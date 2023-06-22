@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MaterialExampleModule } from './../material.module';
 
 import { AuthenticationService } from './../../app/_services';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
-    constructor(private authenticationService: AuthenticationService, private toast: MatSnackBar) { }
+    constructor(private authenticationService: AuthenticationService) { }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         return next.handle(request).pipe(catchError(err => {
@@ -19,13 +19,14 @@ export class ErrorInterceptor implements HttpInterceptor {
 
             const error = err.error.message || err.statusText;
 
-            this.toast.open(error, '', {
-                duration: 6000,
-                verticalPosition: 'top',
-                panelClass: ['error-toast']
-            });
+            // this.toast.open(error, '', {
+            //     duration: 6000,
+            //     verticalPosition: 'top',
+            //     panelClass: ['error-toast']
+            // });
 
             return throwError(error);
         }))
     }
 }
+

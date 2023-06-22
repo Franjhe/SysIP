@@ -11,6 +11,7 @@ $enable-rtl: true;
 // Import Chart.js custom tooltips styles
 @import "@coreui/chartjs/scss/coreui-chartjs";
 
+
 @import "layout";
 
 // Some temp fixes
@@ -24,3 +25,31 @@ $enable-rtl: true;
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mdc-text-field--filled:not(.mdc-text-field--disabled) {
+    background-color: #6060601c;
+}
+
+.mdc-text-field:not(.mdc-text-field--disabled) .mdc-floating-label {
+    color: rgb(0 46 255 / 60%);
+}
+
+.mdc-text-field:not(.mdc-text-field--disabled) .mdc-text-field__input {
+    color: rgb(3 1 1);
+}
+
+.mdc-text-field--filled .mdc-line-ripple::after {
+    border-bottom-color: rgb(0 46 255 / 60%);
+}
+
+.mdc-text-field--focused:not(.mdc-text-field--disabled) 
+.mdc-floating-label {
+    color:rgb(0 46 255 / 60%);
+}
+
+.mdc-text-field--focused:not(.mdc-text-field--disabled) .mdc-floating-label {
+    color:rgb(0 46 255 / 60%);
+}
+
+
+

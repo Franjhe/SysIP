@@ -24,8 +24,10 @@ export class AuthenticationService {
         return this.userSubject.value;
     }
 
-    login(clogin: string, xclavesec: string) {
-        return this.http.post<any>(environment.apiUrl + '/api/v1/auth/signIn', { clogin, xclavesec })
+    login(xlogin: string, xclavesec: string) {
+        console.log(xlogin, xclavesec)
+
+        return this.http.post<any>(environment.apiUrl + '/api/v1/auth/signIn', { xlogin, xclavesec })
             .pipe(map(user => {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
                 localStorage.setItem('user', JSON.stringify(user));

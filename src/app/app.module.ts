@@ -3,8 +3,9 @@ import { HashLocationStrategy, LocationStrategy, PathLocationStrategy } from '@a
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule } from '@angular/forms';
-
 import { NgScrollbarModule } from 'ngx-scrollbar';
+import { AuthInterceptorServiceService, ErrorInterceptor } from './_helpers';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 // Import routing module
 import { AppRoutingModule } from './app-routing.module';
@@ -72,13 +73,13 @@ const APP_CONTAINERS = [
     BadgeModule,
     ListGroupModule,
     CardModule,
-    NgScrollbarModule
+    NgScrollbarModule,
+    HttpClientModule
   ],
   providers: [
-    {
-      provide: LocationStrategy,
-      useClass: HashLocationStrategy
-    },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorServiceService, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true } ,
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
     IconSetService,
     Title
   ],

@@ -19,7 +19,7 @@ export class AuthInterceptorServiceService implements HttpInterceptor {
     ) { }
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const isLoggedIn = localStorage.getItem("user");
-    const token = JSON.parse(isLoggedIn);
+    const token = JSON.parse(isLoggedIn || '' );
 
     let request = req;
 
@@ -30,11 +30,9 @@ export class AuthInterceptorServiceService implements HttpInterceptor {
         }
       });
     }
-   
     if(this.reload > 30){
-      setTimeout(x => {
+      setTimeout(() => {
         this.reload = 0;
-
       },10000)
       return EMPTY
     }else {
