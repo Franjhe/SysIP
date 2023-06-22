@@ -13,7 +13,7 @@
       ></svg>
     </button>
     <c-header-nav class="d-none d-lg-flex me-auto">
-      <c-nav-item>
+      <!-- <c-nav-item>
         <a cNavLink routerLink="/dashboard" routerLinkActive="active">
           Dashboard
         </a>
@@ -25,7 +25,7 @@
         <a cNavLink routerLink="/settings" routerLinkActive="active">
           Settings
         </a>
-      </c-nav-item>
+      </c-nav-item> -->
     </c-header-nav>
 
     <c-header-nav class="d-none d-lg-flex">
@@ -52,7 +52,25 @@
   </c-container>
   <c-header-divider></c-header-divider>
   <c-container [fluid]="true">
-    <c-breadcrumb-router class="ms-2"></c-breadcrumb-router>
+    <c-nav variant="tabs">
+      <c-nav-item>
+        <a [active]="true" [routerLink] cNavLink>Active</a>
+      </c-nav-item>
+      <c-dropdown variant="nav-item">
+        <a [routerLink] cDropdownToggle cNavLink>Dropdown button</a>
+        <ul cDropdownMenu>
+          <li><a [routerLink] cDropdownItem>Action</a></li>
+          <li><a [routerLink] cDropdownItem>Another action</a></li>
+          <li><a [routerLink] cDropdownItem>Something else here</a></li>
+        </ul>
+      </c-dropdown>
+      <c-nav-item>
+        <a [routerLink] cNavLink>Link</a>
+      </c-nav-item>
+      <c-nav-item>
+        <a [disabled]="true" [routerLink] cNavLink>Disabled</a>
+      </c-nav-item>
+    </c-nav>
   </c-container>
 </ng-container>
 <!--</c-header>-->
@@ -153,9 +171,9 @@
         <hr cDropdownDivider/>
       </li>
       <li>
-        <a routerLink="./" cDropdownItem>
+        <a routerLink="./" cDropdownItem (click)="logout()">
           <svg cIcon class="me-2" name="cilLockLocked"></svg>
-          Lock Account
+          Cerrar sesión
         </a>
       </li>
       <li></li>
