@@ -25,8 +25,6 @@ export class AuthenticationService {
     }
 
     login(xlogin: string, xclavesec: string) {
-        console.log(xlogin, xclavesec)
-
         return this.http.post<any>(environment.apiUrl + '/api/v1/auth/signIn', { xlogin, xclavesec })
             .pipe(map(user => {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
@@ -34,7 +32,6 @@ export class AuthenticationService {
                 this.userSubject.next(user);
                 return user;
             }));
-
     }
 
     logout() {       

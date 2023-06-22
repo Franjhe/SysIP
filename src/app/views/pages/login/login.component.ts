@@ -58,6 +58,7 @@ export class LoginComponent {
     }
     this.error = '';
     this.loading = true;
+
     this.authenticationService.login(this.f['xlogin'].value, this.f['xclavesec'].value)
         .pipe(first())
         .subscribe({

@@ -19,16 +19,17 @@ export class AuthInterceptorServiceService implements HttpInterceptor {
     ) { }
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const isLoggedIn = localStorage.getItem("user");
-    const token = JSON.parse(isLoggedIn || '' );
-
     let request = req;
 
-    if (token) {
+    if (isLoggedIn) {
+      const token = JSON.parse(isLoggedIn);
+
       request = req.clone({
         setHeaders: {
           authorization: token.data.token
         }
       });
+
     }
     if(this.reload > 30){
       setTimeout(() => {
