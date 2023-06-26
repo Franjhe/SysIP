@@ -52,6 +52,7 @@ import { TabsComponent } from './tabs/tabs.component';
 
 // Components Routing
 import { BaseRoutingModule } from './base-routing.module';
+import { TemplateComponent } from './template/template.component';
 
 @NgModule({
   imports: [
@@ -100,6 +101,7 @@ import { BaseRoutingModule } from './base-routing.module';
     TooltipsComponent,
     TabsComponent,
     PlaceholdersComponent,
+    TemplateComponent,
   ],
 })
 export class BaseModule {}

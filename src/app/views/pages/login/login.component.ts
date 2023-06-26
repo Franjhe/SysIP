@@ -25,7 +25,6 @@ export class LoginComponent {
     private authenticationService: AuthenticationService
   ) { 
       // redirect to home if already logged in
-
     this.createForm();
       // redirect to home if already logged in
     if (this.authenticationService.userValue) { 
