@@ -12,35 +12,45 @@ import { navItems } from './_nav';
   styleUrls: ['./default-layout.component.scss'],
 })
 export class DefaultLayoutComponent {
-
   public navItems = navItems;
 
-  constructor( private router: Router,
-               private http: HttpClient) {}
+  constructor(private router: Router, private http: HttpClient) {
+    const isLoggedIn = localStorage.getItem('user');
+    if (isLoggedIn) {
+      const userObject = JSON.parse(isLoggedIn);
 
+      let params = {
+        cusuario: userObject.data.cusuario,
+        crol: userObject.data.crol,
+        cdepartamento: userObject.data.cdepartamento,
+      };
 
-  ngOnInit() {
-    console.log('hola')
-    this.getMenus();
-  }
-
-  getMenus() {
-    let params;
-    this.http.post(environment.apiUrl + '/api/v1/menu/get-menu', params).subscribe((response: any) => {
-      const menuPrincipal = response.data.menuPrincipal;
-      const menu = response.data.menu;
-  
-      if (Array.isArray(menuPrincipal) && Array.isArray(menu)) {
-        this.navItems = menuPrincipal.map((item: any, index: number) => ({
-          name: item.xmenu,
-          url: item.xruta,
-          iconComponent: { name: item.xicono },
-          children: menu[index]?.map((childItem: any) => ({
-            name: childItem.xmenu,
-            url: childItem.xruta,
-          })) || [],
-        }));
-      }
-    });  
+      this.http
+      .post(environment.apiUrl + '/api/v1/menu/get-menu', params)
+      .subscribe((response: any) => {
+        const menuPrincipal = response.data.menuPrincipal;
+        console.log(menuPrincipal)
+        if (Array.isArray(menuPrincipal) && menuPrincipal.length > 0) {
+          console.log('hola')
+          const distinctMenuPrincipal = [...new Set(menuPrincipal.map(item => item.xmenuprincipal))];
+          this.navItems = distinctMenuPrincipal.map(menu => {
+            const firstItem = menuPrincipal.find(item => item.xmenuprincipal === menu);
+            return {
+              name: firstItem.xmenuprincipal,
+              url: firstItem.xrutaprincipal,
+              iconComponent: { name: firstItem.xicono },
+              children: menuPrincipal
+                .filter(item => item.xmenuprincipal === menu)
+                .map(childItem => ({
+                  name: childItem.xmenu,
+                  url: childItem.xrutamenu,
+                })),
+            };
+          });
+        }
+      });
+    } else {
+      console.log('No hay usuario autenticado');
+    }
   }
 }
