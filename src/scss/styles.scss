@@ -50,4 +50,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mdc-text-field--focused:not(.mdc-text-field--disabled) .mdc-floating-label {
     color:rgb(0 46 255 / 60%);
 }
+.form-control.rounded-input {
+    border-radius: 20px;
+}
 
