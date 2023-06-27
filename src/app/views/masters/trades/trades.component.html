@@ -8,13 +8,13 @@
       <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
         <!-- Columna Crámo -->
         <ng-container matColumnDef="cramo">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Ramo </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Código </th>
             <td mat-cell *matCellDef="let element"> {{ element.cramo }} </td>
           </ng-container>
           
           <!-- Columna Descripción Larga -->
           <ng-container matColumnDef="xdescripcion_l">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Descripción Larga </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Descripción del Ramo </th>
             <td mat-cell *matCellDef="let element"> {{ element.xdescripcion_l }} </td>
           </ng-container>
           
@@ -49,6 +49,18 @@
       </table>
             
       <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Seleccionar página de usuarios"></mat-paginator>
+
+      <div class="container" style="display: flex; justify-content: flex-end; align-items: flex-start;">
+        <div style="display: flex; flex-direction: column; align-items: flex-end;">
+          <div class="example-button-container" style="text-align: right;">
+            <button mat-fab color="primary" aria-label="Example icon button with a bookmark icon">
+              <mat-icon>add_circle_outline</mat-icon>
+            </button>
+          </div>
+          <label class="label-opaque" style="margin-bottom: 10px;font-weight: bold;">Agregar</label>
+        </div>
+      </div>
+
     </form>
   </div>
   

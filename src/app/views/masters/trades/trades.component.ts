@@ -5,6 +5,8 @@ import { environment } from 'src/environments/environment';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 
 @Component({
   selector: 'app-trades',
@@ -18,7 +20,8 @@ export class TradesComponent implements AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(private router: Router, 
-              private http: HttpClient) {}
+              private http: HttpClient,
+              private snackBar: MatSnackBar) {}
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
@@ -35,9 +38,19 @@ export class TradesComponent implements AfterViewInit {
       this.http.post(environment.apiUrl + '/api/v1/trade/search', data).subscribe((response: any) => {
         if (response.data.trades) {
           this.dataSource.data = response.data.trades;
+          this.showAlert('Hola');
+        }else{
+          this.showAlert('No hay usuario autenticado');
         }
       });
     }
+  }
+
+  showAlert(message: string): void {
+    this.snackBar.open(message, 'Cerrar', {
+      duration: 3000,
+      verticalPosition: 'top'
+    });
   }
 
   applyFilter(event: Event) {
