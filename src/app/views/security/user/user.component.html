@@ -1,4 +1,4 @@
-<div class="card container registration-form">
+<div class="card container registration-form" *ngIf="showTable">
     <form>
       <mat-form-field>
         <mat-label>Buscar</mat-label>
@@ -36,13 +36,17 @@
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #menu="matMenu">
-                <button mat-menu-item (click)="onEditClick($event)" type="button">
+                <button mat-menu-item (click)="onEditUser(element.cusuario)" type="button">
                   <mat-icon>edit</mat-icon>
                   <span>Editar</span>
                 </button>
-                <button mat-menu-item (click)="onCreateContract($event)" type="button">
+                <button mat-menu-item (click)="onDeleteUser($event)" type="button">
                   <mat-icon>delete_outline</mat-icon>
                   <span>Eliminar Usuario</span>
+                </button>
+                <button mat-menu-item (click)="onInfoUser(element.cusuario)" type="button">
+                  <mat-icon>info</mat-icon>
+                  <span>Info.</span>
                 </button>
               </mat-menu>
             </td>
@@ -54,7 +58,7 @@
             
         <!-- Fila que se muestra cuando no hay datos coincidentes. -->
         <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell" colspan="2">No hay datos que coincidan con el filtro "{{ input.value }}"</td>
+          <td class="mat-cell" colspan="2">No hay datos que coincidan con el filtro</td>
         </tr>
       </table>
             
@@ -73,4 +77,5 @@
 
     </form>
   </div>
+  <router-outlet></router-outlet>
   

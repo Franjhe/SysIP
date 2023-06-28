@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
+import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialExampleModule } from './../../material.module'
 import { SecurityRoutingModule } from './security-routing.module';
 import { UserComponent } from './user/user.component';
@@ -10,6 +10,7 @@ import { MenuComponent } from './menu/menu.component';
 import { CreateUserComponent } from './user/create-user/create-user.component';
 import { UpdateUserComponent } from './user/update-user/update-user.component';
 import { DeleteUserComponent } from './user/delete-user/delete-user.component';
+import { InfoUserComponent } from './user/info-user/info-user.component';
 
 
 @NgModule({
@@ -20,12 +21,14 @@ import { DeleteUserComponent } from './user/delete-user/delete-user.component';
     MenuComponent,
     CreateUserComponent,
     UpdateUserComponent,
-    DeleteUserComponent
+    DeleteUserComponent,
+    InfoUserComponent
   ],
   imports: [
     CommonModule,
     MaterialExampleModule,
-    SecurityRoutingModule
+    SecurityRoutingModule,
+    ReactiveFormsModule
   ]
 })
 export class SecurityModule { }

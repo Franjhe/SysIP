@@ -1,5 +1,5 @@
 import { Component, ViewChild, AfterViewInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { MatTableDataSource } from '@angular/material/table';
@@ -18,10 +18,12 @@ export class UserComponent {
   displayedColumns: string[] = ['cusuario', 'xnombre', 'xapellido', 'xlogin', 'star'];
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  showTable: boolean = true;
 
-  constructor(private router: Router, 
-    private http: HttpClient,
-    private snackBar: MatSnackBar) {}
+  constructor(private router: Router,
+              private route: ActivatedRoute, 
+              private http: HttpClient,
+              private snackBar: MatSnackBar) {}
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
@@ -58,16 +60,19 @@ export class UserComponent {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  onEditClick(event: Event) {
-    console.log('Editar');
-    event.preventDefault();
-    // Realiza cualquier acción necesaria sin recargar la página
+  onEditUser(cusuario: any) {
+    this.showTable = false;
+    this.router.navigate(['update-user', cusuario], { relativeTo: this.route });
   }
   
-  onCreateContract(event: Event) {
-    console.log('Crear Contrato');
+  onDeleteUser(event: Event) {
+    console.log('Crear Usuario');
     event.preventDefault();
-    // Realiza cualquier acción necesaria sin recargar la página
+  }
+
+  onInfoUser(cusuario: any) {
+    this.showTable = false;
+    this.router.navigate(['info-user', cusuario], { relativeTo: this.route });
   }
 
 }
