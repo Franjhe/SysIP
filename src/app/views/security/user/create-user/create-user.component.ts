@@ -50,7 +50,6 @@ export class CreateUserComponent {
             id: response.data.departaments[i].cdepartamento,
             value: response.data.departaments[i].xdepartamento
           })
-          console.log(this.departamentList)
         }
       }
     });
@@ -62,6 +61,7 @@ export class CreateUserComponent {
     };
     this.http.post(environment.apiUrl + '/api/v1/valrep/rol', data).subscribe((response: any) => {
       if (response.status) {
+        this.rolList = [];
         for(let i = 0; i < response.data.rols.length; i++){
           this.rolList.push({
             id: response.data.rols[i].crol,
@@ -76,14 +76,18 @@ export class CreateUserComponent {
   onSubmit(form: any){
     if (this.createUser.valid) {
       let dataUpdate = {
+        u_version: '?',
         xnombre: form.xnombre,
         xapellido: form.xapellido,
         xlogin: form.xlogin,
+        xcontrasena: form.xcontrasena,
         xusuario: form.xusuario,
         xcorreo: form.xcorreo,
         xobservacion: form.xobservacion ? form.xobservacion: null,
+        cdepartamento: parseInt(form.cdepartamento),
+        crol: parseInt(form.crol)
       }
-      this.http.post(environment.apiUrl + '/api/v1/security/user/update', dataUpdate).subscribe((response: any) => {
+      this.http.post(environment.apiUrl + '/api/v1/security/user/create', dataUpdate).subscribe((response: any) => {
         if (response.status) {
           this.snackBar.open(`${response.data.message}`, '', {
             duration: 3000,
