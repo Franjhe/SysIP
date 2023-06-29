@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialExampleModule } from './../../material.module'
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SecurityRoutingModule } from './security-routing.module';
 import { UserComponent } from './user/user.component';
 import { RolComponent } from './rol/rol.component';
@@ -28,7 +29,8 @@ import { InfoUserComponent } from './user/info-user/info-user.component';
     CommonModule,
     MaterialExampleModule,
     SecurityRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatSnackBarModule
   ]
 })
 export class SecurityModule { }

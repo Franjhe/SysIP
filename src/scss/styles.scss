@@ -54,8 +54,16 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     border-radius: 20px;
 }
 .label-opaque {
-    font-family: system-ui;
+    font-family: Montserrat,helvetica neue,Arial,sans-serif;
     font-weight: 400;
     color: #8b8b8b;
   }
-
+  .success-toast {
+    background-color: green;
+    color: white;
+}
+::ng-deep snack-bar-container.alert-red{
+    padding: 20px;
+    background-color: green;
+    color: white;
+  }

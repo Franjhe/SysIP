@@ -10,12 +10,7 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
   }
-  .success-toast {
-    background-color: green;
-    color: white;
-  }
-  
-  .danger-toast {
-    background-color: red;
-    color: white;
+
+  mat-form-field {
+    margin-right: 12px;
   }

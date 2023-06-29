@@ -20,14 +20,15 @@ const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'cards',
+        redirectTo: 'user',
       },
       {
         path: 'user',
         component: UserComponent,
         children: [
           { path: 'info-user/:cusuario', component: InfoUserComponent },
-          { path: 'update-user/:cusuario', component: UpdateUserComponent }
+          { path: 'update-user/:cusuario', component: UpdateUserComponent },
+          { path: 'create-user', component: CreateUserComponent }
         ]
       },
 

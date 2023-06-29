@@ -3,12 +3,12 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-update-user',
   templateUrl: './update-user.component.html',
-  styleUrls: ['./update-user.component.scss'],
+  styleUrls: ['./update-user.component.scss']
 })
 export class UpdateUserComponent {
   cusuario: any;
@@ -17,9 +17,10 @@ export class UpdateUserComponent {
 
   constructor(
     private route: ActivatedRoute, 
+    private router: Router,
     private formBuilder: FormBuilder,
     private http: HttpClient,
-    private snackBar: MatSnackBar,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit() {
@@ -72,7 +73,11 @@ export class UpdateUserComponent {
       }
       this.http.post(environment.apiUrl + '/api/v1/security/user/update', dataUpdate).subscribe((response: any) => {
         if (response.status) {
-
+          this.snackBar.open(`${response.data.message}`, '', {
+            duration: 3000,
+          }).afterDismissed().subscribe(() => {
+            this.router.navigate(['security/user/']);
+          });
         }
       });
     } 

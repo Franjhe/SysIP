@@ -7,13 +7,13 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-
 @Component({
   selector: 'app-user',
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.scss']
 })
 export class UserComponent {
+  
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
   displayedColumns: string[] = ['cusuario', 'xnombre', 'xapellido', 'xlogin', 'star'];
   @ViewChild(MatSort) sort!: MatSort;
@@ -73,6 +73,11 @@ export class UserComponent {
   onInfoUser(cusuario: any) {
     this.showTable = false;
     this.router.navigate(['info-user', cusuario], { relativeTo: this.route });
+  }
+
+  addUser(){
+    this.showTable = false;
+    this.router.navigate(['create-user'], { relativeTo: this.route });
   }
 
 }
