@@ -67,3 +67,34 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     background-color: green;
     color: white;
   }
+
+  .card {
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }
+
+  mat-form-field {
+    margin-right: 12px;
+  }
+  .header-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .header-right {
+    flex-grow: 1;
+  }
+  
+  .header-content {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .header-left {
+    display: flex;
+    align-items: center;
+  }
+  .disabled-field {
+    background-color: #ebe9e9;
+  }

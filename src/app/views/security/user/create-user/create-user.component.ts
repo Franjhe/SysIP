@@ -74,7 +74,7 @@ export class CreateUserComponent {
 
   onSubmit(form: any){
     if (this.createUser.valid) {
-      let dataUpdate = {
+      let dataCreate = {
         u_version: '?',
         xnombre: form.xnombre,
         xapellido: form.xapellido,
@@ -86,7 +86,7 @@ export class CreateUserComponent {
         cdepartamento: parseInt(form.cdepartamento),
         crol: parseInt(form.crol)
       }
-      this.http.post(environment.apiUrl + '/api/v1/security/user/create', dataUpdate).subscribe((response: any) => {
+      this.http.post(environment.apiUrl + '/api/v1/security/user/create', dataCreate).subscribe((response: any) => {
         if (response.status) {
           this.snackBar.open(`${response.data.message}`, '', {
             duration: 3000,

@@ -1,0 +1,35 @@
+
+<div class="card container">
+    <div class="header-container">
+        <div class="header-left">
+          <button mat-icon-button color="#F5F5F5" aria-label="Example icon button with a home icon" (click)="backComponent()">
+            <mat-icon>arrow_back_ios</mat-icon>
+          </button>
+        </div>
+        <div class="header-right">
+          <div class="header-content">
+            <h5 class="title">Información del Departamento</h5>
+          </div>
+        </div>
+      </div>
+    <div class="card-body">
+      <form [formGroup]="infoDepartament">
+        <div class="row justify-content-center">
+          <div class="col-md-3">
+            <div class="form-group mb-3">
+              <label for="cdepartamento" class="label-opaque">Código</label>
+              <input class="label-opaque" type="text" id="cdepartamento" formControlName="cdepartamento" class="form-control rounded-input" [ngClass]="{ 'disabled-field': infoDepartament.controls['cdepartamento'].disabled }">
+              <div class="invalid-feedback" *ngIf="submitted && infoDepartament.controls['cdepartamento'].errors">Error en el código</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group mb-3">
+              <label for="xdepartamento" class="label-opaque">Nombre</label>
+              <input class="label-opaque" type="text" id="xdepartamento" formControlName="xdepartamento" class="form-control rounded-input" [ngClass]="{ 'disabled-field': infoDepartament.controls['xdepartamento'].disabled }">
+              <div class="invalid-feedback" *ngIf="submitted && infoDepartament.controls['xdepartamento'].errors">Error en el nombre</div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>

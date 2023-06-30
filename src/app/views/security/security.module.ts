@@ -12,6 +12,10 @@ import { CreateUserComponent } from './user/create-user/create-user.component';
 import { UpdateUserComponent } from './user/update-user/update-user.component';
 import { DeleteUserComponent } from './user/delete-user/delete-user.component';
 import { InfoUserComponent } from './user/info-user/info-user.component';
+import { UpdateDepartamentComponent } from './departament/update-departament/update-departament.component';
+import { InfoDepartamentComponent } from './departament/info-departament/info-departament.component';
+import { DeleteDepartamentComponent } from './departament/delete-departament/delete-departament.component';
+import { CreateDepartamentComponent } from './departament/create-departament/create-departament.component';
 
 
 @NgModule({
@@ -23,7 +27,11 @@ import { InfoUserComponent } from './user/info-user/info-user.component';
     CreateUserComponent,
     UpdateUserComponent,
     DeleteUserComponent,
-    InfoUserComponent
+    InfoUserComponent,
+    UpdateDepartamentComponent,
+    InfoDepartamentComponent,
+    DeleteDepartamentComponent,
+    CreateDepartamentComponent
   ],
   imports: [
     CommonModule,
