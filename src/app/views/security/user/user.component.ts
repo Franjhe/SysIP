@@ -65,9 +65,9 @@ export class UserComponent {
     this.router.navigate(['update-user', cusuario], { relativeTo: this.route });
   }
   
-  onDeleteUser(event: Event) {
-    console.log('Crear Usuario');
-    event.preventDefault();
+  onDeleteUser(cusuario: any) {
+    this.showTable = false;
+    this.router.navigate(['delete-user', cusuario], { relativeTo: this.route });
   }
 
   onInfoUser(cusuario: any) {

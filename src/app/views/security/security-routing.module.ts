@@ -28,7 +28,8 @@ const routes: Routes = [
         children: [
           { path: 'info-user/:cusuario', component: InfoUserComponent },
           { path: 'update-user/:cusuario', component: UpdateUserComponent },
-          { path: 'create-user', component: CreateUserComponent }
+          { path: 'create-user', component: CreateUserComponent },
+          { path: 'delete-user/:cusuario', component: DeleteUserComponent }
         ]
       },
 

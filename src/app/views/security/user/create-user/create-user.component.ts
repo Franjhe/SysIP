@@ -67,7 +67,6 @@ export class CreateUserComponent {
             id: response.data.rols[i].crol,
             value: response.data.rols[i].xrol
           })
-          console.log(this.rolList)
         }
       }
     });
