@@ -56,21 +56,24 @@
           <textarea id="xobservacion" formControlName="xobservacion" class="form-control rounded-input" rows="4" [ngClass]="{ 'is-invalid': submitted && deleteUser.controls['xobservacion'].errors }"></textarea>
           <div class="invalid-feedback" *ngIf="submitted && deleteUser.controls['xobservacion'].errors">Error en la observación</div>
         </div>
-        <button mat-flat-button color="warn" (click)="openModal()">Eliminar</button>
+        <button mat-flat-button color="warn" (click)="open()">Eliminar</button>
       </form>
     </div>
   </div>
 
-  <div *ngIf="showModal" class="modal-overlay">
-    <div class="modal-content">
-      <h2>¿Desea eliminar este usuario?</h2>
-      <div class="modal-buttons">
-        <button class="red-button" mat-icon-button color="primary" aria-label="Example icon button with a home icon" (click)="closeModal()">
-            <mat-icon>highlight_off</mat-icon>
-        </button>
-        <button class="green-button" mat-icon-button color="success" aria-label="Example icon button with a home icon" (click)="onSubmit()">
-            <mat-icon>check_circle_outline</mat-icon>
-        </button>
-      </div>
-    </div>
-  </div>
+  <ng-template #DeleteUser>
+    <mat-dialog-content>
+      <h1 mat-dialog-title class="text-center text-xl-left">Eliminación de Usuario</h1>
+        <div class="row">
+          <h2>¿Desea eliminar el usuario de {{ deleteUser.get('xnombre')!.value }}?</h2>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+      <button class="red-button" mat-icon-button color="primary" aria-label="Example icon button with a home icon" (click)="closeModal()">
+        <mat-icon>highlight_off</mat-icon>
+      </button>
+      <button class="green-button" mat-icon-button color="success" aria-label="Example icon button with a home icon" (click)="onSubmit()">
+        <mat-icon>check_circle_outline</mat-icon>
+      </button>
+    </mat-dialog-actions>
+  </ng-template>

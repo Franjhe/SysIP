@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-delete-user',
@@ -15,11 +17,16 @@ export class DeleteUserComponent {
   deleteUser!: FormGroup;
   submitted = false;
   showModal = false;
+  @ViewChild("DeleteUser") private DeleteUser!: TemplateRef<any>;
+  dialogRef!: MatDialogRef<any>;
 
   constructor(
     private route: ActivatedRoute, 
     private formBuilder: FormBuilder,
     private http: HttpClient,
+    readonly dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private router: Router,
   ) {}
 
   ngOnInit() {
@@ -59,16 +66,35 @@ export class DeleteUserComponent {
     }
   }
 
-  openModal() {
-    this.showModal = true;
+  open() {
+    const config: MatDialogConfig = new MatDialogConfig();
+    config.data = {
+      template: this.DeleteUser
+    };
+    this.dialogRef = this.dialog.open(this.DeleteUser, config);
   }
 
   closeModal() {
-    this.showModal = false;
+    this.dialogRef.close();
   }
 
   onSubmit() {
-    // Lógica para eliminar el usuario
+    this.dialogRef.close();
+    let dataUpdate = {
+      cusuario: parseInt(this.cusuario),
+      istatus: 'N'
+    }
+    this.http.post(environment.apiUrl + '/api/v1/security/user/delete', dataUpdate).subscribe((response: any) => {
+      if (response.status) {
+        this.snackBar.open(`${response.data.message}`, '', {
+          duration: 3000,
+        }).afterDismissed().subscribe(() => {
+          this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+            this.router.navigate(['security/user/']);
+          });
+        });
+      }
+    });
   }
 
 }

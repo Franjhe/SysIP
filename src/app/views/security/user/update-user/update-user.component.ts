@@ -76,7 +76,9 @@ export class UpdateUserComponent {
           this.snackBar.open(`${response.data.message}`, '', {
             duration: 3000,
           }).afterDismissed().subscribe(() => {
-            this.router.navigate(['security/user/']);
+            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+              this.router.navigate(['security/user/']);
+            });
           });
         }
       });
