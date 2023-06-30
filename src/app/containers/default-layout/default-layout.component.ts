@@ -29,9 +29,7 @@ export class DefaultLayoutComponent {
       .post(environment.apiUrl + '/api/v1/menu/get-menu', params)
       .subscribe((response: any) => {
         const menuPrincipal = response.data.menuPrincipal;
-        console.log(menuPrincipal)
         if (Array.isArray(menuPrincipal) && menuPrincipal.length > 0) {
-          console.log('hola')
           const distinctMenuPrincipal = [...new Set(menuPrincipal.map(item => item.xmenuprincipal))];
           this.navItems = distinctMenuPrincipal.map(menu => {
             const firstItem = menuPrincipal.find(item => item.xmenuprincipal === menu);

@@ -1,0 +1,62 @@
+<div class="card container">
+    <h5 class="title">Editar Usuario</h5>
+    <div class="card-body">
+      <form [formGroup]="updateUser">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group mb-3">
+              <label for="cusuario" class="label-opaque">Código</label>
+              <input class="label-opaque" type="text" id="cusuario" formControlName="cusuario" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && updateUser.controls['cusuario'].errors }">
+              <div class="invalid-feedback" *ngIf="submitted && updateUser.controls['cusuario'].errors">Error en el código</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group mb-3">
+              <label for="xnombre" class="label-opaque">Nombre</label>
+              <input class="label-opaque" type="text" id="xnombre" formControlName="xnombre" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && updateUser.controls['xnombre'].errors }">
+              <div class="invalid-feedback" *ngIf="submitted && updateUser.controls['xnombre'].errors">Error en el nombre</div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group mb-3">
+              <label for="xapellido" class="label-opaque">Apellido</label>
+              <input type="text" id="xapellido" formControlName="xapellido" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && updateUser.controls['xapellido'].errors }">
+              <div class="invalid-feedback" *ngIf="submitted && updateUser.controls['xapellido'].errors">Error en el apellido</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group mb-3">
+              <label for="xlogin" class="label-opaque">Login</label>
+              <input type="text" id="xlogin" formControlName="xlogin" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && updateUser.controls['xlogin'].errors }">
+              <div class="invalid-feedback" *ngIf="submitted && updateUser.controls['xlogin'].errors">Error en el login</div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group mb-3">
+              <label for="xusuario" class="label-opaque">Usuario</label>
+              <input type="text" id="xusuario" formControlName="xusuario" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && updateUser.controls['xusuario'].errors }">
+              <div class="invalid-feedback" *ngIf="submitted && updateUser.controls['xusuario'].errors">Error en el usuario</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group mb-3">
+              <label for="xcorreo" class="label-opaque">Correo</label>
+              <input type="text" id="xcorreo" formControlName="xcorreo" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && updateUser.controls['xcorreo'].errors }">
+              <div class="invalid-feedback" *ngIf="submitted && updateUser.controls['xcorreo'].errors">Error en el correo</div>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div class="form-group mb-3">
+          <label for="xobservacion" class="label-opaque">Observación</label>
+          <textarea id="xobservacion" formControlName="xobservacion" class="form-control rounded-input" rows="4" [ngClass]="{ 'is-invalid': submitted && updateUser.controls['xobservacion'].errors }"></textarea>
+          <div class="invalid-feedback" *ngIf="submitted && updateUser.controls['xobservacion'].errors">Error en la observación</div>
+        </div>
+        <button mat-raised-button color="primary" (click)="onSubmit(updateUser.value)">Guardar</button>
+      </form>
+    </div>
+  </div>

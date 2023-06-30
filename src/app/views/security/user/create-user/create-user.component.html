@@ -1,0 +1,84 @@
+<div class="card container">
+    <h5 class="title">Creación de Usuario</h5>
+    <div class="card-body">
+      <form [formGroup]="createUser">
+        <div class="row">
+          <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label for="cdepartamento" class="label-opaque">Departamento</label>
+                <select id="cdepartamento" formControlName="cdepartamento" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && createUser.controls['cdepartamento'].errors }" (change)="changeValrepRol()">
+                  <option value="">Seleccione un departamento</option>
+                  <option *ngFor="let departament of departamentList" [value]="departament.id">{{ departament.value }}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="submitted && createUser.controls['cdepartamento'].errors">Error en el departamento</div>
+              </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group mb-3">
+              <label for="crol" class="label-opaque">Rol</label>
+              <select id="crol" formControlName="crol" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && createUser.controls['crol'].errors }">
+                <option value="">Seleccione un rol</option>
+                <option *ngFor="let rol of rolList" [value]="rol.id">{{ rol.value }}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submitted && createUser.controls['crol'].errors">Error en el departamento</div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                  <label for="xnombre" class="label-opaque">Nombre</label>
+                  <input class="label-opaque" type="text" id="xnombre" formControlName="xnombre" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && createUser.controls['xnombre'].errors }">
+                  <div class="invalid-feedback" *ngIf="submitted && createUser.controls['xnombre'].errors">Error en el nombre</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                  <label for="xapellido" class="label-opaque">Apellido</label>
+                  <input type="text" id="xapellido" formControlName="xapellido" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && createUser.controls['xapellido'].errors }">
+                  <div class="invalid-feedback" *ngIf="submitted && createUser.controls['xapellido'].errors">Error en el apellido</div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group mb-3">
+              <label for="xlogin" class="label-opaque">Login</label>
+              <input type="text" id="xlogin" formControlName="xlogin" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && createUser.controls['xlogin'].errors }">
+              <div class="invalid-feedback" *ngIf="submitted && createUser.controls['xlogin'].errors">Error en el login</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group mb-3">
+              <label for="xcontrasena" class="label-opaque">Contraseña</label>
+              <input type="text" id="xcontrasena" formControlName="xcontrasena" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && createUser.controls['xcontrasena'].errors }">
+              <div class="invalid-feedback" *ngIf="submitted && createUser.controls['xcontrasena'].errors">Error en el login</div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group mb-3">
+              <label for="xusuario" class="label-opaque">Usuario</label>
+              <input type="text" id="xusuario" formControlName="xusuario" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && createUser.controls['xusuario'].errors }">
+              <div class="invalid-feedback" *ngIf="submitted && createUser.controls['xusuario'].errors">Error en el usuario</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group mb-3">
+              <label for="xcorreo" class="label-opaque">Correo</label>
+              <input type="text" id="xcorreo" formControlName="xcorreo" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && createUser.controls['xcorreo'].errors }">
+              <div class="invalid-feedback" *ngIf="submitted && createUser.controls['xcorreo'].errors">Error en el correo</div>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <div class="form-group mb-3">
+          <label for="xobservacion" class="label-opaque">Observación</label>
+          <textarea id="xobservacion" formControlName="xobservacion" class="form-control rounded-input" rows="4" [ngClass]="{ 'is-invalid': submitted && createUser.controls['xobservacion'].errors }"></textarea>
+          <div class="invalid-feedback" *ngIf="submitted && createUser.controls['xobservacion'].errors">Error en la observación</div>
+        </div>
+        <button mat-raised-button color="primary" (click)="onSubmit(createUser.value)">Guardar</button>
+      </form>
+    </div>
+  </div>

@@ -99,8 +99,10 @@ import {DialogModule} from '@angular/cdk/dialog';
     DialogModule,
   ]
 })
-export class MaterialExampleModule {
-    open(error: any, arg1: string, arg2: { duration: number; verticalPosition: string; panelClass: string[]; }) {
-        throw new Error('Method not implemented.');
-    }
-}
+// export class MaterialExampleModule {
+//     open(error: any, arg1: string, arg2: { duration: number; verticalPosition: string; panelClass: string[]; }) {
+//         throw new Error('Method not implemented.');
+//     }
+// }
+
+export class MaterialExampleModule {}

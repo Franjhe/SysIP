@@ -65,6 +65,16 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/pages/pages.module').then((m) => m.PagesModule)
       },
+      {
+        path: 'masters',
+        loadChildren: () =>
+          import('./views/masters/masters.module').then((m) => m.MastersModule)
+      },
+      {
+        path: 'security',
+        loadChildren: () =>
+          import('./views/security/security.module').then((m) => m.SecurityModule)
+      },
     ]
   },
   {

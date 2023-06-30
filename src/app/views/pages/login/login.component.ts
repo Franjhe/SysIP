@@ -44,7 +44,7 @@ export class LoginComponent {
     this.SingIn =this.formBuilder.group(
       {
         xlogin: new FormControl ('', [Validators.required,Validators.minLength(2)]),
-        xclavesec: new FormControl('', Validators.required),
+        xcontrasena: new FormControl('', Validators.required),
       }
     );
   }
@@ -58,7 +58,7 @@ export class LoginComponent {
     this.error = '';
     this.loading = true;
 
-    this.authenticationService.login(this.f['xlogin'].value, this.f['xclavesec'].value)
+    this.authenticationService.login(this.f['xlogin'].value, this.f['xcontrasena'].value)
         .pipe(first())
         .subscribe({
             next: () => {

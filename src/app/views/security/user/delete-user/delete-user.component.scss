@@ -1,0 +1,49 @@
+.title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .card {
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }
+
+  mat-form-field {
+    margin-right: 12px;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: inline-grid;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    text-align: center;
+  }
+  
+  .modal-buttons {
+    margin-top: 20px;
+  }
+  
+  .modal-buttons button {
+    margin: 0 10px;
+  }
+  .green-button {
+    color: green;
+  }
+  .red-button {
+    color: red;
+  }

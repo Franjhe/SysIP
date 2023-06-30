@@ -16,7 +16,7 @@
 
               <div class="container ">
                 <!-- Email input -->
-                <div class="form-outline mb-4">
+                <div class="form-outline mb-2">
                   <mat-form-field class="example-full-width">
                     <mat-label>Usuario</mat-label>
                     <input matInput  formControlName="xlogin">
@@ -27,7 +27,7 @@
                 <div class="form-outline mb-4">
                   <mat-form-field class="example-full-width">
                     <mat-label>Contraseña</mat-label>
-                    <input matInput formControlName="xclavesec" [type]="showPassword ? 'text' : 'password'" name="password">
+                    <input matInput formControlName="xcontrasena" [type]="showPassword ? 'text' : 'password'" name="password">
                     <mat-icon matSuffix (click)="togglePasswordVisibility()">
                         {{showPassword?'visibility_off':'visibility'}}
                     </mat-icon>
