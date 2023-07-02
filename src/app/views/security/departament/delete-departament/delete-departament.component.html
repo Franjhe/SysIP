@@ -1,1 +1,53 @@
-<p>delete-departament works!</p>
+
+<div class="card container">
+    <div class="header-container">
+        <div class="header-left">
+          <button mat-icon-button color="#F5F5F5" aria-label="Example icon button with a home icon" (click)="backComponent()">
+            <mat-icon>arrow_back_ios</mat-icon>
+          </button>
+        </div>
+        <div class="header-right">
+          <div class="header-content">
+            <h5 class="title">Eliminar Departamento</h5>
+          </div>
+        </div>
+      </div>
+    <div class="card-body">
+      <form [formGroup]="deleteDepartament">
+        <div class="row justify-content-center">
+          <div class="col-md-3">
+            <div class="form-group mb-3">
+              <label for="cdepartamento" class="label-opaque">Código</label>
+              <input class="label-opaque" type="text" id="cdepartamento" formControlName="cdepartamento" class="form-control rounded-input" [ngClass]="{ 'disabled-field': deleteDepartament.controls['cdepartamento'].disabled }">
+              <div class="invalid-feedback" *ngIf="submitted && deleteDepartament.controls['cdepartamento'].errors">Error en el código</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group mb-3">
+              <label for="xdepartamento" class="label-opaque">Nombre</label>
+              <input class="label-opaque" type="text" id="xdepartamento" formControlName="xdepartamento" class="form-control rounded-input" [ngClass]="{ 'disabled-field': deleteDepartament.controls['xdepartamento'].disabled }">
+              <div class="invalid-feedback" *ngIf="submitted && deleteDepartament.controls['xdepartamento'].errors">Error en el nombre</div>
+            </div>
+          </div>
+        </div>
+        <button mat-flat-button color="warn" (click)="open()">Eliminar</button>
+      </form>
+    </div>
+  </div>
+
+  <ng-template #DeleteDepartament>
+    <mat-dialog-content>
+      <h1 mat-dialog-title class="text-center text-xl-left">Eliminación de Departamento</h1>
+        <div class="row">
+          <h2>¿Desea eliminar el departamento de {{ deleteDepartament.get('xdepartamento')!.value }}?</h2>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+      <button class="red-button" mat-icon-button color="primary" aria-label="Example icon button with a home icon" (click)="closeModal()">
+        <mat-icon>highlight_off</mat-icon>
+      </button>
+      <button class="green-button" mat-icon-button color="success" aria-label="Example icon button with a home icon" (click)="onSubmit()">
+        <mat-icon>check_circle_outline</mat-icon>
+      </button>
+    </mat-dialog-actions>
+  </ng-template>

@@ -80,11 +80,11 @@ export class DeleteUserComponent {
 
   onSubmit() {
     this.dialogRef.close();
-    let dataUpdate = {
+    let dataDelete = {
       cusuario: parseInt(this.cusuario),
       istatus: 'N'
     }
-    this.http.post(environment.apiUrl + '/api/v1/security/user/delete', dataUpdate).subscribe((response: any) => {
+    this.http.post(environment.apiUrl + '/api/v1/security/user/delete', dataDelete).subscribe((response: any) => {
       if (response.status) {
         this.snackBar.open(`${response.data.message}`, '', {
           duration: 3000,
