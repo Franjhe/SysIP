@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 //Importacion de Usuarios.
 import { UserComponent } from './user/user.component';
@@ -22,9 +23,12 @@ import { CreateRolComponent } from './rol/create-rol/create-rol.component';
 import { UpdateRolComponent } from './rol/update-rol/update-rol.component';
 import { DeleteRolComponent } from './rol/delete-rol/delete-rol.component';
 
-
+//Importacion de Menus.
 import { MenuComponent } from './menu/menu.component';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { InfoMenuComponent } from './menu/info-menu/info-menu.component';
+import { CreateMenuComponent } from './menu/create-menu/create-menu.component';
+import { UpdateMenuComponent } from './menu/update-menu/update-menu.component';
+import { DeleteMenuComponent } from './menu/delete-menu/delete-menu.component';
 
 const routes: Routes = [
   {
@@ -76,6 +80,21 @@ const routes: Routes = [
           { path: 'update-rol/:crol', component: UpdateRolComponent },
           { path: 'create-rol', component: CreateRolComponent },
           { path: 'delete-rol/:crol', component: DeleteRolComponent }
+        ]
+      },
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'menu',
+      },
+      {
+        path: 'menu',
+        component: MenuComponent,
+        children: [
+          { path: 'info-menu',   component: InfoMenuComponent },
+          { path: 'update-menu', component: UpdateMenuComponent },
+          { path: 'create-menu', component: CreateMenuComponent },
+          { path: 'delete-menu', component: DeleteMenuComponent }
         ]
       },
     ]

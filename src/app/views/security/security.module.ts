@@ -20,6 +20,10 @@ import { CreateRolComponent } from './rol/create-rol/create-rol.component';
 import { InfoRolComponent } from './rol/info-rol/info-rol.component';
 import { UpdateRolComponent } from './rol/update-rol/update-rol.component';
 import { DeleteRolComponent } from './rol/delete-rol/delete-rol.component';
+import { CreateMenuComponent } from './menu/create-menu/create-menu.component';
+import { InfoMenuComponent } from './menu/info-menu/info-menu.component';
+import { UpdateMenuComponent } from './menu/update-menu/update-menu.component';
+import { DeleteMenuComponent } from './menu/delete-menu/delete-menu.component';
 
 
 @NgModule({
@@ -39,7 +43,11 @@ import { DeleteRolComponent } from './rol/delete-rol/delete-rol.component';
     CreateRolComponent,
     InfoRolComponent,
     UpdateRolComponent,
-    DeleteRolComponent
+    DeleteRolComponent,
+    CreateMenuComponent,
+    InfoMenuComponent,
+    UpdateMenuComponent,
+    DeleteMenuComponent
   ],
   imports: [
     CommonModule,
