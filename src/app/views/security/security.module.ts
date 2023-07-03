@@ -16,6 +16,10 @@ import { UpdateDepartamentComponent } from './departament/update-departament/upd
 import { InfoDepartamentComponent } from './departament/info-departament/info-departament.component';
 import { DeleteDepartamentComponent } from './departament/delete-departament/delete-departament.component';
 import { CreateDepartamentComponent } from './departament/create-departament/create-departament.component';
+import { CreateRolComponent } from './rol/create-rol/create-rol.component';
+import { InfoRolComponent } from './rol/info-rol/info-rol.component';
+import { UpdateRolComponent } from './rol/update-rol/update-rol.component';
+import { DeleteRolComponent } from './rol/delete-rol/delete-rol.component';
 
 
 @NgModule({
@@ -31,7 +35,11 @@ import { CreateDepartamentComponent } from './departament/create-departament/cre
     UpdateDepartamentComponent,
     InfoDepartamentComponent,
     DeleteDepartamentComponent,
-    CreateDepartamentComponent
+    CreateDepartamentComponent,
+    CreateRolComponent,
+    InfoRolComponent,
+    UpdateRolComponent,
+    DeleteRolComponent
   ],
   imports: [
     CommonModule,

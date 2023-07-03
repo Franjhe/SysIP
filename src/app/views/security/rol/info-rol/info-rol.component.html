@@ -1,0 +1,80 @@
+<div class="container">
+    <div class="row">
+      <div class="col-md-8">
+        <div class="card">
+            <div class="header-container">
+                <div class="header-left">
+                  <button mat-icon-button color="#F5F5F5" aria-label="Example icon button with a home icon" (click)="backComponent()">
+                    <mat-icon>arrow_back_ios</mat-icon>
+                  </button>
+                </div>
+                <div class="header-right">
+                  <div class="header-content">
+                    <h5 class="title">Información del Rol</h5>
+                  </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <form [formGroup]="infoRol">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="crol" class="label-opaque">Código del rol</label>
+                            <input type="text" id="crol" formControlName="crol" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && infoRol.controls['crol'].errors }">
+                            <div class="invalid-feedback" *ngIf="submitted && infoRol.controls['crol'].errors">Error en el código</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="xrol" class="label-opaque">Nombre</label>
+                            <input type="text" id="xrol" formControlName="xrol" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && infoRol.controls['xrol'].errors }">
+                            <div class="invalid-feedback" *ngIf="submitted && infoRol.controls['xrol'].errors">Error en el nombre</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="xdepartamento" class="label-opaque">Departamento</label>
+                            <input type="text" id="xdepartamento" formControlName="xdepartamento" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && infoRol.controls['xdepartamento'].errors }">
+                            <div class="invalid-feedback" *ngIf="submitted && infoRol.controls['xdepartamento'].errors">Error en el departamento</div>
+                        </div>
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <h5 class="title">Acciones del Rol</h5>
+          <div class="card-body">
+            <form [formGroup]="infoRol">
+              <div class="form-group">
+                <mat-checkbox formControlName="bcrear" [ngClass]="{ 'is-invalid': submitted && infoRol.controls['bcrear'].errors }">
+                  <label class="label-opaque">Crear</label>
+                </mat-checkbox>
+                <div class="invalid-feedback" *ngIf="submitted && infoRol.controls['bcrear'].errors">Error en crear</div>
+              </div>
+              <div class="form-group">
+                <mat-checkbox formControlName="bmodificar" [ngClass]="{ 'is-invalid': submitted && infoRol.controls['bmodificar'].errors }">
+                    <label class="label-opaque">Modificar</label>
+                </mat-checkbox>
+                <div class="invalid-feedback" *ngIf="submitted && infoRol.controls['bmodificar'].errors">Error en modificar</div>
+              </div>
+              <div class="form-group">
+                <mat-checkbox formControlName="beliminar" [ngClass]="{ 'is-invalid': submitted && infoRol.controls['beliminar'].errors }">
+                    <label class="label-opaque">Eliminar</label>
+                </mat-checkbox>
+                <div class="invalid-feedback" *ngIf="submitted && infoRol.controls['beliminar'].errors">Error en eliminar</div>
+              </div>
+              <div class="form-group">
+                <mat-checkbox formControlName="bconsultar" [ngClass]="{ 'is-invalid': submitted && infoRol.controls['bconsultar'].errors }">
+                    <label class="label-opaque">Consultar</label>
+                </mat-checkbox>
+                <div class="invalid-feedback" *ngIf="submitted && infoRol.controls['bconsultar'].errors">Error en consultar</div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

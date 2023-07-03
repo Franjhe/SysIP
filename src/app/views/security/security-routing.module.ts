@@ -15,8 +15,14 @@ import { CreateDepartamentComponent } from './departament/create-departament/cre
 import { UpdateDepartamentComponent } from './departament/update-departament/update-departament.component';
 import { DeleteDepartamentComponent } from './departament/delete-departament/delete-departament.component';
 
-
+//Importacion de Roles.
 import { RolComponent } from './rol/rol.component';
+import { InfoRolComponent } from './rol/info-rol/info-rol.component';
+import { CreateRolComponent } from './rol/create-rol/create-rol.component';
+import { UpdateRolComponent } from './rol/update-rol/update-rol.component';
+import { DeleteRolComponent } from './rol/delete-rol/delete-rol.component';
+
+
 import { MenuComponent } from './menu/menu.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
@@ -57,7 +63,21 @@ const routes: Routes = [
           { path: 'delete-departament/:cdepartamento', component: DeleteDepartamentComponent }
         ]
       },
-
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'rol',
+      },
+      {
+        path: 'rol',
+        component: RolComponent,
+        children: [
+          { path: 'info-rol/:crol', component: InfoRolComponent },
+          { path: 'update-rol/:crol', component: UpdateRolComponent },
+          { path: 'create-rol', component: CreateRolComponent },
+          { path: 'delete-rol/:crol', component: DeleteRolComponent }
+        ]
+      },
     ]
   }
 ];

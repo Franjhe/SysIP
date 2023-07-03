@@ -1,1 +1,81 @@
-<p>rol works!</p>
+<div class="card container registration-form" *ngIf="showTable">
+    <form>
+      <mat-form-field>
+        <mat-label>Buscar</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Ingresa datos" #input>
+      </mat-form-field>
+            
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+        <!-- Columna Crámo -->
+        <ng-container matColumnDef="cdepartamento">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Código Departamento</th>
+            <td mat-cell *matCellDef="let element"> {{ element.cdepartamento }} </td>
+          </ng-container>
+          
+          <!-- Columna Descripción Larga -->
+          <ng-container matColumnDef="xdepartamento">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Departamento </th>
+            <td mat-cell *matCellDef="let element"> {{ element.xdepartamento }} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="crol">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Codigo Rol </th>
+            <td mat-cell *matCellDef="let element"> {{ element.crol }} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="xrol">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Rol </th>
+            <td mat-cell *matCellDef="let element"> {{ element.xrol }} </td>
+          </ng-container>
+          
+          <!-- Columna Acciones -->
+          <ng-container matColumnDef="star">
+            <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" type="button">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="onEditRol(element.crol)" type="button">
+                  <mat-icon>edit</mat-icon>
+                  <span>Editar</span>
+                </button>
+                <button mat-menu-item (click)="onDeleteRol(element.crol)" type="button">
+                  <mat-icon>delete_outline</mat-icon>
+                  <span>Eliminar</span>
+                </button>
+                <button mat-menu-item (click)="onInfoRol(element.crol)" type="button">
+                  <mat-icon>info</mat-icon>
+                  <span>Info.</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+          
+            
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            
+        <!-- Fila que se muestra cuando no hay datos coincidentes. -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" colspan="2">No hay datos que coincidan con el filtro</td>
+        </tr>
+      </table>
+            
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Seleccionar página de roles"></mat-paginator>
+
+      <div class="container" style="display: flex; justify-content: flex-end; align-items: flex-start;">
+        <div style="display: flex; flex-direction: column; align-items: flex-end;">
+          <div class="example-button-container" style="text-align: right;">
+            <button mat-fab color="primary" aria-label="Example icon button with a bookmark icon" (click)="addRol()">
+              <mat-icon>add_circle_outline</mat-icon>
+            </button>
+          </div>
+          <label class="label-opaque" style="margin-bottom: 10px;font-weight: bold;">Agregar</label>
+        </div>
+      </div>
+
+    </form>
+  </div>
+  <router-outlet></router-outlet>
+  
