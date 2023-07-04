@@ -1,1 +1,54 @@
-<p>update-menu works!</p>
+
+<div class="card container">
+    <div class="header-container">
+        <div class="header-left">
+          <button mat-icon-button color="#F5F5F5" aria-label="Example icon button with a home icon" (click)="backComponent()">
+            <mat-icon>arrow_back_ios</mat-icon>
+          </button>
+        </div>
+        <div class="header-right">
+          <div class="header-content">
+            <h5 class="title">Actualización del Menu</h5>
+          </div>
+        </div>
+      </div>
+    <div class="card-body">
+      <form [formGroup]="updateMenu">
+        <div class="row justify-content-center">
+          <div class="col-md-3">
+              <div class="form-group mb-3">
+                <label for="xmenuprincipal" class="label-opaque">Menu Principal</label>
+                <input class="label-opaque" type="text" id="xmenuprincipal" formControlName="xmenuprincipal" class="form-control rounded-input" [ngClass]="{ 'disabled-field': updateMenu.controls['xmenuprincipal'].disabled }">
+                <div class="invalid-feedback" *ngIf="submitted && updateMenu.controls['xmenuprincipal'].errors">Error en el código</div>
+              </div>
+          </div>
+          <div class="row justify-content-center mt-4">
+              <div class="col-md-3">
+                <div class="form-group mb-3">
+                  <label for="cmenu" class="label-opaque">Código de Menu</label>
+                  <input class="label-opaque" type="text" id="cmenu" formControlName="cmenu" class="form-control rounded-input" [ngClass]="{ 'disabled-field': updateMenu.controls['cmenu'].disabled }">
+                  <div class="invalid-feedback" *ngIf="submitted && updateMenu.controls['cmenu'].errors">Error en el código</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group mb-3">
+                  <label for="xmenu" class="label-opaque">Nombre</label>
+                  <input class="label-opaque" type="text" id="xmenu" formControlName="xmenu" class="form-control rounded-input" [ngClass]="{ 'disabled-field': updateMenu.controls['xmenu'].disabled }">
+                  <div class="invalid-feedback" *ngIf="submitted && updateMenu.controls['xmenu'].errors">Error en el nombre</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group mb-3">
+                  <label for="xruta" class="label-opaque">Ruta</label>
+                  <input class="label-opaque" type="text" id="xruta" formControlName="xruta" class="form-control rounded-input" [ngClass]="{ 'disabled-field': updateMenu.controls['xruta'].disabled }">
+                  <div class="invalid-feedback" *ngIf="submitted && updateMenu.controls['xruta'].errors">Error en el nombre</div>
+                </div>
+              </div>
+          </div>
+        </div>
+        <div style="margin-top: 16px;">
+            <button mat-raised-button color="primary" (click)="onSubmit(updateMenu.value)">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
