@@ -25,10 +25,22 @@ import { DeleteRolComponent } from './rol/delete-rol/delete-rol.component';
 
 //Importacion de Menus.
 import { MenuComponent } from './menu/menu.component';
+
+import { InfoMainmenuComponent } from './menu/info-mainmenu/info-mainmenu.component';
 import { InfoMenuComponent } from './menu/info-menu/info-menu.component';
+import { InfoSubmenuComponent } from './menu/info-submenu/info-submenu.component';
+
+import { CreateMainmenuComponent } from './menu/create-mainmenu/create-mainmenu.component';
 import { CreateMenuComponent } from './menu/create-menu/create-menu.component';
+import { CreateSubmenuComponent } from './menu/create-submenu/create-submenu.component';
+
+import { UpdateMainmenuComponent } from './menu/update-mainmenu/update-mainmenu.component';
 import { UpdateMenuComponent } from './menu/update-menu/update-menu.component';
+import { UpdateSubmenuComponent } from './menu/update-submenu/update-submenu.component';
+
+import { DeleteMainmenuComponent } from './menu/delete-mainmenu/delete-mainmenu.component';
 import { DeleteMenuComponent } from './menu/delete-menu/delete-menu.component';
+import { DeleteSubmenuComponent } from './menu/delete-submenu/delete-submenu.component';
 
 const routes: Routes = [
   {
@@ -91,10 +103,18 @@ const routes: Routes = [
         path: 'menu',
         component: MenuComponent,
         children: [
-          { path: 'info-menu',   component: InfoMenuComponent },
-          { path: 'update-menu', component: UpdateMenuComponent },
+          { path: 'info-mainmenu/:cmenu_principal',   component: InfoMainmenuComponent },
+          { path: 'info-menu/:cmenu',   component: InfoMenuComponent },
+          { path: 'info-submenu/:csubmenu',   component: InfoSubmenuComponent },
+          { path: 'update-mainmenu/:cmenu_principal', component: UpdateMainmenuComponent },
+          { path: 'update-menu/:cmenu', component: UpdateMenuComponent },
+          { path: 'update-submenu/:csubmenu', component: UpdateSubmenuComponent },
+          { path: 'create-mainmenu', component: CreateMainmenuComponent },
           { path: 'create-menu', component: CreateMenuComponent },
-          { path: 'delete-menu', component: DeleteMenuComponent }
+          { path: 'create-submenu', component: CreateSubmenuComponent },
+          { path: 'delete-mainmenu/:cmenu_principal', component: DeleteMainmenuComponent },
+          { path: 'delete-menu/:cmenu', component: DeleteMenuComponent },
+          { path: 'delete-submenu/:csubmenu', component: DeleteSubmenuComponent }
         ]
       },
     ]

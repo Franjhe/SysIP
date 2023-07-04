@@ -112,25 +112,68 @@ displayedColumnsSubMenu: string[] = ['csubmenu', 'xsubmenu', 'xruta', 'star'];
   }
 
 
-
+  //CRUD Main Menu
   onEditMainMenu(cmenu_principal: any) {
     this.showTable = false;
-    this.router.navigate(['update-menu', cmenu_principal], { relativeTo: this.route });
+    this.router.navigate(['update-mainmenu', cmenu_principal], { relativeTo: this.route });
   }
   
   onDeleteMainMenu(cmenu_principal: any) {
     this.showTable = false;
-    this.router.navigate(['delete-menu', cmenu_principal], { relativeTo: this.route });
+    this.router.navigate(['delete-mainmenu', cmenu_principal], { relativeTo: this.route });
   }
 
   onInfoMainMenu(cmenu_principal: any) {
     this.showTable = false;
-    this.router.navigate(['info-menu', cmenu_principal], {relativeTo: this.route});
+    this.router.navigate(['info-mainmenu', cmenu_principal], {relativeTo: this.route});
+  }
+
+  
+  //CRUD Menu
+  onEditMenu(cmenu: any) {
+    this.showTable = false;
+    this.router.navigate(['update-menu', cmenu], { relativeTo: this.route });
+  }
+  
+  onDeleteMenu(cmenu: any) {
+    this.showTable = false;
+    this.router.navigate(['delete-menu', cmenu], { relativeTo: this.route });
+  }
+
+  onInfoMenu(cmenu: any) {
+    this.showTable = false;
+    this.router.navigate(['info-menu', cmenu], {relativeTo: this.route});
+  }
+
+  //CRUD SubMenu
+  onEditSubMenu(csubmenu: any) {
+    this.showTable = false;
+    this.router.navigate(['update-submenu', csubmenu], { relativeTo: this.route });
+  }
+  
+  onDeleteSubMenu(csubmenu: any) {
+    this.showTable = false;
+    this.router.navigate(['delete-submenu', csubmenu], { relativeTo: this.route });
+  }
+
+  onInfoSubMenu(csubmenu: any) {
+    this.showTable = false;
+    this.router.navigate(['info-submenu', csubmenu], {relativeTo: this.route});
   }
 
   addMainMenu(){
     this.showTable = false;
+    this.router.navigate(['create-mainmenu'], { relativeTo: this.route });
+  }
+
+  addMenu(){
+    this.showTable = false;
     this.router.navigate(['create-menu'], { relativeTo: this.route });
+  }
+
+  addSubMenu(){
+    this.showTable = false;
+    this.router.navigate(['create-submenu'], { relativeTo: this.route });
   }
 
 }

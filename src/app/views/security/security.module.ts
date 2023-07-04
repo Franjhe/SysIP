@@ -24,6 +24,14 @@ import { CreateMenuComponent } from './menu/create-menu/create-menu.component';
 import { InfoMenuComponent } from './menu/info-menu/info-menu.component';
 import { UpdateMenuComponent } from './menu/update-menu/update-menu.component';
 import { DeleteMenuComponent } from './menu/delete-menu/delete-menu.component';
+import { DeleteMainmenuComponent } from './menu/delete-mainmenu/delete-mainmenu.component';
+import { CreateMainmenuComponent } from './menu/create-mainmenu/create-mainmenu.component';
+import { InfoMainmenuComponent } from './menu/info-mainmenu/info-mainmenu.component';
+import { UpdateMainmenuComponent } from './menu/update-mainmenu/update-mainmenu.component';
+import { UpdateSubmenuComponent } from './menu/update-submenu/update-submenu.component';
+import { CreateSubmenuComponent } from './menu/create-submenu/create-submenu.component';
+import { DeleteSubmenuComponent } from './menu/delete-submenu/delete-submenu.component';
+import { InfoSubmenuComponent } from './menu/info-submenu/info-submenu.component';
 
 
 @NgModule({
@@ -47,7 +55,15 @@ import { DeleteMenuComponent } from './menu/delete-menu/delete-menu.component';
     CreateMenuComponent,
     InfoMenuComponent,
     UpdateMenuComponent,
-    DeleteMenuComponent
+    DeleteMenuComponent,
+    DeleteMainmenuComponent,
+    CreateMainmenuComponent,
+    InfoMainmenuComponent,
+    UpdateMainmenuComponent,
+    UpdateSubmenuComponent,
+    CreateSubmenuComponent,
+    DeleteSubmenuComponent,
+    InfoSubmenuComponent
   ],
   imports: [
     CommonModule,

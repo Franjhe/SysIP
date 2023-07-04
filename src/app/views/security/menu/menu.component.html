@@ -1,6 +1,6 @@
-<mat-tab-group>
+<mat-tab-group *ngIf="showTable">
     <mat-tab label="Menu Principal"> 
-        <div class="card container registration-form" *ngIf="showTable">
+        <div class="card container registration-form" >
           <form>
             <mat-form-field>
               <mat-label>Buscar</mat-label>
@@ -14,7 +14,7 @@
                   <td mat-cell *matCellDef="let element"> {{ element.cmenu_principal }} </td>
                 </ng-container>
                 
-                <!-- Columna Descripción Larga -->
+           
                 <ng-container matColumnDef="xmenu">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre </th>
                   <td mat-cell *matCellDef="let element"> {{ element.xmenu }} </td>
@@ -83,13 +83,12 @@
               </mat-form-field>
                     
               <table mat-table [dataSource]="dataSourceMenu" class="mat-elevation-z8" matSort>
-                <!-- Columna Crámo -->
+
                 <ng-container matColumnDef="cmenu">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Código </th>
                     <td mat-cell *matCellDef="let element"> {{ element.cmenu }} </td>
                   </ng-container>
                   
-                  <!-- Columna Descripción Larga -->
                   <ng-container matColumnDef="xmenu">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre </th>
                     <td mat-cell *matCellDef="let element"> {{ element.xmenu }} </td>
@@ -108,15 +107,15 @@
                         <mat-icon>more_vert</mat-icon>
                       </button>
                       <mat-menu #menu="matMenu">
-                        <button mat-menu-item (click)="onEditMainMenu(element.cmenu)" type="button">
+                        <button mat-menu-item (click)="onEditMenu(element.cmenu)" type="button">
                           <mat-icon>edit</mat-icon>
                           <span>Editar</span>
                         </button>
-                        <button mat-menu-item (click)="onDeleteMainMenu(element.cmenu)" type="button">
+                        <button mat-menu-item (click)="onDeleteMenu(element.cmenu)" type="button">
                           <mat-icon>delete_outline</mat-icon>
                           <span>Eliminar</span>
                         </button>
-                        <button mat-menu-item (click)="onInfoMainMenu(element.cmenu)" type="button">
+                        <button mat-menu-item (click)="onInfoMenu(element.cmenu)" type="button">
                           <mat-icon>info</mat-icon>
                           <span>Info.</span>
                         </button>
@@ -158,13 +157,13 @@
               </mat-form-field>
                     
               <table mat-table [dataSource]="dataSourceSubMenu" class="mat-elevation-z8" matSort>
-                <!-- Columna Crámo -->
+
                 <ng-container matColumnDef="csubmenu">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Código </th>
                     <td mat-cell *matCellDef="let element"> {{ element.csubmenu }} </td>
                   </ng-container>
                   
-                  <!-- Columna Descripción Larga -->
+             
                   <ng-container matColumnDef="xsubmenu">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre </th>
                     <td mat-cell *matCellDef="let element"> {{ element.xsubmenu }} </td>
@@ -183,15 +182,15 @@
                         <mat-icon>more_vert</mat-icon>
                       </button>
                       <mat-menu #menu="matMenu">
-                        <button mat-menu-item (click)="onEditMainMenu(element.csubmenu)" type="button">
+                        <button mat-menu-item (click)="onEditSubMenu(element.csubmenu)" type="button">
                           <mat-icon>edit</mat-icon>
                           <span>Editar</span>
                         </button>
-                        <button mat-menu-item (click)="onDeleteMainMenu(element.csubmenu)" type="button">
+                        <button mat-menu-item (click)="onDeleteSubMenu(element.csubmenu)" type="button">
                           <mat-icon>delete_outline</mat-icon>
                           <span>Eliminar</span>
                         </button>
-                        <button mat-menu-item (click)="onInfoMainMenu(element.csubmenu)" type="button">
+                        <button mat-menu-item (click)="onInfoSubMenu(element.csubmenu)" type="button">
                           <mat-icon>info</mat-icon>
                           <span>Info.</span>
                         </button>
