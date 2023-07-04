@@ -11,9 +11,7 @@ import { environment } from 'src/environments/environment';
 })
 export class InfoMenuComponent {
 
-  cmenu_principal: any;
   cmenu: any;
-  csubmenu: any;
   infoMenu!: FormGroup;
   submitted = false;
 
@@ -27,14 +25,39 @@ export class InfoMenuComponent {
 
   ngOnInit() {
     this.infoMenu = this.formBuilder.group({
-      cdepartamento: [{ value: '', disabled: true }],
-      xdepartamento: [{ value: '', disabled: true }],
-      istatus: [{ value: '', disabled: true }],
+      xmenuprincipal: [{ value: '', disabled: true }],
+      cmenu: [{ value: '', disabled: true }],
+      xmenu: [{ value: '', disabled: true }],
+      xrutamenu: [{ value: '', disabled: true }],
     });
 
     this.route.params.subscribe(params => {
       this.cmenu = params['cmenu'];
-      // this.getDepartament();
+      this.getMenu();
     });
   }
+
+  getMenu(){
+    const isLoggedIn = localStorage.getItem('user');
+    if (isLoggedIn) {
+      let data = {
+        cmenu: this.cmenu,
+      };
+      this.http.post(environment.apiUrl + '/api/v1/security/menu/info/menu', data).subscribe((response: any) => {
+        if (response.status) {
+          this.infoMenu.get('cmenu')?.setValue(this.cmenu);
+          this.infoMenu.get('xmenuprincipal')?.setValue(response.data.xmenuprincipal);
+          this.infoMenu.get('xmenu')?.setValue(response.data.xmenu);
+          this.infoMenu.get('xrutamenu')?.setValue(response.data.xrutamenu);
+        }
+      });
+    }
+  }
+
+  backComponent(){
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['security/menu/']);
+    });
+  }
+
 }
