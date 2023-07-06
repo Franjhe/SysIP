@@ -1,47 +1,78 @@
 import { Component, ViewChild, AfterViewInit} from '@angular/core';
-import {MatTabsModule} from '@angular/material/tabs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { environment } from 'src/environments/environment';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatInputModule} from '@angular/material/input';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
+
+const countries = [
+  'Argentina',
+  'Brasil',
+  'Colombia',
+  'Chile',
+  'Ecuador',
+  'Perú',
+  'Uruguay',
+  'Venezuela'
+];
+
 
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss']
 })
+
 export class MenuComponent {
 
-//Tabla de Menu Principal
-dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
-displayedColumns: string[] = ['cmenu_principal', 'xmenu', 'xruta', 'star'];
-@ViewChild(MatSort) sort!: MatSort;
-@ViewChild(MatPaginator) paginator!: MatPaginator;
+    //Tabla de Menu Principal
+  dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
+  displayedColumns: string[] = ['cmenu_principal', 'xmenu', 'xruta', 'star'];
+  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-//Tabla de Menu
-dataSourceMenu: MatTableDataSource<any> = new MatTableDataSource<any>();
-displayedColumnsMenu: string[] = ['cmenu', 'xmenu', 'xruta', 'star'];
-// @ViewChild(MatSort) sortMenu!: MatSort;
-// @ViewChild(MatPaginator) paginatorMenu!: MatPaginator;
+  //Tabla de Menu
+  dataSourceMenu: MatTableDataSource<any> = new MatTableDataSource<any>();
+  displayedColumnsMenu: string[] = ['cmenu', 'xmenu', 'xruta', 'star'];
+  // @ViewChild(MatSort) sortMenu!: MatSort;
+  // @ViewChild(MatPaginator) paginatorMenu!: MatPaginator;
 
-//Tabla de Sub-Menu
-dataSourceSubMenu: MatTableDataSource<any> = new MatTableDataSource<any>();
-displayedColumnsSubMenu: string[] = ['csubmenu', 'xsubmenu', 'xruta', 'star'];
-@ViewChild(MatSort) sortSubMenu!: MatSort;
-@ViewChild(MatPaginator) paginatorSubMenu!: MatPaginator;
+  //Tabla de Sub-Menu
+  dataSourceSubMenu: MatTableDataSource<any> = new MatTableDataSource<any>();
+  displayedColumnsSubMenu: string[] = ['csubmenu', 'xsubmenu', 'xruta', 'star'];
+  @ViewChild(MatSort) sortSubMenu!: MatSort;
+  @ViewChild(MatPaginator) paginatorSubMenu!: MatPaginator;
 
   showTable: boolean = true;
+  distributionMenu!: FormGroup;
+  filteredOptions!: Observable<string[]>;
+  userList: any[] = [];
 
   constructor(private router: Router,
               private route: ActivatedRoute, 
               private http: HttpClient,
-              private snackBar: MatSnackBar) {}
+              private snackBar: MatSnackBar,
+              private formBuilder: FormBuilder,) {}
 
 
   ngOnInit() {
+    this.distributionMenu = this.formBuilder.group({
+      cusuario: [''],
+      cdepartamento: [''],
+      crol: [''],
+      cmenu_principal: [''],
+      cmenu: [''],
+      csubmenu: [''],
+    });
+
     const isLoggedIn = localStorage.getItem('user');
     if (isLoggedIn) {
       const userObject = JSON.parse(isLoggedIn);
@@ -69,6 +100,39 @@ displayedColumnsSubMenu: string[] = ['csubmenu', 'xsubmenu', 'xruta', 'star'];
         }
       });
     }
+
+    this.filteredOptions = this.distributionMenu.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value || '')),
+    );
+
+    this.getUser();
+  }
+
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+  
+    return this.userList.filter(user => user.value.toLowerCase().includes(filterValue))
+                        .map(user => user.value);
+  }
+
+  getUser() {
+    let data;
+    this.http.post(environment.apiUrl + '/api/v1/valrep/user', data).subscribe((response: any) => {
+      if (response.data.users) {
+        for (let i = 0; i < response.data.users.length; i++) {
+          this.userList.push({
+            id: response.data.users[i].cusuario,
+            value: response.data.users[i].xusuario
+          })
+        }
+      }
+    });
+  }
+
+  onUserSelection(event: any) {
+    const selectedUserId = event.option.value;
+    this.distributionMenu.patchValue({ cusuario: selectedUserId });
   }
 
   ngAfterViewInit() {

@@ -223,6 +223,38 @@
             </form>
         </div>
     </mat-tab>
+    <mat-tab label="Distribución de Menus"> 
+      <div class="card container registration-form" *ngIf="showTable">
+        <div class="header-right">
+          <div class="header-content">
+            <h5 class="title">Distribución de Menu</h5>
+          </div>
+        </div>
+        <div>
+          <form [formGroup]="distributionMenu">
+            <div class="row justify-content-center">
+              <div class="col-md-3">
+                <mat-form-field class="example-full-width">
+                  <mat-label>Usuarios</mat-label>
+                  <input type="text"
+                  placeholder="Seleccionar Usuarios"
+                  aria-label="Usuarios"
+                  matInput
+                  [formControlName]="'cusuario'"
+                  [matAutocomplete]="auto"
+                  (optionSelected)="onUserSelection($event)">
+                  <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngFor="let user of userList" [value]="user.id">
+                      {{ user.value }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+  </mat-tab>
 </mat-tab-group>
 
 <router-outlet></router-outlet>
