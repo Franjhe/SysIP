@@ -1,1 +1,47 @@
-<p>create-menu works!</p>
+<div class="card container">
+    <div class="header-container">
+        <div class="header-left">
+          <button mat-icon-button color="#F5F5F5" aria-label="Example icon button with a home icon" (click)="backComponent()">
+            <mat-icon>arrow_back_ios</mat-icon>
+          </button>
+        </div>
+        <div class="header-right">
+          <div class="header-content">
+            <h5 class="title">Creación de Menu</h5>
+          </div>
+        </div>
+      </div>
+    <div class="card-body">
+      <form [formGroup]="createMenu">
+        <div class="row justify-content-center">
+          <div class="col-md-4">
+              <div class="form-group mb-3">
+                <label for="cmenu_principal" class="label-opaque">Menu Principal</label>
+                <select id="cmenu_principal" formControlName="cmenu_principal" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && createMenu.controls['cmenu_principal'].errors }">
+                  <option value="">Seleccione un Menu Principal</option>
+                  <option *ngFor="let main of mainMenuList" [value]="main.id">{{ main.value }}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="submitted && createMenu.controls['cmenu_principal'].errors">Error en el departamento</div>
+              </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group mb-3">
+              <label for="xmenu" class="label-opaque">Nombre</label>
+              <input class="label-opaque" type="text" id="xmenu" formControlName="xmenu" class="form-control rounded-input" [ngClass]="{ 'disabled-field': createMenu.controls['xmenu'].disabled }">
+              <div class="invalid-feedback" *ngIf="submitted && createMenu.controls['xmenu'].errors">Error en el nombre</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group mb-3">
+              <label for="xruta" class="label-opaque">Ruta</label>
+              <input class="label-opaque" type="text" id="xruta" formControlName="xruta" class="form-control rounded-input" [ngClass]="{ 'disabled-field': createMenu.controls['xruta'].disabled }">
+              <div class="invalid-feedback" *ngIf="submitted && createMenu.controls['xruta'].errors">Error en el nombre</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 16px;">
+            <button mat-raised-button color="primary" (click)="onSubmit(createMenu.value)">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>

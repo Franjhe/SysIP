@@ -133,12 +133,12 @@
                 </tr>
               </table>
                     
-              <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Seleccionar página de Menu" [pageSize]="5" [length]="dataSourceMenu.data.length"></mat-paginator>
+              <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Seleccionar página de Menu"></mat-paginator>
       
               <div class="container" style="display: flex; justify-content: flex-end; align-items: flex-start;">
                 <div style="display: flex; flex-direction: column; align-items: flex-end;">
                   <div class="example-button-container" style="text-align: right;">
-                    <button mat-fab color="primary" aria-label="Example icon button with a bookmark icon" (click)="addMainMenu()">
+                    <button mat-fab color="primary" aria-label="Example icon button with a bookmark icon" (click)="addMenu()">
                       <mat-icon>add_circle_outline</mat-icon>
                     </button>
                   </div>
@@ -213,7 +213,7 @@
               <div class="container" style="display: flex; justify-content: flex-end; align-items: flex-start;">
                 <div style="display: flex; flex-direction: column; align-items: flex-end;">
                   <div class="example-button-container" style="text-align: right;">
-                    <button mat-fab color="primary" aria-label="Example icon button with a bookmark icon" (click)="addMainMenu()">
+                    <button mat-fab color="primary" aria-label="Example icon button with a bookmark icon" (click)="addSubMenu()">
                       <mat-icon>add_circle_outline</mat-icon>
                     </button>
                   </div>

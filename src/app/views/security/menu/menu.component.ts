@@ -24,8 +24,8 @@ displayedColumns: string[] = ['cmenu_principal', 'xmenu', 'xruta', 'star'];
 //Tabla de Menu
 dataSourceMenu: MatTableDataSource<any> = new MatTableDataSource<any>();
 displayedColumnsMenu: string[] = ['cmenu', 'xmenu', 'xruta', 'star'];
-@ViewChild(MatSort) sortMenu!: MatSort;
-@ViewChild(MatPaginator) paginatorMenu!: MatPaginator;
+// @ViewChild(MatSort) sortMenu!: MatSort;
+// @ViewChild(MatPaginator) paginatorMenu!: MatPaginator;
 
 //Tabla de Sub-Menu
 dataSourceSubMenu: MatTableDataSource<any> = new MatTableDataSource<any>();
@@ -82,8 +82,8 @@ displayedColumnsSubMenu: string[] = ['csubmenu', 'xsubmenu', 'xruta', 'star'];
 
   ngAfterViewInitMenu() {
    //Menu
-   this.dataSourceMenu.sort = this.sortMenu;
-   this.dataSourceMenu.paginator = this.paginatorMenu;
+   this.dataSourceMenu.sort = this.sort;
+   this.dataSourceMenu.paginator = this.paginator;
  }
 
  ngAfterViewInitSubMenu() {

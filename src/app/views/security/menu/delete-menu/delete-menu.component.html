@@ -1,1 +1,71 @@
-<p>delete-menu works!</p>
+
+<div class="card container">
+    <div class="header-container">
+        <div class="header-left">
+          <button mat-icon-button color="#F5F5F5" aria-label="Example icon button with a home icon" (click)="backComponent()">
+            <mat-icon>arrow_back_ios</mat-icon>
+          </button>
+        </div>
+        <div class="header-right">
+          <div class="header-content">
+            <h5 class="title">Eliminación del Menu</h5>
+          </div>
+        </div>
+      </div>
+    <div class="card-body">
+      <form [formGroup]="deleteMenu">
+        <div class="row justify-content-center">
+          <div class="col-md-3">
+              <div class="form-group mb-3">
+                <label for="xmenuprincipal" class="label-opaque">Menu Principal</label>
+                <input class="label-opaque" type="text" id="xmenuprincipal" formControlName="xmenuprincipal" class="form-control rounded-input" [ngClass]="{ 'disabled-field': deleteMenu.controls['xmenuprincipal'].disabled }">
+                <div class="invalid-feedback" *ngIf="submitted && deleteMenu.controls['xmenuprincipal'].errors">Error en el código</div>
+              </div>
+          </div>
+          <div class="row justify-content-center mt-4">
+              <div class="col-md-3">
+                <div class="form-group mb-3">
+                  <label for="cmenu" class="label-opaque">Código de Menu</label>
+                  <input class="label-opaque" type="text" id="cmenu" formControlName="cmenu" class="form-control rounded-input" [ngClass]="{ 'disabled-field': deleteMenu.controls['cmenu'].disabled }">
+                  <div class="invalid-feedback" *ngIf="submitted && deleteMenu.controls['cmenu'].errors">Error en el código</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group mb-3">
+                  <label for="xmenu" class="label-opaque">Nombre</label>
+                  <input class="label-opaque" type="text" id="xmenu" formControlName="xmenu" class="form-control rounded-input" [ngClass]="{ 'disabled-field': deleteMenu.controls['xmenu'].disabled }">
+                  <div class="invalid-feedback" *ngIf="submitted && deleteMenu.controls['xmenu'].errors">Error en el nombre</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group mb-3">
+                  <label for="xrutamenu" class="label-opaque">Ruta</label>
+                  <input class="label-opaque" type="text" id="xrutamenu" formControlName="xrutamenu" class="form-control rounded-input" [ngClass]="{ 'disabled-field': deleteMenu.controls['xrutamenu'].disabled }">
+                  <div class="invalid-feedback" *ngIf="submitted && deleteMenu.controls['xrutamenu'].errors">Error en el nombre</div>
+                </div>
+              </div>
+          </div>
+        </div>
+        <div style="margin-top: 16px;">
+            <button mat-flat-button color="warn" (click)="open()">Eliminar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <ng-template #DeleteMenu>
+    <mat-dialog-content>
+      <h1 mat-dialog-title class="text-center text-xl-left">Eliminación de Menu</h1>
+        <div class="row">
+          <h2>¿Desea eliminar el menu de {{ deleteMenu.get('xmenu')!.value }}?</h2>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+      <button class="red-button" mat-icon-button color="primary" aria-label="Example icon button with a home icon" (click)="closeModal()">
+        <mat-icon>highlight_off</mat-icon>
+      </button>
+      <button class="green-button" mat-icon-button color="success" aria-label="Example icon button with a home icon" (click)="onSubmit()">
+        <mat-icon>check_circle_outline</mat-icon>
+      </button>
+    </mat-dialog-actions>
+  </ng-template>
