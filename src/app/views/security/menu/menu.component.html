@@ -227,28 +227,121 @@
       <div class="card container registration-form" *ngIf="showTable">
         <div class="header-right">
           <div class="header-content">
-            <h5 class="title">Distribución de Menu</h5>
+            <h5 class="title spaced-title">Distribución de Menu</h5>
           </div>
         </div>
         <div>
           <form [formGroup]="distributionMenu">
             <div class="row justify-content-center">
-              <div class="col-md-3">
+              <div class="col-md-4">
                 <mat-form-field class="example-full-width">
                   <mat-label>Usuarios</mat-label>
                   <input type="text"
-                  placeholder="Seleccionar Usuarios"
-                  aria-label="Usuarios"
-                  matInput
-                  [formControlName]="'cusuario'"
-                  [matAutocomplete]="auto"
-                  (optionSelected)="onUserSelection($event)">
-                  <mat-autocomplete #auto="matAutocomplete">
-                    <mat-option *ngFor="let user of userList" [value]="user.id">
-                      {{ user.value }}
+                         placeholder="Seleccionar Usuario"
+                         aria-label="Usuario"
+                         matInput
+                         [formControl]="userControl"
+                         [matAutocomplete]="userAuto">
+                  <mat-autocomplete #userAuto="matAutocomplete" (optionSelected)="onUserSelection($event)">
+                    <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
+                      {{ user }}
                     </mat-option>
                   </mat-autocomplete>
                 </mat-form-field>
+              </div>
+              <div class="col-md-4">
+                <mat-form-field class="example-full-width">
+                  <mat-label>Departamentos</mat-label>
+                  <input type="text"
+                         placeholder="Seleccionar Departamento"
+                         aria-label="Departamento"
+                         matInput
+                         [formControl]="departamentControl"
+                         [matAutocomplete]="departamentAuto">
+                  <mat-autocomplete #departamentAuto="matAutocomplete" (optionSelected)="onDepartamentSelection($event)">
+                    <mat-option *ngFor="let departament of filteredDepartament | async" [value]="departament">
+                      {{ departament }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="row justify-content-center">
+              <div class="col-md-4">
+                <mat-form-field class="example-full-width">
+                  <mat-label>Roles</mat-label>
+                  <input type="text"
+                         placeholder="Seleccionar Rol"
+                         aria-label="Rol"
+                         matInput
+                         [formControl]="rolControl"
+                         [matAutocomplete]="rolAuto">
+                  <mat-autocomplete #rolAuto="matAutocomplete" (optionSelected)="onRolSelection($event)">
+                    <mat-option *ngFor="let rol of filteredRol | async" [value]="rol">
+                      {{ rol }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+              <div class="col-md-4">
+                <mat-form-field class="example-full-width">
+                  <mat-label>Menu Principal</mat-label>
+                  <input type="text"
+                         placeholder="Seleccionar Menu Principal"
+                         aria-label="Menu Principal"
+                         matInput
+                         [formControl]="mainMenuControl"
+                         [matAutocomplete]="mainMenuAuto">
+                  <mat-autocomplete #mainMenuAuto="matAutocomplete" (optionSelected)="onMainMenuSelection($event)">
+                    <mat-option *ngFor="let main of filteredMainMenu | async" [value]="main">
+                      {{ main }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="row justify-content-center">
+              <div class="col-md-4">
+                <mat-form-field class="example-full-width">
+                  <mat-label>Menu</mat-label>
+                  <input type="text"
+                         placeholder="Seleccionar Menu"
+                         aria-label="Menu"
+                         matInput
+                         [formControl]="menuControl"
+                         [matAutocomplete]="menuAuto">
+                  <mat-autocomplete #menuAuto="matAutocomplete" (optionSelected)="onMenuSelection($event)">
+                    <mat-option *ngFor="let menu of filteredMenu | async" [value]="menu">
+                      {{ menu }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+              <div class="col-md-4">
+                <mat-form-field class="example-full-width">
+                  <mat-label>Sub-Menu</mat-label>
+                  <input type="text"
+                         placeholder="Seleccionar SubMenu"
+                         aria-label="SubMenu"
+                         matInput
+                         [formControl]="subMenuControl"
+                         [matAutocomplete]="subMenuAuto">
+                  <mat-autocomplete #subMenuAuto="matAutocomplete" (optionSelected)="onSubMenuSelection($event)">
+                    <mat-option *ngFor="let sub of filteredSubMenu | async" [value]="sub">
+                      {{ sub }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="container" style="display: flex; justify-content: flex-end; align-items: flex-start;">
+              <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                <div class="example-button-container" style="text-align: right;">
+                  <button mat-fab color="primary" aria-label="Example icon button with a bookmark icon" (click)="addSubMenu()">
+                    <mat-icon>add_circle_outline</mat-icon>
+                  </button>
+                </div>
+                <label class="label-opaque" style="margin-bottom: 10px;font-weight: bold;">Agregar</label>
               </div>
             </div>
           </form>

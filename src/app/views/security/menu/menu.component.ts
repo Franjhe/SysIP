@@ -1,29 +1,15 @@
 import { Component, ViewChild, AfterViewInit} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { environment } from 'src/environments/environment';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {MatAutocompleteModule} from '@angular/material/autocomplete';
-import {MatInputModule} from '@angular/material/input';
-import {MatFormFieldModule} from '@angular/material/form-field';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
-
-const countries = [
-  'Argentina',
-  'Brasil',
-  'Colombia',
-  'Chile',
-  'Ecuador',
-  'Perú',
-  'Uruguay',
-  'Venezuela'
-];
-
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-menu',
@@ -51,10 +37,34 @@ export class MenuComponent {
   @ViewChild(MatSort) sortSubMenu!: MatSort;
   @ViewChild(MatPaginator) paginatorSubMenu!: MatPaginator;
 
+  @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
+
   showTable: boolean = true;
   distributionMenu!: FormGroup;
-  filteredOptions!: Observable<string[]>;
+
+  //Listas del Valrep
   userList: any[] = [];
+  departamentList: any[] = [];
+  rolList: any[] = [];
+  mainMenuList: any[] = [];
+  menuList: any[] = [];
+  subMenuList: any[] = [];
+
+  //Controles
+  userControl = new FormControl('');
+  departamentControl = new FormControl('');
+  rolControl = new FormControl('');
+  mainMenuControl = new FormControl('');
+  menuControl = new FormControl('');
+  subMenuControl = new FormControl('');
+
+  //Filtros
+  filteredUsers!: Observable<string[]>;
+  filteredDepartament!: Observable<string[]>;
+  filteredRol!: Observable<string[]>;
+  filteredMainMenu!: Observable<string[]>;
+  filteredMenu!: Observable<string[]>;
+  filteredSubMenu!: Observable<string[]>;
 
   constructor(private router: Router,
               private route: ActivatedRoute, 
@@ -101,19 +111,9 @@ export class MenuComponent {
       });
     }
 
-    this.filteredOptions = this.distributionMenu.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filter(value || '')),
-    );
-
     this.getUser();
-  }
-
-  private _filter(value: string): string[] {
-    const filterValue = value.toLowerCase();
-  
-    return this.userList.filter(user => user.value.toLowerCase().includes(filterValue))
-                        .map(user => user.value);
+    this.getDepartament();
+    this.getMainMenu();
   }
 
   getUser() {
@@ -124,15 +124,217 @@ export class MenuComponent {
           this.userList.push({
             id: response.data.users[i].cusuario,
             value: response.data.users[i].xusuario
-          })
+          });
         }
+        this.filteredUsers = this.userControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filter(value || ''))
+        );
       }
     });
   }
 
+  getDepartament() {
+    let data;
+    this.http.post(environment.apiUrl + '/api/v1/valrep/departament', data).subscribe((response: any) => {
+      if (response.data.departaments) {
+        for (let i = 0; i < response.data.departaments.length; i++) {
+          this.departamentList.push({
+            id: response.data.departaments[i].cdepartamento,
+            value: response.data.departaments[i].xdepartamento
+          });
+        }
+        this.filteredDepartament = this.departamentControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filterDepartament(value || ''))
+        );
+      }
+    });
+  }
+
+  getRol() {
+    let data = {
+      cdepartamento: this.distributionMenu.get('cdepartamento')?.value
+    }
+    this.http.post(environment.apiUrl + '/api/v1/valrep/rol', data).subscribe((response: any) => {
+      if (response.data.rols) {
+        for (let i = 0; i < response.data.rols.length; i++) {
+          this.rolList.push({
+            id: response.data.rols[i].crol,
+            value: response.data.rols[i].xrol
+          });
+        }
+        this.filteredRol = this.rolControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filterRol(value || ''))
+        );
+      }
+    });
+  }
+
+  getMainMenu() {
+    let data;
+    this.http.post(environment.apiUrl + '/api/v1/valrep/main-menu', data).subscribe((response: any) => {
+      if (response.data.mainMenu) {
+        for (let i = 0; i < response.data.mainMenu.length; i++) {
+          this.mainMenuList.push({
+            id: response.data.mainMenu[i].cmenu_principal,
+            value: response.data.mainMenu[i].xmenu
+          });
+        }
+        this.filteredMainMenu = this.mainMenuControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filterMainMenu(value || ''))
+        );
+      }
+    });
+  }
+
+  getMenu() {
+    let data = {
+      cmenu_principal: this.distributionMenu.get('cmenu_principal')?.value
+    }
+    this.http.post(environment.apiUrl + '/api/v1/valrep/menu', data).subscribe((response: any) => {
+      if (response.data.menu) {
+        for (let i = 0; i < response.data.menu.length; i++) {
+          this.menuList.push({
+            id: response.data.menu[i].cmenu,
+            value: response.data.menu[i].xmenu
+          });
+        }
+        this.filteredMenu = this.menuControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filterMenu(value || ''))
+        );
+      }
+    });
+  }
+
+  getSubMenu() {
+    let data = {
+      cmenu_principal: this.distributionMenu.get('cmenu_principal')?.value,
+      cmenu: this.distributionMenu.get('cmenu')?.value,
+    }
+    this.http.post(environment.apiUrl + '/api/v1/valrep/submenu', data).subscribe((response: any) => {
+      if (response.data.subMenu) {
+        for (let i = 0; i < response.data.subMenu.length; i++) {
+          this.subMenuList.push({
+            id: response.data.subMenu[i].csubmenu,
+            value: response.data.subMenu[i].xsubmenu
+          });
+        }
+        this.filteredSubMenu = this.subMenuControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filterSubMenu(value || ''))
+        );
+      }
+    });
+  }
+
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.userList
+      .map(user => user.value)
+      .filter(users => users.toLowerCase().includes(filterValue));
+  }
+
+  private _filterDepartament(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.departamentList
+      .map(departament => departament.value)
+      .filter(departaments => departaments.toLowerCase().includes(filterValue));
+  }
+
+  private _filterRol(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.rolList
+      .map(rol => rol.value)
+      .filter(rols => rols.toLowerCase().includes(filterValue));
+  }
+
+  private _filterMainMenu(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.mainMenuList
+      .map(main => main.value)
+      .filter(mainM => mainM.toLowerCase().includes(filterValue));
+  }
+
+  private _filterMenu(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.menuList
+      .map(menu => menu.value)
+      .filter(menu => menu.toLowerCase().includes(filterValue));
+  }
+
+  private _filterSubMenu(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.subMenuList
+      .map(submenu => submenu.value)
+      .filter(submenu => submenu.toLowerCase().includes(filterValue));
+  }
+
   onUserSelection(event: any) {
-    const selectedUserId = event.option.value;
-    this.distributionMenu.patchValue({ cusuario: selectedUserId });
+    const selectedValue = event.option.value;
+    const selectedUser = this.userList.find(user => user.value === selectedValue);
+    if (selectedUser) {
+      this.distributionMenu.get('cusuario')?.setValue(selectedUser.id)
+    }
+  }
+
+  onDepartamentSelection(event: any) {
+    const selectedValue = event.option.value;
+    const selectedDepartament = this.departamentList.find(departament => departament.value === selectedValue);
+    if (selectedDepartament) {
+      this.distributionMenu.get('cdepartamento')?.setValue(selectedDepartament.id)
+    }
+
+    if(this.distributionMenu.get('cdepartamento')?.value){
+      this.getRol();
+    }
+  }
+
+  onRolSelection(event: any) {
+    const selectedValue = event.option.value;
+    const selectedRol = this.rolList.find(rol => rol.value === selectedValue);
+    if (selectedRol) {
+      this.distributionMenu.get('crol')?.setValue(selectedRol.id)
+    }
+  }
+
+  onMainMenuSelection(event: any) {
+    const selectedValue = event.option.value;
+    const selectedMainMenu = this.mainMenuList.find(main => main.value === selectedValue);
+    if (selectedMainMenu) {
+      this.distributionMenu.get('cmenu_principal')?.setValue(selectedMainMenu.id)
+    }
+    if(this.distributionMenu.get('cmenu_principal')?.value){
+      this.getMenu();
+    }
+  }
+
+  onMenuSelection(event: any) {
+    const selectedValue = event.option.value;
+    const selectedMenu = this.menuList.find(menu => menu.value === selectedValue);
+    if (selectedMenu) {
+      this.distributionMenu.get('cmenu')?.setValue(selectedMenu.id)
+    }
+    if(this.distributionMenu.get('cmenu')?.value){
+      this.getSubMenu();
+    }
+  }
+
+  onSubMenuSelection(event: any) {
+    const selectedValue = event.option.value;
+    const selectedSubMenu = this.subMenuList.find(submenu => submenu.value === selectedValue);
+    if (selectedSubMenu) {
+      this.distributionMenu.get('csubmenu')?.setValue(selectedSubMenu.id)
+    }
+    console.log('Usuario:' + ' ' + this.distributionMenu.get('cusuario')?.value)
+    console.log('Departamento:' + ' ' + this.distributionMenu.get('cdepartamento')?.value)
+    console.log('Rol:' + ' ' + this.distributionMenu.get('crol')?.value)
+    console.log('Menu Principal:' + ' ' + this.distributionMenu.get('cmenu_principal')?.value)
+    console.log('Menu:' + ' ' + this.distributionMenu.get('cmenu')?.value)
+    console.log('Menu:' + ' ' + this.distributionMenu.get('csubmenu')?.value)
   }
 
   ngAfterViewInit() {

@@ -49,7 +49,7 @@ export class UpdateMenuComponent {
           this.updateMenu.get('cmenu')?.setValue(this.cmenu);
           this.updateMenu.get('xmenu')?.setValue(response.data.xmenu);
           this.updateMenu.get('xmenuprincipal')?.setValue(response.data.xmenuprincipal);
-          this.updateMenu.get('xruta')?.setValue(response.data.xrutamenu);
+          this.updateMenu.get('xruta')?.setValue(response.data.xruta);
         }
       });
     }
