@@ -41,6 +41,7 @@ export class MenuComponent {
 
   showTable: boolean = true;
   distributionMenu!: FormGroup;
+  currentUser!: any;
 
   //Listas del Valrep
   userList: any[] = [];
@@ -85,9 +86,9 @@ export class MenuComponent {
 
     const isLoggedIn = localStorage.getItem('user');
     if (isLoggedIn) {
-      const userObject = JSON.parse(isLoggedIn);
+      this.currentUser = JSON.parse(isLoggedIn);
       let data = {
-      cusuario: userObject.data.cusuario,
+      cusuario: this.currentUser.data.cusuario,
       };
       //Buscar el Menu Principal
       this.http.post(environment.apiUrl + '/api/v1/security/menu/search/main-menu', data).subscribe((response: any) => {
@@ -329,12 +330,6 @@ export class MenuComponent {
     if (selectedSubMenu) {
       this.distributionMenu.get('csubmenu')?.setValue(selectedSubMenu.id)
     }
-    console.log('Usuario:' + ' ' + this.distributionMenu.get('cusuario')?.value)
-    console.log('Departamento:' + ' ' + this.distributionMenu.get('cdepartamento')?.value)
-    console.log('Rol:' + ' ' + this.distributionMenu.get('crol')?.value)
-    console.log('Menu Principal:' + ' ' + this.distributionMenu.get('cmenu_principal')?.value)
-    console.log('Menu:' + ' ' + this.distributionMenu.get('cmenu')?.value)
-    console.log('Menu:' + ' ' + this.distributionMenu.get('csubmenu')?.value)
   }
 
   ngAfterViewInit() {
@@ -440,6 +435,28 @@ export class MenuComponent {
   addSubMenu(){
     this.showTable = false;
     this.router.navigate(['create-submenu'], { relativeTo: this.route });
+  }
+
+  onSubmit(){
+    let data = {
+      u_version: '?',
+      cusuario: this.distributionMenu.get('cusuario')?.value,
+      cdepartamento: this.distributionMenu.get('cdepartamento')?.value,
+      crol: this.distributionMenu.get('crol')?.value,
+      cmenu_principal: this.distributionMenu.get('cmenu_principal')?.value,
+      cmenu: this.distributionMenu.get('cmenu')?.value,
+      csubmenu: this.distributionMenu.get('csubmenu')?.value,
+      cusuario1: this.currentUser.data.cusuario
+    }
+    this.http.post(environment.apiUrl + '/api/v1/security/menu/create/distribution', data).subscribe((response: any) => {
+      if (response.status) {
+        this.snackBar.open(`${response.data.message}`, '', {
+          duration: 3000,
+        }).afterDismissed().subscribe(() => {
+          location.reload();
+        });
+      }
+    });
   }
 
 }
