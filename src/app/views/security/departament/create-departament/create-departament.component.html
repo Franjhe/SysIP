@@ -1,0 +1,29 @@
+
+<div class="card container">
+    <div class="header-container">
+        <div class="header-left">
+          <button mat-icon-button color="#F5F5F5" aria-label="Example icon button with a home icon" (click)="backComponent()">
+            <mat-icon>arrow_back_ios</mat-icon>
+          </button>
+        </div>
+        <div class="header-right">
+          <div class="header-content">
+            <h5 class="title">Creación del Departamento</h5>
+          </div>
+        </div>
+      </div>
+    <div class="card-body">
+      <form [formGroup]="createDepartament">
+        <div class="row justify-content-center">
+          <div class="col-md-4">
+            <div class="form-group mb-3">
+              <label for="xdepartamento" class="label-opaque">Nombre</label>
+              <input class="label-opaque" type="text" id="xdepartamento" formControlName="xdepartamento" class="form-control rounded-input" [ngClass]="{ 'disabled-field': createDepartament.controls['xdepartamento'].disabled }">
+              <div class="invalid-feedback" *ngIf="submitted && createDepartament.controls['xdepartamento'].errors">Error en el nombre</div>
+            </div>
+          </div>
+        </div>
+        <button mat-raised-button color="primary" (click)="onSubmit(createDepartament.value)">Guardar</button>
+      </form>
+    </div>
+  </div>

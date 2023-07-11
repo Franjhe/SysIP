@@ -1,1 +1,353 @@
-<p>menu works!</p>
+<mat-tab-group *ngIf="showTable">
+    <mat-tab label="Menu Principal"> 
+        <div class="card container registration-form" >
+          <form>
+            <mat-form-field>
+              <mat-label>Buscar</mat-label>
+              <input matInput (keyup)="applyFilter($event)" placeholder="Ingresa datos" #input>
+            </mat-form-field>
+                  
+            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+              <!-- Columna Crámo -->
+              <ng-container matColumnDef="cmenu_principal">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Código </th>
+                  <td mat-cell *matCellDef="let element"> {{ element.cmenu_principal }} </td>
+                </ng-container>
+                
+           
+                <ng-container matColumnDef="xmenu">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre </th>
+                  <td mat-cell *matCellDef="let element"> {{ element.xmenu }} </td>
+                </ng-container>
+    
+                <ng-container matColumnDef="xruta">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Ruta </th>
+                  <td mat-cell *matCellDef="let element"> {{ element.xruta }} </td>
+                </ng-container>
+                
+                <!-- Columna Acciones -->
+                <ng-container matColumnDef="star">
+                  <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
+                  <td mat-cell *matCellDef="let element">
+                    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" type="button">
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #menu="matMenu">
+                      <button mat-menu-item (click)="onEditMainMenu(element.cmenu_principal)" type="button">
+                        <mat-icon>edit</mat-icon>
+                        <span>Editar</span>
+                      </button>
+                      <button mat-menu-item (click)="onDeleteMainMenu(element.cmenu_principal)" type="button">
+                        <mat-icon>delete_outline</mat-icon>
+                        <span>Eliminar</span>
+                      </button>
+                      <button mat-menu-item (click)="onInfoMainMenu(element.cmenu_principal)" type="button">
+                        <mat-icon>info</mat-icon>
+                        <span>Info.</span>
+                      </button>
+                    </mat-menu>
+                  </td>
+                </ng-container>
+                
+                  
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                  
+              <!-- Fila que se muestra cuando no hay datos coincidentes. -->
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="2">No hay datos que coincidan con el filtro</td>
+              </tr>
+            </table>
+                  
+            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Seleccionar página de Departamentos"></mat-paginator>
+    
+            <div class="container" style="display: flex; justify-content: flex-end; align-items: flex-start;">
+              <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                <div class="example-button-container" style="text-align: right;">
+                  <button mat-fab color="primary" aria-label="Example icon button with a bookmark icon" (click)="addMainMenu()">
+                    <mat-icon>add_circle_outline</mat-icon>
+                  </button>
+                </div>
+                <label class="label-opaque" style="margin-bottom: 10px;font-weight: bold;">Agregar</label>
+              </div>
+            </div>
+          </form>
+        </div>
+    </mat-tab>
+    <mat-tab label="Menu"> 
+        <div class="card container registration-form" *ngIf="showTable">
+            <form>
+              <mat-form-field>
+                <mat-label>Buscar</mat-label>
+                <input matInput (keyup)="applyFilterMenu($event)" placeholder="Ingresa datos" #input>
+              </mat-form-field>
+                    
+              <table mat-table [dataSource]="dataSourceMenu" class="mat-elevation-z8" matSort>
+
+                <ng-container matColumnDef="cmenu">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Código </th>
+                    <td mat-cell *matCellDef="let element"> {{ element.cmenu }} </td>
+                  </ng-container>
+                  
+                  <ng-container matColumnDef="xmenu">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre </th>
+                    <td mat-cell *matCellDef="let element"> {{ element.xmenu }} </td>
+                  </ng-container>
+      
+                  <ng-container matColumnDef="xruta">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Ruta </th>
+                    <td mat-cell *matCellDef="let element"> {{ element.xruta }} </td>
+                  </ng-container>
+                  
+                  <!-- Columna Acciones -->
+                  <ng-container matColumnDef="star">
+                    <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
+                    <td mat-cell *matCellDef="let element">
+                      <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" type="button">
+                        <mat-icon>more_vert</mat-icon>
+                      </button>
+                      <mat-menu #menu="matMenu">
+                        <button mat-menu-item (click)="onEditMenu(element.cmenu)" type="button">
+                          <mat-icon>edit</mat-icon>
+                          <span>Editar</span>
+                        </button>
+                        <button mat-menu-item (click)="onDeleteMenu(element.cmenu)" type="button">
+                          <mat-icon>delete_outline</mat-icon>
+                          <span>Eliminar</span>
+                        </button>
+                        <button mat-menu-item (click)="onInfoMenu(element.cmenu)" type="button">
+                          <mat-icon>info</mat-icon>
+                          <span>Info.</span>
+                        </button>
+                      </mat-menu>
+                    </td>
+                  </ng-container>
+                  
+                    
+                <tr mat-header-row *matHeaderRowDef="displayedColumnsMenu"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumnsMenu;"></tr>
+                    
+                <!-- Fila que se muestra cuando no hay datos coincidentes. -->
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell" colspan="2">No hay datos que coincidan con el filtro</td>
+                </tr>
+              </table>
+                    
+              <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Seleccionar página de Menu"></mat-paginator>
+      
+              <div class="container" style="display: flex; justify-content: flex-end; align-items: flex-start;">
+                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                  <div class="example-button-container" style="text-align: right;">
+                    <button mat-fab color="primary" aria-label="Example icon button with a bookmark icon" (click)="addMenu()">
+                      <mat-icon>add_circle_outline</mat-icon>
+                    </button>
+                  </div>
+                  <label class="label-opaque" style="margin-bottom: 10px;font-weight: bold;">Agregar</label>
+                </div>
+              </div>
+            </form>
+        </div>
+    </mat-tab>
+    <mat-tab label="Submenu"> 
+        <div class="card container registration-form" *ngIf="showTable">
+            <form>
+              <mat-form-field>
+                <mat-label>Buscar</mat-label>
+                <input matInput (keyup)="applyFilterSubMenu($event)" placeholder="Ingresa datos" #input>
+              </mat-form-field>
+                    
+              <table mat-table [dataSource]="dataSourceSubMenu" class="mat-elevation-z8" matSort>
+
+                <ng-container matColumnDef="csubmenu">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Código </th>
+                    <td mat-cell *matCellDef="let element"> {{ element.csubmenu }} </td>
+                  </ng-container>
+                  
+             
+                  <ng-container matColumnDef="xsubmenu">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre </th>
+                    <td mat-cell *matCellDef="let element"> {{ element.xsubmenu }} </td>
+                  </ng-container>
+      
+                  <ng-container matColumnDef="xruta">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Ruta </th>
+                    <td mat-cell *matCellDef="let element"> {{ element.xruta }} </td>
+                  </ng-container>
+                  
+                  <!-- Columna Acciones -->
+                  <ng-container matColumnDef="star">
+                    <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
+                    <td mat-cell *matCellDef="let element">
+                      <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" type="button">
+                        <mat-icon>more_vert</mat-icon>
+                      </button>
+                      <mat-menu #menu="matMenu">
+                        <button mat-menu-item (click)="onEditSubMenu(element.csubmenu)" type="button">
+                          <mat-icon>edit</mat-icon>
+                          <span>Editar</span>
+                        </button>
+                        <button mat-menu-item (click)="onDeleteSubMenu(element.csubmenu)" type="button">
+                          <mat-icon>delete_outline</mat-icon>
+                          <span>Eliminar</span>
+                        </button>
+                        <button mat-menu-item (click)="onInfoSubMenu(element.csubmenu)" type="button">
+                          <mat-icon>info</mat-icon>
+                          <span>Info.</span>
+                        </button>
+                      </mat-menu>
+                    </td>
+                  </ng-container>
+                  
+                    
+                <tr mat-header-row *matHeaderRowDef="displayedColumnsSubMenu"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumnsSubMenu;"></tr>
+                    
+                <!-- Fila que se muestra cuando no hay datos coincidentes. -->
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell" colspan="2">No hay datos que coincidan con el filtro</td>
+                </tr>
+              </table>
+                    
+              <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Seleccionar página de Menu" [pageSize]="5" [length]="dataSourceSubMenu.data.length"></mat-paginator>
+      
+              <div class="container" style="display: flex; justify-content: flex-end; align-items: flex-start;">
+                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                  <div class="example-button-container" style="text-align: right;">
+                    <button mat-fab color="primary" aria-label="Example icon button with a bookmark icon" (click)="addSubMenu()">
+                      <mat-icon>add_circle_outline</mat-icon>
+                    </button>
+                  </div>
+                  <label class="label-opaque" style="margin-bottom: 10px;font-weight: bold;">Agregar</label>
+                </div>
+              </div>
+            </form>
+        </div>
+    </mat-tab>
+    <mat-tab label="Distribución de Menus"> 
+      <div class="card container registration-form" *ngIf="showTable">
+        <div class="header-right">
+          <div class="header-content">
+            <h5 class="title spaced-title">Distribución de Menu</h5>
+          </div>
+        </div>
+        <div>
+          <form [formGroup]="distributionMenu">
+            <div class="row justify-content-center">
+              <div class="col-md-4">
+                <mat-form-field class="example-full-width">
+                  <mat-label>Usuarios</mat-label>
+                  <input type="text"
+                         placeholder="Seleccionar Usuario"
+                         aria-label="Usuario"
+                         matInput
+                         [formControl]="userControl"
+                         [matAutocomplete]="userAuto">
+                  <mat-autocomplete #userAuto="matAutocomplete" (optionSelected)="onUserSelection($event)">
+                    <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
+                      {{ user }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+              <div class="col-md-4">
+                <mat-form-field class="example-full-width">
+                  <mat-label>Departamentos</mat-label>
+                  <input type="text"
+                         placeholder="Seleccionar Departamento"
+                         aria-label="Departamento"
+                         matInput
+                         [formControl]="departamentControl"
+                         [matAutocomplete]="departamentAuto">
+                  <mat-autocomplete #departamentAuto="matAutocomplete" (optionSelected)="onDepartamentSelection($event)">
+                    <mat-option *ngFor="let departament of filteredDepartament | async" [value]="departament">
+                      {{ departament }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="row justify-content-center">
+              <div class="col-md-4">
+                <mat-form-field class="example-full-width">
+                  <mat-label>Roles</mat-label>
+                  <input type="text"
+                         placeholder="Seleccionar Rol"
+                         aria-label="Rol"
+                         matInput
+                         [formControl]="rolControl"
+                         [matAutocomplete]="rolAuto">
+                  <mat-autocomplete #rolAuto="matAutocomplete" (optionSelected)="onRolSelection($event)">
+                    <mat-option *ngFor="let rol of filteredRol | async" [value]="rol">
+                      {{ rol }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+              <div class="col-md-4">
+                <mat-form-field class="example-full-width">
+                  <mat-label>Menu Principal</mat-label>
+                  <input type="text"
+                         placeholder="Seleccionar Menu Principal"
+                         aria-label="Menu Principal"
+                         matInput
+                         [formControl]="mainMenuControl"
+                         [matAutocomplete]="mainMenuAuto">
+                  <mat-autocomplete #mainMenuAuto="matAutocomplete" (optionSelected)="onMainMenuSelection($event)">
+                    <mat-option *ngFor="let main of filteredMainMenu | async" [value]="main">
+                      {{ main }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="row justify-content-center">
+              <div class="col-md-4">
+                <mat-form-field class="example-full-width">
+                  <mat-label>Menu</mat-label>
+                  <input type="text"
+                         placeholder="Seleccionar Menu"
+                         aria-label="Menu"
+                         matInput
+                         [formControl]="menuControl"
+                         [matAutocomplete]="menuAuto">
+                  <mat-autocomplete #menuAuto="matAutocomplete" (optionSelected)="onMenuSelection($event)">
+                    <mat-option *ngFor="let menu of filteredMenu | async" [value]="menu">
+                      {{ menu }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+              <div class="col-md-4">
+                <mat-form-field class="example-full-width">
+                  <mat-label>Sub-Menu</mat-label>
+                  <input type="text"
+                         placeholder="Seleccionar SubMenu"
+                         aria-label="SubMenu"
+                         matInput
+                         [formControl]="subMenuControl"
+                         [matAutocomplete]="subMenuAuto">
+                  <mat-autocomplete #subMenuAuto="matAutocomplete" (optionSelected)="onSubMenuSelection($event)">
+                    <mat-option *ngFor="let sub of filteredSubMenu | async" [value]="sub">
+                      {{ sub }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="container" style="display: flex; justify-content: flex-end; align-items: flex-start;">
+              <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                <div class="example-button-container" style="text-align: right;">
+                  <button mat-fab color="primary" aria-label="Example icon button with a bookmark icon" (click)="onSubmit()">
+                    <mat-icon>save</mat-icon>
+                  </button>
+                </div>
+                <label class="label-opaque" style="margin-bottom: 10px;font-weight: bold;">Guardar</label>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+  </mat-tab>
+</mat-tab-group>
+
+<router-outlet></router-outlet>

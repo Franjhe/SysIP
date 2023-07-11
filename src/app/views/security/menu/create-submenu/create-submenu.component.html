@@ -1,0 +1,57 @@
+<div class="card container">
+    <div class="header-container">
+        <div class="header-left">
+          <button mat-icon-button color="#F5F5F5" aria-label="Example icon button with a home icon" (click)="backComponent()">
+            <mat-icon>arrow_back_ios</mat-icon>
+          </button>
+        </div>
+        <div class="header-right">
+          <div class="header-content">
+            <h5 class="title">Creación de Menu</h5>
+          </div>
+        </div>
+      </div>
+    <div class="card-body">
+      <form [formGroup]="createSubMenu">
+        <div class="row justify-content-center">
+          <div class="col-md-3">
+              <div class="form-group mb-3">
+                <label for="cmenu_principal" class="label-opaque">Menu Principal</label>
+                <select id="cmenu_principal" formControlName="cmenu_principal" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && createSubMenu.controls['cmenu_principal'].errors }" (change)="changeGetMenu()">
+                  <option value="">Seleccione un Menu Principal</option>
+                  <option *ngFor="let main of mainMenuList" [value]="main.id">{{ main.value }}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="submitted && createSubMenu.controls['cmenu_principal'].errors">Error en el departamento</div>
+              </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group mb-3">
+              <label for="cmenu" class="label-opaque">Menu</label>
+              <select id="cmenu" formControlName="cmenu" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && createSubMenu.controls['cmenu'].errors }">
+                <option value="">Seleccione un Menu</option>
+                <option *ngFor="let menu of menuList" [value]="menu.id">{{ menu.value }}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="submitted && createSubMenu.controls['cmenu_principal'].errors">Error en el departamento</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group mb-3">
+              <label for="xsubmenu" class="label-opaque">Nombre</label>
+              <input class="label-opaque" type="text" id="xsubmenu" formControlName="xsubmenu" class="form-control rounded-input" [ngClass]="{ 'disabled-field': createSubMenu.controls['xsubmenu'].disabled }">
+              <div class="invalid-feedback" *ngIf="submitted && createSubMenu.controls['xsubmenu'].errors">Error en el nombre</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group mb-3">
+              <label for="xruta" class="label-opaque">Ruta</label>
+              <input class="label-opaque" type="text" id="xruta" formControlName="xruta" class="form-control rounded-input" [ngClass]="{ 'disabled-field': createSubMenu.controls['xruta'].disabled }">
+              <div class="invalid-feedback" *ngIf="submitted && createSubMenu.controls['xruta'].errors">Error en el nombre</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 16px;">
+            <button mat-raised-button color="primary" (click)="onSubmit(createSubMenu.value)">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>

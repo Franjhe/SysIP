@@ -1,0 +1,100 @@
+<div class="container">
+    <div class="row">
+      <div class="col-md-8">
+        <div class="card">
+            <div class="header-container">
+                <div class="header-left">
+                  <button mat-icon-button color="#F5F5F5" aria-label="Example icon button with a home icon" (click)="backComponent()">
+                    <mat-icon>arrow_back_ios</mat-icon>
+                  </button>
+                </div>
+                <div class="header-right">
+                  <div class="header-content">
+                    <h5 class="title">Eliminar Rol</h5>
+                  </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <form [formGroup]="deleteRol">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="crol" class="label-opaque">Código del rol</label>
+                            <input type="text" id="crol" formControlName="crol" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && deleteRol.controls['crol'].errors }">
+                            <div class="invalid-feedback" *ngIf="submitted && deleteRol.controls['crol'].errors">Error en el código</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="xrol" class="label-opaque">Nombre</label>
+                            <input type="text" id="xrol" formControlName="xrol" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && deleteRol.controls['xrol'].errors }">
+                            <div class="invalid-feedback" *ngIf="submitted && deleteRol.controls['xrol'].errors">Error en el nombre</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="xdepartamento" class="label-opaque">Departamento</label>
+                            <input type="text" id="xdepartamento" formControlName="xdepartamento" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && deleteRol.controls['xdepartamento'].errors }">
+                            <div class="invalid-feedback" *ngIf="submitted && deleteRol.controls['xdepartamento'].errors">Error en el departamento</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 16px;">
+                    <button mat-flat-button color="warn" (click)="open()">Eliminar</button>
+                </div>
+                </form>
+            </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <h5 class="title">Acciones del Rol</h5>
+          <div class="card-body">
+            <form [formGroup]="deleteRol">
+              <div class="form-group">
+                <mat-checkbox color="primary" formControlName="bcrear" [ngClass]="{ 'is-invalid': submitted && deleteRol.controls['bcrear'].errors }">
+                  <label class="label-opaque">Crear</label>
+                </mat-checkbox>
+                <div class="invalid-feedback" *ngIf="submitted && deleteRol.controls['bcrear'].errors">Error en crear</div>
+              </div>
+              <div class="form-group">
+                <mat-checkbox color="primary" formControlName="bmodificar" [ngClass]="{ 'is-invalid': submitted && deleteRol.controls['bmodificar'].errors }">
+                    <label class="label-opaque">Modificar</label>
+                </mat-checkbox>
+                <div class="invalid-feedback" *ngIf="submitted && deleteRol.controls['bmodificar'].errors">Error en modificar</div>
+              </div>
+              <div class="form-group">
+                <mat-checkbox color="primary" formControlName="beliminar" [ngClass]="{ 'is-invalid': submitted && deleteRol.controls['beliminar'].errors }">
+                    <label class="label-opaque">Eliminar</label>
+                </mat-checkbox>
+                <div class="invalid-feedback" *ngIf="submitted && deleteRol.controls['beliminar'].errors">Error en eliminar</div>
+              </div>
+              <div class="form-group">
+                <mat-checkbox color="primary" formControlName="bconsultar" [ngClass]="{ 'is-invalid': submitted && deleteRol.controls['bconsultar'].errors }">
+                    <label class="label-opaque">Consultar</label>
+                </mat-checkbox>
+                <div class="invalid-feedback" *ngIf="submitted && deleteRol.controls['bconsultar'].errors">Error en consultar</div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #DeleteRol>
+    <mat-dialog-content>
+      <h1 mat-dialog-title class="text-center text-xl-left">Eliminación de Rol</h1>
+        <div class="row">
+          <h2>¿Desea eliminar el rol de {{ deleteRol.get('xrol')!.value }}?</h2>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+      <button class="red-button" mat-icon-button color="primary" aria-label="Example icon button with a home icon" (click)="closeModal()">
+        <mat-icon>highlight_off</mat-icon>
+      </button>
+      <button class="green-button" mat-icon-button color="success" aria-label="Example icon button with a home icon" (click)="onSubmit()">
+        <mat-icon>check_circle_outline</mat-icon>
+      </button>
+    </mat-dialog-actions>
+  </ng-template>

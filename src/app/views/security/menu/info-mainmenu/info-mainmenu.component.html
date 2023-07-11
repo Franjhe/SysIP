@@ -1,0 +1,49 @@
+
+<div class="card container">
+    <div class="header-container">
+        <div class="header-left">
+          <button mat-icon-button color="#F5F5F5" aria-label="Example icon button with a home icon" (click)="backComponent()">
+            <mat-icon>arrow_back_ios</mat-icon>
+          </button>
+        </div>
+        <div class="header-right">
+          <div class="header-content">
+            <h5 class="title">Información del Menu Principal</h5>
+          </div>
+        </div>
+      </div>
+    <div class="card-body">
+      <form [formGroup]="infoMainMenu">
+        <div class="row justify-content-center">
+          <div class="col-md-3">
+            <div class="form-group mb-3">
+              <label for="cmenu_principal" class="label-opaque">Código</label>
+              <input class="label-opaque" type="text" id="cmenu_principal" formControlName="cmenu_principal" class="form-control rounded-input" [ngClass]="{ 'disabled-field': infoMainMenu.controls['cmenu_principal'].disabled }">
+              <div class="invalid-feedback" *ngIf="submitted && infoMainMenu.controls['cmenu_principal'].errors">Error en el código</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group mb-3">
+              <label for="xmenu" class="label-opaque">Nombre</label>
+              <input class="label-opaque" type="text" id="xmenu" formControlName="xmenu" class="form-control rounded-input" [ngClass]="{ 'disabled-field': infoMainMenu.controls['xmenu'].disabled }">
+              <div class="invalid-feedback" *ngIf="submitted && infoMainMenu.controls['xmenu'].errors">Error en el nombre</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group mb-3">
+              <label for="xicono" class="label-opaque">Icono</label>
+              <input class="label-opaque" type="text" id="xicono" formControlName="xicono" class="form-control rounded-input" [ngClass]="{ 'disabled-field': infoMainMenu.controls['xicono'].disabled }">
+              <div class="invalid-feedback" *ngIf="submitted && infoMainMenu.controls['xicono'].errors">Error en el nombre</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group mb-3">
+              <label for="xruta" class="label-opaque">Ruta</label>
+              <input class="label-opaque" type="text" id="xruta" formControlName="xruta" class="form-control rounded-input" [ngClass]="{ 'disabled-field': infoMainMenu.controls['xruta'].disabled }">
+              <div class="invalid-feedback" *ngIf="submitted && infoMainMenu.controls['xruta'].errors">Error en el nombre</div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
