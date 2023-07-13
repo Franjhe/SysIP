@@ -75,6 +75,11 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/security/security.module').then((m) => m.SecurityModule)
       },
+      {
+        path: 'ninja',
+        loadChildren: () =>
+          import('./views/ninja/ninja.module').then((m) => m.NinjaModule)
+      },
     ]
   },
   {
