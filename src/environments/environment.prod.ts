@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl : "http://apisisweb.compuamerica.com.ve",
+  apiUrl : "http://apisys2000.compuamerica.com.ve",
 };
