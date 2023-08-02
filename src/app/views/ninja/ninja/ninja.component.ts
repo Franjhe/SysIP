@@ -15,7 +15,7 @@ export class NinjaComponent {
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
   displayedColumns: string[] = ['cedula', 'nombApell', 'correo', 'nrofac',
                                 'localidad', 'plan_adquirido', 'fecha_in', 'fecha_out', 
-                                'cantidad_personas'];
+                                ];
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   showTable: boolean = true;
