@@ -4,18 +4,26 @@ import { environment } from 'src/environments/environment';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import {animate, state, style, transition, trigger} from '@angular/animations';
 
 @Component({
   selector: 'app-ninja',
   templateUrl: './ninja.component.html',
-  styleUrls: ['./ninja.component.scss']
+  styleUrls: ['./ninja.component.scss'],
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({ height: '0px', minHeight: '0', display: 'none' })),
+      state('expanded', style({ height: '*', display: 'table-row-group' })),
+      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ],
 })
-export class NinjaComponent {
-
+export class NinjaComponent implements AfterViewInit {
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
-  displayedColumns: string[] = ['cedula', 'nombApell', 'correo', 'nrofac',
-                                'localidad', 'plan_adquirido', 'fecha_in', 'fecha_out', 
-                                ];
+  columnsToDisplay: string[] = ['cedula', 'nombApell', 'correo', 'nrofac', 'localidad', 'plan_adquirido', 'fecha_in', 'fecha_out'];
+  columnsToDisplayWithExpand = [...this.columnsToDisplay, 'expand'];
+  expandedElement: any;
+
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   showTable: boolean = true;
@@ -41,4 +49,7 @@ export class NinjaComponent {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
+  toggleRow(element: any) {
+    this.expandedElement = this.expandedElement === element ? null : element;
+  }
 }
