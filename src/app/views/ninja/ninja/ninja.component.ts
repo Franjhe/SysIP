@@ -23,6 +23,8 @@ export class NinjaComponent implements AfterViewInit {
   columnsToDisplay: string[] = ['cedula', 'nombApell', 'correo', 'nrofac', 'localidad', 'plan_adquirido', 'fecha_in', 'fecha_out'];
   columnsToDisplayWithExpand = [...this.columnsToDisplay, 'expand'];
   expandedElement: any;
+  columnsName: string[] = ['Cédula', 'Nombre', 'Correo', 'Factura', 'Localidad', 'Plan', 'Fecha In.', 'Fecha Fi.'];
+  expandedDetailData: any[] = [];
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -51,5 +53,19 @@ export class NinjaComponent implements AfterViewInit {
 
   toggleRow(element: any) {
     this.expandedElement = this.expandedElement === element ? null : element;
+
+    this.searchPropietary(element);
+  }
+
+  searchPropietary(element: any) {
+    let data = {
+      cedula: element.cedula
+    };
+    this.http.post(environment.apiUrl + '/api/v1/ninjaPark/detail', data).subscribe((response: any) => {
+      if (response.data.list) {
+        console.log(response.data.list)
+        this.expandedDetailData = response.data.list;
+      }
+    });
   }
 }
