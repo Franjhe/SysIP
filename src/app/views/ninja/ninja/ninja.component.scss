@@ -55,3 +55,24 @@ tr.example-element-row:not(.example-expanded-row):active {
 .example-element-detail.expanded {
   height: auto; /* Utilizamos 'auto' para que se ajuste automáticamente al contenido expandido */
 }
+.expanded-element-detail {
+  width: 1097px;
+}
+
+.details-table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+  margin-top: 10px;
+}
+
+.details-table th, .details-table td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.details-table th {
+  font-weight: bold;
+  background-color: #f5f5f5;
+}

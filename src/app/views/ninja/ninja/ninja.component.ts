@@ -25,6 +25,7 @@ export class NinjaComponent implements AfterViewInit {
   expandedElement: any;
   columnsName: string[] = ['Cédula', 'Nombre', 'Correo', 'Factura', 'Localidad', 'Plan', 'Fecha In.', 'Fecha Fi.'];
   expandedDetailData: any[] = [];
+  columnsNameDetail: string[] = ['Nombre Acompañante', 'Item', 'Plan', 'Costo Ext.', 'Costo Local'];
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -63,7 +64,6 @@ export class NinjaComponent implements AfterViewInit {
     };
     this.http.post(environment.apiUrl + '/api/v1/ninjaPark/detail', data).subscribe((response: any) => {
       if (response.data.list) {
-        console.log(response.data.list)
         this.expandedDetailData = response.data.list;
       }
     });
