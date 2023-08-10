@@ -1,9 +1,32 @@
 <div class="card container registration-form" *ngIf="showTable">
-  <form>
+  <form [formGroup]="search_form">
+    <div class="row justify-content-center">
+      <div class="col-md-4">
+        <mat-form-field class="example-full-width">
+          <mat-label>Parques</mat-label>
+          <input type="text"
+                 placeholder="Seleccionar Parques"
+                 aria-label="Parques"
+                 matInput
+                 [formControl]="parkControl"
+                 [matAutocomplete]="parkAuto">
+          <mat-autocomplete #parkAuto="matAutocomplete" (optionSelected)="onParkSelection($event)">
+            <mat-option *ngFor="let park of parkList" [value]="park.value">
+              {{ park.value }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+    </div>
+
     <mat-form-field>
       <mat-label>Buscar</mat-label>
       <input matInput (keyup)="applyFilter($event)" placeholder="Ingresa datos" #input>
     </mat-form-field>
+
+    <div class="col-md-2" *ngIf="loadingData">
+      <mat-spinner diameter="30"></mat-spinner>
+    </div>
 
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort multiTemplateDataRows>
 

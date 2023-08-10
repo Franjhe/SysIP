@@ -14,7 +14,8 @@ import { NinjaComponent } from './ninja/ninja.component';
   imports: [
     CommonModule,
     NinjaRoutingModule,
-    MaterialExampleModule
+    MaterialExampleModule,
+    ReactiveFormsModule,
   ]
 })
 export class NinjaModule { }
