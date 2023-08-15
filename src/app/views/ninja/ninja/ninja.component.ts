@@ -31,7 +31,7 @@ export class NinjaComponent implements AfterViewInit {
   expandedElement: any;
   columnsName: string[] = ['Cédula', 'Nombre', 'Correo', 'Factura', 'Hora', 'Cantidad T.', 'Costo', 'Fecha'];
   expandedDetailData: any[] = [];
-  columnsNameDetail: string[] = ['Nombre Acompañante', 'Item', 'Plan', 'Costo Ext.', 'Costo Local'];
+  columnsNameDetail: string[] = ['Acompañante', 'Producto', 'N. Producto', 'Cantidad', 'Costo Ext.', 'Costo Local'];
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -60,8 +60,8 @@ export class NinjaComponent implements AfterViewInit {
       if (response.status) {
         for(let i = 0; i < response.data.parks.length; i++){
           this.parkList.push({
-            id: response.data.parks[i].id,
-            value: response.data.parks[i].plan_adquirido
+            plan_adquirido: response.data.parks[i].plan_adquirido,
+            value: response.data.parks[i].xcompania
           })
         }
         this.filteredPark = this.parkControl.valueChanges.pipe(
@@ -81,9 +81,9 @@ export class NinjaComponent implements AfterViewInit {
 
   onParkSelection(event: any) {
     const selectedValue = event.option.value;
-    const selectedPark = this.parkList.find(park => park.value === selectedValue);
+    const selectedPark = this.parkList.find(park => park.plan_adquirido === selectedValue);
     if (selectedPark) {
-      this.search_form.get('plan_adquirido')?.setValue(selectedPark.value)
+      this.search_form.get('plan_adquirido')?.setValue(selectedPark.plan_adquirido)
     }
     if(this.search_form.get('plan_adquirido')?.value){
       this.getDataFromPark();
