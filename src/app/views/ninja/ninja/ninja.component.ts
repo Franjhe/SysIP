@@ -26,7 +26,7 @@ export class NinjaComponent implements AfterViewInit {
   search_form!: FormGroup;
   submitted = false;
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
-  columnsToDisplay: string[] = ['cedula', 'nombApell', 'correo', 'nrofac', 'hora_fac', 'cantidad_tickes', 'mcosto_ext', 'fingreso'];
+  columnsToDisplay: string[] = ['cedula', 'nombApell', 'correo', 'nrofac', 'hora_emision', 'cantidad_tickes', 'mcosto_ext', 'fingreso'];
   columnsToDisplayWithExpand = [...this.columnsToDisplay, 'expand'];
   expandedElement: any;
   columnsName: string[] = ['Cédula', 'Nombre', 'Correo', 'Factura', 'Hora', 'Cantidad T.', 'Costo', 'Fecha'];
