@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, AfterViewInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-reports',
@@ -6,5 +9,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./reports.component.scss']
 })
 export class ReportsComponent {
-
+  showTable: boolean = true;
 }

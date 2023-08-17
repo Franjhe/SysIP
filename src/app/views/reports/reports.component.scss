@@ -1,0 +1,22 @@
+.image-container {
+    width: 100%;
+    max-width: 600px; /* Aumenta el ancho máximo para hacerlo más grande */
+    height: 400px; /* Aumenta la altura para hacerlo más grande */
+    background-image: url('../../../assets/images/Vector-Trabajo.png');
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    // margin: 0 auto; /* Centra horizontalmente el contenedor en su contenedor padre */
+}
+
+@media (max-width: 768px) {
+    .image-container {
+        max-width: 100%;
+    }
+}
+
+.reset {
+    margin: 0;
+    padding: 0;
+}

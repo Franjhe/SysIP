@@ -1,1 +1,39 @@
-<p>premiums works!</p>
+<div class="row">
+    <div class="col-sm-3" style="width: 27%;">
+      <div class="card">
+        <div class="card-body">
+            <mat-list>
+                <mat-list-item>Seleccione por favor</mat-list-item>
+                <mat-divider></mat-divider>
+            </mat-list>
+            <mat-chip-listbox class="mat-mdc-chip-set-stacked" aria-label="Color selection">
+                <mat-chip-option *ngFor="let chip of availableColors; let first = first" [color]="chip.color" (click)="guardarSeleccion(chip.name)">
+                    {{chip.name}}
+                </mat-chip-option>
+            </mat-chip-listbox>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="card container registration-form" *ngIf="showTable">
+            <div class="row d-flex justify-content-center">
+                <div class="col-5">
+                    <mat-form-field>
+                        <mat-label>Fecha Desde</mat-label>
+                        <input matInput [matDatepicker]="pickerDesde">
+                        <mat-datepicker-toggle matIconSuffix [for]="pickerDesde"></mat-datepicker-toggle>
+                        <mat-datepicker #pickerDesde></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div class="col-5">
+                    <mat-form-field>
+                        <mat-label>Fecha Hasta</mat-label>
+                        <input matInput [matDatepicker]="pickerHasta">
+                        <mat-datepicker-toggle matIconSuffix [for]="pickerHasta"></mat-datepicker-toggle>
+                        <mat-datepicker #pickerHasta></mat-datepicker>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
