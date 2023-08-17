@@ -80,6 +80,12 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/ninja/ninja.module').then((m) => m.NinjaModule)
       },
+      
+      {
+        path: 'reports',
+        loadChildren: () =>
+          import('./views/reports/reports.module').then((m) => m.ReportsModule)
+      },
     ]
   },
   {

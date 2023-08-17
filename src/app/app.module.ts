@@ -6,6 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NgScrollbarModule } from 'ngx-scrollbar';
 import { AuthInterceptorServiceService, ErrorInterceptor } from './_helpers';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { MaterialExampleModule } from './material.module';
 
 // Import routing module
 import { AppRoutingModule } from './app-routing.module';
@@ -55,6 +56,7 @@ const APP_CONTAINERS = [
     BreadcrumbModule,
     FooterModule,
     DropdownModule,
+    MaterialExampleModule,
     GridModule,
     HeaderModule,
     SidebarModule,
