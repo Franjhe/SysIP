@@ -6,6 +6,8 @@ import { AlertsComponent } from './alerts/alerts.component';
 import { ModalsComponent } from './modals/modals.component';
 import { ToastersComponent } from './toasters/toasters.component';
 
+
+
 const routes: Routes = [
   {
     path: '',

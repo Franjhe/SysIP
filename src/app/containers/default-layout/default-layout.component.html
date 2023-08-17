@@ -21,18 +21,23 @@
     routerLink="./"
   />
 
-  <ng-scrollbar pointerEventsMethod="scrollbar">
-    <c-sidebar-nav
+   <ng-scrollbar pointerEventsMethod="scrollbar">
+    <c-sidebar-nav 
       [navItems]="navItems"
-      dropdownMode="close"
+      (click)="onNavItemSelect($event.target)"
+      dropdownMode="path"
     />
-  </ng-scrollbar>
-  <c-sidebar-toggler
+
+  </ng-scrollbar> 
+  <!-- <c-sidebar-toggler
     *ngIf="!sidebar.narrow"
     toggle="unfoldable"
     cSidebarToggle="sidebar"
-  />
-</c-sidebar>
+  /> -->
+
+
+
+</c-sidebar>  
 
 <!--main-->
 <div class="wrapper d-flex flex-column min-vh-100 bg-light dark:bg-transparent">

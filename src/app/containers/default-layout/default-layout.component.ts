@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, ViewChild, ElementRef, TemplateRef } from '@angular/core';import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
+import { DataSharingService } from './../../_services/data-sharing.service';
 
 import { navItems } from './_nav';
 
@@ -14,7 +14,13 @@ import { navItems } from './_nav';
 export class DefaultLayoutComponent {
   public navItems = navItems;
 
-  constructor(private router: Router, private http: HttpClient) {
+  listmenus : any = []
+  listshare : any = []
+
+  constructor(
+    private router: Router, private http: HttpClient,
+    private dataSharingService: DataSharingService
+    ) {
     const isLoggedIn = localStorage.getItem('user');
     if (isLoggedIn) {
       const userObject = JSON.parse(isLoggedIn);
@@ -28,6 +34,7 @@ export class DefaultLayoutComponent {
       this.http
       .post(environment.apiUrl + '/api/v1/menu/get-menu', params)
       .subscribe((response: any) => {
+        this.listmenus = response.data.menuPrincipal
         const menuPrincipal = response.data.menuPrincipal;
         if (Array.isArray(menuPrincipal) && menuPrincipal.length > 0) {
           const distinctMenuPrincipal = [...new Set(menuPrincipal.map(item => item.xmenuprincipal))];
@@ -47,8 +54,43 @@ export class DefaultLayoutComponent {
           });
         }
       });
+
     } else {
       console.log('No hay usuario autenticado');
     }
   }
+
+
+
+  onNavItemSelect(event: any) {
+
+    const urlString = event.toString();
+
+    const startIndex = urlString.indexOf('/#'); // Encuentra la posición de '/#'
+
+    const shortPath = urlString.substring(startIndex);
+
+    for(let i = 0; i < this.listmenus.length; i++){
+
+        if(shortPath === ('/#' + this.listmenus[i].xrutamenu)){
+    
+            this.listshare = [{
+              xrutamenu: this.listmenus[i].xrutamenu,
+              xsubmenu: this.listmenus[i].xsubmenu,
+              xrutasubmenu: this.listmenus[i].xrutasubmenu
+          }]
+        
+
+        }
+
+    }
+
+    const info = {
+     list:this.listshare
+    }
+
+    this.dataSharingService.updateData(info);
+
+  }
+
 }
