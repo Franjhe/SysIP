@@ -31,7 +31,7 @@ export class NinjaComponent implements AfterViewInit {
   expandedElement: any;
   columnsName: string[] = ['Cédula', 'Nombre', 'Correo', 'Factura', 'Hora', 'Cantidad T.', 'Costo', 'Fecha'];
   expandedDetailData: any[] = [];
-  columnsNameDetail: string[] = ['Acompañante', 'Producto', 'N. Producto', 'Cantidad', 'Costo Ext.', 'Costo Local'];
+  columnsNameDetail: string[] = ['Acompañante', 'Producto', 'N. Producto'];
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;

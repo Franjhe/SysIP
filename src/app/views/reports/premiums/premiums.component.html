@@ -7,7 +7,7 @@
                 <mat-divider></mat-divider>
             </mat-list>
             <mat-chip-listbox class="mat-mdc-chip-set-stacked" aria-label="Color selection">
-                <mat-chip-option *ngFor="let chip of availableColors; let first = first" [color]="chip.color" (click)="guardarSeleccion(chip.name)">
+                <mat-chip-option *ngFor="let chip of availableColors; let first = first" [color]="chip.color" (click)="saveSelection(chip.name)">
                     {{chip.name}}
                 </mat-chip-option>
             </mat-chip-listbox>
@@ -16,24 +16,24 @@
     </div>
     <div class="col-sm-8">
         <div class="card container registration-form" *ngIf="showTable">
-            <div class="row d-flex justify-content-center">
-                <div class="col-5">
-                    <mat-form-field>
-                        <mat-label>Fecha Desde</mat-label>
-                        <input matInput [matDatepicker]="pickerDesde">
-                        <mat-datepicker-toggle matIconSuffix [for]="pickerDesde"></mat-datepicker-toggle>
-                        <mat-datepicker #pickerDesde></mat-datepicker>
-                    </mat-form-field>
+            <form [formGroup]="report_form">
+                <div class="row d-flex justify-content-center">
+                    <div class="col-md-5">
+                        <div class="form-group mb-3">
+                          <label for="fdesde" class="label-opaque">Fecha Desde</label>
+                          <input class="label-opaque" type="date" id="fdesde" formControlName="fdesde" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && report_form.controls['fdesde'].errors }">
+                          <div class="invalid-feedback" *ngIf="submitted && report_form.controls['fdesde'].errors">Error en el nombre</div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group mb-3">
+                          <label for="fhasta" class="label-opaque">Fecha Hasta</label>
+                          <input class="label-opaque" type="date" id="fhasta" formControlName="fhasta" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && report_form.controls['fhasta'].errors }" (change)="onSubmit()">
+                          <div class="invalid-feedback" *ngIf="submitted && report_form.controls['fhasta'].errors">Error en el nombre</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-5">
-                    <mat-form-field>
-                        <mat-label>Fecha Hasta</mat-label>
-                        <input matInput [matDatepicker]="pickerHasta">
-                        <mat-datepicker-toggle matIconSuffix [for]="pickerHasta"></mat-datepicker-toggle>
-                        <mat-datepicker #pickerHasta></mat-datepicker>
-                    </mat-form-field>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
   </div>

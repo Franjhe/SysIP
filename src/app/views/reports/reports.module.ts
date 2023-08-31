@@ -4,6 +4,7 @@ import { PremiumsComponent } from './premiums/premiums.component';
 import { ReportsComponent } from './reports.component';
 import { ReportsRoutingModule } from './reports-routing.module'
 import { MaterialExampleModule } from './../../material.module'
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,8 @@ import { MaterialExampleModule } from './../../material.module'
   imports: [
     CommonModule,
     ReportsRoutingModule,
-    MaterialExampleModule
+    MaterialExampleModule,
+    ReactiveFormsModule
   ]
 })
 export class ReportsModule { }
