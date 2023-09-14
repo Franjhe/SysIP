@@ -5,11 +5,13 @@ import { ReportsComponent } from './reports.component';
 import { ReportsRoutingModule } from './reports-routing.module'
 import { MaterialExampleModule } from './../../material.module'
 import { ReactiveFormsModule } from '@angular/forms';
+import { ReceiptsComponent } from './receipts/receipts.component';
 
 @NgModule({
   declarations: [
     PremiumsComponent,
-    ReportsComponent
+    ReportsComponent,
+    ReceiptsComponent
   ],
   imports: [
     CommonModule,

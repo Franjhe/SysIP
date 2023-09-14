@@ -31,25 +31,52 @@ export class DefaultLayoutComponent {
         cdepartamento: userObject.data.cdepartamento,
       };
 
+      // this.http
+      // .post(environment.apiUrl + '/api/v1/menu/get-menu', params)
+      // .subscribe((response: any) => {
+      //   this.listmenus = response.data.menuPrincipal
+      //   const menuPrincipal = response.data.menuPrincipal;
+      //   if (Array.isArray(menuPrincipal) && menuPrincipal.length > 0) {
+      //     const distinctMenuPrincipal = [...new Set(menuPrincipal.map(item => item.xmenuprincipal))];
+      //     this.navItems = distinctMenuPrincipal.map(menu => {
+      //       const firstItem = menuPrincipal.find(item => item.xmenuprincipal === menu);
+      //       return {
+      //         name: firstItem.xmenuprincipal,
+      //         url: firstItem.xrutaprincipal,
+      //         iconComponent: { name: firstItem.xicono },
+      //         children: menuPrincipal
+      //           .filter(item => item.xmenuprincipal === menu)
+      //           .map(childItem => ({
+      //             name: childItem.xmenu,
+      //             url: childItem.xrutamenu,
+      //           })),
+      //       };
+      //     });
+      //   }
+      // });
+
       this.http
       .post(environment.apiUrl + '/api/v1/menu/get-menu', params)
       .subscribe((response: any) => {
         this.listmenus = response.data.menuPrincipal
         const menuPrincipal = response.data.menuPrincipal;
         if (Array.isArray(menuPrincipal) && menuPrincipal.length > 0) {
-          const distinctMenuPrincipal = [...new Set(menuPrincipal.map(item => item.xmenuprincipal))];
-          this.navItems = distinctMenuPrincipal.map(menu => {
-            const firstItem = menuPrincipal.find(item => item.xmenuprincipal === menu);
+          // Obtener los valores únicos de cmenu
+          const distinctCmenuValues = [...new Set(menuPrincipal.map(item => item.cmenu))];
+    
+          // Crear navItems basados en los elementos distintos de cmenu
+          this.navItems = distinctCmenuValues.map(cmenu => {
+            const filteredItems = menuPrincipal.filter(item => item.cmenu === cmenu);
+            const firstItem = filteredItems[0]; // Tomar el primer elemento, ya que todos tienen el mismo cmenu
+            console.log(filteredItems)
             return {
-              name: firstItem.xmenuprincipal,
-              url: firstItem.xrutaprincipal,
+              name: filteredItems[0].xmenuprincipal,
+              url: filteredItems[0].xrutaprincipal,
               iconComponent: { name: firstItem.xicono },
-              children: menuPrincipal
-                .filter(item => item.xmenuprincipal === menu)
-                .map(childItem => ({
-                  name: childItem.xmenu,
-                  url: childItem.xrutamenu,
-                })),
+              children: [{
+                name: firstItem.xmenu,
+                url: firstItem.xrutamenu,
+              }],
             };
           });
         }
