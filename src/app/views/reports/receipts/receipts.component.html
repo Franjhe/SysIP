@@ -1,1 +1,131 @@
-<p>receipts works!</p>
+<div class="row" *ngIf="disableChip">
+    <div class="col-sm-3" style="width: 27%;" >
+      <div class="card">
+        <div class="card-body">
+            <mat-list>
+                <mat-list-item>Seleccione por favor</mat-list-item>
+                <mat-divider></mat-divider>
+            </mat-list>
+            <mat-chip-listbox class="mat-mdc-chip-set-stacked" aria-label="Color selection">
+                <mat-chip-option *ngFor="let chip of availableColors; let first = first" [color]="chip.color" (click)="saveSelection(chip.name)">
+                    {{chip.name}}
+                </mat-chip-option>
+            </mat-chip-listbox>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-8" style="display: grid;place-items: center;">
+        <div class="card container py-4  registration-form" *ngIf="showTable">
+            <div ><h2 class="text-center">Seleccione el rango de fecha</h2></div>
+            <hr><form [formGroup]="receipt_form">
+                <div class="row d-flex justify-content-center">
+                    <div class="col-md-5">
+                        <div class="form-group mb-3">
+                          <label for="fdesde" class="label-opaque">Fecha Desde</label>
+                          <input class="label-opaque" type="date" id="fdesde" formControlName="fdesde" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && receipt_form.controls['fdesde'].errors }">
+                          <div class="invalid-feedback" *ngIf="submitted && receipt_form.controls['fdesde'].errors">Error en el nombre</div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group mb-3">
+                          <label for="fhasta" class="label-opaque">Fecha Hasta</label>
+                          <input class="label-opaque" type="date" id="fhasta" formControlName="fhasta" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && receipt_form.controls['fhasta'].errors }" (change)="onSubmit()">
+                          <div class="invalid-feedback" *ngIf="submitted && receipt_form.controls['fhasta'].errors">Error en el nombre</div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="card container registration-form" *ngIf="disableCard">
+    <div class="spinnerContainer" *ngIf="loading">
+        <div class="spinner"></div>
+        <div class="loader">
+          <p>Cargando</p>
+          <div class="words">
+            <span class="word">Requisitos</span>
+            <span class="word">Requisitos</span>
+            <span class="word">Fechas</span>
+            <span class="word">Recibos</span>
+            <span class="word">Listas</span>
+          </div>
+        </div>
+      </div>
+    <form>
+        <div class="row" *ngIf="enableDate">
+            <div class="col-lg-12 d-flex justify-content-center align-items-center">
+              <div class="col-lg-2">
+                <div class="form-outline form-white">
+                  <strong class="form-label required" for="form3Examplea8">Fecha Desde</strong>
+                  <p class="mt-3">{{fdesde}}</p>
+                </div>
+              </div>
+              <div class="col-lg-2">
+                <div class="form-outline form-white">
+                  <strong class="form-label required" for="form3Examplea8">Fecha Hasta</strong>
+                  <p class="mt-3">{{fhasta}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        
+        <mat-form-field *ngIf="disableTable">
+            <mat-label>Buscar</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Ingresa datos" #input>
+        </mat-form-field>
+            
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort *ngIf="disableTable">
+            <ng-container matColumnDef="name_user">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre </th>
+                <td mat-cell *matCellDef="let element"> {{ element.name_user }} </td>
+            </ng-container>
+            
+            <ng-container matColumnDef="last_name_user">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Apellido </th>
+                <td mat-cell *matCellDef="let element"> {{ element.last_name_user }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="start_date">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha Inicio </th>
+                <td mat-cell *matCellDef="let element"> {{ element.start_date }} </td>
+            </ng-container>
+            <ng-container matColumnDef="end_date">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha Final </th>
+                <td mat-cell *matCellDef="let element"> {{ element.end_date }} </td>
+            </ng-container>
+            <ng-container matColumnDef="ncuota">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Cuotas </th>
+                <td mat-cell *matCellDef="let element"> {{ element.ncuota }} </td>
+            </ng-container>
+            <ng-container matColumnDef="total_payment">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Pago en Dólares </th>
+                <td mat-cell *matCellDef="let element"> {{ element.total_payment }} </td>
+            </ng-container>
+            <ng-container matColumnDef="total_payment_bs">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Pago en Bolívares </th>
+                <td mat-cell *matCellDef="let element"> {{ element.total_payment_bs }} </td>
+            </ng-container>
+            
+            <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+            <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"></tr>
+                
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="2">No hay datos que coincidan con el filtro</td>
+            </tr>
+        </table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Seleccionar página de Recibos" #paginator></mat-paginator>
+
+        <div class="container" style="display: flex; justify-content: flex-end; align-items: flex-start;" *ngIf="enableDownload">
+            <div style="display: flex; flex-direction: column; align-items: flex-end;">
+              <div class="example-button-container" style="text-align: right;">
+                <button mat-fab class="green-button" aria-label="Example icon button with a bookmark icon" >
+                  <mat-icon>cloud_download</mat-icon>
+                </button>
+              </div>
+              <label class="label-opaque" style="margin-bottom: 10px;font-weight: bold;margin-right:9px">Excel</label>
+            </div>
+          </div>
+    </form>
+</div> 
