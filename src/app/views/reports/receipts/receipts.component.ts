@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { environment } from 'src/environments/environment';
 import { ThemePalette } from '@angular/material/core';
@@ -7,8 +7,9 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatSnackBar } from '@angular/material/snack-bar';
-// import { ExportAsModule } from 'ngx-export-as';
-// import { ExportAsService, ExportAsConfig } from 'ngx-export-as';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import { NotificationService } from './../../../_services/notification.service';
 
 @Component({
   selector: 'app-receipts',
@@ -28,9 +29,12 @@ export class ReceiptsComponent {
   loading: boolean = false;
   enableDate: boolean = false;
   enableDownload: boolean = false;
+  disableError: boolean = false;
   fdesde?: string;
   fhasta?: string
   selectedOption: string = '';
+  errorMessage: string | null = null;
+  errorCode: number | null = null;
 
   availableColors = [
     {name: 'Recibos Pendientes', color: 'primary'},
@@ -44,12 +48,8 @@ export class ReceiptsComponent {
 
   constructor(private http: HttpClient,
               private formBuilder: FormBuilder,
-              private snackBar: MatSnackBar,){}
-              // private exportAsService: ExportAsService) {}
-
-  // ngAfterViewInit() {
-
-  // }
+              private snackBar: MatSnackBar,
+              private notificationService: NotificationService){}
 
   ngOnInit() {
     this.receipt_form = this.formBuilder.group({
@@ -58,6 +58,14 @@ export class ReceiptsComponent {
       fhasta: [''],
       id_status: ['']
     });
+
+    this.notificationService.error$.subscribe(({ code, message }) => {
+      this.errorCode = code; // Almacena el código de error
+      this.errorMessage = message;
+      this.loading = false
+      this.disableError = true;
+    });
+    
   }
 
   saveSelection(opcion: string) {
@@ -92,20 +100,7 @@ export class ReceiptsComponent {
         this.enableDate = true;
         this.enableDownload = true;
       }
-    },(err) => {
-      let code = err.error.data.code;
-      this.disableChip = true;
-      this.disableTable = false;
-      this.disableCard = false;
-      this.loading = false;
-      this.enableDate = false;
-      this.enableDownload = false;
-      if(code == 404){
-        this.snackBar.open(`Error: No existen ${this.selectedOption} segun los parámetros seleccionados`, '', {
-          duration: 3000,
-        })
-      }
-    });
+    })
   }
 
   applyFilter(event: Event) {
@@ -113,33 +108,46 @@ export class ReceiptsComponent {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  // downloadExcel() {
-  //   const data = this.dataSource.data;
+  refresh(){
+    location.reload();
+  }
 
-  //   // Configura los estilos personalizados
-  //   const exportAsConfig: ExportAsConfig = {
-  //     type: 'xls', // Tipo de archivo Excel
-  //     elementIdOrContent: 'tabla-de-datos', // ID de elemento HTML o contenido para exportar
-  //     options: {
-  //       xls: {
-  //         sheet: {
-  //           // Establece el estilo del encabezado
-  //           name: 'Hoja1', // Nombre de la hoja
-  //           merge: [
-  //             { s: { r: 0, c: 0 }, e: { r: 0, c: data.length - 1 } }, // Fusiona la primera fila
-  //           ],
-  //           rows: [
-  //             {
-  //               cells: data[0].map((cell: number, index: number) => ({ value: cell, style: { fill: { fgColor: 'FFFF00' }, font: { bold: true } } })),
-  //             }, // Estilo de la primera fila
-  //           ],
-  //         },
-  //       },
-  //     },
-  //   };
-
-  //   // Genera y descarga el archivo Excel
-  //   this.exportAsService.save(exportAsConfig, 'datos'); // 'datos' es el nombre del archivo
-  // }
-
+  downloadExcel() {
+    // Define un objeto de mapeo para cambiar los nombres de las columnas
+    const columnMapping = {
+      start_date: 'Fecha desde',
+      end_date: 'Fecha hasta',
+      amount_term: 'Monto término',
+      total_payment: 'Pago total dólares',
+      total_payment_bs: 'Pago total bolívares',
+      ncuota: 'Cuotas',
+      msaldo: 'Saldo',
+      name_user: 'Nombre',
+      last_name_user: 'Apellido'
+    };
+  
+    // Filtra y renombra los campos que deseas exportar
+    const filteredData = this.dataSource.data.map(item => ({
+      'Fecha desde': item.start_date,
+      'Fecha hasta': item.end_date,
+      'Monto término': item.amount_term,
+      'Pago total dólares': item.total_payment,
+      'Pago total bolívares': item.total_payment_bs,
+      'Cuotas': item.ncuota,
+      'Saldo': item.msaldo,
+      'Nombre': item.name_user,
+      'Apellido': item.last_name_user
+    }));
+  
+    const worksheet = XLSX.utils.json_to_sheet(filteredData);
+  
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
+  
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  
+    const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  
+    saveAs(excelData, `Reporte de ${this.selectedOption} solicitados.xlsx`);
+  }
 }

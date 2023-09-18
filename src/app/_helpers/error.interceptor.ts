@@ -5,16 +5,21 @@ import { catchError } from 'rxjs/operators';
 import { MaterialExampleModule } from './../material.module';
 
 import { AuthenticationService } from './../../app/_services';
+import { NotificationService } from './../_services/notification.service';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
-    constructor(private authenticationService: AuthenticationService) { }
+    constructor(private authenticationService: AuthenticationService,
+                private notificationService: NotificationService) { }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         return next.handle(request).pipe(catchError(err => {
+
             if ([401].includes(err.status)) {
-                // auto logout if 401 Unauthorized or 403 Forbidden response returned from api
                 this.authenticationService.logout();
+            }
+            if ([500].includes(err.status)) {
+                this.notificationService.showError(500, 'Lo sentimos, se ha producido un error en el servidor. Por favor, inténtalo de nuevo más tarde o contacta al soporte técnico para obtener ayuda.');
             }
 
             const error = err.error.message || err.statusText;

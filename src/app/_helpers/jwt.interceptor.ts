@@ -20,7 +20,6 @@ export class AuthInterceptorServiceService implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const isLoggedIn = localStorage.getItem("user");
     let request = req;
-
     if (isLoggedIn) {
       const token = JSON.parse(isLoggedIn);
 
