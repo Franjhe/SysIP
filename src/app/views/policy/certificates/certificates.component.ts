@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { PdfGenerationService } from '../../../../app/_services';
 
 @Component({
   selector: 'app-certificates',
@@ -21,7 +22,8 @@ export class CertificatesComponent {
 
   constructor(private router: Router,
               private route: ActivatedRoute, 
-              private http: HttpClient) {}
+              private http: HttpClient,
+              private PdfService: PdfGenerationService) {}
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
@@ -40,5 +42,8 @@ export class CertificatesComponent {
         }
       });
     }
+
+    this.PdfService.certificateData()
+
   }
 }
