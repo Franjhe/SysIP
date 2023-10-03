@@ -15,9 +15,18 @@ import { Buffer } from 'buffer';
 
 export class PdfGenerationService {
 
+	//beneficiario
 	cpoliza: number | undefined;
-	fanopol: number | undefined ;
-	fmespol: number | undefined ;
+	fanopol: string | undefined ;
+	cci_rif: string | undefined ;
+	finclusion: string | undefined ;
+	fmespol: string | undefined ;
+	fnacimiento: string | undefined ;
+	xcedula: string | undefined ;
+	xnombre: string | undefined ;
+	xparentesco: string | undefined ;
+	xsexo: string | undefined ;
+
 	xcertificado: string | undefined;
 	fecha: string | undefined;
 	xtomador: string | undefined;
@@ -113,16 +122,40 @@ export class PdfGenerationService {
     private http: HttpClient
   ) 
   {
-    
+
+	this.certifiquedPDF()
   }
 
     async certificateData(){
+
       this.http.get(environment.apiUrl + '/api/v1/certificate/search').subscribe((response: any) => {
         console.log(response)
  
-		this.cpoliza = response.data.cpoliza;
-		this.fanopol = response.data.fanopol;
-		this.fmespol = response.data.fmespol;
+		//beneficiario
+
+		for(let i = 0; i < response.data.beneficiario.length; i++){
+
+			console.log(response.data.beneficiario.cpoliza)
+
+			this.cpoliza = response.data.beneficiario[0].cpoliza;
+			this.fanopol = response.data.beneficiario[0].fanopol;
+			this.cci_rif = response.data.beneficiario[0].cci_rif;
+			this.finclusion = response.data.beneficiario[0].finclusion;
+			this.fmespol = response.data.beneficiario[0].fmespol;
+			this.fnacimiento = response.data.beneficiario[0].fnacimiento;
+			this.xcedula = response.data.beneficiario[0].xcedula;
+			this.xnombre = response.data.beneficiario[0].xnombre;
+			this.xparentesco = response.data.beneficiario[0].xparentesco;
+			this.xsexo = response.data.beneficiario[0].xsexo;
+		}
+
+		console.log(
+			this.cpoliza,
+			this.fanopol,
+			this.cci_rif
+		)
+
+
 		this.xcertificado = response.data.xcertificado;
 		this.fecha = response.data.fecha;
 		this.xtomador = response.data.xtomador;
@@ -213,12 +246,17 @@ export class PdfGenerationService {
 		this.mgastos = response.data.mgastos;
 		this.mtotal = response.data.mtotal;
       });
+
+
     }
 
 
 	async certifiquedPDF(){
-		const data = await this.certificateData()
-		  var dd = {
+
+
+		  const data = await this.certificateData()
+
+		  var pdfDefinition = {
 			  content: [{
 				  text: 'Cuadro - Recibo de Póliza'
 			  }, {
@@ -227,7 +265,7 @@ export class PdfGenerationService {
 					  widths: [345, 150],
 					  body: [
 						  ['Tomador \n\n ' +`${this.xtomador }`, 'Cédula de Identidad / R.I.F.\n\n ' +`${this.xcedula_tomador }` ],
-						  ['Asegurado \n\n ' +`${this.xasegurado }`, 'Cédula de Identidad / R.I.F. \n\n ' +`${this.xcedula_asegurado }`]
+						  ['Asegurado \n\n ' +`${this.xnombre }`, 'Cédula de Identidad / R.I.F. \n\n ' +`${this.cci_rif }`]
 					  ]
 				  }
 			  }, {
@@ -446,6 +484,11 @@ export class PdfGenerationService {
 				  }
 			  }, ]
 		  }
+
+		  const mamefile = `${ ' Poliza #' + this.cpoliza}.pdf`
+		  const PdfKit = pdfMake.createPdf(pdfDefinition);
+		  PdfKit.open();
+		  //PdfKit.download(mamefile);
 		}
 
 }
