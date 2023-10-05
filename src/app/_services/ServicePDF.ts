@@ -15,7 +15,8 @@ import { Buffer } from 'buffer';
 
 export class PdfGenerationService {
 
-	//beneficiario
+	//poliza
+
 	cpoliza: number | undefined;
 	fanopol: string | undefined ;
 	cci_rif: string | undefined ;
@@ -116,6 +117,13 @@ export class PdfGenerationService {
 	mtotal_prima: number | undefined ;
 	mgastos: number | undefined ;
 	mtotal: number| undefined ;
+	femision_rec: string | undefined;
+	fdesde_poliza: string | undefined;
+	fhasta_poliza: string | undefined;
+	xlogo: any;
+
+	beneficiarios : any = [] 
+	coberturas : any = [] 
 
   constructor(
     private router: Router,
@@ -123,372 +131,542 @@ export class PdfGenerationService {
   ) 
   {
 
-	this.certifiquedPDF()
+	this.certificateData()
+
+	setTimeout(x => {
+        this.certifiquedPDF() ;
+
+      },4000)
+
+	
   }
 
     async certificateData(){
 
       this.http.get(environment.apiUrl + '/api/v1/certificate/search').subscribe((response: any) => {
-        console.log(response)
+     
  
+		//poliza 
+		
+		for(let i = 0; i < response.data.poliza.length; i++){
+
+			this.cpoliza = response.data.poliza[0][0].cpoliza;
+			this.canal_venta = response.data.poliza[0][0].canal_venta;
+			this.fanopol = response.data.poliza[0][0].fanopol;
+
+			//fecha de poliza 
+			let dateFormatPoliza = new Date(response.data.poliza[0][0].femision_pol);
+			let fechaISPoliza = dateFormatPoliza.toISOString().substring(0, 10);
+			this.fecha = fechaISPoliza;
+
+			let fdesdeP = new Date(response.data.poliza[0][0].fdesde_pol);
+			let ISOFdesdeP = fdesdeP.toISOString().substring(0, 10);
+			this.fdesde_poliza = ISOFdesdeP;
+
+			let fhastaP = new Date(response.data.poliza[0][0].fhasta_pol);
+			let ISOFhastaP = fhastaP.toISOString().substring(0, 10);
+			this.fhasta_poliza = ISOFhastaP;
+
+			//fechas de recibo
+			let femisionR = new Date(response.data.poliza[0][0].femision_rec);
+			let ISOFrecibo = femisionR.toISOString().substring(0, 10);
+			this.femision_rec = ISOFrecibo;
+
+			let fdesdeR = new Date(response.data.poliza[0][0].fdesde_rec);
+			let ISOFdesdeR = fdesdeR.toISOString().substring(0, 10);
+			this.fdesde_recibo = ISOFdesdeR;
+
+			let fhastaR = new Date(response.data.poliza[0][0].fhasta_rec);
+			let ISOFhastaR = fhastaR.toISOString().substring(0, 10);
+			this.fhasta_recibo = ISOFhastaR;
+
+			this.xreferencia = response.data.poliza[0][0].xreferencia;
+			this.fcobro = response.data.poliza[0][0].fcobro;
+			this.fmespol = response.data.poliza[0][0].fmespol;
+			this.mgastos = response.data.poliza[0][0].mgastos;
+			this.mtotal = response.data.poliza[0][0].mtotal;
+			this.mtotal_prima = response.data.poliza[0][0].mtotal_prima;
+
+			this.xparticipacion = response.data.poliza[0][0].xparticipacion;
+			this.xfrecuencia = response.data.poliza[0][0].xfrecuencia;
+			
+			this.xasegurado = response.data.poliza[0][0].xasegurado;
+			this.xcedula_asegurado = response.data.poliza[0][0].xcedula_asegurado;
+			this.xcedula_ben = response.data.poliza[0][0].xcedula_ben;
+			this.xcedula_tomador = response.data.poliza[0][0].xcedula_tomador;
+			this.xcertificado = response.data.poliza[0][0].xcertificado;
+			this.xciudad_asegurado = response.data.poliza[0][0].xciudad_asegurado;
+			this.xciudad_tomador = response.data.poliza[0][0].xciudad_tomador;
+			this.xestado_asegurado = response.data.poliza[0][0].xestado_asegurado;
+			this.xestado_tomador = response.data.poliza[0][0].xestado_tomador;
+			this.xintermediario = response.data.poliza[0][0].xintermediario;
+			this.xmoneda = response.data.poliza[0][0].xmoneda;
+			this.xnombre_ben = response.data.poliza[0][0].xnombre_ben;
+			this.xrecibo = response.data.poliza[0][0].xrecibo;
+			this.xsucursal = response.data.poliza[0][0].xsucursal;
+			this.xtelefono_asegurado = response.data.poliza[0][0].xtelefono_asegurado;
+			this.xtelefono_tomador = response.data.poliza[0][0].xtelefono_tomador;
+			this.xtipo_mov = response.data.poliza[0][0].xtipo_mov;
+			this.xtomador = response.data.poliza[0][0].xtomador;
+			this.xzona_postal_asegurado = response.data.poliza[0][0].xzona_postal_asegurado;
+			this.xzona_postal_tomador = response.data.poliza[0][0].xzona_postal_tomador;
+
+		}
+
 		//beneficiario
 
-		for(let i = 0; i < response.data.beneficiario.length; i++){
+		this.beneficiarios = [];
+		for(let i = 0; i <response.data.beneficiario.length; i++){
 
-			console.log(response.data.beneficiario.cpoliza)
+			let fnacimiento = new Date(response.data.beneficiario[0][0].fnacimiento);
+			let ISOnacimiento = fnacimiento.toISOString().substring(0, 10);
+	
+			this.beneficiarios.push({
 
-			this.cpoliza = response.data.beneficiario[0].cpoliza;
-			this.fanopol = response.data.beneficiario[0].fanopol;
-			this.cci_rif = response.data.beneficiario[0].cci_rif;
-			this.finclusion = response.data.beneficiario[0].finclusion;
-			this.fmespol = response.data.beneficiario[0].fmespol;
-			this.fnacimiento = response.data.beneficiario[0].fnacimiento;
-			this.xcedula = response.data.beneficiario[0].xcedula;
-			this.xnombre = response.data.beneficiario[0].xnombre;
-			this.xparentesco = response.data.beneficiario[0].xparentesco;
-			this.xsexo = response.data.beneficiario[0].xsexo;
+			fnacimiento: ISOnacimiento, 
+			xcedula: response.data.beneficiario[0][0].xcedula,
+			xnombre: response.data.beneficiario[0][0].xnombre , 
+			xparentesco: response.data.beneficiario[0][0].xparentesco,
+			xsexo: response.data.beneficiario[0][0].xsexo,
+			});
 		}
 
-		console.log(
-			this.cpoliza,
-			this.fanopol,
-			this.cci_rif
-		)
 
 
-		this.xcertificado = response.data.xcertificado;
-		this.fecha = response.data.fecha;
-		this.xtomador = response.data.xtomador;
-		this.xcedula_tomador = response.data.xcedula_tomador;
-		this.xdireccion_tomador = response.data.xdireccion_tomador;
-		this.xestado_tomador = response.data.xestado_tomador;
-		this.xciudad_tomador = response.data.xciudad_tomador;
-		this.xzona_postal_tomador = response.data.xzona_postal_tomador;
-		this.xtelefono_tomador = response.data.xtelefono_tomador;
-		this.xasegurado = response.data.xasegurado;
-		this.xcedula_asegurado = response.data.xcedula_asegurado;
-		this.xdireccion_asegurado = response.data.xdireccion_asegurado;
-		this.xestado_asegurado = response.data.xestado_asegurado;
-		this.xciudad_asegurado = response.data.xciudad_asegurado;
-		this.xzona_postal_asegurado = response.data.xzona_postal_asegurado;
-		this.xtelefono_asegurado = response.data.xtelefono_asegurado;
-		this.ffecha_suscripcion = response.data.ffecha_suscripcion;
-		this.fdesde = response.data.fdesde;
-		this.fhasta = response.data.fhasta;
-		this.xmoneda = response.data.xmoneda;
-		this.xsucursal = response.data.xsucursal;
-		this.canal_venta = response.data.canal_venta;
-		this.xfrecuencia = response.data.xfrecuencia;
-		this.xintermediario = response.data.xintermediario;
-		this.xparticipacion = response.data.xparticipacion;
-		this.xplan = response.data.xplan;
-		this.xasegurado1 = response.data.xasegurado1;
-		this.xparentesco1 = response.data.xparentesco1;
-		this.xcedula1 = response.data.this.xcedula1;
-		this.xsexo1 = response.data.xsexo1;
-		this.ffecha_nac1 = response.data.ffecha_nac1;
-		this.ffecha_inc1 = response.data.ffecha_inc1;
-		this.xasegurado2 = response.data.xasegurado2;
-		this.xparentesco2 = response.data.xparentesco2;
-		this.xcedula2 = response.data.this.xcedula2;
-		this.xsexo2 = response.data.xsexo2;
-		this.ffecha_nac2 = response.data.ffecha_nac2;
-		this.ffecha_inc2 = response.data.ffecha_inc2;
-		this.xasegurado3 = response.data.xasegurado3;
-		this.xparentesco3 = response.data.xparentesco3;
-		this.xcedula3 = response.data.this.xcedula3;
-		this.xsexo3 = response.data.xsexo3;
-		this.ffecha_nac3 = response.data.ffecha_nac3;
-		this.ffecha_inc3 = response.data.ffecha_inc3;
-		this.xasegurado4 = response.data.xasegurado4;
-		this.xparentesco4 = response.data.xparentesco4;
-		this.xcedula4 = response.data.this.xcedula4;
-		this.xsexo4 = response.data.xsexo4;
-		this.ffecha_nac4 = response.data.ffecha_nac4;
-		this.ffecha_inc4 = response.data.ffecha_inc4;
-		this.xasegurado5 = response.data.xasegurado5;
-		this.xparentesco5 = response.data.xparentesco5;
-		this.xcedula5 = response.data.this.xcedula5;
-		this.xsexo5 = response.data.xsexo5;
-		this.ffecha_nac5 = response.data.ffecha_nac5;
-		this.ffecha_inc5 = response.data.ffecha_inc5;
-		this.xcobertura1 = response.data.xcobertura1;
-		this.msuma1 = response.data.msuma1;
-		this.mprima1 = response.data.mprima1;
-		this.xcobertura2 = response.data.xcobertura2;
-		this.msuma2 = response.data.msuma2;
-		this.mprima2 = response.data.mprima2;
-		this.xcobertura3 = response.data.xcobertura3;
-		this.msuma3 = response.data.msuma3;
-		this.mprima3 = response.data.mprima3;
-		this.xcobertura4 = response.data.xcobertura4;
-		this.msuma4 = response.data.msuma4;
-		this.mprima4 = response.data.mprima4;
-		this.xcobertura5 = response.data.xcobertura5;
-		this.msuma5 = response.data.msuma5;
-		this.mprima5 = response.data.mprima5;
-		this.xcobertura6 = response.data.xcobertura6;
-		this.msuma6 = response.data.msuma6;
-		this.mprima6 = response.data.mprima6;
-		this.xcedula_ben = response.data.xcedula_ben;
-		this.xnombre_ben = response.data.xnombre_ben;
-		this.ffecha_nac_ben = response.data.ffecha_nac_ben;
-		this.xparentesco_ben = response.data.xparentesco_ben;
-		this.xparticipacion_ben = response.data.xparticipacion_ben;
-		this.xrecibo = response.data.xrecibo;
-		this.ffecha_emision = response.data.ffecha_emision;
-		this.fdesde_recibo = response.data.fdesde_recibo;
-		this.fhasta_recibo = response.data.fhasta_recibo;
-		this.xtipo_mov = response.data.xtipo_mov;
-		this.fcobro = response.data.fcobro;
-		this.xreferencia = response.data.xreferencia;
-		this.mtotal_prima = response.data.mtotal_prima;
-		this.mgastos = response.data.mgastos;
-		this.mtotal = response.data.mtotal;
+		//coberturas
+
+		this.coberturas = []
+		for(let i = 0; i < response.data.cobertura.length; i++){
+
+			this.coberturas.push({
+				cmoneda: response.data.cobertura[0][0].cmoneda, 
+				mprima: response.data.cobertura[0][0].mprima,
+				mprimaext: response.data.cobertura[0][0].mprimaext ,
+				msumaaseg: response.data.cobertura[0][0].msumaaseg,
+				xdescripcion_l:response.data.cobertura[0][0].xdescripcion_l,
+			});
+		}
+
+
       });
+	  
+	  this.buildBeneficiariosBody()
 
-
+	  this.buildCoberturasBody()
     }
 
+	buildBeneficiariosBody() {
+		let body = [];
 
-	async certifiquedPDF(){
+		if (this.beneficiarios.length > 0){
 
-
-		  const data = await this.certificateData()
-
-		  var pdfDefinition = {
-			  content: [{
-				  text: 'Cuadro - Recibo de Póliza'
-			  }, {
-				  style: 'tableExample',
-				  table: {
-					  widths: [345, 150],
-					  body: [
-						  ['Tomador \n\n ' +`${this.xtomador }`, 'Cédula de Identidad / R.I.F.\n\n ' +`${this.xcedula_tomador }` ],
-						  ['Asegurado \n\n ' +`${this.xnombre }`, 'Cédula de Identidad / R.I.F. \n\n ' +`${this.cci_rif }`]
-					  ]
-				  }
-			  }, {
-				  text: 'direccion del tomador  \n\n ' +`${this.xdireccion_tomador }`
-			  }, {
-				  style: 'tableExample',
-				  table: {
-					  widths: [150, 150, 70, '*', 35],
-					  body: [
-						  ['Estado \n\n ' +`${this.xestado_tomador }`, 'Ciudad \n\n ' +`${this.xciudad_tomador }`, 'Zona Postal \n\n ' +`${this.xzona_postal_tomador }`, 'Teléfonos \n\n ' +`${this.xtelefono_tomador }`, 'Fax \n\n '],
-	
-					  ]
-				  }
-			  }, {
-				  text: 'direccion del Asegurado  \n\n '+ `${this.xdireccion_asegurado }`
-			  }, {
-				  style: 'tableExample',
-				  table: {
-					  widths: [150, 150, 70, '*', 30],
-					  body: [
-						['Estado \n\n ' +`${this.xestado_asegurado }`, 'Ciudad \n\n ' +`${this.xciudad_asegurado }`, 'Zona Postal \n\n ' +`${this.xzona_postal_asegurado }`, 'Teléfonos \n\n ' +`${this.xtelefono_asegurado }`, 'Fax \n\n '],
-	
-					  ]
-				  }
-			  }, {
-				  text: 'DATOS DE LA PÓLIZA'
-			  }, {
-				  style: 'tableExample',
-				  table: {
-					  widths: [250, 90, 150],
-					  body: [
-						  ['Fecha de Suscripción' +`${this.ffecha_suscripcion }`, 'Vigencia' +`${this.xmoneda }`, 'Moneda \n\n ' +`${this.xmoneda }` ],
-						  [{
-							  text: 'Sucursal / Oficina \n\n ' +`${this.xsucursal }`,
-							  italics: true,
-							  
-						  }, {
-							  text: 'Canal de Venta \n\n ' +`${this.canal_venta }`,
-							  italics: true,
-							  
-						  }, {
-							  text: 'Frecuencia de Pago \n\n ' +`${this.xfrecuencia }`,
-							  italics: true,
-							  
-						  }, ],
-						  [{
-							  text: 'Intermediario(s):\n\n ' +`${this.xintermediario }`,
-							  italics: true,
-							  
-						  }, {
-							  text: '',
-							  italics: true,
-							  
-						  }, {
-							  text: 'Participación\n\n ' +`${this.xparticipacion }`,
-							  italics: true,
-							  
-						  }, ]
-					  ]
-				  }
-			  }, {
-				  text: 'ASEGURADOS / DEPENDIENTES'
-			  }, {
-				  style: 'tableExample',
-				  table: {
-					  widths: [145, 90, 145, 100],
-					  body: [
-						  ['Apellido\n\n ' +`${this.xasegurado1 }`, '', 'Nombre\n\n ' +`${this.xasegurado1 }`, ''],
-						  [{
-							  text: 'Cédula Identidad \n\n ' +`${this.xcedula1}`,
-							  italics: true,
-							  
-						  }, {
-							  text: '',
-							  italics: true,
-							  
-						  }, {
-							  text: 'Fecha Nacimiento \n\n ' +`${this.ffecha_nac1 }`,
-							  italics: true,
-							  
-						  }, {
-							  text: '',
-							  italics: true,
-							  
-						  }, ],
-						  [{
-							  text: 'Parentesco \n\n ' +`${this.xparentesco1 }`,
-							  italics: true,
-							  
-						  }, {
-							  text: '',
-							  italics: true,
-							  
-						  }, {
-							  text: 'Sexo \n\n ' +`${this.xsexo1 }`,
-							  italics: true,
-							  
-						  }, {
-							  text: '',
-							  italics: true,
-							  
-						  }, ],
-	
-					  ]
-				  }
-			  }, {
-				  text: 'COBERTURAS'
-			  }, {
-				  style: 'tableExample',
-				  table: {
-					  widths: [150, 120, 150, 60],
-					  body: [
-						  [
-						 'COBERTURAS \n\n ' +`${this.xcobertura1 }` + '\n\n'  +`${this.xcobertura2 }`+ '\n\n'  +`${this.xcobertura3 }`+ '\n\n'  +`${this.xcobertura4 }`+ '\n\n'  +`${this.xcobertura5  }`+ '\n\n'  +`${this.xcobertura6  }`,
-						 'SUMA ASEGURADA\n\n ' +`${this.msuma1 }` + '\n\n'  +`${this.msuma2 }`+ '\n\n'  +`${this.msuma3 }`+ '\n\n'  +`${this.msuma4 }`+ '\n\n'  +`${this.msuma5  }`+ '\n\n'  +`${this.msuma6  }`, 
-						 'DEDUCIBLE', 
-						 'PRIMA\n\n ' +`${this.mprima1 }` + '\n\n'  +`${this.mprima2 }`+ '\n\n'  +`${this.mprima3 }`+ '\n\n'  +`${this.mprima4 }`+ '\n\n'  +`${this.mprima5  }`+ '\n\n'  +`${this.mprima6  }`,
-						],
-						  [{
-								  text: ' ',
-								  italics: true,
-								  
-							  }, {
-								  text: '',
-								  italics: true,
-								  
-							  },
-							  [{
-								  table: {
-									  body: [
-										  [
-											'%',
-											'U.T',
-											'Monto Mínimo'
-										],
-									  ]
-								  },
-							  }], {
-								  text: '',
-								  italics: true,
-								  
-							  },
-						  ],
-					  ]
-				  }
-			  }, {
-				  text: 'DATOS DEL RECIBO'
-			  }, {
-				  style: 'tableExample',
-				  table: {
-					  widths: [70, 120, 150, 140],
-					  body: [
-						  ['Recibo Nro.\n\n ' +`${this.xrecibo }`,
-						 'Fecha de Emisión\n\n ' +`${this.fdesde_recibo }`, 
-						 'Vigencia\n\n ' +`${this.fhasta_recibo }`, 
-						 'Tipo de Movimiento\n\n ' +`${this.xtipo_mov }`],
-					  ]
-				  }
-			  }, {
-				  table: {
-					  widths: [90, 70, 80, 80, 150],
-					  body: [
-						  ['Fecha de Cobro', 'Referencia', 'Total Prima', 'Gastos', 'Total a Cobrar'],
-					  ]
-				  }
-			  }, {
-				  style: 'tableExample',
-				  table: {
-					  widths: ['*'],
-					  body: [
-						  ['OBSERVACIONES:  \n\n '],
-					  ]
-				  }
-			  }, {
-				  style: 'tableExample',
-				  table: {
-					  widths: ['*'],
-					  body: [
-						  ['El Asegurador entregará al Tomador este Cuadro Póliza Recibo, junto con las condiciones generales, las condiciones particulares, los anexos, si los hubiere, copia de lasolicitud de seguro y demás documentos que formen parte del contrato. En las renovaciones la obligación se mantendrá si se modifican las condiciones originalmente contratadas. El Tomador, Asegurado o Beneficiario de la Póliza, que sienta vulneración de sus derechos, y requieran presentar cualquier denuncia, queja, reclamo o solicitud de asesoría; surgida con ocasión de este contrato de seguros; puede acudir a la Oficina de la Defensoría del Asegurado de la Superintendencia de la Actividad Aseguradora, o comunicarlo a través de la página web: http://www.sudeaseg.gob.ve/.'],
-					  ]
-				  }
-			  }, {
-				  style: 'tableExample',
-				  table: {
-					  widths: [240, 255],
-					  body: [
-						  ['Por el Tomador', 'Por La Mundial C.A. Venezolana de Seguros de Crédito'],
-						  [{
-							  text: 'Nombre y Apellido/Denominación Social:',
-							  italics: true,
-							  
-						  }, {
-							  text: 'Representante',
-							  italics: true,
-							  
-						  }, ],
-						  [{
-							  text: 'C.I./RIF:',
-							  italics: true,
-							  
-						  }, {
-							  text: 'Nombre y Apellido:',
-							  italics: true,
-							  
-						  }, ],
-						  [{
-							  text: 'Firma:',
-							  italics: true,
-							  
-						  }, {
-							  text: 'Cargo \n\n Firma',
-							  italics: true,
-							  
-						  }, ],
-					  ]
-				  }
-			  }, ]
-		  }
-
-		  const mamefile = `${ ' Poliza #' + this.cpoliza}.pdf`
-		  const PdfKit = pdfMake.createPdf(pdfDefinition);
-		  PdfKit.open();
-		  //PdfKit.download(mamefile);
+			this.beneficiarios.forEach(function(row: 
+				{
+					fnacimiento: any; 
+					xcedula: any; 
+					xnombre: any; 
+					xparentesco: any; 
+					xsexo: any; 
+				}
+				) {
+			let dataRow = [];
+			dataRow.push({fontSize: 10,text: 'Fecha Nacimiento \n\n' + row.fnacimiento, alignment: 'center', });
+			dataRow.push({fontSize: 10,text: 'Cédula Identidad\n\n' + row.xcedula, alignment: 'center',})
+			dataRow.push({fontSize: 10,text: 'Nombre\n\n' + row.xnombre, alignment: 'center',})
+			dataRow.push({fontSize: 10,text: 'Parentesco\n\n' + row.xparentesco, alignment: 'center',})
+			dataRow.push({fontSize: 10,text: 'Sexo\n\n' + row.xsexo, alignment: 'center',})
+			body.push(dataRow);
+			})
+		} else {
+			let dataRow = [];
+			dataRow.push(
+			{fontSize: 10,text: 'Fecha Nacimiento \n\n',},
+			{fontSize: 10,text: 'Cédula Identidad\n\n',}, 
+			{fontSize: 10,text: 'Nombre\n\n',},
+			{fontSize: 10,text: 'Parentesco\n\n',},
+			{fontSize: 10,text: 'Sexo\n\n',}
+			);
+			body.push(dataRow);
 		}
+		return body;
+	}
+
+	buildCoberturasBody() {
+		let body = [];
+		if (this.coberturas.length > 0){
+		  this.coberturas.forEach(function(row: 
+			{ 
+				cmoneda: any;
+				mprima: any; 
+				mprimaext: any; 
+				msumaaseg: any; 
+				xdescripcion_l: any; 
+
+			}) {
+			let dataRow = [];
+			dataRow.push({fontSize: 10,text: 'COBERTURAS \n\n' + row.xdescripcion_l, alignment: 'center', });
+			dataRow.push({fontSize: 10,text: 'SUMA ASEGURADA \n\n' + row.cmoneda + ' '  + row.msumaaseg, alignment: 'center',})
+			dataRow.push(
+			{fontSize: 10,text: 'DEDUCIBLE \n\n' })
+			dataRow.push({fontSize: 10,text: 'PRIMA\n\n' +  row.cmoneda + ' ' + row.mprima, alignment: 'center',})
+
+			body.push(dataRow);
+		  })
+		} else {
+		  let dataRow = [];
+		  dataRow.push(
+			{fontSize: 10,text: ' ', }, 
+			{fontSize: 10,text: ' ',}, 
+			{fontSize: 10,text: ' ', }, 
+			{fontSize: 10,text: ' ',}, 
+
+			);
+		  body.push(dataRow);
+		}
+		return body;
+	}
+
+
+	async certifiquedPDF() {
+		try {
+
+		  const imgURL = 'https://i.ibb.co/SJbTZQt/logo-color.png'; 
+	
+		  fetch(imgURL)
+			.then(response => response.blob())
+			.then(blob => {
+			  const reader = new FileReader();
+			  reader.onload = () => {
+				const dataURL = reader.result;
+				this.xlogo = dataURL;
+	
+				var pdfDefinition = {
+					content: [
+	  
+					  {
+						  style: 'tableExample',
+						  table: {
+							  widths: [100 ,250 , 150],
+							  body: [
+								  [
+									  {									  
+									  style: 'tableExample',
+									  table: {
+										  widths: ['*'],
+										  body: [
+											  [{image: this.xlogo, width: 140, height: 40, border:[false, false, false, false] , },],
+											  [{fontSize: 10,text: 'RIF.: J-00084644-8',alignment: 'center',border:[false, false, false, false]}],
+
+									  ]
+									  },
+									},
+	  
+									  {fontSize: 12,text: 'Cuadro - Recibo de Póliza',absolutePosition: { x:205, y:60 }, bold: true,  border:[false, false, false, false]},
+	  
+									  {				  
+										  style: 'tableExample',
+										  table: {
+											  widths: ['*'],
+											  body: [
+												  [{fontSize: 10,text: 'Póliza     ' +`${this.cpoliza }`,alignment: 'center',bold: true}],
+												  [{fontSize: 10,text: 'Certificado     ' +`${this.xcertificado }`,alignment: 'center',bold: true}],
+												  [{fontSize: 10,text: 'Fecha  ' +`${this.fecha }`,alignment: 'center',bold: true}],
+										  ]
+										  },
+										 
+									  }
+								  ],
+								],
+
+						  	},
+							layout: 'noBorders'
+						  
+					   },
+	  
+					  {
+						style: 'tableExample',
+						fillColor: '#eeeeee',
+						table: {
+							widths: ['*'],
+							body: [
+								[{fontSize: 10,text: 'DATOS DEL TOMADOR Y ASEGURADO',alignment: 'center',bold: true,}
+							],
+						  ]
+						}
+						
+					 }, {
+						style: 'tableExample',
+						fontSize: 10,
+						table: {
+							widths: [345, 150],
+							body: [
+								['Tomador \n\n ' +`${this.xtomador }`, 'Cédula de Identidad / R.I.F.\n\n ' +`${this.xcedula_tomador }` ],
+								['Asegurado \n\n ' +`${this.xasegurado }`, 'Cédula de Identidad / R.I.F. \n\n ' +`${this.xcedula_asegurado }`]
+							]
+						}
+					}, {
+	  
+						style: 'tableExample',
+						table: {
+							widths: ['*'],
+							body: [
+								[{fontSize: 10,text: 'Direccion del tomador  \n\n ' +`${this.xdireccion_tomador }`,}
+							],
+						  ]
+						}
+					}, {
+						style: 'tableExample',
+						fontSize: 10,
+						table: {
+							widths: [150, 150, 70, '*', 35],
+							body: [
+								['Estado \n\n ' +`${this.xestado_tomador }`, 'Ciudad \n\n ' +`${this.xciudad_tomador }`, 'Zona Postal \n\n ' +`${this.xzona_postal_tomador }`, 'Teléfonos \n\n ' +`${this.xtelefono_tomador }`, 'Fax \n\n '],
+		  
+							],
+							
+						},
+						
+					}, {
+	  
+					  style: 'tableExample',
+					  table: {
+						  widths: ['*'],
+						  body: [
+							  [{fontSize: 10,text: 'Direccion del Asegurado  \n\n '+ `${this.xdireccion_asegurado }`,}
+						  ],
+						]
+					  }
+						
+						
+					}, {
+						style: 'tableExample',
+						fontSize: 10,
+						table: {
+							widths: [150, 150, 70, '*', 30],
+							body: [
+							  ['Estado \n\n ' +`${this.xestado_asegurado }`, 'Ciudad \n\n ' +`${this.xciudad_asegurado }`, 'Zona Postal \n\n ' +`${this.xzona_postal_asegurado }`, 'Teléfonos \n\n ' +`${this.xtelefono_asegurado }`, 'Fax \n\n '],
+		  
+							]
+						}
+					}, {
+						style: 'tableExample',
+						fillColor: '#eeeeee',
+						table: {
+							widths: ['*'],
+							body: [
+								[{fontSize: 10,text: 'DATOS DE LA PÓLIZA',alignment: 'center',bold: true,}
+							],
+						  ]
+						}
+					}, {
+						style: 'tableExample',
+						fontSize: 10,
+						table: {
+							widths: [170, 170, 147],
+							body: [
+								['Fecha de Suscripción \n\n' +`${this.fecha }`,
+									'Vigencia\n\n ' +'Desde '+`${this.fdesde_poliza }`+'\n\n hasta '+`${this.fhasta_poliza }`, 
+	   
+									 'Moneda \n\n ' +`${this.xmoneda }` ],
+								[{
+									fontSize: 10,text: 'Sucursal / Oficina \n\n ' +`${this.xsucursal }`,
+									
+									
+								}, {
+									fontSize: 10,text: 'Canal de Venta \n\n ' +`${this.canal_venta }`,
+									
+									
+								}, {
+									fontSize: 10,text: 'Frecuencia de Pago \n\n ' +`${this.xfrecuencia }`,
+									
+									
+								}, ],
+								[{
+									fontSize: 10,text: 'Intermediario(s):\n\n ' +`${this.xintermediario }`,
+									
+									
+								}, {
+									fontSize: 10,text: '',
+									
+									
+								}, {
+									fontSize: 10,text: 'Participación\n\n ' +`${this.xparticipacion }`,
+									
+									
+								}, ]
+							]
+						}
+					}, {
+	  
+						style: 'tableExample',
+						fillColor: '#eeeeee',
+						table: {
+							widths: ['*'],
+							body: [
+								[{fontSize: 10,text: 'ASEGURADOS / DEPENDIENTES',alignment: 'center',bold: true,}
+							],
+						  ]
+						}
+						
+					}, {
+						style: 'tableExample',
+						fontSize: 10,
+						table: {
+							widths: [100, 90, 140, 70 , '*'],
+							body: this.buildBeneficiariosBody()
+						}
+					}, {
+	  
+						style: 'tableExample',
+						fillColor: '#eeeeee',
+						table: {
+							widths: ['*'],
+							body: [
+								[{fontSize: 10,text: 'COBERTURAS',alignment: 'center',bold: true,}
+							],
+						  ]
+						}
+						
+					}, {
+						style: 'tableExample',
+						fontSize: 10,
+						table: {
+							widths: [150, 120, 130, 80],
+							body: this.buildCoberturasBody()
+						}
+					}, {
+	  
+						style: 'tableExample',
+						fillColor: '#eeeeee',
+						table: {
+							widths: ['*'],
+							body: [
+								[{fontSize: 10,text: 'DATOS DEL RECIBO',alignment: 'center',bold: true,}
+							],
+						  ]
+						}
+					}, {
+						style: 'tableExample',
+						fontSize: 10,
+						table: {
+							widths: [70, 100, 170, 140],
+							body: [
+								[
+							   'Recibo Nro.\n\n ' +`${this.xrecibo }`,
+							   'Fecha de Emisión\n\n ' +`${this.femision_rec }`, 
+							   'Vigencia\n\n ' +'Desde '+`${this.fdesde_recibo }`+'\n\n hasta '+`${this.fhasta_recibo }`, 
+							   'Tipo de Movimiento\n\n ' +`${this.xtipo_mov }`],
+							]
+						}
+					}, {
+						fontSize: 10,
+						table: {
+							widths: [90, 70, 80, 80, 150],
+							body: [
+								[
+								  'Fecha de Cobro.\n\n ' +`${this.fcobro }`,
+								  'Referencia.\n\n ' +`${this.xreferencia }`,
+								  'Total Prima.\n\n ' +`${this.mtotal_prima }`,
+								  'Gastos.\n\n ' +`${this.mgastos }`, 
+								  'Total a Cobrar.\n\n ' +`${this.mtotal }`
+							  ],
+							]
+						}
+					},
+					{
+						style: 'tableExample',
+						fontSize: 10,
+						bold: true,
+						table: {
+							widths: ['*'],
+							body: [
+								[{text:'  \n\n ', border:[false, false, false, false]}],
+							]
+						}
+					},  {
+						style: 'tableExample',
+						fontSize: 10,
+						bold: true,
+						table: {
+							widths: ['*'],
+							body: [
+								['OBSERVACIONES:  \n\n '],
+							]
+						}
+					}, {
+						style: 'tableExample',
+						fontSize: 10,
+						table: {
+							widths: ['*'],
+							body: [
+								['El Asegurador entregará al Tomador este Cuadro Póliza Recibo, junto con las condiciones generales, las condiciones particulares, los anexos, si los hubiere, copia de lasolicitud de seguro y demás documentos que formen parte del contrato. En las renovaciones la obligación se mantendrá si se modifican las condiciones originalmente contratadas. El Tomador, Asegurado o Beneficiario de la Póliza, que sienta vulneración de sus derechos, y requieran presentar cualquier denuncia, queja, reclamo o solicitud de asesoría; surgida con ocasión de este contrato de seguros; puede acudir a la Oficina de la Defensoría del Asegurado de la Superintendencia de la Actividad Aseguradora, o comunicarlo a través de la página web: http://www.sudeaseg.gob.ve/.'],
+							]
+						}
+					}, {
+						style: 'tableExample',
+						fontSize: 10,
+						table: {
+							widths: [240, 255],
+							body: [
+								['Por el Tomador',
+								 'Por La Mundial C.A. Venezolana de Seguros de Crédito'],
+								[{
+									fontSize: 10,text: 'Nombre y Apellido/Denominación Social:\n\n',
+									
+									
+								}, {
+									fontSize: 10,text: 'Representante\n\n',
+									
+									
+								}, ],
+								[{
+									fontSize: 10,text: 'C.I./RIF:',
+									
+									
+								}, {
+									fontSize: 10,text: 'Nombre y Apellido:',
+									
+									
+								}, ],
+								[{
+									fontSize: 10,text: 'Firma:',
+									
+									
+								}, {
+									fontSize: 10,text: 'Cargo \n\n Firma',
+									
+									
+								}, ],
+							]
+						}
+					}, ],
+					styles: {
+		  
+					  header: {
+						  fontSize: 10,
+						  bold: true,
+						  background : 'cornflowerblue',
+					  },
+					  subheader: {
+						  fontSize: 15,
+						  bold: true,
+						  background : 'cornflowerblue',
+					  },
+	  
+				  }
+				}
+	
+
+				const mamefile = `${ ' Poliza #' + this.cpoliza}.pdf`
+				const PdfKit = pdfMake.createPdf(pdfDefinition);
+				PdfKit.open();
+				//PdfKit.download(mamefile);
+			  };
+			  reader.readAsDataURL(blob);
+			});
+		} catch (err) {
+		  console.error(err);
+		}
+	}
 
 }

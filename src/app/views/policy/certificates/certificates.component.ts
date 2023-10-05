@@ -43,7 +43,7 @@ export class CertificatesComponent {
       });
     }
 
-    this.PdfService.certificateData()
+     this.PdfService.certificateData()
 
   }
 }
