@@ -26,21 +26,6 @@ const routes: Routes = [
           import('./views/dashboard/dashboard.module').then((m) => m.DashboardModule)
       },
       {
-        path: 'base',
-        loadChildren: () =>
-          import('./views/base/base.module').then((m) => m.BaseModule)
-      },
-      {
-        path: 'buttons',
-        loadChildren: () =>
-          import('./views/buttons/buttons.module').then((m) => m.ButtonsModule)
-      },
-      {
-        path: 'forms',
-        loadChildren: () =>
-          import('./views/forms/forms.module').then((m) => m.CoreUIFormsModule)
-      },
-      {
         path: 'charts',
         loadChildren: () =>
           import('./views/charts/charts.module').then((m) => m.ChartsModule)
@@ -50,11 +35,7 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/icons/icons.module').then((m) => m.IconsModule)
       },
-      {
-        path: 'notifications',
-        loadChildren: () =>
-          import('./views/notifications/notifications.module').then((m) => m.NotificationsModule)
-      },
+
       {
         path: 'widgets',
         loadChildren: () =>
@@ -89,6 +70,11 @@ const routes: Routes = [
         path: 'policy',
         loadChildren: () =>
           import('./views/policy/policy.module').then((m) => m.PolicyModule)
+      },
+      {
+        path: 'emissions',
+        loadChildren: () =>
+          import('./views/emissions/emissions.module').then((m) => m.EmissionsModule)
       },
     ]
   },

@@ -1,0 +1,134 @@
+<div class="card container registration-form">
+    <mat-stepper [linear]="isLinear" #stepper>
+        <mat-step [stepControl]="personsFormGroup">
+          <form [formGroup]="personsFormGroup">
+            <ng-template matStepLabel>Datos Personales</ng-template>
+            <div class="row">
+                <div class="col-3">
+                    <mat-form-field class="example-full-width">
+                        <mat-label>Tipo Doc. Identidad</mat-label>
+                        <input type="text"
+                               placeholder="Seleccione"
+                               aria-label="Seleccione"
+                               matInput
+                               [formControl]="identControl"
+                               [matAutocomplete]="ident">
+                               <mat-autocomplete #ident="matAutocomplete" (optionSelected)="onIdentSelection($event)">
+                                <mat-option *ngFor="let ident of filteredIdent | async" [value]="ident">
+                                  {{ ident }}
+                                </mat-option>
+                              </mat-autocomplete>
+                      </mat-form-field>
+                </div>
+                <div class="col-3">
+                    <mat-form-field>
+                        <mat-label>Identificación</mat-label>
+                        <input matInput placeholder="Cédula" formControlName="xrif_cliente" required>
+                    </mat-form-field>
+                </div>
+                <div class="col-3">
+                    <mat-form-field>
+                        <mat-label>Nombre</mat-label>
+                        <input matInput placeholder="Nombre" formControlName="xnombre" required>
+                    </mat-form-field>
+                </div>
+                <div class="col-3">
+                    <mat-form-field>
+                        <mat-label>Apellido</mat-label>
+                        <input matInput placeholder="Apellido" formControlName="xapellido" required>
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-3">
+                    <mat-form-field>
+                        <mat-label>Teléfono</mat-label>
+                        <input matInput placeholder="Teléfono" formControlName="xtelefono_emp" required>
+                    </mat-form-field>
+                </div>
+                <div class="col-3">
+                    <mat-form-field>
+                        <mat-label>Correo</mat-label>
+                        <input matInput placeholder="Correo" formControlName="email" required>
+                    </mat-form-field>
+                </div>
+                <div class="col-3">
+                    <mat-form-field class="example-full-width">
+                        <mat-label>Estado</mat-label>
+                        <input type="text"
+                               placeholder="Seleccione Estado"
+                               aria-label="Seleccione"
+                               matInput
+                               [formControl]="stateControl"
+                               [matAutocomplete]="state">
+                               <mat-autocomplete #state="matAutocomplete" (optionSelected)="onStateSelection($event)">
+                                <mat-option *ngFor="let state of filteredState | async" [value]="state">
+                                  {{ state }}
+                                </mat-option>
+                              </mat-autocomplete>
+                      </mat-form-field>
+                </div>
+                <div class="col-3">
+                    <mat-form-field class="example-full-width">
+                        <mat-label>Ciudad</mat-label>
+                        <input type="text"
+                               placeholder="Seleccione Ciudad"
+                               aria-label="Seleccione"
+                               matInput
+                               [formControl]="cityControl"
+                               [matAutocomplete]="city">
+                               <mat-autocomplete #city="matAutocomplete" (optionSelected)="onCitySelection($event)">
+                                <mat-option *ngFor="let city of filteredCity | async" [value]="city">
+                                  {{ city }}
+                                </mat-option>
+                              </mat-autocomplete>
+                      </mat-form-field>
+                </div>
+            </div>
+            <div>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="vehicleFormGroup" label="Datos del Vehículo">
+          <form [formGroup]="vehicleFormGroup">
+            <mat-form-field>
+              <mat-label>Address</mat-label>
+              <input matInput formControlName="secondCtrl" placeholder="Ex. 1 Main St, New York, NY"
+                     required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="planFormGroup" label="Detalles del plan">
+            <form [formGroup]="planFormGroup">
+              <mat-form-field>
+                <mat-label>Address</mat-label>
+                <input matInput formControlName="secondCtrl" placeholder="Ex. 1 Main St, New York, NY"
+                       required>
+              </mat-form-field>
+              <div>
+                <button mat-button matStepperPrevious>Back</button>
+                <button mat-button matStepperNext>Next</button>
+              </div>
+            </form>
+        </mat-step>
+        <mat-step [stepControl]="receiptFormGroup" label="Detalles del Recibo">
+            <form [formGroup]="receiptFormGroup">
+              <mat-form-field>
+                <mat-label>Address</mat-label>
+                <input matInput formControlName="secondCtrl" placeholder="Ex. 1 Main St, New York, NY"
+                       required>
+              </mat-form-field>
+              <div>
+                <button mat-button matStepperPrevious>Back</button>
+                <button mat-button matStepperNext>Next</button>
+              </div>
+            </form>
+        </mat-step>
+    </mat-stepper>
+</div>
