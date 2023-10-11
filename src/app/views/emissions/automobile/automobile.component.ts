@@ -24,6 +24,7 @@ export class AutomobileComponent {
   utilityVehicleList:  any[] = [];
   classList:  any[] = [];
   planList:  any[] = [];
+  brokerList:  any[] = [];
 
   identControl = new FormControl('');
   stateControl = new FormControl('');
@@ -37,6 +38,7 @@ export class AutomobileComponent {
   utilityVehicleControl = new FormControl('');
   classControl = new FormControl('');
   planControl = new FormControl('');
+  brokerControl = new FormControl('');
 
   filteredIdent!: Observable<string[]>;
   filteredState!: Observable<string[]>;
@@ -50,6 +52,15 @@ export class AutomobileComponent {
   filteredUtilityVehicle!: Observable<string[]>;
   filteredClass!: Observable<string[]>;
   filteredPlan!: Observable<string[]>;
+  filteredBroker!: Observable<string[]>;
+
+  isLinear = false;
+  helmet: boolean = false;
+  discount: boolean = false;
+  enableInfo: boolean = false;
+  primaBruta!: any;
+  descuento!: any;
+  sumaAsegurada!: any;
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -80,12 +91,20 @@ export class AutomobileComponent {
   });
   planFormGroup = this._formBuilder.group({
     cplan: ['', Validators.required],
+    ccorredor: ['', Validators.required],
+    pcasco: [{ value: '', disabled: true }],
+    msuma_aseg: ['', Validators.required],
+    mprima_bruta: [{ value: '', disabled: true }],
+    pdescuento: [''],
+    pmotin: ['', Validators.required],
+    pcatastrofico: ['', Validators.required],
+    mprima_casco: [{ value: '', disabled: true }],
+    mcatastrofico: ['', Validators.required],
+    mmotin: ['', Validators.required],
   });
   receiptFormGroup = this._formBuilder.group({
     secondCtrl: ['', Validators.required],
   });
-
-  isLinear = false;
 
   constructor( private _formBuilder: FormBuilder,
                private http: HttpClient,) {}
@@ -104,6 +123,7 @@ export class AutomobileComponent {
     this.getUtilityVehicle();
     this.getClass();
     this.getPlan();
+    this.getBroker();
   }
 
   private _filter(value: string): string[] {
@@ -200,7 +220,8 @@ export class AutomobileComponent {
         for (let i = 0; i < response.data.brand.length; i++) {
           this.brandList.push({
             id: response.data.brand[i].cmarca,
-            value: response.data.brand[i].xmarca
+            value: response.data.brand[i].xmarca,
+            control: response.data.brand[i].control,
           });
         }
         this.filteredBrand = this.brandControl.valueChanges.pipe(
@@ -222,21 +243,23 @@ export class AutomobileComponent {
     const selectedValue = event.option.value;
     const selectedBrand = this.brandList.find(brand => brand.value === selectedValue);
     if (selectedBrand) {
-      this.vehicleFormGroup.get('cmarca')?.setValue(selectedBrand.id);
+      this.vehicleFormGroup.get('cmarca')?.setValue(selectedBrand.control);
       this.getModel();
     }
   }
 
   getModel(){
+    let marca = this.brandList.find(element => element.control == this.vehicleFormGroup.get('cmarca')?.value) ;
     let data = {
-      cmarca: this.vehicleFormGroup.get('cmarca')?.value
+      cmarca: marca.id
     };
     this.http.post(environment.apiUrl + '/api/v1/valrep/model', data).subscribe((response: any) => {
       if (response.data.model) {
         for (let i = 0; i < response.data.model.length; i++) {
           this.modelList.push({
             id: response.data.model[i].cmodelo,
-            value: response.data.model[i].xmodelo
+            value: response.data.model[i].xmodelo,
+            control: response.data.model[i].control,
           });
         }
         this.filteredModel = this.modelControl.valueChanges.pipe(
@@ -258,15 +281,17 @@ export class AutomobileComponent {
     const selectedValue = event.option.value;
     const selectedModel = this.modelList.find(model => model.value === selectedValue);
     if (selectedModel) {
-      this.vehicleFormGroup.get('cmodelo')?.setValue(selectedModel.id);
+      this.vehicleFormGroup.get('cmodelo')?.setValue(selectedModel.control);
       this.getVersion();
     }
   }
 
   getVersion(){
+    let marca = this.brandList.find(element => element.control == this.vehicleFormGroup.get('cmarca')?.value);
+    let modelo = this.modelList.find(element => element.control == this.vehicleFormGroup.get('cmodelo')?.value);
     let data = {
-      cmarca: this.vehicleFormGroup.get('cmarca')?.value,
-      cmodelo: this.vehicleFormGroup.get('cmodelo')?.value
+      cmarca: marca.id,
+      cmodelo: modelo.id
     };
     this.http.post(environment.apiUrl + '/api/v1/valrep/version', data).subscribe((response: any) => {
       if (response.data.version) {
@@ -274,8 +299,10 @@ export class AutomobileComponent {
           this.versionList.push({
             id: response.data.version[i].cversion,
             value: response.data.version[i].xversion,
-            npasajeros: response.data.version[i].npasajero,
-            fano: response.data.version[i].cano,
+            value2: `${response.data.version[i].xversion} - Año ${response.data.version[i].fano}`,
+            npasajeros: response.data.version[i].npasajeros,
+            fano: response.data.version[i].fano,
+            control: response.data.version[i].control,
           });
         }
         this.filteredVersion = this.versionControl.valueChanges.pipe(
@@ -289,21 +316,21 @@ export class AutomobileComponent {
   private _filterVersion(value: string): string[] {
     const filterValue = value.toLowerCase();
     return this.versionList
-      .map(version => version.value)
+      .map(version => version.value2)
       .filter(version => version.toLowerCase().includes(filterValue));
   }
 
   onVersionSelection(event: any) {
     const selectedValue = event.option.value;
-    const selectedVersion = this.versionList.find(version => version.value === selectedValue);
+    const selectedVersion = this.versionList.find(version => version.value2 === selectedValue);
     if (selectedVersion) {
-      this.vehicleFormGroup.get('cversion')?.setValue(selectedVersion.id);
+      this.vehicleFormGroup.get('cversion')?.setValue(selectedVersion.control);
       this.changePassager();
     }
   }
 
   changePassager(){
-    let version = this.versionList.find(element => element.id == this.vehicleFormGroup.get('cversion')?.value) ;
+    let version = this.versionList.find(element => element.control == this.vehicleFormGroup.get('cversion')?.value) ;
     this.vehicleFormGroup.get('fano')?.setValue(version.fano);
     this.vehicleFormGroup.get('npasajeros')?.setValue(version.npasajeros);
   }
@@ -465,6 +492,7 @@ export class AutomobileComponent {
     const selectedClass = this.classList.find(classL => classL.value === selectedValue);
     if (selectedClass) {
       this.vehicleFormGroup.get('cclase')?.setValue(selectedClass.id);
+      this.getHullPrice();
     }
   }
 
@@ -499,4 +527,138 @@ export class AutomobileComponent {
       this.planFormGroup.get('cplan')?.setValue(selectedPlan.id);
     }
   }
+
+  getBroker(){
+    this.http.post(environment.apiUrl + '/api/v1/valrep/brokers', null).subscribe((response: any) => {
+      if (response.data.broker) {
+        for (let i = 0; i < response.data.broker.length; i++) {
+          this.brokerList.push({
+            id: response.data.broker[i].ccorredor,
+            value: response.data.broker[i].xdescripcion_l,
+          });
+        }
+        this.filteredBroker = this.brokerControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filterBroker(value || ''))
+        );
+      }
+    });
+  }
+
+  private _filterBroker(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.brokerList
+      .map(broker => broker.value)
+      .filter(broker => broker.toLowerCase().includes(filterValue));
+  }
+
+  onBrokerSelection(event: any) {
+    const selectedValue = event.option.value;
+    const selectedBroker = this.brokerList.find(broker => broker.value === selectedValue);
+    if (selectedBroker) {
+      this.planFormGroup.get('ccorredor')?.setValue(selectedBroker.id);
+    }
+  }
+
+  onCoverageChange(): void {
+    if(this.vehicleFormGroup.get('xcobertura')?.value == 'RCV'){
+      this.helmet = false;
+    }else{
+      this.helmet = true;
+    }
+  }
+
+  getHullPrice(){
+    let marca = this.brandList.find(element => element.control === this.vehicleFormGroup.get('cmarca')?.value);
+    let modelo = this.modelList.find(element => element.control === this.vehicleFormGroup.get('cmodelo')?.value);
+    let clase = this.classList.find(element => element.id === this.vehicleFormGroup.get('cclase')?.value);
+    let data =  {
+      xclase: clase.value,  
+      xmarca: marca.value,
+      xmodelo: modelo.value,
+      cano: this.vehicleFormGroup.get('fano')?.value,
+      xcobertura: this.vehicleFormGroup.get('xcobertura')?.value,
+      
+    };
+    this.http.post(environment.apiUrl + '/api/v1/emissions/automobil/hull-price', data).subscribe((response: any) => {
+      if(response.status){
+        this.planFormGroup.get('pcasco')?.setValue(response.data.ptasa_casco);
+        this.planFormGroup.get('pmotin')?.setValue(response.data.ptarifa);
+        for(let i = 0; i < response.data.ptarifa.length; i++){
+          this.planFormGroup.get('pcatastrofico')?.setValue(response.data.ptarifa[1].ptarifa)
+          this.planFormGroup.get('pmotin')?.setValue(response.data.ptarifa[0].ptarifa)
+        }
+      }
+    })
+  }
+
+  openDiscount(){
+    if(this.planFormGroup.get('msuma_aseg')?.value){
+      this.discount = true;
+      this.calculation()
+    }else{
+      this.discount = false;
+    }
+  }
+
+  calculation(){
+    const msumaAseg = this.planFormGroup.get('msuma_aseg')?.value;
+    const pcasco = this.planFormGroup.get('pcasco')?.value;
+    const pcatastrofico = this.planFormGroup.get('pcatastrofico')?.value;
+    const pmotin = this.planFormGroup.get('pmotin')?.value;
+    
+    let calculo: number = 0;
+    let catastrofico: number = 0;
+    let motin: number = 0;
+    
+    if (typeof msumaAseg === 'number' && typeof pcasco === 'number') {
+      calculo = msumaAseg * pcasco / 100;
+      this.planFormGroup.get('mprima_casco')?.setValue(calculo.toString());
+      this.planFormGroup.get('mprima_bruta')?.setValue(calculo.toString());
+      this.primaBruta = this.planFormGroup.get('mprima_bruta')?.value
+    }
+
+    if (typeof msumaAseg === 'number' && typeof pcatastrofico === 'number') {
+      catastrofico = (msumaAseg * pcatastrofico) / 100;
+    
+      this.planFormGroup.get('mcatastrofico')?.setValue(catastrofico.toString());
+    }
+    
+    if (typeof msumaAseg === 'number' && typeof pmotin === 'number') {
+      motin = (msumaAseg * pmotin) / 100;
+    
+      this.planFormGroup.get('mmotin')?.setValue(motin.toString());
+    }
+    this.sumaAsegurada = msumaAseg;
+  }
+
+  getDiscount(){
+    const descuento = this.planFormGroup.get('pdescuento')?.value;
+    const casco = this.planFormGroup.get('mprima_casco')?.value;
+    
+    let division: number = 0;
+    let multiplicacion: number = 0;
+    let calculo_descuento: number = 0;
+
+    if(descuento){
+      if (typeof descuento === 'number' && typeof casco === 'string') {
+
+        const cascoNumero = parseFloat(casco);
+      
+        division = descuento / 100;
+        multiplicacion = cascoNumero * division;
+        calculo_descuento = cascoNumero - multiplicacion;
+  
+        this.planFormGroup.get('mprima_casco')?.setValue(calculo_descuento.toString());
+      }
+    }else{
+      this.planFormGroup.get('mprima_casco')?.setValue(this.primaBruta);
+    }
+
+    if(this.planFormGroup.get('mprima_casco')?.value){
+      this.enableInfo = true;
+    }
+    this.descuento = this.planFormGroup.get('pdescuento')?.value;
+  }
+
 }
