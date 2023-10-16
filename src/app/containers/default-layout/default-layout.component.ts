@@ -68,7 +68,6 @@ export class DefaultLayoutComponent {
           this.navItems = distinctCmenuValues.map(cmenu => {
             const filteredItems = menuPrincipal.filter(item => item.cmenu === cmenu);
             const firstItem = filteredItems[0]; // Tomar el primer elemento, ya que todos tienen el mismo cmenu
-            console.log(filteredItems)
             return {
               name: filteredItems[0].xmenuprincipal,
               url: filteredItems[0].xrutaprincipal,
