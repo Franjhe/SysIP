@@ -417,7 +417,42 @@
                     </div>
                   </div>
                 </mat-tab>
-                <mat-tab label="Blindaje"> Content 3 </mat-tab>
+                <mat-tab label="Blindaje"> 
+                  <div style="display: flex;">
+                    <div class="col-3">
+                      <mat-form-field >
+                        <mat-label>Tasa de blindaje</mat-label>
+                        <input matInput type="number" formControlName="pblindaje">
+                      </mat-form-field>
+                    </div>
+                    <div class="col-3">
+                      <mat-form-field >
+                        <mat-label>Suma Asegurada</mat-label>
+                        <input matInput type="number" formControlName="msuma_blindaje" (change)="calculationPremiumsShielding()">
+                      </mat-form-field>
+                    </div>
+                    <div class="col-3">
+                      <mat-form-field >
+                        <mat-label>Prima de Blindaje</mat-label>
+                        <input matInput type="number" formControlName="mprima_blindaje">
+                      </mat-form-field>
+                    </div>
+                    <div class="col-3">
+                      <mat-form-field>
+                        <mat-label>Accesorios</mat-label>
+                        <mat-select [formControl]="accesories" multiple containerClass="custom-select" (ngModelChange)="onToppingsChange($event)">
+                          <mat-select-trigger>
+                            {{accesories.value?.[0] || ''}}
+                            <span *ngIf="(accesories.value?.length || 0) > 1" class="example-additional-selection">
+                              (+{{(accesories.value?.length || 0) - 1}} {{accesories.value?.length === 2 ? 'other' : 'others'}})
+                            </span>
+                          </mat-select-trigger>
+                          <mat-option *ngFor="let accesories of accesoriesList" [value]="accesories">{{accesories}}</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </mat-tab>
               </mat-tab-group>
 
               <div class="row justify-content-center py-5">
@@ -433,14 +468,58 @@
         </mat-step>
         <mat-step [stepControl]="receiptFormGroup" label="Detalles del Recibo">
             <form [formGroup]="receiptFormGroup">
-              <mat-form-field>
-                <mat-label>Address</mat-label>
-                <input matInput formControlName="secondCtrl" placeholder="Ex. 1 Main St, New York, NY"
-                       required>
-              </mat-form-field>
-              <div>
-                <button mat-button matStepperPrevious>Back</button>
-                <button mat-button matStepperNext>Next</button>
+              <div class="row">
+                <!--<div class="col-3">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Modalidad de Pagos</mat-label>
+                    <mat-select formControlName="xpago" (selectionChange)="onPaymentChange()">
+                       <mat-option value="PASARELA">Pasarela de Pago</mat-option> 
+                      <mat-option value="MANUAL">Pago Manual</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>-->
+                <div class="col-3">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Fecha de Emisión</mat-label>
+                    <input matInput [matDatepicker]="picker" formControlName="femision">
+                    <mat-hint>DD/MM/YYYY</mat-hint>
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </mat-form-field>
+                </div>
+                <div class="col-3">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>Frecuencia de Pago</mat-label>
+                      <input type="text"
+                            placeholder="Seleccione Frecuencia de Pago"
+                            aria-label="Seleccione"
+                            matInput
+                            [formControl]="methodOfPaymentControl"
+                            [matAutocomplete]="methodOfPayment"
+                            required>
+                      <mat-autocomplete #methodOfPayment="matAutocomplete" (optionSelected)="onMethodOfPaymentSelection($event)">
+                        <mat-option *ngFor="let methodOfPayment of filteredMethodOfPayment | async" [value]="methodOfPayment">
+                          {{ methodOfPayment }}
+                        </mat-option>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col-3" *ngIf="amountTotal" style="margin-top: 34px;">
+                  <P><strong>Monto Total:  </strong>{{montoTotal}}$</P>
+                </div>
+              </div>
+
+              <div class="row justify-content-center">
+                <button mat-raised-button color="primary" (click)="onSubmit()" style="width: 13%; margin-top: 44px;">Emitir</button>
+              </div>
+
+              <div class="row justify-content-center py-5">
+                <div class="col-2">
+                  <button mat-button matStepperPrevious>Regresar</button>
+                </div>
+                <div class="col-1">
+                  <button mat-button matStepperNext>Continuar</button>
+                </div>
               </div>
             </form>
         </mat-step>

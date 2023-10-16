@@ -1,15 +1,30 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {FormBuilder, Validators, FormGroup, FormControl} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+
+export const MY_FORMATS = {
+  parse: {
+    dateInput: 'LL',
+  },
+  display: {
+    dateInput: 'DD/MM/YYYY',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
 
 @Component({
   selector: 'app-automobile',
   templateUrl: './automobile.component.html',
   styleUrls: ['./automobile.component.scss']
 })
+
 export class AutomobileComponent {
 
   identList = ['V', 'P', 'E', 'J', 'C','G'];
@@ -25,6 +40,8 @@ export class AutomobileComponent {
   classList:  any[] = [];
   planList:  any[] = [];
   brokerList:  any[] = [];
+  accesoriesList: any[] = [];
+  methodOfPaymentList: any[] = [];
 
   identControl = new FormControl('');
   stateControl = new FormControl('');
@@ -39,6 +56,8 @@ export class AutomobileComponent {
   classControl = new FormControl('');
   planControl = new FormControl('');
   brokerControl = new FormControl('');
+  accesories = new FormControl('');
+  methodOfPaymentControl = new FormControl('');
 
   filteredIdent!: Observable<string[]>;
   filteredState!: Observable<string[]>;
@@ -53,14 +72,17 @@ export class AutomobileComponent {
   filteredClass!: Observable<string[]>;
   filteredPlan!: Observable<string[]>;
   filteredBroker!: Observable<string[]>;
+  filteredMethodOfPayment!: Observable<string[]>;
 
   isLinear = false;
   helmet: boolean = false;
   discount: boolean = false;
   enableInfo: boolean = false;
+  amountTotal: boolean = false;
   primaBruta!: any;
   descuento!: any;
   sumaAsegurada!: any;
+  montoTotal!: any;
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -101,13 +123,20 @@ export class AutomobileComponent {
     mprima_casco: [{ value: '', disabled: true }],
     mcatastrofico: ['', Validators.required],
     mmotin: ['', Validators.required],
+    pblindaje: [''],
+    msuma_blindaje: [''],
+    mprima_blindaje: [{ value: '', disabled: true }],
   });
   receiptFormGroup = this._formBuilder.group({
-    secondCtrl: ['', Validators.required],
+    xpago: ['', Validators.required],
+    femision: ['', Validators.required],
+    cmetodologiapago: ['', Validators.required]
   });
 
   constructor( private _formBuilder: FormBuilder,
-               private http: HttpClient,) {}
+               private http: HttpClient,
+               private modalService: NgbModal,
+               private dateAdapter: DateAdapter<Date>) {dateAdapter.setLocale('es');}
 
 
   ngOnInit(){
@@ -124,6 +153,8 @@ export class AutomobileComponent {
     this.getClass();
     this.getPlan();
     this.getBroker();
+    this.getAccesories();
+    this.getMethodOfPayment();
   }
 
   private _filter(value: string): string[] {
@@ -217,6 +248,7 @@ export class AutomobileComponent {
     let data;
     this.http.post(environment.apiUrl + '/api/v1/valrep/brand', data).subscribe((response: any) => {
       if (response.data.brand) {
+        this.brandList = [];
         for (let i = 0; i < response.data.brand.length; i++) {
           this.brandList.push({
             id: response.data.brand[i].cmarca,
@@ -255,6 +287,7 @@ export class AutomobileComponent {
     };
     this.http.post(environment.apiUrl + '/api/v1/valrep/model', data).subscribe((response: any) => {
       if (response.data.model) {
+        this.modelList = [];
         for (let i = 0; i < response.data.model.length; i++) {
           this.modelList.push({
             id: response.data.model[i].cmodelo,
@@ -295,6 +328,7 @@ export class AutomobileComponent {
     };
     this.http.post(environment.apiUrl + '/api/v1/valrep/version', data).subscribe((response: any) => {
       if (response.data.version) {
+        this.versionList = [];
         for (let i = 0; i < response.data.version.length; i++) {
           this.versionList.push({
             id: response.data.version[i].cversion,
@@ -595,13 +629,13 @@ export class AutomobileComponent {
   openDiscount(){
     if(this.planFormGroup.get('msuma_aseg')?.value){
       this.discount = true;
-      this.calculation()
+      this.calculationPremiums()
     }else{
       this.discount = false;
     }
   }
 
-  calculation(){
+  calculationPremiums(){
     const msumaAseg = this.planFormGroup.get('msuma_aseg')?.value;
     const pcasco = this.planFormGroup.get('pcasco')?.value;
     const pcatastrofico = this.planFormGroup.get('pcatastrofico')?.value;
@@ -661,4 +695,84 @@ export class AutomobileComponent {
     this.descuento = this.planFormGroup.get('pdescuento')?.value;
   }
 
+  calculationPremiumsShielding(){
+    const msumaAseg = this.planFormGroup.get('msuma_blindaje')?.value;
+    const pblindaje = this.planFormGroup.get('pblindaje')?.value;
+
+    let calculo: number = 0;
+    
+    if (typeof msumaAseg === 'number' && typeof pblindaje === 'number') {
+      calculo = msumaAseg * pblindaje / 100;
+      this.planFormGroup.get('mprima_blindaje')?.setValue(calculo.toString());
+    }
+  }
+
+  getAccesories(){
+    this.http.post(environment.apiUrl + '/api/v1/valrep/accesories', null).subscribe((response: any) => {
+      if (response.data.accesories) {
+        for (let i = 0; i < response.data.accesories.length; i++) {
+          this.accesoriesList.push(response.data.accesories[i].xaccesorio);
+        }
+      }
+    });
+  }
+
+  onToppingsChange(selectedToppings: any[]) {
+
+  }
+
+  getMethodOfPayment(){
+    this.http.post(environment.apiUrl + '/api/v1/valrep/method-of-payment', null).subscribe((response: any) => {
+      if (response.data.payment) {
+        for (let i = 0; i < response.data.payment.length; i++) {
+          this.methodOfPaymentList.push({
+            id: response.data.payment[i].cmetodologiapago,
+            value: response.data.payment[i].xmetodologiapago,
+          });
+        }
+        this.filteredMethodOfPayment = this.methodOfPaymentControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filterMethodOfPayment(value || ''))
+        );
+      }
+    });
+  }
+
+  private _filterMethodOfPayment(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.methodOfPaymentList
+      .map(payment => payment.value)
+      .filter(payment => payment.toLowerCase().includes(filterValue));
+  }
+
+  onMethodOfPaymentSelection(event: any) {
+    const selectedValue = event.option.value;
+    const selectedMethodOfPayment = this.methodOfPaymentList.find(payment => payment.value === selectedValue);
+    if (selectedMethodOfPayment) {
+      this.receiptFormGroup.get('cmetodologiapago')?.setValue(selectedMethodOfPayment.id);
+      this.operationAmount();
+    }
+  }
+
+  operationAmount(){
+    let data = {
+      cplan: this.planFormGroup.get('cplan')?.value,
+      cmetodologiapago: this.receiptFormGroup.get('cmetodologiapago')?.value,
+      ctarifa_exceso: this.vehicleFormGroup.get('ctarifa_exceso')?.value,
+      igrua: false,
+      npasajeros: this.vehicleFormGroup.get('npasajeros')?.value,
+    }
+    this.http.post(environment.apiUrl + '/api/v1/emissions/automobil/premium-amount', data).subscribe((response: any) => {
+      if (response.status) {
+        this.amountTotal = true;
+        this.montoTotal = response.data.mprima
+      }else{
+        this.amountTotal = false;
+      }
+    });
+  }
+
+  onSubmit(){
+    
+  }
 }
