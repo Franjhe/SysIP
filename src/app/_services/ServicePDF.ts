@@ -991,17 +991,14 @@ export class PdfGenerationService {
 		let watermarkBody = {}
 		if (this.cestatusgeneral == 13) {
 		  watermarkBody = {text: 'PENDIENTE DE PAGO', color: 'red', opacity: 0.3, bold: true, italics: false, fontSize: 50, angle: 70}
-		  return watermarkBody;
 		}
 		if (this.cestatusgeneral == 7) {
 		  watermarkBody = {text: 'COBRADO', color: 'green', opacity: 0.3, bold: true, italics: false, fontSize: 50, angle: 70}
-		  return watermarkBody;
 		}
 		if (this.cestatusgeneral == 3) {
 		  watermarkBody = {text: 'PÓLIZA ANULADA', color: 'red', opacity: 0.3, bold: true, italics: false, fontSize: 50, angle: 70}
-		  return watermarkBody;
 		}
-	
+		return watermarkBody;
 	  }
 	
 	  createPDF(){

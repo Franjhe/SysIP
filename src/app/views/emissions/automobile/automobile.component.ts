@@ -1,6 +1,6 @@
 import {Component, ViewChild} from '@angular/core';
 import {FormBuilder, Validators, FormGroup, FormControl} from '@angular/forms';
-import {Observable} from 'rxjs';
+import {from, Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
@@ -826,14 +826,16 @@ export class AutomobileComponent {
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobil/create', data).subscribe((response: any) => {
       if (response.status) {
         this.ccontratoflota = response.data.ccontratoflota;
-        // this.pdfGenerationService.certificateData(this.ccontratoflota).subscribe(
-        //   (data) => {
-            
-        //   },
-        //   (error) => {
-            
-        //   }
-        // );
+        const observable = from(this.pdfGenerationService.LoadDataCertifiqued(this.ccontratoflota));
+
+        observable.subscribe(
+          (data) => {
+            console.log(data)
+          },
+          (error) => {
+            console.log(error)
+          }
+        );
       }
     });
   }
