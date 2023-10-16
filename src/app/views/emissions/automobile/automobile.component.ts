@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { PdfGenerationService } from '../../../_services/ServicePDF'
 
 export const MY_FORMATS = {
   parse: {
@@ -83,6 +84,7 @@ export class AutomobileComponent {
   descuento!: any;
   sumaAsegurada!: any;
   montoTotal!: any;
+  ccontratoflota!: any;
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -102,7 +104,7 @@ export class AutomobileComponent {
     cversion: ['', Validators.required],
     fano: [{ value: '', disabled: true }],
     npasajeros: [{ value: '', disabled: true }],
-    ccolor: ['', Validators.required],
+    xcolor: ['', Validators.required],
     xserialcarroceria: ['', Validators.required],
     xserialmotor: ['', Validators.required],
     xcobertura: ['', Validators.required],
@@ -118,7 +120,7 @@ export class AutomobileComponent {
     msuma_aseg: ['', Validators.required],
     mprima_bruta: [{ value: '', disabled: true }],
     pdescuento: [''],
-    pmotin: ['', Validators.required],
+    pmotin: [''],
     pcatastrofico: ['', Validators.required],
     mprima_casco: [{ value: '', disabled: true }],
     mcatastrofico: ['', Validators.required],
@@ -136,7 +138,8 @@ export class AutomobileComponent {
   constructor( private _formBuilder: FormBuilder,
                private http: HttpClient,
                private modalService: NgbModal,
-               private dateAdapter: DateAdapter<Date>) {dateAdapter.setLocale('es');}
+               private dateAdapter: DateAdapter<Date>,
+               private pdfGenerationService: PdfGenerationService) {dateAdapter.setLocale('es');}
 
 
   ngOnInit(){
@@ -239,8 +242,7 @@ export class AutomobileComponent {
     const selectedValue = event.option.value;
     const selectedCity = this.cityList.find(city => city.value === selectedValue);
     if (selectedCity) {
-      this.personsFormGroup.get('cestado')?.setValue(selectedCity.id);
-      this.getCity();
+      this.personsFormGroup.get('cciudad')?.setValue(selectedCity.id);
     }
   }
 
@@ -397,7 +399,7 @@ export class AutomobileComponent {
     const selectedValue = event.option.value;
     const selectedColor = this.colorList.find(color => color.value === selectedValue);
     if (selectedColor) {
-      this.vehicleFormGroup.get('ccolor')?.setValue(selectedColor.id);
+      this.vehicleFormGroup.get('xcolor')?.setValue(selectedColor.value);
     }
   }
 
@@ -773,6 +775,66 @@ export class AutomobileComponent {
   }
 
   onSubmit(){
-    
+    let marca = this.brandList.find(element => element.control === this.vehicleFormGroup.get('cmarca')?.value);
+    let modelo = this.modelList.find(element => element.control === this.vehicleFormGroup.get('cmodelo')?.value);
+    let version = this.versionList.find(element => element.control === this.vehicleFormGroup.get('cversion')?.value);
+    let data = {
+      icedula: this.personsFormGroup.get('icedula')?.value,
+      xrif_cliente: this.personsFormGroup.get('xrif_cliente')?.value,
+      xnombre: this.personsFormGroup.get('xnombre')?.value,
+      xapellido: this.personsFormGroup.get('xapellido')?.value,
+      xtelefono_emp: this.personsFormGroup.get('xtelefono_emp')?.value,
+      email: this.personsFormGroup.get('email')?.value,
+      cestado: this.personsFormGroup.get('cestado')?.value,
+      cciudad: this.personsFormGroup.get('cciudad')?.value,
+      xdireccion: this.personsFormGroup.get('xdireccion')?.value,
+      xplaca: this.vehicleFormGroup.get('xplaca')?.value,
+      cmarca: marca.id,
+      cmodelo: modelo.id,
+      cversion: version.id,
+      fano: this.vehicleFormGroup.get('fano')?.value,
+      npasajeros: this.vehicleFormGroup.get('npasajeros')?.value,
+      xcolor: this.vehicleFormGroup.get('xcolor')?.value,
+      xserialcarroceria: this.vehicleFormGroup.get('xserialcarroceria')?.value,
+      xserialmotor: this.vehicleFormGroup.get('xserialmotor')?.value,
+      xcobertura: this.vehicleFormGroup.get('xcobertura')?.value,
+      ctarifa_exceso: this.vehicleFormGroup.get('ctarifa_exceso')?.value,
+      cuso: this.vehicleFormGroup.get('cuso')?.value,
+      ctipovehiculo: this.vehicleFormGroup.get('ctipovehiculo')?.value,
+      cclase: this.vehicleFormGroup.get('cclase')?.value,
+      cplan_rc: this.planFormGroup.get('cplan')?.value,
+      ccorredor: this.planFormGroup.get('ccorredor')?.value,
+      pcasco: this.planFormGroup.get('pcasco')?.value,
+      msuma_aseg: this.planFormGroup.get('msuma_aseg')?.value,
+      mprima_bruta: this.planFormGroup.get('mprima_bruta')?.value,
+      pdescuento: this.planFormGroup.get('pdescuento')?.value,
+      pmotin: this.planFormGroup.get('pmotin')?.value,
+      pcatastrofico: this.planFormGroup.get('pcatastrofico')?.value,
+      mprima_casco: this.planFormGroup.get('mprima_casco')?.value,
+      mcatastrofico: this.planFormGroup.get('mcatastrofico')?.value,
+      mmotin: this.planFormGroup.get('mmotin')?.value,
+      pblindaje: this.planFormGroup.get('pblindaje')?.value,
+      msuma_blindaje: this.planFormGroup.get('msuma_blindaje')?.value,
+      mprima_blindaje: this.planFormGroup.get('mprima_blindaje')?.value,
+      xpago: this.receiptFormGroup.get('xpago')?.value,
+      femision: this.receiptFormGroup.get('femision')?.value,
+      cmetodologiapago: this.receiptFormGroup.get('cmetodologiapago')?.value,
+      cpais: 58
+    }
+
+    console.log(data)
+    this.http.post(environment.apiUrl + '/api/v1/emissions/automobil/create', data).subscribe((response: any) => {
+      if (response.status) {
+        this.ccontratoflota = response.data.ccontratoflota;
+        // this.pdfGenerationService.certificateData(this.ccontratoflota).subscribe(
+        //   (data) => {
+            
+        //   },
+        //   (error) => {
+            
+        //   }
+        // );
+      }
+    });
   }
 }
