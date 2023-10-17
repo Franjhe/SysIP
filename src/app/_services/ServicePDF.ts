@@ -146,6 +146,7 @@ export class PdfGenerationService {
 	xemailpropietario:string | undefined;
 	xocupacionpropietario:string | undefined;
 	cmetodologiapago: number | undefined ;
+	xmetodologiapago: string | undefined ;
 	xtelefonopropietario:string | undefined;
 	cvehiculopropietario: number | undefined ;
 	ctipoplan: number | undefined ;
@@ -746,9 +747,15 @@ export class PdfGenerationService {
 	//Funciones para generar el pdf de emision
 
 	async LoadDataCertifiqued(contratoflota : any){
+
+		let params = {
+			ccontratoflota: contratoflota,
+			cpais: 58,
+			ccompania: 1
+		}
 		
-		await this.http.post( environment.apiUrl + '/api/v1/certificate/detail', contratoflota).subscribe( async (response: any) => {
-			if(response.data.status){
+		await this.http.post( environment.apiUrl + '/api/v1/certificate/detail', params).subscribe( async (response: any) => {
+			if(response.status){
 			console.log(response.data)
 			this.ccarga = response.data.ccarga;
 			this.xpoliza = response.data.xpoliza;
@@ -762,6 +769,8 @@ export class PdfGenerationService {
 			this.xdireccionfiscalcliente = response.data.xdireccionfiscalcliente;
 			this.xciudadcliente = response.data.xciudadcliente;
 			this.xestadocliente = response.data.xestadocliente;
+			this.fdesde_pol = response.data.fdesde_pol;
+			this.fhasta_pol = response.data.fhasta_pol;
 			if (response.data.xtelefonocliente) {
 				this.xtelefonocliente = response.data.xtelefonocliente;
 			} else {
@@ -797,6 +806,7 @@ export class PdfGenerationService {
 			this.ctipoplan = response.data.ctipoplan;
 			this.cplan = response.data.cplan;
 			this.cmetodologiapago = response.data.cmetodologiapago;
+			this.xmetodologiapago = response.data.xmetodologiapago;
 			this.ctiporecibo = response.data.ctiporecibo;
 			this.xmarca = response.data.xmarca;
 			this.xmoneda = response.data.xmoneda;
@@ -823,6 +833,11 @@ export class PdfGenerationService {
 			this.mprimaprorratatotal = response.data.mprimaprorratatotal;
 			this.xzona_postal_propietario = response.data.xzona_postal_propietario;
 			this.cestatusgeneral = response.data.cestatusgeneral;
+			this.fsuscripcion = response.data.fsuscripcion;
+			this.femision = response.data.femision;
+			this.xrecibo = response.data.xrecibo;
+			this.fdesde_rec = response.data.finiciorecibo;
+			this.fhasta_rec = response.data.fhastarecibo;
 			if(response.data.xtomador){
 				this.xtomador = response.data.xtomador;
 			}else{
@@ -888,12 +903,12 @@ export class PdfGenerationService {
 			}
 			this.serviceList = response.data.services;
 			this.coverageList = response.data.realCoverages;
-			await window.alert(`Se ha generado exitósamente la póliza n° ${this.xpoliza} del cliente ${this.xnombrecliente} para el vehículo de placa ${this.xplaca}`);
+			this.annexList = response.data.coverageAnnexes
+			// await window.alert(`Se ha generado exitósamente la póliza n° ${this.xpoliza} del cliente ${this.xnombrecliente} para el vehículo de placa ${this.xplaca}`);
 			try {this.createPDF()}
 			catch(err) {console.log()};
 			}
 			await response.data.estatus 
-			this.createPDF()
 		},
 		(err) => { });
 	}
@@ -1002,6 +1017,7 @@ export class PdfGenerationService {
 	  }
 	
 	  createPDF(){
+		console.log('holaaaaa')
 		try{
 		const pdfDefinition: any = {
 		  watermark: this.selectWatermark(),
@@ -1057,7 +1073,7 @@ export class PdfGenerationService {
 			  table: {
 				widths: [130, 80, 50, 80, '*'],
 				body: [
-				  [{text: 'Datos del Recibo', alignment: 'center', fillColor: '#ababab', bold: true, border: [true, false, true, true]}, {text: 'Tipo de Movimiento:', bold: true, border: [false, false, false, false]}, {text: 'EMISIÓN', border: [false, false, false, false]}, {text: 'Frecuencia de Pago:', bold: true, border: [false, false, false, false]}, {text: this.getPaymentMethodology(this.cmetodologiapago), border: [false, false, true, false]}]
+				  [{text: 'Datos del Recibo', alignment: 'center', fillColor: '#ababab', bold: true, border: [true, false, true, true]}, {text: 'Tipo de Movimiento:', bold: true, border: [false, false, false, false]}, {text: 'EMISIÓN', border: [false, false, false, false]}, {text: 'Frecuencia de Pago:', bold: true, border: [false, false, false, false]}, {text: this.xmetodologiapago, border: [false, false, true, false]}]
 				]
 			  }
 			},
@@ -1111,7 +1127,7 @@ export class PdfGenerationService {
 			  table: {
 				widths: [24, 130, 50, 24, 50, 24, '*', '*'],
 				body: [
-				  [{text: 'Ciudad:', bold: true, border: [true, false, false, true]}, {text: this.xciudadcliente, border: [false, false, false, true]}, {text: 'Zona Postal:', bold: true, border: [false, false, false, true]}, {text: ' ', border: [false, false, false, true]}, {text: 'Zona Cobro:', bold: true, border: [false, false, false, true]}, {text: ' ', border: [false, false, false, true]}, {text: 'Teléfono:', bold: true, border: [false, false, false, true]}, {text: this.xtelefonocliente, border: [false, false, true, true]}]
+				  [{text: 'Ciudad:', bold: true, border: [true, false, false, true]}, {text: this.xciudadcliente, border: [false, false, false, true]}, {text: 'Zona Postal:', bold: true, border: [false, false, false, true]}, {text: ' ', border: [false, false, false, true]}, {text: 'Zona Cobro:', bold: true, border: [false, false, false, true]}, {text: this.xestadocliente, border: [false, false, false, true]}, {text: 'Teléfono:', bold: true, border: [false, false, false, true]}, {text: this.xtelefonocliente, border: [false, false, true, true]}]
 				]
 			  }
 			},
@@ -1129,7 +1145,7 @@ export class PdfGenerationService {
 			  table: {
 				widths: [40, 310, 24, '*'],
 				body: [
-				  [{text: 'DOMICILIO:', bold: true, border: [true, false, false, false]}, {text: this.xdireccionpropietario, border: [false, false, false, false]}, {text: 'Estado:', bold: true, border: [false, false, false, false]}, {text: this.xestadopropietario, border: [false, false, true, false]}]
+				  [{text: 'DOMICILIO:', bold: true, border: [true, false, false, false]}, {text: this.xdireccionpropietario, border: [false, false, false, false]}, {text: 'Estado:', bold: true, border: [false, false, false, false]}, {text: this.xestadocliente, border: [false, false, true, false]}]
 				]
 			  }
 			},
@@ -1138,7 +1154,7 @@ export class PdfGenerationService {
 			  table: {
 				widths: [24, 130, 40, 24, 30, 50, 24, '*'],
 				body: [
-				  [{text: 'Ciudad:', bold: true, border: [true, false, false, false]}, {text: this.xciudadpropietario, border: [false, false, false, false]}, {text: 'Zona Postal:', bold: true, border: [false, false, false, false]}, {text: ' ', border: [false, false, false, false]}, {text: 'Teléfono:', bold: true, border: [false, false, false, false]}, {text: this.xtelefonocelularpropietario, border: [false, false, false, false]}, {text: 'E-mail:', bold: true, border: [false, false, false, false]}, {text: this.xemailpropietario, border: [false, false, true, false]}]
+				  [{text: 'Ciudad:', bold: true, border: [true, false, false, false]}, {text: this.xciudadpropietario, border: [false, false, false, false]}, {text: 'Zona Postal:', bold: true, border: [false, false, false, false]}, {text: ' ', border: [false, false, false, false]}, {text: 'Teléfono:', bold: true, border: [false, false, false, false]}, {text: this.xtelefonocliente, border: [false, false, false, false]}, {text: 'E-mail:', bold: true, border: [false, false, false, false]}, {text: this.xemailpropietario, border: [false, false, true, false]}]
 				]
 			  }
 			},
@@ -1172,7 +1188,7 @@ export class PdfGenerationService {
 			{
 			  style: 'data',
 			  table: {
-				widths: [30, 100, 30, 100, 35, '*'],
+				widths: [30, 120, 30, 120, 45, '*'],
 				body: [
 				  [{text: 'MARCA:', bold: true, border: [true, false, false, true]}, {text: this.xmarca, border: [false, false, false, true]}, {text: 'MODELO:', bold: true, border: [false, false, false, true]}, {text: this.xmodelo, border: [false, false, false, true]}, {text: 'VERSIÓN:', bold: true, border: [false, false, false, true]}, {text: this.xversion, border: [false, false, true, true]} ]
 				]
@@ -1181,25 +1197,25 @@ export class PdfGenerationService {
 			{
 			  style: 'data',
 			  table: {
-				widths: [60, 30, 30, 50, 30, 50, 60, '*'],
+				widths: [60, 50, 30, 70, 30, 70, 60, '*'],
 				body: [
-				  [{text: 'N° DE PUESTOS:', bold: true, border: [true, false, false, true]}, {'text': this.ncapacidadpasajerosvehiculo, border: [false, false, false, true]}, {text: 'CLASE:', bold: true, border: [false, false, false, true]}, {text: ' ', border: [false, false, false, true]}, {text: this.xclase, border: [false, false, false, true]},{text: 'PLACA:', bold: true, border: [false, false, false, true]}, {text: this.xplaca, border: [false, false, false, true]}, {text: 'TRANSMISIÓN:', bold: true, border: [false, false, false, true]}, {text: this.xtransmision, border: [false, false, true, true]}]
+				  [{text: 'N° DE PUESTOS:', bold: true, border: [true, false, false, true]}, {text: this.ncapacidadpasajerosvehiculo, border: [false, false, false, true]}, {text: 'CLASE:', bold: true, border: [false, false, false, true]}, {text: this.xclase, border: [false, false, false, true]},{text: 'PLACA:', bold: true, border: [false, false, false, true]}, {text: this.xplaca, border: [false, false, false, true]}, {text: 'TRANSMISIÓN:', bold: true, border: [false, false, false, true]}, {text: this.xtransmision, border: [false, false, true, true]}]
 				]
 			  }
 			},
 			{
 			  style: 'data',
 			  table: {
-				widths: [20, 45, 80, 75, 70, 70, 50, '*'],
+				widths: [20, 80, 90, 90, 90, '*'],
 				body: [
-				  [{text: 'USO:', bold: true, border: [true, false, false, true]}, {text: this.xuso, border: [false, false, false, true]}, {text: 'SERIAL CARROCERIA:', bold: true, border: [false, false, false, true]}, {text: this.xserialcarroceria, border: [false, false, false, true]}, {text: 'SERIAL DEL MOTOR:', bold: true, border: [false, false, false, true]}, {text: this.xserialmotor, border: [false, false, false, true]}, {text: 'KILOMETRAJE:', bold: true, border: [false, false, false, true]},  {text: this.nkilometraje, border: [false, false, true, true]}]
+				  [{text: 'USO:', bold: true, border: [true, false, false, true]}, {text: this.xuso, border: [false, false, false, true]}, {text: 'SERIAL CARROCERIA:', bold: true, border: [false, false, false, true]}, {text: this.xserialcarroceria, border: [false, false, false, true]}, {text: 'SERIAL DEL MOTOR:', bold: true, border: [false, false, false, true]}, {text: this.xserialmotor, border: [false, false, true, true]}]
 				]
 			  }
 			},
 			{
 			  style: 'data',
 			  table: {
-				widths: [20, 45, 30, 50, 50, 140, '*'],
+				widths: [30, 150, 30, 60, 70, 100, '*'],
 				body: [
 				  [{text: 'TIPO:', bold: true, border: [true, false, false, false]}, {text: this.xtipovehiculo, border: [false, false, false, false]}, {text: 'AÑO:', bold: true, border: [false, false, false, false]}, {text: this.fano, border: [false, false, false, false]}, {text: 'COLOR:', bold: true, border: [false, false, false, false]}, {text: this.xcolor, border: [false, false, false, false]}, {text: ' ', border: [false, false, true, false]}]
 				]
@@ -1240,7 +1256,6 @@ export class PdfGenerationService {
 				]
 			  }
 			},
-
 			{
 			  style: 'data',
 			  table: {
@@ -1331,7 +1346,7 @@ export class PdfGenerationService {
 			  table: {
 				widths: [130, 80, 50, 80, '*'],
 				body: [
-				  [{text: 'Datos del Recibo', alignment: 'center', fillColor: '#ababab', bold: true, border: [true, false, true, true]}, {text: 'Tipo de Movimiento:', bold: true, border: [false, false, false, false]}, {text: 'EMISIÓN', border: [false, false, false, false]}, {text: 'Frecuencia de Pago:', bold: true, border: [false, false, false, false]}, {text: this.getPaymentMethodology(this.cmetodologiapago), border: [false, false, true, false]}]
+				  [{text: 'Datos del Recibo', alignment: 'center', fillColor: '#ababab', bold: true, border: [true, false, true, true]}, {text: 'Tipo de Movimiento:', bold: true, border: [false, false, false, false]}, {text: 'EMISIÓN', border: [false, false, false, false]}, {text: 'Frecuencia de Pago:', bold: true, border: [false, false, false, false]}, {text: this.xmetodologiapago, border: [false, false, true, false]}]
 				]
 			  }
 			},
@@ -1386,7 +1401,7 @@ export class PdfGenerationService {
 			  table: {
 				widths: [24, 134, 50, 24, 50, 24, '*', '*'],
 				body: [
-				  [{text: 'Ciudad:', bold: true, border: [true, false, false, true]}, {text: this.xciudadcliente, border: [false, false, false, true]}, {text: 'Zona Postal:', bold: true, border: [false, false, false, true]}, {text: ' ', border: [false, false, false, true]}, {text: 'Zona Cobro:', bold: true, border: [false, false, false, true]}, {text: ' ', border: [false, false, false, true]}, {text: 'Teléfono:', bold: true, border: [false, false, false, true]}, {text: this.xtelefonocliente, border: [false, false, true, true]}]
+				  [{text: 'Ciudad:', bold: true, border: [true, false, false, true]}, {text: this.xciudadcliente, border: [false, false, false, true]}, {text: 'Zona Postal:', bold: true, border: [false, false, false, true]}, {text: ' ', border: [false, false, false, true]}, {text: 'Zona Cobro:', bold: true, border: [false, false, false, true]}, {text: this.xestadocliente, border: [false, false, false, true]}, {text: 'Teléfono:', bold: true, border: [false, false, false, true]}, {text: this.xtelefonocliente, border: [false, false, true, true]}]
 				]
 			  }
 			},
@@ -1404,7 +1419,7 @@ export class PdfGenerationService {
 			  table: {
 				widths: [40, 310, 24, '*'],
 				body: [
-				  [{text: 'DOMICILIO:', bold: true, border: [true, false, false, false]}, {text: this.xdireccionpropietario, border: [false, false, false, false]}, {text: 'Estado:', bold: true, border: [false, false, false, false]}, {text: this.xestadopropietario, border: [false, false, true, false]}]
+				  [{text: 'DOMICILIO:', bold: true, border: [true, false, false, false]}, {text: this.xdireccionpropietario, border: [false, false, false, false]}, {text: 'Estado:', bold: true, border: [false, false, false, false]}, {text: this.xestadocliente, border: [false, false, true, false]}]
 				]
 			  }
 			},
@@ -1413,7 +1428,7 @@ export class PdfGenerationService {
 			  table: {
 				widths: [24, 130, 40, 24, 30, 50, 24, '*'],
 				body: [
-				  [ {text: 'Ciudad:', bold: true, border: [true, false, false, false]}, {text: this.xciudadpropietario, border: [false, false, false, false]}, {text: 'Zona Postal:', bold: true, border: [false, false, false, false]}, {text: ' ', border: [false, false, false, false]}, {text: 'Teléfono:', bold: true, border: [false, false, false, false]}, {text: this.xtelefonocelularpropietario, border: [false, false, false, false]}, {text: 'E-mail:', bold: true, border: [false, false, false, false]}, {text: this.xemailpropietario, border: [false, false, true, false]}]
+				  [ {text: 'Ciudad:', bold: true, border: [true, false, false, false]}, {text: this.xciudadcliente, border: [false, false, false, false]}, {text: 'Zona Postal:', bold: true, border: [false, false, false, false]}, {text: ' ', border: [false, false, false, false]}, {text: 'Teléfono:', bold: true, border: [false, false, false, false]}, {text: this.xtelefonocliente, border: [false, false, false, false]}, {text: 'E-mail:', bold: true, border: [false, false, false, false]}, {text: this.xemailcliente, border: [false, false, true, false]}]
 				]
 			  }
 			},
@@ -1451,50 +1466,50 @@ export class PdfGenerationService {
 				body: this.buildAnnexesBody()
 			  }
 			},
-			{
-			  style: 'data',
-			  table: {
-				widths: ['*'],
-				body: [
-				  [{text: 'ANEXOS', alignment: 'center', fillColor: '#ababab', bold: true}]
-				]
-			  }
-			},
-			{
-			  style: 'data',
-			  table: {
-				widths: ['*'],
-				body: [
-				  [{text: this.xanexo, border: [true, false, true, false]}]
-				]
-			  }
-			},
+			// {
+			//   style: 'data',
+			//   table: {
+			// 	widths: ['*'],
+			// 	body: [
+			// 	  [{text: 'ANEXOS', alignment: 'center', fillColor: '#ababab', bold: true}]
+			// 	]
+			//   }
+			// },
+			// {
+			//   style: 'data',
+			//   table: {
+			// 	widths: ['*'],
+			// 	body: [
+			// 	  [{text: this.xanexo, border: [true, false, true, false]}]
+			// 	]
+			//   }
+			// },
 
-			{
-			  style: 'data',
-			  table: {
-				widths: ['*'],
-				body: [
-				  [{text: 'ACCESORIOS', alignment: 'center', fillColor: '#ababab', bold: true}]
-				]
-			  }
-			},
-			{
-			  style: 'data',
-			  table: {
-				widths: ['*', '*', '*'],
-				body: [
-				  [{text: 'ACCESORIO', alignment: 'center', fillColor: '#d9d9d9', bold: true, border: [true, false, true, true]}, {text: 'SUMA ASEGURADA', alignment: 'center', fillColor: '#d9d9d9', bold: true, border: [false, false, true, true]}, {text: 'PRIMA', alignment: 'center', fillColor: '#d9d9d9', bold: true, border: [false, false, true, true]}]
-				]
-			  }
-			},
-			{
-			  style: 'data',
-			  table: {
-				widths: ['*', '*', '*'],
-				body: this.buildAccesoriesBody()
-			  }
-			},
+			// {
+			//   style: 'data',
+			//   table: {
+			// 	widths: ['*'],
+			// 	body: [
+			// 	  [{text: 'ACCESORIOS', alignment: 'center', fillColor: '#ababab', bold: true}]
+			// 	]
+			//   }
+			// },
+			// {
+			//   style: 'data',
+			//   table: {
+			// 	widths: ['*', '*', '*'],
+			// 	body: [
+			// 	  [{text: 'ACCESORIO', alignment: 'center', fillColor: '#d9d9d9', bold: true, border: [true, false, true, true]}, {text: 'SUMA ASEGURADA', alignment: 'center', fillColor: '#d9d9d9', bold: true, border: [false, false, true, true]}, {text: 'PRIMA', alignment: 'center', fillColor: '#d9d9d9', bold: true, border: [false, false, true, true]}]
+			// 	]
+			//   }
+			// },
+			// {
+			//   style: 'data',
+			//   table: {
+			// 	widths: ['*', '*', '*'],
+			// 	body: this.buildAccesoriesBody()
+			//   }
+			// },
 			{
 			  style: 'data',
 			  table: {

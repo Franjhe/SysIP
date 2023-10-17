@@ -510,7 +510,29 @@
               </div>
 
               <div class="row justify-content-center">
-                <button mat-raised-button color="primary" (click)="onSubmit()" style="width: 13%; margin-top: 44px;">Emitir</button>
+                <div class="col-4" *ngIf="buttonEmissions">
+                  <button mat-raised-button color="primary" (click)="onSubmit()" style="width: 42%; margin-top: 44px;margin-left: 89px;">Emitir</button>
+                </div>
+                <div class="col-4" *ngIf="loadingEmissions">
+                  <div id="container">
+                    <label class="loading-title">Cargando</label>
+                    <span class="loading-circle sp1">
+                      <span class="loading-circle sp2">
+                        <span class="loading-circle sp3"></span>
+                      </span>
+                    </span>
+                  </div>
+                </div>
+                <div class="col-4" *ngIf="loadingPdf">
+                  <div id="container">
+                    <label class="loading-title">Generando Cuadro Póliza</label>
+                    <span class="loading-circle sp1">
+                      <span class="loading-circle sp2">
+                        <span class="loading-circle sp3"></span>
+                      </span>
+                    </span>
+                  </div>
+                </div>
               </div>
 
               <div class="row justify-content-center py-5">

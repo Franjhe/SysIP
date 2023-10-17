@@ -1,17 +1,21 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MaterialExampleModule } from './../../material.module'
 
 import { PolicyRoutingModule } from './policy-routing.module';
 import { CertificatesComponent } from './certificates/certificates.component';
+import { AutomobilePolicyComponent } from './automobile-policy/automobile-policy.component';
 
 
 @NgModule({
   declarations: [
-    CertificatesComponent
+    CertificatesComponent,
+    AutomobilePolicyComponent
   ],
   imports: [
     CommonModule,
-    PolicyRoutingModule
+    PolicyRoutingModule,
+    MaterialExampleModule
   ]
 })
 export class PolicyModule { }

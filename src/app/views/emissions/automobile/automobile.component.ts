@@ -7,6 +7,7 @@ import { environment } from 'src/environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { PdfGenerationService } from '../../../_services/ServicePDF'
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 export const MY_FORMATS = {
   parse: {
@@ -80,6 +81,9 @@ export class AutomobileComponent {
   discount: boolean = false;
   enableInfo: boolean = false;
   amountTotal: boolean = false;
+  buttonEmissions: boolean = true;
+  loadingEmissions: boolean = false;
+  loadingPdf: boolean = false;
   primaBruta!: any;
   descuento!: any;
   sumaAsegurada!: any;
@@ -139,7 +143,8 @@ export class AutomobileComponent {
                private http: HttpClient,
                private modalService: NgbModal,
                private dateAdapter: DateAdapter<Date>,
-               private pdfGenerationService: PdfGenerationService) {dateAdapter.setLocale('es');}
+               private pdfGenerationService: PdfGenerationService,
+               private snackBar: MatSnackBar) {dateAdapter.setLocale('es');}
 
 
   ngOnInit(){
@@ -775,6 +780,8 @@ export class AutomobileComponent {
   }
 
   onSubmit(){
+    this.buttonEmissions = false;
+    this.loadingEmissions = true;
     let marca = this.brandList.find(element => element.control === this.vehicleFormGroup.get('cmarca')?.value);
     let modelo = this.modelList.find(element => element.control === this.vehicleFormGroup.get('cmodelo')?.value);
     let version = this.versionList.find(element => element.control === this.vehicleFormGroup.get('cversion')?.value);
@@ -822,20 +829,28 @@ export class AutomobileComponent {
       cpais: 58
     }
 
-    console.log(data)
+    const nombre = this.personsFormGroup.get('xnombre')?.value + ' ' + this.personsFormGroup.get('xapellido')?.value;
+    const placa = this.vehicleFormGroup.get('xplaca')?.value;
+
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobil/create', data).subscribe((response: any) => {
       if (response.status) {
+        this.loadingEmissions = false;
+        this.loadingPdf = true;
         this.ccontratoflota = response.data.ccontratoflota;
         const observable = from(this.pdfGenerationService.LoadDataCertifiqued(this.ccontratoflota));
 
         observable.subscribe(
           (data) => {
-            console.log(data)
+            console.log('DATA ' + data)
           },
           (error) => {
             console.log(error)
           }
         );
+
+        this.snackBar.open(`Se ha generado exitósamente el contrato n° ${this.ccontratoflota} del cliente ${nombre?.toUpperCase()} para el vehículo de placa ${placa?.toUpperCase()}`, '', {
+          duration: 3000,
+        });
       }
     });
   }

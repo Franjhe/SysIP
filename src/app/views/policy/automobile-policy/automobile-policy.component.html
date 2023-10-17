@@ -1,0 +1,61 @@
+<div class="card container registration-form">
+    <form>
+      <mat-form-field>
+        <mat-label>Buscar</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Ingresa datos" #input>
+      </mat-form-field>
+            
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+        <!-- Columna Crámo -->
+        <ng-container matColumnDef="ccontratoflota">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Código </th>
+            <td mat-cell *matCellDef="let element"> {{ element.ccontratoflota }} </td>
+          </ng-container>
+          
+          <ng-container matColumnDef="xnombre">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre </th>
+            <td mat-cell *matCellDef="let element"> {{ element.xnombre }} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="xvehiculo">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Vehiculo </th>
+            <td mat-cell *matCellDef="let element"> {{ element.xvehiculo }} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="xplaca">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Placa </th>
+            <td mat-cell *matCellDef="let element"> {{ element.xplaca }} </td>
+          </ng-container>
+          
+          <!-- Columna Acciones -->
+          <ng-container matColumnDef="star">
+            <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" type="button">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="openPdf(element.ccontratoflota)" type="button">
+                  <mat-icon>picture_as_pdf</mat-icon>
+                  <span>Generar Cuadro Póliza</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+          
+            
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            
+        <!-- Fila que se muestra cuando no hay datos coincidentes. -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" colspan="2">No hay datos que coincidan con el filtro</td>
+        </tr>
+      </table>
+            
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Seleccionar página de Contratos"></mat-paginator>
+
+    </form>
+  </div>
+  <router-outlet></router-outlet>
+  
