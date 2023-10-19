@@ -44,6 +44,7 @@ export class AutomobileComponent {
   brokerList:  any[] = [];
   accesoriesList: any[] = [];
   methodOfPaymentList: any[] = [];
+  takersList: any[] = [];
 
   identControl = new FormControl('');
   stateControl = new FormControl('');
@@ -60,6 +61,7 @@ export class AutomobileComponent {
   brokerControl = new FormControl('');
   accesories = new FormControl('');
   methodOfPaymentControl = new FormControl('');
+  takersControl = new FormControl('');
 
   filteredIdent!: Observable<string[]>;
   filteredState!: Observable<string[]>;
@@ -75,6 +77,7 @@ export class AutomobileComponent {
   filteredPlan!: Observable<string[]>;
   filteredBroker!: Observable<string[]>;
   filteredMethodOfPayment!: Observable<string[]>;
+  filteredTakers!: Observable<string[]>;
 
   isLinear = false;
   helmet: boolean = false;
@@ -83,12 +86,18 @@ export class AutomobileComponent {
   amountTotal: boolean = false;
   buttonEmissions: boolean = true;
   loadingEmissions: boolean = false;
+  activateInspection: boolean = false;
   loadingPdf: boolean = false;
+  firstTime: boolean = true;
+  detail: boolean = false;
   primaBruta!: any;
   descuento!: any;
   sumaAsegurada!: any;
   montoTotal!: any;
   ccontratoflota!: any;
+  currentUser!: any
+  token!: any
+  
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -102,15 +111,17 @@ export class AutomobileComponent {
     xdireccion: ['', Validators.required],
   });
   vehicleFormGroup = this._formBuilder.group({
-    xplaca: ['', Validators.required],
-    cmarca: ['', Validators.required],
-    cmodelo: ['', Validators.required],
-    cversion: ['', Validators.required],
-    fano: [{ value: '', disabled: true }],
+    ccotizacion: [{ value: '', disabled: false }],
+    cinspeccion: [{ value: '', disabled: false }],
+    xplaca: ['',[Validators.required, Validators.maxLength(7)]],
+    xmarca: ['', Validators.required],
+    xmodelo: ['', Validators.required],
+    xversion: ['', Validators.required],
+    fano: [{ value: '', disabled: false }],
     npasajeros: [{ value: '', disabled: true }],
     xcolor: ['', Validators.required],
-    xserialcarroceria: ['', Validators.required],
-    xserialmotor: ['', Validators.required],
+    xserialcarroceria: ['', [Validators.required, Validators.maxLength(17)]],
+    xserialmotor: ['', [Validators.required, Validators.maxLength(17)]],
     xcobertura: ['', Validators.required],
     ctarifa_exceso: ['', Validators.required],
     cuso: ['', Validators.required],
@@ -120,6 +131,8 @@ export class AutomobileComponent {
   planFormGroup = this._formBuilder.group({
     cplan: ['', Validators.required],
     ccorredor: ['', Validators.required],
+    ctomador: [{ value: '', disabled: false }],
+    xtomador: [{ value: '', disabled: false }],
     pcasco: [{ value: '', disabled: true }],
     msuma_aseg: ['', Validators.required],
     mprima_bruta: [{ value: '', disabled: true }],
@@ -148,21 +161,61 @@ export class AutomobileComponent {
 
 
   ngOnInit(){
-    this.filteredIdent = this.identControl.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filter(value || ''))
-    );
-    this.getState();
-    this.getBrand();
-    this.getColor();
-    this.getRates();
-    this.getTypeVehicles();
-    this.getUtilityVehicle();
-    this.getClass();
-    this.getPlan();
-    this.getBroker();
-    this.getAccesories();
-    this.getMethodOfPayment();
+    this.token = localStorage.getItem('user');
+    this.currentUser = JSON.parse(this.token);
+
+      if (this.currentUser) {
+        this.filteredIdent = this.identControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filter(value || ''))
+        );
+
+        this.getState();
+        this.getColor();
+        this.getRates();
+        this.getTypeVehicles();
+        this.getUtilityVehicle();
+        this.getClass();
+        this.getPlan();
+        this.getBroker();
+        this.getAccesories();
+        this.getMethodOfPayment();
+        this.getTakers();
+    }
+  }
+
+  searchPropietary(){
+    let data = {
+      xrif_cliente: this.personsFormGroup.get('xrif_cliente')?.value
+    };
+    this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/propietary', data).subscribe((response: any) => {
+      if (response.status) {
+        this.firstTime = false;
+        this.detail = true;
+        this.personsFormGroup.get('xnombre')?.setValue(response.data.xnombre)
+        this.personsFormGroup.get('xapellido')?.setValue(response.data.xapellido)
+        this.personsFormGroup.get('xtelefono_emp')?.setValue(response.data.xtelefono_emp)
+        this.personsFormGroup.get('email')?.setValue(response.data.email)
+        this.personsFormGroup.get('cestado')?.setValue(response.data.cestado)
+        this.personsFormGroup.get('cciudad')?.setValue(response.data.cciudad)
+        this.getCity();
+        this.personsFormGroup.get('xdireccion')?.setValue(response.data.xdireccion)
+      }
+    });
+  }
+
+  searchVehicle(){
+    let data = {
+      xplaca: this.vehicleFormGroup.get('xplaca')?.value
+    };
+    this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/vehicle', data).subscribe((response: any) => {
+      if (response.status) {
+        this.snackBar.open(`${response.message}`, '', {
+          duration: 10000,
+        });
+        this.vehicleFormGroup.get('xplaca')?.setValue('')
+      }
+    });
   }
 
   private _filter(value: string): string[] {
@@ -251,18 +304,37 @@ export class AutomobileComponent {
     }
   }
 
+  changeYears() {
+    const fanoControl = this.vehicleFormGroup.get('fano');
+    
+    if (fanoControl && fanoControl.value) {
+      const fanoValue = parseInt(fanoControl.value, 10);
+      
+      if (fanoValue > 2021) {
+        this.snackBar.open(`No puedes colocar un año mayor al 2021. Por favor, vuelve a intentarlo`, '', {
+          duration: 5000,
+        });
+      }else{
+        this.getBrand()
+      }
+    }
+  }
+
   getBrand(){
-    let data;
+    let data = {
+      qano: this.vehicleFormGroup.get('fano')?.value
+    };
     this.http.post(environment.apiUrl + '/api/v1/valrep/brand', data).subscribe((response: any) => {
       if (response.data.brand) {
         this.brandList = [];
         for (let i = 0; i < response.data.brand.length; i++) {
           this.brandList.push({
-            id: response.data.brand[i].cmarca,
+            id: i,
             value: response.data.brand[i].xmarca,
-            control: response.data.brand[i].control,
           });
         }
+        this.brandList.sort((a, b) => a.value > b.value ? 1 : -1);
+
         this.filteredBrand = this.brandControl.valueChanges.pipe(
           startWith(''),
           map(value => this._filterBrand(value || ''))
@@ -282,26 +354,27 @@ export class AutomobileComponent {
     const selectedValue = event.option.value;
     const selectedBrand = this.brandList.find(brand => brand.value === selectedValue);
     if (selectedBrand) {
-      this.vehicleFormGroup.get('cmarca')?.setValue(selectedBrand.control);
+      this.vehicleFormGroup.get('xmarca')?.setValue(selectedBrand.value);
       this.getModel();
     }
   }
 
   getModel(){
-    let marca = this.brandList.find(element => element.control == this.vehicleFormGroup.get('cmarca')?.value) ;
     let data = {
-      cmarca: marca.id
+      qano: this.vehicleFormGroup.get('fano')?.value,
+      xmarca: this.vehicleFormGroup.get('xmarca')?.value,
     };
     this.http.post(environment.apiUrl + '/api/v1/valrep/model', data).subscribe((response: any) => {
       if (response.data.model) {
         this.modelList = [];
         for (let i = 0; i < response.data.model.length; i++) {
           this.modelList.push({
-            id: response.data.model[i].cmodelo,
+            id: i,
             value: response.data.model[i].xmodelo,
-            control: response.data.model[i].control,
           });
         }
+        this.modelList.sort((a, b) => a.value > b.value ? 1 : -1);
+
         this.filteredModel = this.modelControl.valueChanges.pipe(
           startWith(''),
           map(value => this._filterModel(value || ''))
@@ -321,31 +394,29 @@ export class AutomobileComponent {
     const selectedValue = event.option.value;
     const selectedModel = this.modelList.find(model => model.value === selectedValue);
     if (selectedModel) {
-      this.vehicleFormGroup.get('cmodelo')?.setValue(selectedModel.control);
+      this.vehicleFormGroup.get('xmodelo')?.setValue(selectedModel.value);
       this.getVersion();
     }
   }
 
   getVersion(){
-    let marca = this.brandList.find(element => element.control == this.vehicleFormGroup.get('cmarca')?.value);
-    let modelo = this.modelList.find(element => element.control == this.vehicleFormGroup.get('cmodelo')?.value);
     let data = {
-      cmarca: marca.id,
-      cmodelo: modelo.id
+      qano: this.vehicleFormGroup.get('fano')?.value,
+      xmarca: this.vehicleFormGroup.get('xmarca')?.value,
+      xmodelo: this.vehicleFormGroup.get('xmodelo')?.value,
     };
     this.http.post(environment.apiUrl + '/api/v1/valrep/version', data).subscribe((response: any) => {
       if (response.data.version) {
         this.versionList = [];
         for (let i = 0; i < response.data.version.length; i++) {
           this.versionList.push({
-            id: response.data.version[i].cversion,
+            id: i,
             value: response.data.version[i].xversion,
-            value2: `${response.data.version[i].xversion} - Año ${response.data.version[i].fano}`,
-            npasajeros: response.data.version[i].npasajeros,
-            fano: response.data.version[i].fano,
-            control: response.data.version[i].control,
+            npasajero: response.data.version[i].npasajero,
           });
         }
+        this.versionList.sort((a, b) => a.value > b.value ? 1 : -1);
+
         this.filteredVersion = this.versionControl.valueChanges.pipe(
           startWith(''),
           map(value => this._filterVersion(value || ''))
@@ -357,23 +428,17 @@ export class AutomobileComponent {
   private _filterVersion(value: string): string[] {
     const filterValue = value.toLowerCase();
     return this.versionList
-      .map(version => version.value2)
+      .map(version => version.value)
       .filter(version => version.toLowerCase().includes(filterValue));
   }
 
   onVersionSelection(event: any) {
     const selectedValue = event.option.value;
-    const selectedVersion = this.versionList.find(version => version.value2 === selectedValue);
+    const selectedVersion = this.versionList.find(version => version.value === selectedValue);
     if (selectedVersion) {
-      this.vehicleFormGroup.get('cversion')?.setValue(selectedVersion.control);
-      this.changePassager();
+      this.vehicleFormGroup.get('xversion')?.setValue(selectedVersion.value);
+      this.vehicleFormGroup.get('npasajeros')?.setValue(selectedVersion.npasajero);
     }
-  }
-
-  changePassager(){
-    let version = this.versionList.find(element => element.control == this.vehicleFormGroup.get('cversion')?.value) ;
-    this.vehicleFormGroup.get('fano')?.setValue(version.fano);
-    this.vehicleFormGroup.get('npasajeros')?.setValue(version.npasajeros);
   }
 
   getColor(){
@@ -602,10 +667,20 @@ export class AutomobileComponent {
   }
 
   onCoverageChange(): void {
-    if(this.vehicleFormGroup.get('xcobertura')?.value == 'RCV'){
+    if(this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv'){
       this.helmet = false;
+      this.activateInspection = false;
     }else{
+      this.activateInspection = true;
       this.helmet = true;
+    }
+  }
+
+  changeInspection(){
+    if(this.currentUser.data.crol != 1){
+      this.snackBar.open(`No posee Número de Inspección, por lo tanto no puede proceder con ${this.vehicleFormGroup.get('xcobertura')?.value}`, '', {
+        duration: 4000,
+      });
     }
   }
 
@@ -621,7 +696,7 @@ export class AutomobileComponent {
       xcobertura: this.vehicleFormGroup.get('xcobertura')?.value,
       
     };
-    this.http.post(environment.apiUrl + '/api/v1/emissions/automobil/hull-price', data).subscribe((response: any) => {
+    this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/hull-price', data).subscribe((response: any) => {
       if(response.status){
         this.planFormGroup.get('pcasco')?.setValue(response.data.ptasa_casco);
         this.planFormGroup.get('pmotin')?.setValue(response.data.ptarifa);
@@ -631,6 +706,42 @@ export class AutomobileComponent {
         }
       }
     })
+  }
+
+  getTakers(){
+    this.http.post(environment.apiUrl + '/api/v1/valrep/takers', null).subscribe((response: any) => {
+      if (response.data.takers) {
+        for (let i = 0; i < response.data.takers.length; i++) {
+          this.takersList.push({
+            id: response.data.takers[i].ctomador,
+            value: response.data.takers[i].xtomador,
+          });
+        }
+        this.filteredTakers = this.takersControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filterTakers(value || ''))
+        );
+      }
+    });
+  }
+
+  private _filterTakers(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    const lista = this.takersList.map(taker => taker.value).filter(taker => taker.toLowerCase().includes(filterValue));;
+
+    if(!lista[0]){
+      this.planFormGroup.get('xtomador')?.setValue(filterValue)
+    }
+
+    return lista
+  }
+
+  onTakersSelection(event: any) {
+    const selectedValue = event.option.value;
+    const selectedTakers = this.takersList.find(taker => taker.value === selectedValue);
+    if (selectedTakers) {
+      this.planFormGroup.get('ctomador')?.setValue(selectedTakers.id);
+    }
   }
 
   openDiscount(){
@@ -769,7 +880,7 @@ export class AutomobileComponent {
       igrua: false,
       npasajeros: this.vehicleFormGroup.get('npasajeros')?.value,
     }
-    this.http.post(environment.apiUrl + '/api/v1/emissions/automobil/premium-amount', data).subscribe((response: any) => {
+    this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/premium-amount', data).subscribe((response: any) => {
       if (response.status) {
         this.amountTotal = true;
         this.montoTotal = response.data.mprima
@@ -782,9 +893,7 @@ export class AutomobileComponent {
   onSubmit(){
     this.buttonEmissions = false;
     this.loadingEmissions = true;
-    let marca = this.brandList.find(element => element.control === this.vehicleFormGroup.get('cmarca')?.value);
-    let modelo = this.modelList.find(element => element.control === this.vehicleFormGroup.get('cmodelo')?.value);
-    let version = this.versionList.find(element => element.control === this.vehicleFormGroup.get('cversion')?.value);
+
     let data = {
       icedula: this.personsFormGroup.get('icedula')?.value,
       xrif_cliente: this.personsFormGroup.get('xrif_cliente')?.value,
@@ -796,9 +905,9 @@ export class AutomobileComponent {
       cciudad: this.personsFormGroup.get('cciudad')?.value,
       xdireccion: this.personsFormGroup.get('xdireccion')?.value,
       xplaca: this.vehicleFormGroup.get('xplaca')?.value,
-      cmarca: marca.id,
-      cmodelo: modelo.id,
-      cversion: version.id,
+      xmarca: this.vehicleFormGroup.get('xmarca')?.value,
+      xmodelo: this.vehicleFormGroup.get('xmodelo')?.value,
+      xversion: this.vehicleFormGroup.get('xversion')?.value,
       fano: this.vehicleFormGroup.get('fano')?.value,
       npasajeros: this.vehicleFormGroup.get('npasajeros')?.value,
       xcolor: this.vehicleFormGroup.get('xcolor')?.value,
@@ -832,7 +941,7 @@ export class AutomobileComponent {
     const nombre = this.personsFormGroup.get('xnombre')?.value + ' ' + this.personsFormGroup.get('xapellido')?.value;
     const placa = this.vehicleFormGroup.get('xplaca')?.value;
 
-    this.http.post(environment.apiUrl + '/api/v1/emissions/automobil/create', data).subscribe((response: any) => {
+    this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/create', data).subscribe((response: any) => {
       if (response.status) {
         this.loadingEmissions = false;
         this.loadingPdf = true;
