@@ -97,6 +97,7 @@ export class AutomobileComponent {
   ccontratoflota!: any;
   currentUser!: any
   token!: any
+  today!: Date;
   
 
   personsFormGroup = this._formBuilder.group({
@@ -119,6 +120,7 @@ export class AutomobileComponent {
     xversion: ['', Validators.required],
     fano: [{ value: '', disabled: false }],
     npasajeros: [{ value: '', disabled: true }],
+    cclasificacion: ['', Validators.required], 
     xcolor: ['', Validators.required],
     xserialcarroceria: ['', [Validators.required, Validators.maxLength(17)]],
     xserialmotor: ['', [Validators.required, Validators.maxLength(17)]],
@@ -149,6 +151,8 @@ export class AutomobileComponent {
   receiptFormGroup = this._formBuilder.group({
     xpago: ['', Validators.required],
     femision: ['', Validators.required],
+    fdesde: ['', Validators.required],
+    fhasta: ['', Validators.required],
     cmetodologiapago: ['', Validators.required]
   });
 
@@ -161,7 +165,25 @@ export class AutomobileComponent {
 
 
   ngOnInit(){
+    this.today = new Date();
+    const formattedDate = this.today.toISOString();
+    
+    this.receiptFormGroup.get('fdesde')?.setValue(formattedDate);
+
+    const fdesdeString = this.receiptFormGroup.get('fdesde')?.value;
+
+    if (fdesdeString) {
+      const fdesde = new Date(fdesdeString);
+      const fhasta = new Date(fdesde);
+
+      fhasta.setFullYear(fhasta.getFullYear() + 1);
+
+      const formattedFhasta = fhasta.toISOString();
+      this.receiptFormGroup.get('fhasta')?.setValue(formattedFhasta)
+    }
+
     this.token = localStorage.getItem('user');
+    
     this.currentUser = JSON.parse(this.token);
 
       if (this.currentUser) {
@@ -413,6 +435,7 @@ export class AutomobileComponent {
             id: i,
             value: response.data.version[i].xversion,
             npasajero: response.data.version[i].npasajero,
+            cclasificacion: response.data.version[i].xclasificacion,
           });
         }
         this.versionList.sort((a, b) => a.value > b.value ? 1 : -1);
@@ -438,6 +461,7 @@ export class AutomobileComponent {
     if (selectedVersion) {
       this.vehicleFormGroup.get('xversion')?.setValue(selectedVersion.value);
       this.vehicleFormGroup.get('npasajeros')?.setValue(selectedVersion.npasajero);
+      this.vehicleFormGroup.get('cclasificacion')?.setValue(selectedVersion.cclasificacion);
     }
   }
 
@@ -890,6 +914,21 @@ export class AutomobileComponent {
     });
   }
 
+  calculateDate(newValue: string) {
+    this.receiptFormGroup.get('fhasta')?.setValue('');
+    const fdesdeString = newValue;
+  
+    if (fdesdeString) {
+      const fdesde = new Date(fdesdeString);
+      const fhasta = new Date(fdesde);
+  
+      fhasta.setFullYear(fhasta.getFullYear() + 1);
+  
+      const formattedFhasta = fhasta.toISOString();
+      this.receiptFormGroup.get('fhasta')?.setValue(formattedFhasta);
+    }
+  }
+  
   onSubmit(){
     this.buttonEmissions = false;
     this.loadingEmissions = true;
@@ -915,9 +954,13 @@ export class AutomobileComponent {
       xserialmotor: this.vehicleFormGroup.get('xserialmotor')?.value,
       xcobertura: this.vehicleFormGroup.get('xcobertura')?.value,
       ctarifa_exceso: this.vehicleFormGroup.get('ctarifa_exceso')?.value,
-      cuso: this.vehicleFormGroup.get('cuso')?.value,
-      ctipovehiculo: this.vehicleFormGroup.get('ctipovehiculo')?.value,
-      cclase: this.vehicleFormGroup.get('cclase')?.value,
+      cclasificacion: this.vehicleFormGroup.get('cclasificacion')?.value,
+      ctomador: this.planFormGroup.get('ctomador')?.value,
+      xtomador: this.planFormGroup.get('xtomador')?.value,
+      ccotizacion: this.vehicleFormGroup.get('ccotizacion')?.value,
+      cinspeccion: this.vehicleFormGroup.get('cinspeccion')?.value,
+      fdesde_pol: this.receiptFormGroup.get('fdesde_pol')?.value,
+      fhasta_pol: this.receiptFormGroup.get('fhasta_pol')?.value,
       cplan_rc: this.planFormGroup.get('cplan')?.value,
       ccorredor: this.planFormGroup.get('ccorredor')?.value,
       pcasco: this.planFormGroup.get('pcasco')?.value,

@@ -324,6 +324,23 @@
                     <input matInput type="number" placeholder="N° de Inspección" formControlName="cinspeccion" (change)="changeInspection()">
                   </mat-form-field>
                 </div>
+                <div class="col-3">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>Tarifas</mat-label>
+                      <input type="text"
+                            placeholder="Seleccione Tarifa"
+                            aria-label="Seleccione"
+                            matInput
+                            [formControl]="ratesControl"
+                            [matAutocomplete]="rates"
+                            required>
+                      <mat-autocomplete #rates="matAutocomplete" (optionSelected)="onRatesSelection($event)">
+                        <mat-option *ngFor="let rates of filteredRates | async" [value]="rates">
+                          {{ rates }}
+                        </mat-option>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                </div>
               </div>
             </div>
 
@@ -515,22 +532,22 @@
         <mat-step [stepControl]="receiptFormGroup" label="Detalles del Recibo">
             <form [formGroup]="receiptFormGroup">
               <div class="row">
-                <!--<div class="col-3">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>Modalidad de Pagos</mat-label>
-                    <mat-select formControlName="xpago" (selectionChange)="onPaymentChange()">
-                       <mat-option value="PASARELA">Pasarela de Pago</mat-option> 
-                      <mat-option value="MANUAL">Pago Manual</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>-->
                 <div class="col-3">
                   <mat-form-field class="example-full-width">
-                    <mat-label>Fecha de Emisión</mat-label>
-                    <input matInput [matDatepicker]="picker" formControlName="femision">
+                    <mat-label>Fecha Desde</mat-label>
+                    <input matInput [matDatepicker]="pickerDesde" formControlName="fdesde" (ngModelChange)="calculateDate($event)">
                     <mat-hint>DD/MM/YYYY</mat-hint>
-                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
+                    <mat-datepicker-toggle matIconSuffix [for]="pickerDesde"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerDesde></mat-datepicker>
+                  </mat-form-field>
+                </div>
+                <div class="col-3">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Fecha Hasta</mat-label>
+                    <input matInput [matDatepicker]="pickerHasta" formControlName="fhasta">
+                    <mat-hint>DD/MM/YYYY</mat-hint>
+                    <mat-datepicker-toggle matIconSuffix [for]="pickerHasta"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerHasta></mat-datepicker>
                   </mat-form-field>
                 </div>
                 <div class="col-3">
