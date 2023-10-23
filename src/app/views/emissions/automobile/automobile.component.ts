@@ -129,6 +129,7 @@ export class AutomobileComponent {
     cuso: ['', Validators.required],
     ctipovehiculo: ['', Validators.required],
     cclase: ['', Validators.required],
+    id_inma: ['', Validators.required],
   });
   planFormGroup = this._formBuilder.group({
     cplan: ['', Validators.required],
@@ -436,6 +437,7 @@ export class AutomobileComponent {
             value: response.data.version[i].xversion,
             npasajero: response.data.version[i].npasajero,
             cclasificacion: response.data.version[i].xclasificacion,
+            id_inma: response.data.version[i].id,
           });
         }
         this.versionList.sort((a, b) => a.value > b.value ? 1 : -1);
@@ -462,6 +464,7 @@ export class AutomobileComponent {
       this.vehicleFormGroup.get('xversion')?.setValue(selectedVersion.value);
       this.vehicleFormGroup.get('npasajeros')?.setValue(selectedVersion.npasajero);
       this.vehicleFormGroup.get('cclasificacion')?.setValue(selectedVersion.cclasificacion);
+      this.vehicleFormGroup.get('id_inma')?.setValue(selectedVersion.id_inma);
     }
   }
 
@@ -978,6 +981,7 @@ export class AutomobileComponent {
       xpago: this.receiptFormGroup.get('xpago')?.value,
       femision: this.receiptFormGroup.get('femision')?.value,
       cmetodologiapago: this.receiptFormGroup.get('cmetodologiapago')?.value,
+      id_inma: this.vehicleFormGroup.get('id_inma')?.value,
       cpais: 58
     }
 

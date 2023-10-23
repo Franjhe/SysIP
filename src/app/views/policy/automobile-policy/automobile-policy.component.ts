@@ -37,7 +37,7 @@ export class AutomobilePolicyComponent {
     const isLoggedIn = localStorage.getItem('user');
     if (isLoggedIn) {
       let data;
-      this.http.post(environment.apiUrl + '/api/v1/emissions/automobil/search', data).subscribe((response: any) => {
+      this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/search', data).subscribe((response: any) => {
         if (response.data.contract) {
           this.dataSource.data = response.data.contract;
         }
