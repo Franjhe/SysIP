@@ -438,6 +438,7 @@ export class AutomobileComponent {
             npasajero: response.data.version[i].npasajero,
             cclasificacion: response.data.version[i].xclasificacion,
             id_inma: response.data.version[i].id,
+            msum: response.data.version[i].msum,
           });
         }
         this.versionList.sort((a, b) => a.value > b.value ? 1 : -1);
@@ -465,6 +466,7 @@ export class AutomobileComponent {
       this.vehicleFormGroup.get('npasajeros')?.setValue(selectedVersion.npasajero);
       this.vehicleFormGroup.get('cclasificacion')?.setValue(selectedVersion.cclasificacion);
       this.vehicleFormGroup.get('id_inma')?.setValue(selectedVersion.id_inma);
+      this.sumaAsegurada = selectedVersion.msum;
     }
   }
 
@@ -625,7 +627,6 @@ export class AutomobileComponent {
     const selectedClass = this.classList.find(classL => classL.value === selectedValue);
     if (selectedClass) {
       this.vehicleFormGroup.get('cclase')?.setValue(selectedClass.id);
-      this.getHullPrice();
     }
   }
 
@@ -698,6 +699,7 @@ export class AutomobileComponent {
       this.helmet = false;
       this.activateInspection = false;
     }else{
+      this.validateYearsFromHullPrice()
       this.activateInspection = true;
       this.helmet = true;
     }
@@ -711,21 +713,44 @@ export class AutomobileComponent {
     }
   }
 
+  validateYearsFromHullPrice() {
+    const yearActual = new Date().getFullYear();
+  
+    const yearLimite = yearActual - 16;
+  
+    const fanoValue = this.vehicleFormGroup.get('fano')?.value;
+  
+    if (fanoValue !== null && fanoValue !== undefined) {
+      const fanoNumber = parseInt(fanoValue, 10);
+
+      if (fanoNumber <= yearLimite) {
+        this.snackBar.open(`El año del vehículo es menor a ${yearLimite}, por lo tanto, no se puede prestar el servicio de ${this.vehicleFormGroup.get('xcobertura')?.value}`, '', {
+          duration: 5000,
+        });
+        this.vehicleFormGroup.get('xcobertura')?.setValue('');
+      } else {
+        this.getHullPrice()
+      }
+    } else {
+      console.log('fanoValue es nulo o indefinido');
+    }
+  }
+
   getHullPrice(){
     let marca = this.brandList.find(element => element.control === this.vehicleFormGroup.get('cmarca')?.value);
     let modelo = this.modelList.find(element => element.control === this.vehicleFormGroup.get('cmodelo')?.value);
     let clase = this.classList.find(element => element.id === this.vehicleFormGroup.get('cclase')?.value);
     let data =  {
-      xclase: clase.value,  
       xmarca: marca.value,
       xmodelo: modelo.value,
       cano: this.vehicleFormGroup.get('fano')?.value,
       xcobertura: this.vehicleFormGroup.get('xcobertura')?.value,
-      
+      xclase: this.vehicleFormGroup.get('cclasificacion')?.value,
     };
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/hull-price', data).subscribe((response: any) => {
       if(response.status){
         this.planFormGroup.get('pcasco')?.setValue(response.data.ptasa_casco);
+        this.planFormGroup.get('msuma_aseg')?.setValue(this.sumaAsegurada);
         this.planFormGroup.get('pmotin')?.setValue(response.data.ptarifa);
         for(let i = 0; i < response.data.ptarifa.length; i++){
           this.planFormGroup.get('pcatastrofico')?.setValue(response.data.ptarifa[1].ptarifa)
