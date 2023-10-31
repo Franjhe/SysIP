@@ -411,6 +411,76 @@
                 </div>
               </div>
 
+              <div class="row" *ngIf="takersInfo">
+                <div class="col-3">
+                  <mat-form-field>
+                    <mat-label>Identificación</mat-label>
+                    <input matInput type="text" placeholder="Identificación" formControlName="xrif_tomador">
+                  </mat-form-field>
+                </div>
+                <div class="col-3">
+                  <mat-form-field>
+                    <mat-label>Correo</mat-label>
+                    <input matInput type="text" placeholder="Correo" formControlName="xemail_tomador">
+                  </mat-form-field>
+                </div>
+                <div class="col-3">
+                  <mat-form-field class="example-full-width" >
+                    <mat-label>Estado</mat-label>
+                    <input type="text"
+                           placeholder="Seleccione Estado"
+                           aria-label="Seleccione"
+                           matInput
+                           [formControl]="stateTakerControl"
+                           [matAutocomplete]="state"
+                           required>
+                           <mat-autocomplete #state="matAutocomplete" (optionSelected)="onStateSelectionTakers($event)">
+                            <mat-option *ngFor="let state of filteredStateTaker | async" [value]="state">
+                              {{ state }}
+                            </mat-option>
+                          </mat-autocomplete>
+                  </mat-form-field>
+                </div>
+                <div class="col-3">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Ciudad</mat-label>
+                    <input type="text"
+                           placeholder="Seleccione Ciudad"
+                           aria-label="Seleccione"
+                           matInput
+                           [formControl]="cityTakerControl"
+                           [matAutocomplete]="cityTa"
+                           required>
+                           <mat-autocomplete #cityTa="matAutocomplete" (optionSelected)="onCitySelectionTakers($event)">
+                            <mat-option *ngFor="let city of filteredCityTaker | async" [value]="city">
+                              {{ city }}
+                            </mat-option>
+                          </mat-autocomplete>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <div class="row justify-content-center" *ngIf="takersInfo">
+                <div class="col-4">
+                    <mat-form-field>
+                      <mat-label>Dirección</mat-label>
+                      <input matInput type="text" placeholder="Dirección" formControlName="xdireccion_tomador">
+                    </mat-form-field>
+                </div>
+                <div class="col-4">
+                    <mat-form-field>
+                      <mat-label>Zona Postal</mat-label>
+                      <input matInput type="text" placeholder="Zona Postal" formControlName="xzona_postal_tomador">
+                    </mat-form-field>
+                </div>
+                <div class="col-4">
+                    <mat-form-field>
+                      <mat-label>Teléfono</mat-label>
+                      <input matInput type="text" placeholder="Teléfono" formControlName="xtelefono_tomador">
+                    </mat-form-field>
+                </div>
+              </div>
+
               <mat-tab-group *ngIf="helmet">
                 <mat-tab label="Tasas Casco"> 
                   <div style="display: flex;">

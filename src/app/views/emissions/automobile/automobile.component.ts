@@ -32,6 +32,8 @@ export class AutomobileComponent {
   identList = ['V', 'P', 'E', 'J', 'C','G'];
   stateList: any[] = [];
   cityList: any[] = [];
+  stateTakerList: any[] = [];
+  cityTakerList: any[] = [];
   brandList: any[] = [];
   modelList: any[] = [];
   versionList: any[] = [];
@@ -49,6 +51,8 @@ export class AutomobileComponent {
   identControl = new FormControl('');
   stateControl = new FormControl('');
   cityControl = new FormControl('');
+  stateTakerControl = new FormControl('');
+  cityTakerControl = new FormControl('');
   brandControl = new FormControl('');
   modelControl = new FormControl('');
   versionControl = new FormControl('');
@@ -66,6 +70,8 @@ export class AutomobileComponent {
   filteredIdent!: Observable<string[]>;
   filteredState!: Observable<string[]>;
   filteredCity!: Observable<string[]>;
+  filteredStateTaker!: Observable<string[]>;
+  filteredCityTaker!: Observable<string[]>;
   filteredBrand!: Observable<string[]>;
   filteredModel!: Observable<string[]>;
   filteredVersion!: Observable<string[]>;
@@ -84,12 +90,13 @@ export class AutomobileComponent {
   discount: boolean = false;
   enableInfo: boolean = false;
   amountTotal: boolean = false;
-  buttonEmissions: boolean = true;
+  buttonEmissions: boolean = false;
   loadingEmissions: boolean = false;
   activateInspection: boolean = false;
   loadingPdf: boolean = false;
   firstTime: boolean = true;
   detail: boolean = false;
+  takersInfo: boolean = false;
   primaBruta!: any;
   descuento!: any;
   sumaAsegurada!: any;
@@ -98,6 +105,7 @@ export class AutomobileComponent {
   currentUser!: any
   token!: any
   today!: Date;
+  xmetodologia!: any;
   
 
   personsFormGroup = this._formBuilder.group({
@@ -136,6 +144,13 @@ export class AutomobileComponent {
     ccorredor: ['', Validators.required],
     ctomador: [{ value: '', disabled: false }],
     xtomador: [{ value: '', disabled: false }],
+    xrif_tomador: ['', Validators.required],
+    cestado_tomador: ['', Validators.required],
+    cciudad_tomador: ['', Validators.required],
+    xemail_tomador: ['', Validators.required],
+    xdireccion_tomador: ['', Validators.required],
+    xzona_postal_tomador: ['', Validators.required],
+    xtelefono_tomador: ['', Validators.required],
     pcasco: [{ value: '', disabled: true }],
     msuma_aseg: ['', Validators.required],
     mprima_bruta: [{ value: '', disabled: true }],
@@ -234,7 +249,7 @@ export class AutomobileComponent {
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/vehicle', data).subscribe((response: any) => {
       if (response.status) {
         this.snackBar.open(`${response.message}`, '', {
-          duration: 10000,
+          duration: 5000,
         });
         this.vehicleFormGroup.get('xplaca')?.setValue('')
       }
@@ -266,13 +281,30 @@ export class AutomobileComponent {
             id: response.data.state[i].cestado,
             value: response.data.state[i].xdescripcion_l
           });
+
+          this.stateTakerList.push({
+            id: response.data.state[i].cestado,
+            value: response.data.state[i].xdescripcion_l
+          });
         }
         this.filteredState = this.stateControl.valueChanges.pipe(
           startWith(''),
           map(value => this._filterState(value || ''))
         );
+
+        this.filteredStateTaker = this.stateTakerControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filterStateTaker(value || ''))
+        );
       }
     });
+  }
+
+  private _filterStateTaker(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.stateTakerList
+      .map(state => state.value)
+      .filter(state => state.toLowerCase().includes(filterValue));
   }
 
   private _filterState(value: string): string[] {
@@ -289,6 +321,37 @@ export class AutomobileComponent {
       this.personsFormGroup.get('cestado')?.setValue(selectedState.id);
       this.getCity();
     }
+  }
+
+  onStateSelectionTakers(event: any) {
+    const selectedValue = event.option.value;
+    const selectedState = this.stateTakerList.find(state => state.value === selectedValue);
+    if (selectedState) {
+      this.planFormGroup.get('cestado_tomador')?.setValue(selectedState.id);
+      this.getCityTaker();
+    }
+  }
+
+  getCityTaker(){
+    console.log(this.planFormGroup.get('cestado_tomador')?.value)
+    let data = {
+      cpais: 58,
+      cestado: this.planFormGroup.get('cestado_tomador')?.value
+    };
+    this.http.post(environment.apiUrl + '/api/v1/valrep/city', data).subscribe((response: any) => {
+      if (response.data.city) {
+        for (let i = 0; i < response.data.city.length; i++) {
+          this.cityTakerList.push({
+            id: response.data.city[i].cciudad,
+            value: response.data.city[i].xdescripcion_l
+          });
+        }
+        this.filteredCityTaker = this.cityTakerControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filterCityTaker(value || ''))
+        );
+      }
+    });
   }
 
   getCity(){
@@ -319,11 +382,26 @@ export class AutomobileComponent {
       .filter(city => city.toLowerCase().includes(filterValue));
   }
 
+  private _filterCityTaker(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.cityTakerList
+      .map(city => city.value)
+      .filter(city => city.toLowerCase().includes(filterValue));
+  }
+
   onCitySelection(event: any) {
     const selectedValue = event.option.value;
     const selectedCity = this.cityList.find(city => city.value === selectedValue);
     if (selectedCity) {
       this.personsFormGroup.get('cciudad')?.setValue(selectedCity.id);
+    }
+  }
+
+  onCitySelectionTakers(event: any) {
+    const selectedValue = event.option.value;
+    const selectedCity = this.cityTakerList.find(city => city.value === selectedValue);
+    if (selectedCity) {
+      this.planFormGroup.get('cciudad_tomador')?.setValue(selectedCity.id);
     }
   }
 
@@ -783,6 +861,11 @@ export class AutomobileComponent {
 
     if(!lista[0]){
       this.planFormGroup.get('xtomador')?.setValue(filterValue)
+      if(this.planFormGroup.get('xtomador')?.value){
+        this.takersInfo = true;
+      }else{
+        this.takersInfo = false;
+      }
     }
 
     return lista
@@ -920,27 +1003,30 @@ export class AutomobileComponent {
     const selectedMethodOfPayment = this.methodOfPaymentList.find(payment => payment.value === selectedValue);
     if (selectedMethodOfPayment) {
       this.receiptFormGroup.get('cmetodologiapago')?.setValue(selectedMethodOfPayment.id);
-      this.operationAmount();
+      this.xmetodologia = selectedMethodOfPayment.value;
+      this.validateMethod();
+      // this.operationAmount();
+      
     }
   }
 
-  operationAmount(){
-    let data = {
-      cplan: this.planFormGroup.get('cplan')?.value,
-      cmetodologiapago: this.receiptFormGroup.get('cmetodologiapago')?.value,
-      ctarifa_exceso: this.vehicleFormGroup.get('ctarifa_exceso')?.value,
-      igrua: false,
-      npasajeros: this.vehicleFormGroup.get('npasajeros')?.value,
-    }
-    this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/premium-amount', data).subscribe((response: any) => {
-      if (response.status) {
-        this.amountTotal = true;
-        this.montoTotal = response.data.mprima
-      }else{
-        this.amountTotal = false;
-      }
-    });
-  }
+  // operationAmount(){
+  //   let data = {
+  //     cplan: this.planFormGroup.get('cplan')?.value,
+  //     cmetodologiapago: this.receiptFormGroup.get('cmetodologiapago')?.value,
+  //     ctarifa_exceso: this.vehicleFormGroup.get('ctarifa_exceso')?.value,
+  //     igrua: false,
+  //     npasajeros: this.vehicleFormGroup.get('npasajeros')?.value,
+  //   }
+  //   this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/premium-amount', data).subscribe((response: any) => {
+  //     if (response.status) {
+  //       this.amountTotal = true;
+  //       this.montoTotal = response.data.mprima
+  //     }else{
+  //       this.amountTotal = false;
+  //     }
+  //   });
+  // }
 
   calculateDate(newValue: string) {
     this.receiptFormGroup.get('fhasta')?.setValue('');
@@ -954,6 +1040,21 @@ export class AutomobileComponent {
   
       const formattedFhasta = fhasta.toISOString();
       this.receiptFormGroup.get('fhasta')?.setValue(formattedFhasta);
+    }
+  }
+
+  validateMethod(){
+    if(this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv'){
+      if(this.xmetodologia != "ANUAL"){
+        this.snackBar.open(`Lo sentimos, solo se puede colocar ${this.xmetodologia} cuando no sea RCV.`, '', {
+          duration: 3000,
+        });
+        this.receiptFormGroup.get('cmetodologiapago')?.setValue('')
+        this.methodOfPaymentControl.setValue('');
+        this.buttonEmissions = false;
+      }else{
+        this.buttonEmissions = true;
+      }
     }
   }
   
@@ -985,6 +1086,13 @@ export class AutomobileComponent {
       cclasificacion: this.vehicleFormGroup.get('cclasificacion')?.value,
       ctomador: this.planFormGroup.get('ctomador')?.value,
       xtomador: this.planFormGroup.get('xtomador')?.value,
+      xrif_tomador: this.planFormGroup.get('xrif_tomador')?.value,
+      xemail_tomador: this.planFormGroup.get('xemail_tomador')?.value,
+      cestado_tomador: this.planFormGroup.get('cestado_tomador')?.value,
+      cciudad_tomador: this.planFormGroup.get('cciudad_tomador')?.value,
+      xdireccion_tomador: this.planFormGroup.get('xdireccion_tomador')?.value,
+      xzona_postal_tomador: this.planFormGroup.get('xzona_postal_tomador')?.value,
+      xtelefono_tomador: this.planFormGroup.get('xtelefono_tomador')?.value,
       ccotizacion: this.vehicleFormGroup.get('ccotizacion')?.value,
       cinspeccion: this.vehicleFormGroup.get('cinspeccion')?.value,
       fdesde_pol: this.receiptFormGroup.get('fdesde_pol')?.value,

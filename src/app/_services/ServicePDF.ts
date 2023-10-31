@@ -1121,7 +1121,7 @@ export class PdfGenerationService {
 			{
 				alignment: 'center',
 				style: 'title',
-				margin: [0, 0, 0, 6],
+				margin: [0, 0, 0, 2],
 				text: [
 				  { text: '\nCUADRO - RECIBO DE PÓLIZA', bold: true },
 				  { text: '\nAUTOMÓVIL', bold: true },
@@ -1183,7 +1183,7 @@ export class PdfGenerationService {
 			},
 			{
 				style: 'data',
-				margin: [0, 0, 0, 6],
+				margin: [0, 0, 0, 2],
 				table: {
 				  widths: [30, 100, 40, 50, 60, 22, 50, '*'],
 				  body: [
@@ -1220,7 +1220,7 @@ export class PdfGenerationService {
 			},
 			{
 				style: 'data',
-				margin: [0, 0, 0, 6],
+				margin: [0, 0, 0, 2],
 				table: {
 				widths: [60, 280, '*', '*'],
 				body: [
@@ -1257,11 +1257,30 @@ export class PdfGenerationService {
 			},
 			{
 				style: 'data',
-				margin: [0, 0, 0, 6],
+				margin: [0, 0, 0, 2],
 				table: {
 				  widths: [30, 50],
 				  body: [
 					[{text: 'COLOR:', bold: true, border: [false, false, false, false]}, {text: this.xcolor, border: [false, false, false, false]}]
+				  ]
+				}
+			},
+			{
+				style: 'data',
+				table: {
+				  widths: ['*'],
+				  body: [
+					[{text: 'BENEFICIARIOS', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
+				  ]
+				}
+			},
+			{
+				style: 'data',
+				margin: [0, 0, 0, 2],
+				table: {
+				  widths: [120, 70],
+				  body: [
+					[{text: `${this.xnombrepropietario} ${this.xapellidopropietario}`, bold: true, border: [false, false, false, false]}, {text: this.xrif, border: [false, false, false, false]}]
 				  ]
 				}
 			},
@@ -1292,7 +1311,7 @@ export class PdfGenerationService {
 			},
 			{
 			  style: 'data',
-			  margin: [0, 0, 0, 10],
+			  margin: [0, 0, 0, 2],
 			  table: {
 				widths: [150, 100, 60, 50, '*'],
 				body: [
@@ -1320,7 +1339,7 @@ export class PdfGenerationService {
 			},
 			{
 				style: 'data',
-				margin: [0, 0, 0, 10],
+				margin: [0, 0, 0, 2],
 				table: {
 				  widths: [135, 80, 80, 45, 82],
 				  body: this.buildReceiptBody()
@@ -1331,57 +1350,9 @@ export class PdfGenerationService {
 				table: {
 				  widths: ['*'],
 				  body: [
-					[{text: 'DECLARACIÓN DE FE', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
+					[{text: 'Incluye IGTF', bold: true, border: [false, false, false, false], alignment: 'center' } ]
 				  ]
-				}
-			},
-			{
-				style: 'data',
-				table: {
-				  widths: ['*'],
-				  body: [
-					[{text: 'En mi carácter de Tomador de la Póliza contratada con La Mundial de Seguros, C.A., bajo Fe de Juramento certifico que el dinero utilizado para el pago de la prima de la referida Póliza, proviene de fuente lícita; por lo tanto no tiene relación alguna con dinero, capitales, bienes, haberes, valores o títulos producto de actividades o acciones a que se refiere el Articulo 37 de la Ley Orgánica sobre Sustancias Estupefacientes y Psicotrópicas.', alignment: 'justify', bold: true, border: [false, false, false, false]}]
-				  ]
-				}
-			},
-			{
-				style: 'data',
-				margin: [0, 0, 0, 10],
-				table: {
-				  widths: [150, '*'],
-				  body: [
-					[{text: 'POR EL TOMADOR', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}, {text: 'POR LA MUNDIAL DE SEGUROS', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
-				  ]
-				}
-			},
-			{
-				style: 'tableExample',
-				table: {
-				  widths: [150, 110, '*'],
-				  heights: 40,
-				  body: [
-					[
-					  {
-						text: `Nombre Apellido / Denominación Social:\n${this.xnombrepropietario} ${this.xapellidopropietario}\n\nC.I./RIF: ${this.xrif}\n\nFirma:`,
-						fontSize: 7,
-						border: [true, true, true, true]
-					  },
-					  {
-						text: 'Representante\nNombre Apellido\n\n\n\nFirma Autorizada',
-						fontSize: 7,
-						border: [false, true, false, true]
-					  },
-					  {
-						border: [false, true, true, true],
-						table: {
-						  body: [
-							[{ image: this.xlogo, width: 110, height: 47, border: [false, false, false, false] }]
-						  ]
-						}
-					  }
-					]
-				  ]
-				}
+				},
 			},
 			{
 				table: {
@@ -1391,22 +1362,22 @@ export class PdfGenerationService {
 				  ]
 				},
 			},
-			{
-				table: {
-				  widths: ['*'],
-				  body: [
-					[{text: [{text: `Obtenga y conozca el contenido de las Condiciones Generales, Condiciones Particulares y Anexos correspondientes a las coberturas descritas en este Cuadro Recibo de la Póliza, accediendo a nuestra página web www.lamundialdeseguros.com`}], alignment: 'justify', fontSize: 6, bold: true, border: [false, false, false, false]} ]
-				  ]
-				},
-			},
-			{
-				table: {
-				  widths: ['*'],
-				  body: [
-					[{text: [{text: `Aprobado por la Superintendencia de la Actividad Aseguradora mediante Oficio N° de fecha El Tomador Asegurado o Beneficiario de las Pólizas, que sienta vulneración de sus derechos, y requiera presentar cualquier denuncia, queja, reclamo o solicitud de asesoría sugerida con ocasión de este contrato de seguros; puede acudir a la Ofici na de la Defensor del Asegurado de la Superintendencia de la Actividad Aseguradora, o comunicarlo a través de la Pagina web: http: //www,lamundialdeseguros.com`}], alignment: 'justify', fontSize: 6, bold: true, border: [false, false, false, false]} ]
-				  ]
-				},
-			},
+			// {
+			// 	table: {
+			// 	  widths: ['*'],
+			// 	  body: [
+			// 		[{text: [{text: `Obtenga y conozca el contenido de las Condiciones Generales, Condiciones Particulares y Anexos correspondientes a las coberturas descritas en este Cuadro Recibo de la Póliza, accediendo a nuestra página web www.lamundialdeseguros.com`}], alignment: 'justify', fontSize: 6, bold: true, border: [false, false, false, false]} ]
+			// 	  ]
+			// 	},
+			// },
+			// {
+			// 	table: {
+			// 	  widths: ['*'],
+			// 	  body: [
+			// 		[{text: [{text: `Aprobado por la Superintendencia de la Actividad Aseguradora mediante Oficio N° de fecha El Tomador Asegurado o Beneficiario de las Pólizas, que sienta vulneración de sus derechos, y requiera presentar cualquier denuncia, queja, reclamo o solicitud de asesoría sugerida con ocasión de este contrato de seguros; puede acudir a la Ofici na de la Defensor del Asegurado de la Superintendencia de la Actividad Aseguradora, o comunicarlo a través de la Pagina web: http: //www,lamundialdeseguros.com`}], alignment: 'justify', fontSize: 6, bold: true, border: [false, false, false, false]} ]
+			// 	  ]
+			// 	},
+			// },
 			{
 				table: {
 				  widths: ['*'],
@@ -1583,60 +1554,18 @@ export class PdfGenerationService {
 				table: {
 				  widths: ['*'],
 				  body: [
-					[{text: 'COBERTURAS CONTRATADAS', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
+					[{text: 'BENEFICIARIOS', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
 				  ]
 				}
 			},
 			{
-			  style: 'data',
-			  table: {
-				widths: [150, 100, 60, 50, '*'],
-				body: [
-				  [{text: 'COBERTURAS', bold: true, border: [false, false, false, false]}, {text: 'SUMA ASEGURADA', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'TASAS', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: '% DESC.', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'PRIMA', alignment: 'center', bold: true, border: [false, false, false, false]}]
-				]
-			  }
-			},
-			{
-			  style: 'data',
-			  table: {
-				widths: [150, 100, 60, 50, '*'],
-				body: this.buildCoverageBody2()
-			  }
-			},
-			{
-			  style: 'data',
-			  margin: [0, 0, 0, 10],
-			  table: {
-				widths: [150, 100, 60, 50, '*'],
-				body: [
-				  [{text: 'Prima total', colSpan: 4, alignment: 'right', bold: true, border: [false, false, false, false]}, {}, {}, {}, {text: `${this.xmoneda} ${new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.mprimatotal)}`, alignment: 'right', bold: true, border: [false, false, false, false]}]
-				]
-			  }
-			},
-			{
 				style: 'data',
+				margin: [0, 0, 0, 2],
 				table: {
-				  widths: ['*'],
+				  widths: [120, 70],
 				  body: [
-					[{text: 'RECIBOS DE PRIMAS - FRACCIONAMIENTO', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
+					[{text: `${this.xnombrepropietario} ${this.xapellidopropietario}`, bold: true, border: [false, false, false, false]}, {text: this.xrif, border: [false, false, false, false]}]
 				  ]
-				}
-			},
-			{
-				style: 'data',
-				table: {
-				  widths: [150, 100, 60, 50, '*'],
-				  body: [
-					[{text: 'NO. RECIBO', bold: true, border: [false, false, false, false]}, {text: 'FECHA DESDE', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'FECHA HASTA', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'MONEDA', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'PRIMA', alignment: 'center', bold: true, border: [false, false, false, false]}]
-				  ]
-				}
-			},
-			{
-				style: 'data',
-				margin: [0, 0, 0, 10],
-				table: {
-				  widths: [135, 80, 80, 45, 82],
-				  body: this.buildReceiptBody()
 				}
 			},
 			{
@@ -1724,7 +1653,7 @@ export class PdfGenerationService {
 				table: {
 				  widths: ['*'],
 				  body: [
-					[{text: [{text: `INTERMEDIARIO`}], color: 'red', alignment: 'center', fontSize: 6, bold: true, border: [false, false, false, false]} ]
+					[{text: [{text: `CLIENTE`}], color: 'red', alignment: 'center', fontSize: 6, bold: true, border: [false, false, false, false]} ]
 				  ]
 				},
 			},
