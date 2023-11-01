@@ -21,8 +21,9 @@ export class PdfGenerationService {
 	xcertificado: string | undefined;
 	fecha: string | undefined;
 	xtomador: string | undefined;
+	xrif_tomador: string | undefined;
+	xcorreo_tomador: string | undefined;
 	xasegurado:string | undefined;
-	xcedula_tomador: string | undefined;
 	xcedula_asegurado:string | undefined;
 	xdireccion_tomador: string | undefined;
 	xestado_tomador: string | undefined;
@@ -270,7 +271,7 @@ export class PdfGenerationService {
 			this.xasegurado = response.data.poliza[0][0].xasegurado;
 			this.xcedula_asegurado = response.data.poliza[0][0].xcedula_asegurado;
 			this.xcedula_ben = response.data.poliza[0][0].xcedula_ben;
-			this.xcedula_tomador = response.data.poliza[0][0].xcedula_tomador;
+			this.xrif_tomador = response.data.poliza[0][0].xcedula_tomador;
 			this.xcertificado = response.data.poliza[0][0].xcertificado;
 			this.xciudad_asegurado = response.data.poliza[0][0].xciudad_asegurado;
 			this.xciudad_tomador = response.data.poliza[0][0].xciudad_tomador;
@@ -476,7 +477,7 @@ export class PdfGenerationService {
 						table: {
 							widths: [345, 150],
 							body: [
-								['Tomador \n\n ' +`${this.xtomador }`, 'Cédula de Identidad / R.I.F.\n\n ' +`${this.xcedula_tomador }` ],
+								['Tomador \n\n ' +`${this.xtomador }`, 'Cédula de Identidad / R.I.F.\n\n ' +`${this.xrif_tomador }` ],
 								['Asegurado \n\n ' +`${this.xasegurado }`, 'Cédula de Identidad / R.I.F. \n\n ' +`${this.xcedula_asegurado }`]
 							]
 						}
@@ -850,11 +851,47 @@ export class PdfGenerationService {
 			}else{
 				this.xtomador = this.xnombrecliente;
 			}
-			
-			if(response.data.xprofesion){
-				this.xprofesion = response.data.xprofesion;
+
+			if(response.data.xrif_tomador){
+				this.xrif_tomador = response.data.xrif_tomador;
 			}else{
-				this.xprofesion = ' ';
+				this.xrif_tomador = this.xrif;
+			}
+			
+			if(response.data.xzona_postal_tomador){
+				this.xzona_postal_tomador = response.data.xzona_postal_tomador;
+			}else{
+				this.xzona_postal_tomador = ' ';
+			}
+
+			if(response.data.xtelefono_tomador){
+				this.xtelefono_tomador = response.data.xtelefono_tomador;
+			}else{
+				this.xtelefono_tomador = this.xtelefonocliente;
+			}
+
+			if(response.data.xcorreo_tomador){
+				this.xcorreo_tomador = response.data.xcorreo_tomador;
+			}else{
+				this.xcorreo_tomador = this.xemailcliente;
+			}
+
+			if(response.data.xestado_tomador){
+				this.xestado_tomador = response.data.xestado_tomador;
+			}else{
+				this.xestado_tomador = this.xestadocliente;
+			}
+
+			if(response.data.xciudad_tomador){
+				this.xciudad_tomador = response.data.xciudad_tomador;
+			}else{
+				this.xciudad_tomador = this.xciudadcliente;
+			}
+
+			if(response.data.xdireccion_tomador){
+				this.xdireccion_tomador = response.data.xdireccion_tomador;
+			}else{
+				this.xdireccion_tomador = this.xdireccionfiscalcliente;
 			}
 	
 			if(response.data.xrif){
@@ -1141,7 +1178,7 @@ export class PdfGenerationService {
 				table: {
 				widths: [40, 140, 70, 70, 120, '*'],
 				body: [
-				  [{text: 'TOMADOR:', bold: true, border: [false, false, false, false]}, {text: this.xtomador, border: [false, false, false, false]}, {text: 'C.I. / R.I.F.:', bold: true, border: [false, false, false, false]}, {text: this.xrif, border: [false, false, false, false]}, {text: 'CÓDIGO RAMO PÓLIZA:', bold: true, border: [false, false, false, false]}, {text: '18', border: [false, false, false, false]}]
+				  [{text: 'TOMADOR:', bold: true, border: [false, false, false, false]}, {text: this.xtomador, border: [false, false, false, false]}, {text: 'C.I. / R.I.F.:', bold: true, border: [false, false, false, false]}, {text: this.xrif_tomador, border: [false, false, false, false]}, {text: 'CÓDIGO RAMO PÓLIZA:', bold: true, border: [false, false, false, false]}, {text: '18', border: [false, false, false, false]}]
 				]
 				}
 			},
@@ -1150,7 +1187,7 @@ export class PdfGenerationService {
 				table: {
 				widths: [40, 140, 40, 100, 120, '*'],
 				body: [
-				  [{text: 'DIRECCIÓN:', bold: true, border: [false, false, false, false]}, {text: this.xdireccionfiscalcliente, border: [false, false, false, false]}, {text: 'EMAIL:', bold: true, border: [false, false, false, false]}, {text: this.xemailcliente, border: [false, false, false, false]}, {text: 'PÓLIZA:', bold: true, border: [false, false, false, false]}, {text: `${this.ccarga}`, border: [false, false, false, false]}]
+				  [{text: 'DIRECCIÓN:', bold: true, border: [false, false, false, false]}, {text: this.xdireccion_tomador, border: [false, false, false, false]}, {text: 'EMAIL:', bold: true, border: [false, false, false, false]}, {text: this.xcorreo_tomador, border: [false, false, false, false]}, {text: 'PÓLIZA:', bold: true, border: [false, false, false, false]}, {text: `${this.ccarga}`, border: [false, false, false, false]}]
 				]
 				}
 			},
@@ -1159,7 +1196,7 @@ export class PdfGenerationService {
 			  table: {
 				widths: [30, 100, 40, 50, 60, 22, 50, '*'],
 				body: [
-				  [{text: 'CIUDAD:', bold: true, border: [false, false, false, false]}, {text: this.xciudad, border: [false, false, false, false]}, {text: 'ESTADO:', bold: true, border: [false, false, false, false]}, {text: this.xestado, border: [false, false, false, false]}, {text: 'ZONA POSTAL:', bold: true, border: [false, false, false, false]}, {text: this.xzona_postal, border: [false, false, false, false]}, {text: 'TELÉFONO:', bold: true, border: [false, false, false, false]}, {text: this.xtelefono, border: [false, false, false, false]}]
+				  [{text: 'CIUDAD:', bold: true, border: [false, false, false, false]}, {text: this.xciudad_tomador, border: [false, false, false, false]}, {text: 'ESTADO:', bold: true, border: [false, false, false, false]}, {text: this.xestado_tomador, border: [false, false, false, false]}, {text: 'ZONA POSTAL:', bold: true, border: [false, false, false, false]}, {text: this.xzona_postal_tomador, border: [false, false, false, false]}, {text: 'TELÉFONO:', bold: true, border: [false, false, false, false]}, {text: this.xtelefono_tomador, border: [false, false, false, false]}]
 				]
 			  }
 			},
