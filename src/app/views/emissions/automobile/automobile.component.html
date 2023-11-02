@@ -1,5 +1,7 @@
 <div class="card container registration-form">
-    <mat-stepper [linear]="isLinear" #stepper>
+  <mat-tab-group>
+    <mat-tab label="Emisión Individual"> 
+      <mat-stepper [linear]="isLinear" #stepper>
         <mat-step [stepControl]="personsFormGroup">
           <form [formGroup]="personsFormGroup">
             <ng-template matStepLabel>Datos Personales</ng-template>
@@ -116,7 +118,7 @@
             </div>
 
             <div class="row justify-content-center py-5">
-              <button mat-button matStepperNext>Continuar</button>
+              <button mat-button matStepperNext (click)="value()">Continuar</button>
             </div>
           </form>
         </mat-step>
@@ -679,5 +681,11 @@
               </div>
             </form>
         </mat-step>
-    </mat-stepper>
+      </mat-stepper>  
+    </mat-tab>
+    <mat-tab label="Emisión Colectiva"> 
+      <h2>En Desarrollo...</h2>
+    </mat-tab>
+  </mat-tab-group>
+
 </div>

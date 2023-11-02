@@ -1069,19 +1069,19 @@ export class PdfGenerationService {
 				dataRow.push({text: ` `, alignment: 'right', border: [false, false, false, false]});
 			  }
 			  if(row.mprima){
-				dataRow.push({text: `${new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(row.mprima)}`, fillColor: '#f2f2f2', alignment: 'right', border:[false, false, false, false]});
+				dataRow.push({text: `${new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(row.mprima)}`, fillColor: '#FFFFFF', alignment: 'right', border:[false, false, false, false]});
 			  } else {
-				dataRow.push({text: ` `,fillColor: '#f2f2f2', alignment: 'right', border: [false, false, false, false]});
+				dataRow.push({text: ` `, alignment: 'right', border: [false, false, false, false]});
 			  }
 			  body.push(dataRow);
 			}
 			if (row.ititulo == 'T') {
 			  let dataRow = [];
 			  dataRow.push({text: row.xcobertura, decoration: 'underline', margin: [2, 0, 0, 0], border: [false, false, false, false]});
-			  dataRow.push({text: ` `, fillColor: '#D7D7D7', border:[false, false, false, false]});
-			  dataRow.push({text: ` `, fillColor: '#D7D7D7', border:[false, false, false, false]});
-			  dataRow.push({text: ` `, fillColor: '#D7D7D7', border:[false, false, false, false]});
-			  dataRow.push({text: ` `, fillColor: '#f2f2f2', border:[false, false, false, false]});
+			  dataRow.push({text: ` `, fillColor: '#FFFFFF', border:[false, false, false, false]});
+			  dataRow.push({text: ` `, fillColor: '#FFFFFF', border:[false, false, false, false]});
+			  dataRow.push({text: ` `, fillColor: '#FFFFFF', border:[false, false, false, false]});
+			  dataRow.push({text: ` `, fillColor: '#FFFFFF', border:[false, false, false, false]});
 			  body.push(dataRow);
 			}
 		  });
