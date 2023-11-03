@@ -327,7 +327,7 @@
                     <input matInput type="number" placeholder="N° de Inspección" formControlName="cinspeccion" (change)="changeInspection()">
                   </mat-form-field>
                 </div>
-                <div class="col-3">
+                <div class="col-3" *ngIf="activateRate">
                   <mat-form-field class="example-full-width">
                       <mat-label>Tarifas</mat-label>
                       <input type="text"
@@ -521,35 +521,6 @@
                         <P><strong>Prima Bruta:  </strong>{{primaBruta}}$</P>
                         <P><strong>Descuento:  </strong>{{descuento}}%</P>
                       </mat-menu>
-                    </div>
-                  </div>
-                </mat-tab>
-                <mat-tab label="Catastrófico - Motin">
-                  <p style="text-align: center;margin-top: 21px;"><strong>Suma Asegurada:  </strong>{{primaBruta}}$</p>
-                  <div style="display: flex;">
-                    <div class="col-3">
-                      <mat-form-field >
-                        <mat-label>Tasa Catastrofico</mat-label>
-                        <input matInput type="number" formControlName="pcatastrofico">
-                      </mat-form-field>
-                    </div>
-                    <div class="col-3">
-                      <mat-form-field >
-                        <mat-label>Prima de Catastrofico</mat-label>
-                        <input matInput type="number" formControlName="mcatastrofico">
-                      </mat-form-field>
-                    </div>
-                    <div class="col-3">
-                      <mat-form-field >
-                        <mat-label>Tasa Motin</mat-label>
-                        <input matInput type="number" formControlName="pmotin">
-                      </mat-form-field>
-                    </div>
-                    <div class="col-3">
-                      <mat-form-field >
-                        <mat-label>Prima de Motin</mat-label>
-                        <input matInput type="number" formControlName="mmotin">
-                      </mat-form-field>
                     </div>
                   </div>
                 </mat-tab>

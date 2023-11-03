@@ -97,6 +97,8 @@ export class AutomobileComponent {
   firstTime: boolean = true;
   detail: boolean = false;
   takersInfo: boolean = false;
+  activateTypeVehicle: boolean = false;
+  activateRate: boolean = false;
   primaBruta!: any;
   descuento!: any;
   sumaAsegurada!: any;
@@ -129,6 +131,7 @@ export class AutomobileComponent {
     fano: [{ value: '', disabled: false }],
     npasajeros: [{ value: '', disabled: true }],
     cclasificacion: ['', Validators.required], 
+    xtipovehiculo: ['', Validators.required],
     xcolor: ['', Validators.required],
     xserialcarroceria: ['', [Validators.required, Validators.maxLength(17)]],
     xserialmotor: ['', [Validators.required, Validators.maxLength(17)]],
@@ -517,8 +520,11 @@ export class AutomobileComponent {
             cclasificacion: response.data.version[i].xclasificacion,
             id_inma: response.data.version[i].id,
             msum: response.data.version[i].msum,
+            xtipovehiculo: response.data.version[i].xclase_rcv,
+            ctarifa_exceso: response.data.version[i].ctarifa_exceso,
           });
         }
+        console.log(this.versionList)
         this.versionList.sort((a, b) => a.value > b.value ? 1 : -1);
 
         this.filteredVersion = this.versionControl.valueChanges.pipe(
@@ -544,7 +550,24 @@ export class AutomobileComponent {
       this.vehicleFormGroup.get('npasajeros')?.setValue(selectedVersion.npasajero);
       this.vehicleFormGroup.get('cclasificacion')?.setValue(selectedVersion.cclasificacion);
       this.vehicleFormGroup.get('id_inma')?.setValue(selectedVersion.id_inma);
+      this.vehicleFormGroup.get('xtipovehiculo')?.setValue(selectedVersion.xtipovehiculo);
+      this.vehicleFormGroup.get('ctarifa_exceso')?.setValue(selectedVersion.ctarifa_exceso);
       this.sumaAsegurada = selectedVersion.msum;
+
+
+      if(!this.vehicleFormGroup.get('xtipovehiculo')?.value){
+        console.log('holaaaaa')
+        this.activateTypeVehicle = true;
+      }else{
+        this.activateTypeVehicle = false;
+      }
+      
+      if(!this.vehicleFormGroup.get('ctarifa_exceso')?.value){
+        console.log('veeeee')
+        this.activateRate = true;
+      }else{
+        this.activateRate = false;
+      }
     }
   }
 
@@ -815,25 +838,15 @@ export class AutomobileComponent {
   }
 
   getHullPrice(){
-    let marca = this.brandList.find(element => element.control === this.vehicleFormGroup.get('cmarca')?.value);
-    let modelo = this.modelList.find(element => element.control === this.vehicleFormGroup.get('cmodelo')?.value);
-    let clase = this.classList.find(element => element.id === this.vehicleFormGroup.get('cclase')?.value);
     let data =  {
-      xmarca: marca.value,
-      xmodelo: modelo.value,
       cano: this.vehicleFormGroup.get('fano')?.value,
-      xcobertura: this.vehicleFormGroup.get('xcobertura')?.value,
       xclase: this.vehicleFormGroup.get('cclasificacion')?.value,
+      xtipovehiculo: this.vehicleFormGroup.get('xtipovehiculo')?.value,
     };
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/hull-price', data).subscribe((response: any) => {
       if(response.status){
         this.planFormGroup.get('pcasco')?.setValue(response.data.ptasa_casco);
         this.planFormGroup.get('msuma_aseg')?.setValue(this.sumaAsegurada);
-        this.planFormGroup.get('pmotin')?.setValue(response.data.ptarifa);
-        for(let i = 0; i < response.data.ptarifa.length; i++){
-          this.planFormGroup.get('pcatastrofico')?.setValue(response.data.ptarifa[1].ptarifa)
-          this.planFormGroup.get('pmotin')?.setValue(response.data.ptarifa[0].ptarifa)
-        }
       }
     })
   }
