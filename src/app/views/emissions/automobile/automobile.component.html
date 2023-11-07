@@ -134,7 +134,7 @@
               <div class="col-3">
                 <mat-form-field>
                   <mat-label>Año</mat-label>
-                  <input matInput type="number" placeholder="Año" formControlName="fano" (change)="changeYears()" required>
+                  <input matInput type="number" placeholder="Año" formControlName="fano" [maxlength]="4" (change)="changeYears()" required>
                 </mat-form-field>
               </div>
               <div class="col-3">
@@ -250,23 +250,6 @@
                 </div>
                 <div class="col-3">
                   <mat-form-field class="example-full-width">
-                      <mat-label>Tipo de Vehiculo</mat-label>
-                      <input type="text"
-                            placeholder="Seleccione Tipo de Vehiculo"
-                            aria-label="Seleccione"
-                            matInput
-                            [formControl]="typeVehicleControl"
-                            [matAutocomplete]="typeVehicle"
-                            required>
-                      <mat-autocomplete #typeVehicle="matAutocomplete" (optionSelected)="onTypeVehicleSelection($event)">
-                        <mat-option *ngFor="let typeVehicle of filteredTypeVehicle | async" [value]="typeVehicle">
-                          {{ typeVehicle }}
-                        </mat-option>
-                      </mat-autocomplete>
-                    </mat-form-field>
-                </div>
-                <div class="col-3">
-                  <mat-form-field class="example-full-width">
                       <mat-label>Uso</mat-label>
                       <input type="text"
                             placeholder="Seleccione Uso"
@@ -340,6 +323,23 @@
                       <mat-autocomplete #rates="matAutocomplete" (optionSelected)="onRatesSelection($event)">
                         <mat-option *ngFor="let rates of filteredRates | async" [value]="rates">
                           {{ rates }}
+                        </mat-option>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col-3" *ngIf="activateTypeVehicle">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>Tipo de Vehiculo</mat-label>
+                      <input type="text"
+                            placeholder="Seleccione Tipo de Vehiculo"
+                            aria-label="Seleccione"
+                            matInput
+                            [formControl]="typeVehicleControl"
+                            [matAutocomplete]="typeVehicle"
+                            required>
+                      <mat-autocomplete #typeVehicle="matAutocomplete" (optionSelected)="onTypeVehicleSelection($event)">
+                        <mat-option *ngFor="let typeVehicle of filteredTypeVehicle | async" [value]="typeVehicle">
+                          {{ typeVehicle }}
                         </mat-option>
                       </mat-autocomplete>
                     </mat-form-field>
@@ -495,13 +495,13 @@
                     <div class="col-2">
                       <mat-form-field class="example-full-width">
                         <mat-label>Suma Asegurada</mat-label>
-                        <input matInput type="number" placeholder="Suma Asegurada" formControlName="msuma_aseg" (change)="openDiscount()" required>
+                        <input matInput placeholder="Suma Asegurada" formControlName="msuma_aseg_text"  required>
                       </mat-form-field>
                     </div>
                     <div class="col-3">
                       <mat-form-field class="example-full-width">
                         <mat-label>Prima</mat-label>
-                        <input matInput type="number" formControlName="mprima_casco">
+                        <input matInput formControlName="mprima_casco_text">
                       </mat-form-field>
                     </div>
                     <div class="col-2" *ngIf="discount" style="margin-left: 29px;">

@@ -128,7 +128,7 @@ export class AutomobileComponent {
     xmarca: ['', Validators.required],
     xmodelo: ['', Validators.required],
     xversion: ['', Validators.required],
-    fano: [{ value: '', disabled: false }],
+    fano: ['',[Validators.required, Validators.maxLength(4)]],
     npasajeros: [{ value: '', disabled: true }],
     cclasificacion: ['', Validators.required], 
     xtipovehiculo: ['', Validators.required],
@@ -156,7 +156,10 @@ export class AutomobileComponent {
     xtelefono_tomador: ['', Validators.required],
     pcasco: [{ value: '', disabled: true }],
     msuma_aseg: ['', Validators.required],
+    msuma_aseg_text: [{ value: '', disabled: true }],
     mprima_bruta: [{ value: '', disabled: true }],
+    mprima_casco_text: [{ value: '', disabled: true }],
+    mprima_bruta_text: [{ value: '', disabled: true }],
     pdescuento: [''],
     pmotin: [''],
     pcatastrofico: ['', Validators.required],
@@ -223,6 +226,13 @@ export class AutomobileComponent {
         this.getMethodOfPayment();
         this.getTakers();
     }
+  }
+
+  formatCurrency(value: any): string {
+    const formatter = new Intl.NumberFormat('es-ES', {
+      minimumFractionDigits: 2,
+    });
+    return formatter.format(value);
   }
 
   searchPropietary(){
@@ -556,14 +566,12 @@ export class AutomobileComponent {
 
 
       if(!this.vehicleFormGroup.get('xtipovehiculo')?.value){
-        console.log('holaaaaa')
         this.activateTypeVehicle = true;
       }else{
         this.activateTypeVehicle = false;
       }
       
       if(!this.vehicleFormGroup.get('ctarifa_exceso')?.value){
-        console.log('veeeee')
         this.activateRate = true;
       }else{
         this.activateRate = false;
@@ -663,7 +671,8 @@ export class AutomobileComponent {
     const selectedValue = event.option.value;
     const selectedTypeVehicle = this.typeVehicleList.find(typeVehicle => typeVehicle.value === selectedValue);
     if (selectedTypeVehicle) {
-      this.vehicleFormGroup.get('ctipovehiculo')?.setValue(selectedTypeVehicle.id);
+      this.vehicleFormGroup.get('xtipovehiculo')?.setValue(selectedTypeVehicle.value);
+      this.validateYearsFromHullPrice()
     }
   }
 
@@ -830,7 +839,11 @@ export class AutomobileComponent {
         });
         this.vehicleFormGroup.get('xcobertura')?.setValue('');
       } else {
-        this.getHullPrice()
+        if(this.vehicleFormGroup.get('xtipovehiculo')?.value){
+          this.getHullPrice()
+        }else{
+          console.log(this.vehicleFormGroup.get('xtipovehiculo')?.value)
+        }
       }
     } else {
       console.log('fanoValue es nulo o indefinido');
@@ -841,12 +854,16 @@ export class AutomobileComponent {
     let data =  {
       cano: this.vehicleFormGroup.get('fano')?.value,
       xclase: this.vehicleFormGroup.get('cclasificacion')?.value,
-      xtipovehiculo: this.vehicleFormGroup.get('xtipovehiculo')?.value,
+      xtipo: this.vehicleFormGroup.get('xtipovehiculo')?.value,
     };
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/hull-price', data).subscribe((response: any) => {
       if(response.status){
+        let SumaAsegurada = this.sumaAsegurada
         this.planFormGroup.get('pcasco')?.setValue(response.data.ptasa_casco);
         this.planFormGroup.get('msuma_aseg')?.setValue(this.sumaAsegurada);
+        this.planFormGroup.get('msuma_aseg_text')?.setValue(this.formatCurrency(SumaAsegurada));
+
+        this.openDiscount();
       }
     })
   }
@@ -912,10 +929,16 @@ export class AutomobileComponent {
     let motin: number = 0;
     
     if (typeof msumaAseg === 'number' && typeof pcasco === 'number') {
-      calculo = msumaAseg * pcasco / 100;
-      this.planFormGroup.get('mprima_casco')?.setValue(calculo.toString());
-      this.planFormGroup.get('mprima_bruta')?.setValue(calculo.toString());
-      this.primaBruta = this.planFormGroup.get('mprima_bruta')?.value
+      calculo = (msumaAseg * pcasco) / 100;
+  
+      // Redondear la prima a dos decimales
+      const primaRedondeada = calculo.toFixed(2);
+      
+      this.planFormGroup.get('mprima_casco')?.setValue(primaRedondeada);
+      this.planFormGroup.get('mprima_bruta')?.setValue(primaRedondeada);
+      this.planFormGroup.get('mprima_casco_text')?.setValue(primaRedondeada);
+      this.planFormGroup.get('mprima_bruta_text')?.setValue(primaRedondeada);
+      this.primaBruta = this.planFormGroup.get('mprima_bruta_text')?.value;
     }
 
     if (typeof msumaAseg === 'number' && typeof pcatastrofico === 'number') {
@@ -948,8 +971,11 @@ export class AutomobileComponent {
         division = descuento / 100;
         multiplicacion = cascoNumero * division;
         calculo_descuento = cascoNumero - multiplicacion;
+
+        let valorTotal = calculo_descuento.toFixed(2)
   
         this.planFormGroup.get('mprima_casco')?.setValue(calculo_descuento.toString());
+        this.planFormGroup.get('mprima_casco_text')?.setValue(valorTotal);
       }
     }else{
       this.planFormGroup.get('mprima_casco')?.setValue(this.primaBruta);
