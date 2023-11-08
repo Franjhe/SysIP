@@ -888,13 +888,11 @@ export class AutomobileComponent {
   private _filterTakers(value: string): string[] {
     const filterValue = value.toLowerCase();
     const lista = this.takersList.map(taker => taker.value).filter(taker => taker.toUpperCase().includes(filterValue));;
-
+  
     if(!lista[0]){
       this.planFormGroup.get('xtomador')?.setValue(filterValue)
       if(this.planFormGroup.get('xtomador')?.value){
-        this.takersInfo = true;
-      }else{
-        this.takersInfo = false;
+        this.validateTaker();
       }
     }
 
@@ -906,7 +904,19 @@ export class AutomobileComponent {
     const selectedTakers = this.takersList.find(taker => taker.value === selectedValue);
     if (selectedTakers) {
       this.planFormGroup.get('ctomador')?.setValue(selectedTakers.id);
+      this.validateTaker();
     }
+  }
+
+  validateTaker(){
+    if(this.planFormGroup.get('ctomador')?.value && this.planFormGroup.get('xtomador')?.value){
+      this.planFormGroup.get('xtomador')?.setValue('')
+      this.takersInfo = false;
+    }else{
+      this.takersInfo = true;
+    }
+
+    console.log(this.planFormGroup.get('xtomador')?.value)
   }
 
   openDiscount(){
