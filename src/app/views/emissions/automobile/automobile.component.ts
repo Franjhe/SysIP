@@ -778,7 +778,7 @@ export class AutomobileComponent {
         for (let i = 0; i < response.data.broker.length; i++) {
           this.brokerList.push({
             id: response.data.broker[i].ccorredor,
-            value: response.data.broker[i].xdescripcion_l,
+            value: response.data.broker[i].xcorredor,
           });
         }
         this.filteredBroker = this.brokerControl.valueChanges.pipe(

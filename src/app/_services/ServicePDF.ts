@@ -855,7 +855,7 @@ export class PdfGenerationService {
 			if(response.data.xrif_tomador){
 				this.xrif_tomador = response.data.xrif_tomador;
 			}else{
-				this.xrif_tomador = this.xrif;
+				this.xrif_tomador = this.xdocidentidadcliente;
 			}
 			
 			if(response.data.xzona_postal_tomador){
