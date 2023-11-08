@@ -66,6 +66,7 @@ export class AutomobileComponent {
   accesories = new FormControl('');
   methodOfPaymentControl = new FormControl('');
   takersControl = new FormControl('');
+  sumaAseguradaControl: FormControl = new FormControl(0);
 
   filteredIdent!: Observable<string[]>;
   filteredState!: Observable<string[]>;
@@ -108,6 +109,7 @@ export class AutomobileComponent {
   token!: any
   today!: Date;
   xmetodologia!: any;
+  xprimaAccesorio!: any;
   
 
   personsFormGroup = this._formBuilder.group({
@@ -169,6 +171,7 @@ export class AutomobileComponent {
     pblindaje: [{ value: '', disabled: true }],
     msuma_blindaje: [''],
     mprima_blindaje: [{ value: '', disabled: true }],
+    msuma_aseg_acce: [{ value: '', disabled: false }],
   });
   receiptFormGroup = this._formBuilder.group({
     xpago: ['', Validators.required],
@@ -183,7 +186,11 @@ export class AutomobileComponent {
                private modalService: NgbModal,
                private dateAdapter: DateAdapter<Date>,
                private pdfGenerationService: PdfGenerationService,
-               private snackBar: MatSnackBar) {dateAdapter.setLocale('es');}
+               private snackBar: MatSnackBar,
+               ) {
+                dateAdapter.setLocale('es');
+
+              }
 
 
   ngOnInit(){
@@ -1017,11 +1024,26 @@ export class AutomobileComponent {
         for (let i = 0; i < response.data.accesories.length; i++) {
           this.accesoriesList.push({
             xaccesorio: response.data.accesories[i].xaccesorio,
-            ptasa: response.data.accesories[i].ptasa
+            ptasa: response.data.accesories[i].ptasa,
+            sumaAsegurada: 0,
+            xprimaAccesorio: 0
           });
         }
       }
     });
+  }
+
+  updateSumaAsegurada(accessory: any, event: any) {
+    if (event && event.target) {
+      const newValue = event.target.value;
+      accessory.sumaAsegurada = newValue;
+      this.calculateAccesories(accessory);
+    }
+  }
+
+  calculateAccesories(accessory: any) {
+    console.log('calculateAccesories called for:', accessory);
+    accessory.xprimaAccesorio = accessory.ptasa * (accessory.sumaAsegurada / 100);
   }
 
   onToppingsChange(selectedToppings: any[]) {
@@ -1149,8 +1171,8 @@ export class AutomobileComponent {
       xtelefono_tomador: this.planFormGroup.get('xtelefono_tomador')?.value,
       ccotizacion: this.vehicleFormGroup.get('ccotizacion')?.value,
       cinspeccion: this.vehicleFormGroup.get('cinspeccion')?.value,
-      fdesde_pol: this.receiptFormGroup.get('fdesde_pol')?.value,
-      fhasta_pol: this.receiptFormGroup.get('fhasta_pol')?.value,
+      fdesde_pol: this.receiptFormGroup.get('fdesde')?.value,
+      fhasta_pol: this.receiptFormGroup.get('fhasta')?.value,
       cplan_rc: this.planFormGroup.get('cplan')?.value,
       ccorredor: this.planFormGroup.get('ccorredor')?.value,
       pcasco: this.planFormGroup.get('pcasco')?.value,

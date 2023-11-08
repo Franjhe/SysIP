@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { FormsModule } from '@angular/forms';
 
 import { EmissionsRoutingModule } from './emissions-routing.module';
 import { AutomobileComponent } from './automobile/automobile.component';
@@ -17,7 +18,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     EmissionsRoutingModule,
     MaterialExampleModule,
     ReactiveFormsModule,
-    NgbModule
+    NgbModule,
+    FormsModule
   ]
 })
 export class EmissionsModule { }

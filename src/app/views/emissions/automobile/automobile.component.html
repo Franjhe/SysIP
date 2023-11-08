@@ -552,12 +552,18 @@
                       <tr>
                         <th>Accesorio</th>
                         <th>Tasa</th>
+                        <th>Suma Asegurada</th>
+                        <th>Prima</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr *ngFor="let accessory of accesoriesList">
                         <td>{{ accessory.xaccesorio }}</td>
                         <td>{{ accessory.ptasa }}</td>
+                        <td class="items">
+                          <input matInput type="number" (input)="updateSumaAsegurada(accessory, $event)" placeholder="Ingrese valor" />
+                        </td>
+                        <td>{{ accessory.xprimaAccesorio }}</td>
                       </tr>
                     </tbody>
                   </table>
