@@ -166,7 +166,7 @@ export class AutomobileComponent {
     mprima_casco: [{ value: '', disabled: true }],
     mcatastrofico: ['', Validators.required],
     mmotin: ['', Validators.required],
-    pblindaje: [''],
+    pblindaje: [{ value: '', disabled: true }],
     msuma_blindaje: [''],
     mprima_blindaje: [{ value: '', disabled: true }],
   });
@@ -777,8 +777,8 @@ export class AutomobileComponent {
       if (response.data.broker) {
         for (let i = 0; i < response.data.broker.length; i++) {
           this.brokerList.push({
-            id: response.data.broker[i].ccorredor,
-            value: response.data.broker[i].xcorredor,
+            id: response.data.broker[i].cproductor,
+            value: response.data.broker[i].xintermediario,
           });
         }
         this.filteredBroker = this.brokerControl.valueChanges.pipe(
@@ -860,6 +860,7 @@ export class AutomobileComponent {
       if(response.status){
         let SumaAsegurada = this.sumaAsegurada
         this.planFormGroup.get('pcasco')?.setValue(response.data.ptasa_casco);
+        this.planFormGroup.get('pblindaje')?.setValue(response.data.ptasa_casco);
         this.planFormGroup.get('msuma_aseg')?.setValue(this.sumaAsegurada);
         this.planFormGroup.get('msuma_aseg_text')?.setValue(this.formatCurrency(SumaAsegurada));
 
@@ -1005,7 +1006,8 @@ export class AutomobileComponent {
     
     if (typeof msumaAseg === 'number' && typeof pblindaje === 'number') {
       calculo = msumaAseg * pblindaje / 100;
-      this.planFormGroup.get('mprima_blindaje')?.setValue(calculo.toString());
+      let valorTotal = calculo.toFixed(2)
+      this.planFormGroup.get('mprima_blindaje')?.setValue(valorTotal);
     }
   }
 
@@ -1013,7 +1015,10 @@ export class AutomobileComponent {
     this.http.post(environment.apiUrl + '/api/v1/valrep/accesories', null).subscribe((response: any) => {
       if (response.data.accesories) {
         for (let i = 0; i < response.data.accesories.length; i++) {
-          this.accesoriesList.push(response.data.accesories[i].xaccesorio);
+          this.accesoriesList.push({
+            xaccesorio: response.data.accesories[i].xaccesorio,
+            ptasa: response.data.accesories[i].ptasa
+          });
         }
       }
     });

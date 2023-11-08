@@ -547,7 +547,20 @@
                   </div>
                 </mat-tab>
                 <mat-tab label="Accesorios">
-
+                  <table class="accesories-table">
+                    <thead>
+                      <tr>
+                        <th>Accesorio</th>
+                        <th>Tasa</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let accessory of accesoriesList">
+                        <td>{{ accessory.xaccesorio }}</td>
+                        <td>{{ accessory.ptasa }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </mat-tab>
               </mat-tab-group>
 
