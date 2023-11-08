@@ -47,6 +47,7 @@ export class AutomobileComponent {
   accesoriesList: any[] = [];
   methodOfPaymentList: any[] = [];
   takersList: any[] = [];
+  accessorySelected: any[] = [];
 
   identControl = new FormControl('');
   stateControl = new FormControl('');
@@ -1033,17 +1034,32 @@ export class AutomobileComponent {
     });
   }
 
+  cloneObject(source: any) {
+    return JSON.parse(JSON.stringify(source));
+  }
+
   updateSumaAsegurada(accessory: any, event: any) {
     if (event && event.target) {
       const newValue = event.target.value;
       accessory.sumaAsegurada = newValue;
       this.calculateAccesories(accessory);
+  
+      if (accessory.sumaAsegurada > 0) {
+        // Agrega una copia independiente del accessory a accessorySelected
+        this.accessorySelected.push(this.cloneObject(accessory));
+      }
     }
   }
 
   calculateAccesories(accessory: any) {
-    console.log('calculateAccesories called for:', accessory);
     accessory.xprimaAccesorio = accessory.ptasa * (accessory.sumaAsegurada / 100);
+
+    if (accessory.sumaAsegurada > 0) {
+      // Agrega el accessory a accessorySelected si la Suma Asegurada es mayor que 0
+      this.accessorySelected.push({ ...accessory });
+    }
+
+    console.log(this.accessorySelected)
   }
 
   onToppingsChange(selectedToppings: any[]) {
