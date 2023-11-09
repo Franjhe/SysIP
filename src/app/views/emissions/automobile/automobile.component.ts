@@ -164,8 +164,8 @@ export class AutomobileComponent {
     mprima_casco_text: [{ value: '', disabled: true }],
     mprima_bruta_text: [{ value: '', disabled: true }],
     pdescuento: [''],
-    pmotin: [''],
-    pcatastrofico: ['', Validators.required],
+    pmotin: [{ value: '', disabled: true }],
+    pcatastrofico: [{ value: '', disabled: true }],
     mprima_casco: [{ value: '', disabled: true }],
     mcatastrofico: ['', Validators.required],
     mmotin: ['', Validators.required],
@@ -815,6 +815,8 @@ export class AutomobileComponent {
     if(this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv'){
       this.helmet = false;
       this.activateInspection = false;
+
+
     }else{
       this.validateYearsFromHullPrice()
       this.activateInspection = true;
@@ -868,6 +870,8 @@ export class AutomobileComponent {
         let SumaAsegurada = this.sumaAsegurada
         this.planFormGroup.get('pcasco')?.setValue(response.data.ptasa_casco);
         this.planFormGroup.get('pblindaje')?.setValue(response.data.ptasa_casco);
+        this.planFormGroup.get('pmotin')?.setValue(response.data.ptasa_casco);
+        this.planFormGroup.get('pcatastrofico')?.setValue(response.data.ptasa_casco);
         this.planFormGroup.get('msuma_aseg')?.setValue(this.sumaAsegurada);
         this.planFormGroup.get('msuma_aseg_text')?.setValue(this.formatCurrency(SumaAsegurada));
 
@@ -1021,6 +1025,7 @@ export class AutomobileComponent {
       if (response.data.accesories) {
         for (let i = 0; i < response.data.accesories.length; i++) {
           this.accesoriesList.push({
+            caccesorio: response.data.accesories[i].caccesorio,
             xaccesorio: response.data.accesories[i].xaccesorio,
             ptasa: response.data.accesories[i].ptasa,
             sumaAsegurada: 0,
@@ -1040,11 +1045,6 @@ export class AutomobileComponent {
       const newValue = event.target.value;
       accessory.sumaAsegurada = newValue;
       this.calculateAccesories(accessory);
-  
-      if (accessory.sumaAsegurada > 0) {
-        // Agrega una copia independiente del accessory a accessorySelected
-        this.accessorySelected.push(this.cloneObject(accessory));
-      }
     }
   }
 
@@ -1052,11 +1052,9 @@ export class AutomobileComponent {
     accessory.xprimaAccesorio = accessory.ptasa * (accessory.sumaAsegurada / 100);
 
     if (accessory.sumaAsegurada > 0) {
-      // Agrega el accessory a accessorySelected si la Suma Asegurada es mayor que 0
       this.accessorySelected.push({ ...accessory });
     }
-
-    // console.log(this.accessorySelected)
+    console.log(this.accessorySelected)
   }
 
   onToppingsChange(selectedToppings: any[]) {
@@ -1144,6 +1142,8 @@ export class AutomobileComponent {
       }else{
         this.buttonEmissions = true;
       }
+    }else{
+      this.buttonEmissions = true;
     }
   }
   
@@ -1200,11 +1200,13 @@ export class AutomobileComponent {
       pblindaje: this.planFormGroup.get('pblindaje')?.value,
       msuma_blindaje: this.planFormGroup.get('msuma_blindaje')?.value,
       mprima_blindaje: this.planFormGroup.get('mprima_blindaje')?.value,
+      accesorios: this.accessorySelected,
       xpago: this.receiptFormGroup.get('xpago')?.value,
       femision: this.receiptFormGroup.get('femision')?.value,
       cmetodologiapago: this.receiptFormGroup.get('cmetodologiapago')?.value,
       id_inma: this.vehicleFormGroup.get('id_inma')?.value,
-      cpais: 58
+      cpais: 58,
+      cusuario: this.currentUser.data.cusuario
     }
 
     const nombre = this.personsFormGroup.get('xnombre')?.value + ' ' + this.personsFormGroup.get('xapellido')?.value;
@@ -1231,10 +1233,5 @@ export class AutomobileComponent {
         });
       }
     });
-  }
-
-  value(){
-    console.log('holiwis',this.personsFormGroup.value)
-    
   }
 }

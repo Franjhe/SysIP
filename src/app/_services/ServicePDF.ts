@@ -949,6 +949,7 @@ export class PdfGenerationService {
 			this.coverageList = response.data.realCoverages;
 			this.annexList = response.data.coverageAnnexes;
 			this.receiptList = response.data.receipt;
+			this.accesoriesList = response.data.accesories;
 			// await window.alert(`Se ha generado exitósamente la póliza n° ${this.xpoliza} del cliente ${this.xnombrecliente} para el vehículo de placa ${this.xplaca}`);
 			try {this.createPDF()}
 			catch(err) {console.log()};
@@ -1020,14 +1021,14 @@ export class PdfGenerationService {
 		if (this.accesoriesList.length > 0){
 		  this.accesoriesList.forEach(function(row) {
 			let dataRow = [];
-			dataRow.push({text: row.xaccesorio, alignment: 'center', border: [true, false, true, false]});
-			dataRow.push({text: row.msuma_accesorio, alignment: 'center', border: [false, false, true, false]})
-			dataRow.push({text: row.mprima_accesorio, alignment: 'center', border: [false, false, true, false]})
+			dataRow.push({text: row.xaccesorio, alignment: 'center', border: [false, false, false, false]});
+			dataRow.push({text: row.maccesoriocontratoflota, alignment: 'center', border: [false, false, false, false]})
 			body.push(dataRow);
 		  })
 		} else {
 		  let dataRow = [];
-		  dataRow.push({text: ' ', border: [true, false, true, false]}, {text: ' ', border: [false, false, true, false]}, {text: ' ', border: [false, false, true, false]});
+		  dataRow.push({text: ' ', border: [false, false, false, false]});
+		  dataRow.push({text: ' ', border: [false, false, false, false]})
 		  body.push(dataRow);
 		}
 		return body;
@@ -1621,6 +1622,23 @@ export class PdfGenerationService {
 				  body: [
 					[{text: 'En mi carácter de Tomador de la Póliza contratada con La Mundial de Seguros, C.A., bajo Fe de Juramento certifico que el dinero utilizado para el pago de la prima de la referida Póliza, proviene de fuente lícita; por lo tanto no tiene relación alguna con dinero, capitales, bienes, haberes, valores o títulos producto de actividades o acciones a que se refiere el Articulo 37 de la Ley Orgánica sobre Sustancias Estupefacientes y Psicotrópicas.', alignment: 'justify', bold: true, border: [false, false, false, false]}]
 				  ]
+				}
+			},
+			{
+				style: 'data',
+				table: {
+				  widths: ['*'],
+				  body: [
+					[{text: 'ACCESORIOS', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
+				  ]
+				}
+			},
+			{
+				style: 'data',
+				margin: [0, 0, 0, 2],
+				table: {
+				  widths: [150, 80],
+				  body: this.buildAccesoriesBody()
 				}
 			},
 			{

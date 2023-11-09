@@ -118,7 +118,7 @@
             </div>
 
             <div class="row justify-content-center py-5">
-              <button mat-button matStepperNext (click)="value()">Continuar</button>
+              <button mat-button matStepperNext>Continuar</button>
             </div>
           </form>
         </mat-step>
@@ -561,7 +561,7 @@
                         <td>{{ accessory.xaccesorio }}</td>
                         <td>{{ accessory.ptasa }}</td>
                         <td class="items">
-                          <input matInput type="number" (input)="updateSumaAsegurada(accessory, $event)" placeholder="Ingrese valor" />
+                          <input matInput type="number" (change)="updateSumaAsegurada(accessory, $event)" placeholder="Ingrese valor" />
                         </td>
                         <td>{{ accessory.xprimaAccesorio }}</td>
                       </tr>
