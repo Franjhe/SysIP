@@ -542,7 +542,6 @@ export class AutomobileComponent {
             ctarifa_exceso: response.data.version[i].ctarifa_exceso,
           });
         }
-        console.log(this.versionList)
         this.versionList.sort((a, b) => a.value > b.value ? 1 : -1);
 
         this.filteredVersion = this.versionControl.valueChanges.pipe(
@@ -924,8 +923,6 @@ export class AutomobileComponent {
     }else{
       this.takersInfo = true;
     }
-
-    console.log(this.planFormGroup.get('xtomador')?.value)
   }
 
   openDiscount(){
@@ -1059,7 +1056,7 @@ export class AutomobileComponent {
       this.accessorySelected.push({ ...accessory });
     }
 
-    console.log(this.accessorySelected)
+    // console.log(this.accessorySelected)
   }
 
   onToppingsChange(selectedToppings: any[]) {
