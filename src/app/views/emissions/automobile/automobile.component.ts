@@ -8,6 +8,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { PdfGenerationService } from '../../../_services/ServicePDF'
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDatepicker } from '@angular/material/datepicker';
 
 export const MY_FORMATS = {
   parse: {
@@ -28,6 +29,7 @@ export const MY_FORMATS = {
 })
 
 export class AutomobileComponent {
+  @ViewChild('pickerHasta') pickerHasta!: MatDatepicker<Date>;
 
   identList = ['V', 'P', 'E', 'J', 'C','G'];
   stateList: any[] = [];
@@ -88,6 +90,7 @@ export class AutomobileComponent {
   filteredTakers!: Observable<string[]>;
 
   isLinear = false;
+  check = false;
   helmet: boolean = false;
   discount: boolean = false;
   enableInfo: boolean = false;
@@ -1121,12 +1124,51 @@ export class AutomobileComponent {
   
     if (fdesdeString) {
       const fdesde = new Date(fdesdeString);
-      const fhasta = new Date(fdesde);
   
+      // Validación para Fecha Desde
+      const currentYear = new Date().getFullYear();
+      if (fdesde.getFullYear() < currentYear) {
+        console.error('No puedes seleccionar un año menor al actual en Fecha Desde');
+        return;
+      }
+  
+      // Validación para Fecha Hasta
+      const fhasta = new Date(fdesde);
       fhasta.setFullYear(fhasta.getFullYear() + 1);
+  
+      const maxYearAllowed = currentYear + 2;
+      console.log(fhasta.getFullYear())
+      if (fhasta.getFullYear() > maxYearAllowed) {
+        console.error('No puedes seleccionar una Fecha Hasta con más de dos años en el futuro');
+        return;
+      }
   
       const formattedFhasta = fhasta.toISOString();
       this.receiptFormGroup.get('fhasta')?.setValue(formattedFhasta);
+    }
+  }
+
+  prueba() {
+    const fhastaControl = this.receiptFormGroup.get('fhasta');
+  
+    if (fhastaControl?.value) {
+      const selectedDate = new Date(fhastaControl.value);
+      const currentYear = new Date().getFullYear();
+      const maxYearAllowed = currentYear + 2;
+  
+      if (selectedDate.getFullYear() > maxYearAllowed) {
+        this.snackBar.open(`No puedes seleccionar una Fecha Hasta con más de dos años.`, '', {
+          duration: 3000,
+        });
+  
+        this.receiptFormGroup.get('fhasta')?.setValue('');
+  
+      } else {
+        // Restaurar la capacidad de cierre del MatDatepicker
+      }
+    } else {
+      console.error('La Fecha Hasta no puede estar vacía');
+      // Puedes agregar aquí el código para mostrar un mensaje de error o manejar la situación de otra manera
     }
   }
 
@@ -1154,22 +1196,22 @@ export class AutomobileComponent {
     let data = {
       icedula: this.personsFormGroup.get('icedula')?.value,
       xrif_cliente: this.personsFormGroup.get('xrif_cliente')?.value,
-      xnombre: this.personsFormGroup.get('xnombre')?.value,
-      xapellido: this.personsFormGroup.get('xapellido')?.value,
+      xnombre: this.personsFormGroup.get('xnombre')?.value?.toUpperCase(),
+      xapellido: this.personsFormGroup.get('xapellido')?.value?.toUpperCase(),
       xtelefono_emp: this.personsFormGroup.get('xtelefono_emp')?.value,
-      email: this.personsFormGroup.get('email')?.value,
+      email: this.personsFormGroup.get('email')?.value?.toUpperCase(),
       cestado: this.personsFormGroup.get('cestado')?.value,
       cciudad: this.personsFormGroup.get('cciudad')?.value,
-      xdireccion: this.personsFormGroup.get('xdireccion')?.value,
-      xplaca: this.vehicleFormGroup.get('xplaca')?.value,
+      xdireccion: this.personsFormGroup.get('xdireccion')?.value?.toUpperCase(),
+      xplaca: this.vehicleFormGroup.get('xplaca')?.value?.toUpperCase(),
       xmarca: this.vehicleFormGroup.get('xmarca')?.value,
       xmodelo: this.vehicleFormGroup.get('xmodelo')?.value,
       xversion: this.vehicleFormGroup.get('xversion')?.value,
       fano: this.vehicleFormGroup.get('fano')?.value,
       npasajeros: this.vehicleFormGroup.get('npasajeros')?.value,
       xcolor: this.vehicleFormGroup.get('xcolor')?.value,
-      xserialcarroceria: this.vehicleFormGroup.get('xserialcarroceria')?.value,
-      xserialmotor: this.vehicleFormGroup.get('xserialmotor')?.value,
+      xserialcarroceria: this.vehicleFormGroup.get('xserialcarroceria')?.value?.toUpperCase(),
+      xserialmotor: this.vehicleFormGroup.get('xserialmotor')?.value?.toUpperCase(),
       xcobertura: this.vehicleFormGroup.get('xcobertura')?.value,
       ctarifa_exceso: this.vehicleFormGroup.get('ctarifa_exceso')?.value,
       cclasificacion: this.vehicleFormGroup.get('cclasificacion')?.value,
@@ -1221,7 +1263,8 @@ export class AutomobileComponent {
 
         observable.subscribe(
           (data) => {
-            console.log('DATA ' + data)
+            this.check = true;
+            this.loadingPdf = false
           },
           (error) => {
             console.log(error)

@@ -1177,9 +1177,9 @@ export class PdfGenerationService {
 			{
 				style: 'data',
 				table: {
-				widths: [40, 140, 70, 70, 120, '*'],
+				widths: [40, 140, 70, 70, 100, '*'],
 				body: [
-				  [{text: 'TOMADOR:', bold: true, border: [false, false, false, false]}, {text: this.xtomador, border: [false, false, false, false]}, {text: 'C.I. / R.I.F.:', bold: true, border: [false, false, false, false]}, {text: this.xrif_tomador, border: [false, false, false, false]}, {text: 'CÓDIGO RAMO PÓLIZA:', bold: true, border: [false, false, false, false]}, {text: '18', border: [false, false, false, false]}]
+				  [{text: 'TOMADOR:', bold: true, border: [false, false, false, false]}, {text: this.xtomador, border: [false, false, false, false]}, {text: 'C.I. / R.I.F.:', bold: true, border: [false, false, false, false]}, {text: this.xrif_tomador, border: [false, false, false, false]}, {text: 'RAMO PÓLIZA:', bold: true, border: [false, false, false, false]}, {text: 'AUTOMÓVIL', border: [false, false, false, false]}]
 				]
 				}
 			},
@@ -1303,25 +1303,25 @@ export class PdfGenerationService {
 				  ]
 				}
 			},
-			{
-				style: 'data',
-				table: {
-				  widths: ['*'],
-				  body: [
-					[{text: 'BENEFICIARIOS', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
-				  ]
-				}
-			},
-			{
-				style: 'data',
-				margin: [0, 0, 0, 2],
-				table: {
-				  widths: [120, 70],
-				  body: [
-					[{text: `${this.xnombrepropietario} ${this.xapellidopropietario}`, bold: true, border: [false, false, false, false]}, {text: this.xrif, border: [false, false, false, false]}]
-				  ]
-				}
-			},
+			// {
+			// 	style: 'data',
+			// 	table: {
+			// 	  widths: ['*'],
+			// 	  body: [
+			// 		[{text: 'BENEFICIARIOS', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
+			// 	  ]
+			// 	}
+			// },
+			// {
+			// 	style: 'data',
+			// 	margin: [0, 0, 0, 2],
+			// 	table: {
+			// 	  widths: [120, 70],
+			// 	  body: [
+			// 		[{text: `${this.xnombrepropietario} ${this.xapellidopropietario}`, bold: true, border: [false, false, false, false]}, {text: this.xrif, border: [false, false, false, false]}]
+			// 	  ]
+			// 	}
+			// },
 			{
 				style: 'data',
 				table: {
@@ -1383,23 +1383,23 @@ export class PdfGenerationService {
 				  body: this.buildReceiptBody()
 				}
 			},
-			{
-				style: 'data',
-				table: {
-				  widths: ['*'],
-				  body: [
-					[{text: 'Incluye IGTF', bold: true, border: [false, false, false, false], alignment: 'center' } ]
-				  ]
-				},
-			},
-			{
-				table: {
-				  widths: ['*'],
-				  body: [
-					[{text: [{text: `En Caracas a los ${new Date().getDate()} días del mes de ${this.getMonthAsString(new Date().getMonth())} del ${new Date().getFullYear()}`}], alignment: 'center', fontSize: 6, bold: true, border: [false, false, false, false]} ]
-				  ]
-				},
-			},
+			// {
+			// 	style: 'data',
+			// 	table: {
+			// 	  widths: ['*'],
+			// 	  body: [
+			// 		[{text: 'Incluye IGTF', bold: true, border: [false, false, false, false], alignment: 'center' } ]
+			// 	  ]
+			// 	},
+			// },
+			// {
+			// 	table: {
+			// 	  widths: ['*'],
+			// 	  body: [
+			// 		[{text: [{text: `En Caracas a los ${new Date().getDate()} días del mes de ${this.getMonthAsString(new Date().getMonth())} del ${new Date().getFullYear()}`}], alignment: 'center', fontSize: 6, bold: true, border: [false, false, false, false]} ]
+			// 	  ]
+			// 	},
+			// },
 			// {
 			// 	table: {
 			// 	  widths: ['*'],
@@ -1416,14 +1416,14 @@ export class PdfGenerationService {
 			// 	  ]
 			// 	},
 			// },
-			{
-				table: {
-				  widths: ['*'],
-				  body: [
-					[{text: [{text: `CLIENTE`}], color: 'red', alignment: 'center', fontSize: 6, bold: true, border: [false, false, false, false]} ]
-				  ]
-				},
-			},
+			// {
+			// 	table: {
+			// 	  widths: ['*'],
+			// 	  body: [
+			// 		[{text: [{text: `CLIENTE`}], color: 'red', alignment: 'center', fontSize: 6, bold: true, border: [false, false, false, false]} ]
+			// 	  ]
+			// 	},
+			// },
 			{
 				pageBreak: 'before',
 				style: 'data',
@@ -1587,25 +1587,25 @@ export class PdfGenerationService {
 				  ]
 				}
 			},
-			{
-				style: 'data',
-				table: {
-				  widths: ['*'],
-				  body: [
-					[{text: 'BENEFICIARIOS', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
-				  ]
-				}
-			},
-			{
-				style: 'data',
-				margin: [0, 0, 0, 2],
-				table: {
-				  widths: [120, 70],
-				  body: [
-					[{text: `${this.xnombrepropietario} ${this.xapellidopropietario}`, bold: true, border: [false, false, false, false]}, {text: this.xrif, border: [false, false, false, false]}]
-				  ]
-				}
-			},
+			// {
+			// 	style: 'data',
+			// 	table: {
+			// 	  widths: ['*'],
+			// 	  body: [
+			// 		[{text: 'BENEFICIARIOS', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
+			// 	  ]
+			// 	}
+			// },
+			// {
+			// 	style: 'data',
+			// 	margin: [0, 0, 0, 2],
+			// 	table: {
+			// 	  widths: [120, 70],
+			// 	  body: [
+			// 		[{text: `${this.xnombrepropietario} ${this.xapellidopropietario}`, bold: true, border: [false, false, false, false]}, {text: this.xrif, border: [false, false, false, false]}]
+			// 	  ]
+			// 	}
+			// },
 			{
 				style: 'data',
 				table: {
@@ -1700,7 +1700,7 @@ export class PdfGenerationService {
 				table: {
 				  widths: ['*'],
 				  body: [
-					[{text: [{text: `Aprobado por la Superintendencia de la Actividad Aseguradora mediante Oficio N° de fecha El Tomador Asegurado o Beneficiario de las Pólizas, que sienta vulneración de sus derechos, y requiera presentar cualquier denuncia, queja, reclamo o solicitud de asesoría sugerida con ocasión de este contrato de seguros; puede acudir a la Ofici na de la Defensor del Asegurado de la Superintendencia de la Actividad Aseguradora, o comunicarlo a través de la Pagina web: http: //www,lamundialdeseguros.com`}], alignment: 'justify', fontSize: 6, bold: true, border: [false, false, false, false]} ]
+					[{text: [{text: `Aprobado por la Superintendencia de la Actividad Aseguradora FSAA-1-1-0363-2022 mediante Oficio N° de fecha 05-08-2022. El Tomador Asegurado o Beneficiario de las Pólizas, que sienta vulneración de sus derechos, y requiera presentar cualquier denuncia, queja, reclamo o solicitud de asesoría sugerida con ocasión de este contrato de seguros; puede acudir a la Ofici na de la Defensor del Asegurado de la Superintendencia de la Actividad Aseguradora, o comunicarlo a través de la Pagina web: http: //www,lamundialdeseguros.com`}], alignment: 'justify', fontSize: 6, bold: true, border: [false, false, false, false]} ]
 				  ]
 				},
 			},
