@@ -1120,26 +1120,45 @@ export class AutomobileComponent {
 
   calculateDate(newValue: string) {
     this.receiptFormGroup.get('fhasta')?.setValue('');
-    const fdesdeString = newValue;
   
-    if (fdesdeString) {
-      const fdesde = new Date(fdesdeString);
+    if (newValue) {
+      const fdesde = new Date(newValue);
+      const currentDate = new Date();
   
       // Validación para Fecha Desde
-      const currentYear = new Date().getFullYear();
-      if (fdesde.getFullYear() < currentYear) {
-        console.error('No puedes seleccionar un año menor al actual en Fecha Desde');
+      const minStartDate = new Date(currentDate);
+      minStartDate.setDate(minStartDate.getDate() - 5);
+  
+      if (fdesde < minStartDate) {
+        this.snackBar.open('La Fecha Desde no puede ser menor a 5 días antes de la fecha actual.', '', {
+          duration: 3000,
+        });
+        console.error('La Fecha Desde no puede ser menor a 5 días antes de la fecha actual');
         return;
       }
   
       // Validación para Fecha Hasta
       const fhasta = new Date(fdesde);
-      fhasta.setFullYear(fhasta.getFullYear() + 1);
+      const daysToAdd = 30;
   
-      const maxYearAllowed = currentYear + 2;
-      console.log(fhasta.getFullYear())
-      if (fhasta.getFullYear() > maxYearAllowed) {
-        console.error('No puedes seleccionar una Fecha Hasta con más de dos años en el futuro');
+      if (fdesde < currentDate && fdesde.getDate() + 6 <= currentDate.getDate()) {
+        this.snackBar.open('Requiere autorización si la Fecha Desde es menor que la fecha actual en 6 días o más.', '', {
+          duration: 3000,
+        });
+        // Requiere autorización si la Fecha Desde es menor que la fecha actual en 6 días o más
+        // Aquí puedes agregar lógica para solicitar autorización al gerente
+      }
+  
+      fhasta.setDate(fhasta.getDate() + daysToAdd);
+  
+      const maxEndDate = new Date(fdesde);
+      maxEndDate.setDate(maxEndDate.getDate() + 365);
+  
+      if (fhasta > maxEndDate) {
+        this.snackBar.open('La Fecha Hasta no puede ser mayor a 365 días desde la Fecha Desde.', '', {
+          duration: 3000,
+        });
+        console.error('La Fecha Hasta no puede ser mayor a 365 días desde la Fecha Desde');
         return;
       }
   
@@ -1152,25 +1171,48 @@ export class AutomobileComponent {
     const fhastaControl = this.receiptFormGroup.get('fhasta');
   
     if (fhastaControl?.value) {
-      const selectedDate = new Date(fhastaControl.value);
-      const currentYear = new Date().getFullYear();
-      const maxYearAllowed = currentYear + 2;
+      const fdesdeValue = this.receiptFormGroup.get('fdesde')?.value;
   
-      if (selectedDate.getFullYear() > maxYearAllowed) {
-        this.snackBar.open(`No puedes seleccionar una Fecha Hasta con más de dos años.`, '', {
-          duration: 3000,
-        });
+      if (fdesdeValue) {
+        const fdesde = new Date(fdesdeValue as string);
+        const currentDate = new Date();
+        const maxEndDate = new Date(fdesde);
+        maxEndDate.setDate(maxEndDate.getDate() + 365);
+        const minEndDate = new Date(fdesde);
+        minEndDate.setDate(minEndDate.getDate() + 30);
   
-        this.receiptFormGroup.get('fhasta')?.setValue('');
+        const selectedDate = new Date(fhastaControl.value as string);
   
+        if (selectedDate < minEndDate) {
+          console.error('La Fecha Hasta debe ser mayor a la Fecha Desde más 30 días');
+          this.snackBar.open('La Fecha Hasta debe ser mayor a la Fecha Desde más 30 días.', '', {
+            duration: 3000,
+          });
+          return;
+        }
+  
+        if (selectedDate > maxEndDate) {
+          this.snackBar.open('La Fecha Hasta no puede ser mayor a 365 días desde la Fecha Desde.', '', {
+            duration: 3000,
+          });
+          
+        } else {
+          // Restaurar la capacidad de cierre del MatDatepicker
+        }
       } else {
-        // Restaurar la capacidad de cierre del MatDatepicker
+        console.error('La Fecha Desde no puede estar vacía');
+        // Puedes manejar la situación de otra manera si es necesario
       }
-    } else {
-      console.error('La Fecha Hasta no puede estar vacía');
-      // Puedes agregar aquí el código para mostrar un mensaje de error o manejar la situación de otra manera
     }
+    // } else {
+    //   this.snackBar.open('La Fecha Hasta no puede estar vacía.', '', {
+    //     duration: 3000,
+    //   });
+    //   console.error('La Fecha Hasta no puede estar vacía');
+    //   // Puedes manejar la situación de otra manera si es necesario
+    // }
   }
+  
 
   validateMethod(){
     if(this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv'){
