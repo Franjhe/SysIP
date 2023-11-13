@@ -584,7 +584,7 @@
         <mat-step [stepControl]="receiptFormGroup" label="Detalles del Recibo">
             <form [formGroup]="receiptFormGroup">
               <div class="row">
-                <div class="col-3">
+                <!-- <div class="col-3">
                   <mat-form-field class="example-full-width">
                     <mat-label>Fecha Desde</mat-label>
                     <input matInput [matDatepicker]="pickerDesde" formControlName="fdesde" (ngModelChange)="calculateDate($event)">
@@ -601,6 +601,14 @@
                     <mat-datepicker-toggle matIconSuffix [for]="pickerHasta"></mat-datepicker-toggle>
                     <mat-datepicker #pickerHasta></mat-datepicker>
                   </mat-form-field>
+                </div> -->
+                <div class="col-3">
+                  <label class="form-label required" for="form3Examplev5">Fecha Desde</label>
+                  <input type="date" formControlName="fdesde" class="form-control form-control-lg" (ngModelChange)="calculateDate($event)" />
+                </div>
+                <div class="col-3">
+                  <label class="form-label required" for="form3Examplev5">Fecha Hasta</label>
+                  <input type="date" formControlName="fhasta" class="form-control form-control-lg" (ngModelChange)="prueba()" />
                 </div>
                 <div class="col-3">
                   <mat-form-field class="example-full-width">

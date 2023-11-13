@@ -9,6 +9,8 @@ import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/materia
 import { PdfGenerationService } from '../../../_services/ServicePDF'
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDatepicker } from '@angular/material/datepicker';
+import { ChangeDetectorRef } from '@angular/core';
+import { format, addYears } from 'date-fns';
 
 export const MY_FORMATS = {
   parse: {
@@ -191,6 +193,7 @@ export class AutomobileComponent {
                private dateAdapter: DateAdapter<Date>,
                private pdfGenerationService: PdfGenerationService,
                private snackBar: MatSnackBar,
+               private cdr: ChangeDetectorRef
                ) {
                 dateAdapter.setLocale('es');
 
@@ -236,6 +239,7 @@ export class AutomobileComponent {
         this.getAccesories();
         this.getMethodOfPayment();
         this.getTakers();
+        this.setDefaultDates();
     }
   }
 
@@ -1118,6 +1122,20 @@ export class AutomobileComponent {
   //   });
   // }
 
+  setDefaultDates(): void {
+    const currentDate = new Date();
+
+    const formattedCurrentDate = format(currentDate, 'yyyy-MM-dd');
+
+    this.receiptFormGroup.get('fdesde')?.setValue(formattedCurrentDate);
+
+    const nextYearDate = addYears(currentDate, 1);
+
+    const formattedNextYearDate = format(nextYearDate, 'yyyy-MM-dd');
+
+    this.receiptFormGroup.get('fhasta')?.setValue(formattedNextYearDate);
+  }
+
   calculateDate(newValue: string) {
     this.receiptFormGroup.get('fhasta')?.setValue('');
   
@@ -1125,7 +1143,6 @@ export class AutomobileComponent {
       const fdesde = new Date(newValue);
       const currentDate = new Date();
   
-      // Validación para Fecha Desde
       const minStartDate = new Date(currentDate);
       minStartDate.setDate(minStartDate.getDate() - 5);
   
@@ -1133,11 +1150,18 @@ export class AutomobileComponent {
         this.snackBar.open('La Fecha Desde no puede ser menor a 5 días antes de la fecha actual.', '', {
           duration: 3000,
         });
-        console.error('La Fecha Desde no puede ser menor a 5 días antes de la fecha actual');
+  
+        const formattedCurrentDate = format(currentDate, 'yyyy-MM-dd');
+        this.receiptFormGroup.get('fdesde')?.setValue(formattedCurrentDate);
+        this.cdr.detectChanges();
+  
+        const nextYearDate = addYears(currentDate, 1);
+        const formattedNextYearDate = format(nextYearDate, 'yyyy-MM-dd');
+        this.receiptFormGroup.get('fhasta')?.setValue(formattedNextYearDate);
+  
         return;
       }
   
-      // Validación para Fecha Hasta
       const fhasta = new Date(fdesde);
       const daysToAdd = 30;
   
@@ -1145,14 +1169,12 @@ export class AutomobileComponent {
         this.snackBar.open('Requiere autorización si la Fecha Desde es menor que la fecha actual en 6 días o más.', '', {
           duration: 3000,
         });
-        // Requiere autorización si la Fecha Desde es menor que la fecha actual en 6 días o más
-        // Aquí puedes agregar lógica para solicitar autorización al gerente
       }
   
       fhasta.setDate(fhasta.getDate() + daysToAdd);
   
       const maxEndDate = new Date(fdesde);
-      maxEndDate.setDate(maxEndDate.getDate() + 365);
+      maxEndDate.setDate(maxEndDate.getDate() + 366);
   
       if (fhasta > maxEndDate) {
         this.snackBar.open('La Fecha Hasta no puede ser mayor a 365 días desde la Fecha Desde.', '', {
@@ -1161,9 +1183,10 @@ export class AutomobileComponent {
         console.error('La Fecha Hasta no puede ser mayor a 365 días desde la Fecha Desde');
         return;
       }
-  
-      const formattedFhasta = fhasta.toISOString();
-      this.receiptFormGroup.get('fhasta')?.setValue(formattedFhasta);
+      
+      const nextYearDate = addYears(fdesde, 1);
+      const formattedNextYearDate = format(nextYearDate, 'yyyy-MM-dd');
+      this.receiptFormGroup.get('fhasta')?.setValue(formattedNextYearDate);
     }
   }
 
@@ -1177,7 +1200,7 @@ export class AutomobileComponent {
         const fdesde = new Date(fdesdeValue as string);
         const currentDate = new Date();
         const maxEndDate = new Date(fdesde);
-        maxEndDate.setDate(maxEndDate.getDate() + 365);
+        maxEndDate.setDate(maxEndDate.getDate() + 366);
         const minEndDate = new Date(fdesde);
         minEndDate.setDate(minEndDate.getDate() + 30);
   
@@ -1188,6 +1211,7 @@ export class AutomobileComponent {
           this.snackBar.open('La Fecha Hasta debe ser mayor a la Fecha Desde más 30 días.', '', {
             duration: 3000,
           });
+          this.receiptFormGroup.get('fhasta')?.setValue(currentDate.toISOString());
           return;
         }
   
@@ -1196,21 +1220,12 @@ export class AutomobileComponent {
             duration: 3000,
           });
           
-        } else {
-          // Restaurar la capacidad de cierre del MatDatepicker
+          const nextYearDate = addYears(fdesde, 1);
+          const formattedNextYearDate = format(nextYearDate, 'yyyy-MM-dd');
+          this.receiptFormGroup.get('fhasta')?.setValue(formattedNextYearDate);
         }
-      } else {
-        console.error('La Fecha Desde no puede estar vacía');
-        // Puedes manejar la situación de otra manera si es necesario
       }
     }
-    // } else {
-    //   this.snackBar.open('La Fecha Hasta no puede estar vacía.', '', {
-    //     duration: 3000,
-    //   });
-    //   console.error('La Fecha Hasta no puede estar vacía');
-    //   // Puedes manejar la situación de otra manera si es necesario
-    // }
   }
   
 
