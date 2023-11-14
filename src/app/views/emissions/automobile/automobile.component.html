@@ -250,23 +250,6 @@
                 </div>
                 <div class="col-3">
                   <mat-form-field class="example-full-width">
-                      <mat-label>Uso</mat-label>
-                      <input type="text"
-                            placeholder="Seleccione Uso"
-                            aria-label="Seleccione"
-                            matInput
-                            [formControl]="utilityVehicleControl"
-                            [matAutocomplete]="utility"
-                            required>
-                      <mat-autocomplete #utility="matAutocomplete" (optionSelected)="onUtilityVehicleSelection($event)">
-                        <mat-option *ngFor="let utility of filteredUtilityVehicle | async" [value]="utility">
-                          {{ utility }}
-                        </mat-option>
-                      </mat-autocomplete>
-                    </mat-form-field>
-                </div>
-                <div class="col-3">
-                  <mat-form-field class="example-full-width">
                       <mat-label>Clase</mat-label>
                       <input type="text"
                             placeholder="Seleccione Clase"
@@ -340,6 +323,23 @@
                       <mat-autocomplete #typeVehicle="matAutocomplete" (optionSelected)="onTypeVehicleSelection($event)">
                         <mat-option *ngFor="let typeVehicle of filteredTypeVehicle | async" [value]="typeVehicle">
                           {{ typeVehicle }}
+                        </mat-option>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                </div>
+                <div class="col-3">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>Uso</mat-label>
+                      <input type="text"
+                            placeholder="Seleccione Uso"
+                            aria-label="Seleccione"
+                            matInput
+                            [formControl]="utilityVehicleControl"
+                            [matAutocomplete]="utility"
+                            required>
+                      <mat-autocomplete #utility="matAutocomplete" (optionSelected)="onUtilityVehicleSelection($event)">
+                        <mat-option *ngFor="let utility of filteredUtilityVehicle | async" [value]="utility">
+                          {{ utility }}
                         </mat-option>
                       </mat-autocomplete>
                     </mat-form-field>
