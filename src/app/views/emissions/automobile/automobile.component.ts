@@ -146,6 +146,7 @@ export class AutomobileComponent {
     xcobertura: ['', Validators.required],
     ctarifa_exceso: ['', Validators.required],
     cuso: ['', Validators.required],
+    precargo: ['', Validators.required],
     ctipovehiculo: ['', Validators.required],
     cclase: ['', Validators.required],
     id_inma: ['', Validators.required],
@@ -737,6 +738,7 @@ export class AutomobileComponent {
           this.utilityVehicleList.push({
             id: response.data.utility[i].cuso,
             value: response.data.utility[i].xuso,
+            precargo: response.data.utility[i].precargo,
           });
         }
         this.filteredUtilityVehicle = this.utilityVehicleControl.valueChanges.pipe(
@@ -759,6 +761,7 @@ export class AutomobileComponent {
     const selectedUtilityVehicle = this.utilityVehicleList.find(utility => utility.value === selectedValue);
     if (selectedUtilityVehicle) {
       this.vehicleFormGroup.get('cuso')?.setValue(selectedUtilityVehicle.id);
+      this.vehicleFormGroup.get('precargo')?.setValue(selectedUtilityVehicle.precargo);
     }
   }
 
