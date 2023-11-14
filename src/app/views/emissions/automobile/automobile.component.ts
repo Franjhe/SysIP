@@ -1270,20 +1270,33 @@ export class AutomobileComponent {
     }
   }
   
-
-  validateMethod(){
-    if(this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv'){
-      if(this.xmetodologia != "ANUAL"){
+  validateMethod() {
+    const fdesdeValue = this.receiptFormGroup.get('fdesde')?.value;
+    const fhastaValue = this.receiptFormGroup.get('fhasta')?.value;
+    
+    // Verificar si fdesde y fhasta son fechas válidas
+    if (!fdesdeValue || !fhastaValue) {
+      this.snackBar.open('Las fechas son inválidas.', '', {
+        duration: 3000,
+      });
+      return;
+    }
+    
+    const fdesde = new Date(fdesdeValue as string);
+    const fhasta = new Date(fhastaValue as string);
+  
+    if (this.vehicleFormGroup.get('xcobertura')?.value === 'Rcv') {
+      if (this.xmetodologia !== 'ANUAL') {
         this.snackBar.open(`Lo sentimos, solo se puede colocar ${this.xmetodologia} cuando no sea RCV.`, '', {
           duration: 3000,
         });
-        this.receiptFormGroup.get('cmetodologiapago')?.setValue('')
+        this.receiptFormGroup.get('cmetodologiapago')?.setValue('');
         this.methodOfPaymentControl.setValue('');
         this.buttonEmissions = false;
-      }else{
+      } else {
         this.buttonEmissions = true;
       }
-    }else{
+    } else {
       this.buttonEmissions = true;
     }
   }
