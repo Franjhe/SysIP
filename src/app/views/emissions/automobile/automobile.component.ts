@@ -145,7 +145,7 @@ export class AutomobileComponent {
     xserialmotor: ['', [Validators.required, Validators.maxLength(17)]],
     xcobertura: ['', Validators.required],
     ctarifa_exceso: ['', Validators.required],
-    cuso: ['', Validators.required],
+    cuso: [''],
     precargo: ['', Validators.required],
     ctipovehiculo: ['', Validators.required],
     cclase: ['', Validators.required],
@@ -913,7 +913,6 @@ export class AutomobileComponent {
     let data =  {
       cano: this.vehicleFormGroup.get('fano')?.value,
       xclase: this.vehicleFormGroup.get('cclasificacion')?.value,
-      xtipo: this.vehicleFormGroup.get('xtipovehiculo')?.value,
     };
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/hull-price', data).subscribe((response: any) => {
       if(response.status){
@@ -1347,6 +1346,7 @@ export class AutomobileComponent {
       femision: this.receiptFormGroup.get('femision')?.value,
       cmetodologiapago: this.receiptFormGroup.get('cmetodologiapago')?.value,
       id_inma: this.vehicleFormGroup.get('id_inma')?.value,
+      cuso: this.vehicleFormGroup.get('cuso')?.value,
       cpais: 58,
       cusuario: this.currentUser.data.cusuario
     }
