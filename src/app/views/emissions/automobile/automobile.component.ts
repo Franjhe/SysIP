@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, ViewChild  } from '@angular/core';
 import {FormBuilder, Validators, FormGroup, FormControl} from '@angular/forms';
 import {from, Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
@@ -270,10 +270,50 @@ export class AutomobileComponent {
     });
   }
 
+  valueplate(value: any){
+    var ExpRegSoloLetras="^[A-Za-z0-9\s]+$";
+    if(value.data.match(ExpRegSoloLetras)==null){
+ 
+
+      const formulario = this.vehicleFormGroup.get('xplaca')?.value  || ''
+      const newValue = formulario.replace(new RegExp(`[^A-Za-z0-9\\s]`, 'g'), '');
+    
+      // Actualiza el valor en el formulario
+      this.vehicleFormGroup.get('xplaca')?.setValue(newValue);
+
+    }
+  }
+
+  valueSerial(value: any){
+    var ExpRegSoloLetras="^[A-Za-z0-9\s]+$";
+    if(value.data.match(ExpRegSoloLetras)==null){
+
+      const formulario = this.vehicleFormGroup.get('xserialcarroceria')?.value  || ''
+      const newValue = formulario.replace(new RegExp(`[^A-Za-z0-9\\s]`, 'g'), '');
+    
+      // Actualiza el valor en el formulario
+      this.vehicleFormGroup.get('xserialcarroceria')?.setValue(newValue);
+
+    }
+  }
+
+  valueSerialMotor(value: any){
+    var ExpRegSoloLetras="^[A-Za-z0-9\s]+$";
+    if(value.data.match(ExpRegSoloLetras)==null){
+      const formulario = this.vehicleFormGroup.get('xserialmotor')?.value  || ''
+      const newValue = formulario.replace(new RegExp(`[^A-Za-z0-9\\s]`, 'g'), '');
+    
+      // Actualiza el valor en el formulario
+      this.vehicleFormGroup.get('xserialmotor')?.setValue(newValue);
+
+    }
+  }
+
   searchVehicle(){
     let data = {
       xplaca: this.vehicleFormGroup.get('xplaca')?.value
     };
+
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/vehicle', data).subscribe((response: any) => {
       if (response.status) {
         this.snackBar.open(`${response.message}`, '', {

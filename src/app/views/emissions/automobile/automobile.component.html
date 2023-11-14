@@ -217,7 +217,7 @@
               <div class="col-3">
                 <mat-form-field>
                   <mat-label>Placa</mat-label>
-                  <input matInput placeholder="Placa" formControlName="xplaca" [maxlength]="7" (change)="searchVehicle()" required>
+                  <input matInput placeholder="Placa" formControlName="xplaca" [maxlength]="7" (change)="searchVehicle()" required (input)="valueplate($event)">
                 </mat-form-field>
               </div>
             </div>
@@ -285,13 +285,13 @@
                 <div class="col-3">
                   <mat-form-field class="example-full-width">
                     <mat-label>Serial de Carroceria</mat-label>
-                    <input matInput placeholder="Serial de Carroceria" formControlName="xserialcarroceria" [maxlength]="17" required>
+                    <input matInput placeholder="Serial de Carroceria" formControlName="xserialcarroceria" [maxlength]="17" required (input)="valueSerial($event)">
                   </mat-form-field>
                 </div>
                 <div class="col-3">
                   <mat-form-field class="example-full-width">
                     <mat-label>Serial de Motor</mat-label>
-                    <input matInput placeholder="Serial de Motor" formControlName="xserialmotor" [maxlength]="17" required>
+                    <input matInput placeholder="Serial de Motor" formControlName="xserialmotor" [maxlength]="17" required (input)="valueSerialMotor($event)">
                   </mat-form-field>
                 </div>
                 <div class="col-3">
