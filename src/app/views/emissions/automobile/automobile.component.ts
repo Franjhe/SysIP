@@ -32,6 +32,7 @@ export const MY_FORMATS = {
 
 export class AutomobileComponent {
   @ViewChild('pickerHasta') pickerHasta!: MatDatepicker<Date>;
+  @ViewChild('paymentModal') paymentModal: any;
 
   identList = ['V', 'P', 'E', 'J', 'C','G'];
   stateList: any[] = [];
@@ -52,6 +53,9 @@ export class AutomobileComponent {
   methodOfPaymentList: any[] = [];
   takersList: any[] = [];
   accessorySelected: any[] = [];
+  typeOfPayList: any[] = [];
+  bankList: any[] = [];
+  targetBankList: any[] = [];
 
   identControl = new FormControl('');
   stateControl = new FormControl('');
@@ -105,7 +109,9 @@ export class AutomobileComponent {
   detail: boolean = false;
   takersInfo: boolean = false;
   activateTypeVehicle: boolean = false;
+  isModalActive: boolean = false; 
   activateRate: boolean = false;
+  methodOfPayment: boolean = false;
   primaBruta!: any;
   descuento!: any;
   sumaAsegurada!: any;
@@ -185,7 +191,14 @@ export class AutomobileComponent {
     femision: ['', Validators.required],
     fdesde: ['', Validators.required],
     fhasta: ['', Validators.required],
-    cmetodologiapago: ['', Validators.required]
+    cmetodologiapago: ['', Validators.required],
+    ctipopago: [''],
+    cbanco: [''],
+    cbanco_destino: [''],
+    fcobro: [''],
+    xreferencia: [''],
+    mprima_pagada: [''],
+    mprima_bs: ['']
   });
 
   constructor( private _formBuilder: FormBuilder,
@@ -241,6 +254,8 @@ export class AutomobileComponent {
         this.getMethodOfPayment();
         this.getTakers();
         this.setDefaultDates();
+        this.getTypeOfPay();
+        this.getBank();
     }
   }
 
@@ -826,6 +841,7 @@ export class AutomobileComponent {
     const selectedPlan = this.planList.find(plan => plan.value === selectedValue);
     if (selectedPlan) {
       this.planFormGroup.get('cplan')?.setValue(selectedPlan.id);
+      this.getAmount();
     }
   }
 
@@ -861,6 +877,56 @@ export class AutomobileComponent {
     }
   }
 
+  getTypeOfPay(){
+    this.http.post(environment.apiUrl + '/api/v1/valrep/type-of-payment', null).subscribe((response: any) => {
+      if (response.data.typePayment) {
+        this.typeOfPayList = [];
+        for (let i = 0; i < response.data.typePayment.length; i++) {
+          this.typeOfPayList.push({
+            id: response.data.typePayment[i].ctipopago,
+            value: response.data.typePayment[i].xtipopago,
+          });
+        }
+      }
+    });
+  }
+
+  getBank(){
+    this.http.post(environment.apiUrl + '/api/v1/valrep/bank', null).subscribe((response: any) => {
+      if (response.data.bank) {
+        for (let i = 0; i < response.data.bank.length; i++) {
+          this.bankList.push({
+            id: response.data.bank[i].cbanco,
+            value: response.data.bank[i].xbanco,
+          });
+        }
+      }
+    });
+  }
+
+  getTargetBank(){
+    if(this.receiptFormGroup.get('ctipopago')?.value == '5'){
+      this.receiptFormGroup.get('cbanco_destino')?.disable();
+      this.receiptFormGroup.get('cbanco')?.disable();
+    }else{
+      this.receiptFormGroup.get('cbanco_destino')?.enable();
+      this.receiptFormGroup.get('cbanco')?.enable();
+      let data = {
+        ctipopago: this.receiptFormGroup.get('ctipopago')?.value
+      }
+      this.http.post(environment.apiUrl + '/api/v1/valrep/target-bank', data).subscribe((response: any) => {
+        if (response.data.targetBank) {
+          for (let i = 0; i < response.data.targetBank.length; i++) {
+            this.targetBankList.push({
+              id: response.data.targetBank[i].cbanco_destino,
+              value: response.data.targetBank[i].xbanco,
+            });
+          }
+        }
+      });
+    }
+  }
+
   onCoverageChange(): void {
     if(this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv'){
       this.helmet = false;
@@ -875,7 +941,7 @@ export class AutomobileComponent {
   }
 
   changeInspection(){
-    if(this.currentUser.data.crol != 1){
+    if(this.currentUser.data.crol != 5){
       this.snackBar.open(`No posee Número de Inspección, por lo tanto no puede proceder con ${this.vehicleFormGroup.get('xcobertura')?.value}`, '', {
         duration: 4000,
       });
@@ -922,6 +988,11 @@ export class AutomobileComponent {
         this.planFormGroup.get('pmotin')?.setValue(response.data.ptasa_casco);
         this.planFormGroup.get('pcatastrofico')?.setValue(response.data.ptasa_casco);
         this.planFormGroup.get('msuma_aseg')?.setValue(this.sumaAsegurada);
+        if(this.currentUser.data.crol == 5){
+          this.planFormGroup.get('msuma_aseg')?.enable();
+        }else{
+          this.planFormGroup.get('msuma_aseg')?.disable();
+        }
         this.planFormGroup.get('msuma_aseg_text')?.setValue(this.formatCurrency(SumaAsegurada));
 
         this.openDiscount();
@@ -1146,24 +1217,6 @@ export class AutomobileComponent {
     }
   }
 
-  // operationAmount(){
-  //   let data = {
-  //     cplan: this.planFormGroup.get('cplan')?.value,
-  //     cmetodologiapago: this.receiptFormGroup.get('cmetodologiapago')?.value,
-  //     ctarifa_exceso: this.vehicleFormGroup.get('ctarifa_exceso')?.value,
-  //     igrua: false,
-  //     npasajeros: this.vehicleFormGroup.get('npasajeros')?.value,
-  //   }
-  //   this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/premium-amount', data).subscribe((response: any) => {
-  //     if (response.status) {
-  //       this.amountTotal = true;
-  //       this.montoTotal = response.data.mprima
-  //     }else{
-  //       this.amountTotal = false;
-  //     }
-  //   });
-  // }
-
   setDefaultDates(): void {
     const currentDate = new Date();
 
@@ -1269,6 +1322,85 @@ export class AutomobileComponent {
       }
     }
   }
+
+  configurationCollectionDate(newValue: string){
+    if (newValue) {
+      const fcobro = new Date(newValue);
+      const currentDate = new Date();
+  
+      const minStartDate = new Date(currentDate);
+      minStartDate.setDate(minStartDate.getDate() - 5);
+  
+      if (fcobro < minStartDate) {
+        window.alert('La Fecha de Cobro no puede ser menor a 5 días antes de la fecha actual.')
+  
+        const formattedCurrentDate = format(currentDate, 'yyyy-MM-dd');
+        this.receiptFormGroup.get('fcobro')?.setValue(formattedCurrentDate);
+        this.cdr.detectChanges();
+  
+        return;
+      }
+    }
+  }
+
+  getAmount(){
+    let data = {
+      cplan: this.planFormGroup.get('cplan')?.value,
+      ctarifa_exceso: this.vehicleFormGroup.get('ctarifa_exceso')?.value,
+      npasajeros: this.vehicleFormGroup.get('npasajeros')?.value,
+      cuso: this.vehicleFormGroup.get('cuso')?.value,
+    }
+    this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/premium-amount', data).subscribe((response: any) => {
+      if (response.status) {
+        this.montoTotal = response.data.mprima
+        if(this.currentUser.data.crol == 5 && this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv'){
+          if(this.montoTotal){
+            this.amountTotal = true;
+          }else{
+            this.amountTotal = false;
+          }
+        }else{
+          this.amountTotal = false;
+        }
+
+      }else{
+        this.amountTotal = false;
+      }
+    });
+  }
+
+  getFormControl(name: string) {
+    return this.receiptFormGroup.get(name);
+  }
+
+  openPaymentModal() {
+    const currentDate = new Date();
+
+    const formattedCurrentDate = format(currentDate, 'yyyy-MM-dd');
+
+    this.receiptFormGroup.get('fcobro')?.setValue(formattedCurrentDate);
+
+    const modalRef = this.modalService.open(this.paymentModal, { centered: true });
+  
+    modalRef.result.then((result) => {
+      if (result === 'result') {
+        this.getFormControl('ctipopago')?.value;
+        this.getFormControl('cbanco')?.value;
+        this.getFormControl('cbanco_destino')?.value;
+        this.getFormControl('fcobro')?.value;
+        this.getFormControl('xreferencia')?.value;
+        this.getFormControl('mprima_bs')?.value;
+        this.receiptFormGroup.get('mprima_pagada')?.setValue(this.montoTotal);
+        this.buttonEmissions = true;
+      }
+    }).catch((reason) => {
+      this.buttonEmissions = false;
+    });
+  }
+
+  closeModal() {
+    this.isModalActive = false;
+  }
   
   validateMethod() {
     const fdesdeValue = this.receiptFormGroup.get('fdesde')?.value;
@@ -1286,19 +1418,27 @@ export class AutomobileComponent {
     const fhasta = new Date(fhastaValue as string);
   
     if (this.vehicleFormGroup.get('xcobertura')?.value === 'Rcv') {
-      if (this.xmetodologia !== 'ANUAL') {
-        this.snackBar.open(`Lo sentimos, solo se puede colocar ${this.xmetodologia} cuando no sea RCV.`, '', {
+      if(this.currentUser.data.crol == 5){
+        if (this.xmetodologia !== 'ANUAL') {
+          this.snackBar.open(`Lo sentimos, solo se puede colocar ${this.xmetodologia} cuando no sea RCV.`, '', {
+            duration: 3000,
+          });
+          this.receiptFormGroup.get('cmetodologiapago')?.setValue('');
+          this.methodOfPaymentControl.setValue('');
+          this.buttonEmissions = false;
+        } else {
+          this.buttonEmissions = true;
+        }
+      } else {
+        this.buttonEmissions = false;
+        this.snackBar.open(`Lo sentimos, debe formalizar una modalidad de pago para emitir la póliza`, '', {
           duration: 3000,
         });
-        this.receiptFormGroup.get('cmetodologiapago')?.setValue('');
-        this.methodOfPaymentControl.setValue('');
-        this.buttonEmissions = false;
-      } else {
-        this.buttonEmissions = true;
       }
-    } else {
+    }else{
       this.buttonEmissions = true;
     }
+
   }
   
   onSubmit(){
@@ -1361,7 +1501,14 @@ export class AutomobileComponent {
       id_inma: this.vehicleFormGroup.get('id_inma')?.value,
       cuso: this.vehicleFormGroup.get('cuso')?.value,
       cpais: 58,
-      cusuario: this.currentUser.data.cusuario
+      cusuario: this.currentUser.data.cusuario,
+      ctipopago: this.receiptFormGroup.get('ctipopago')?.value,
+      cbanco: this.receiptFormGroup.get('cbanco')?.value,
+      cbanco_destino: this.receiptFormGroup.get('cbanco_destino')?.value,
+      fcobro: this.receiptFormGroup.get('fcobro')?.value,
+      xreferencia: this.receiptFormGroup.get('xreferencia')?.value,
+      mprima_bs: this.receiptFormGroup.get('mprima_bs')?.value,
+      mprima_pagada: this.receiptFormGroup.get('mprima_pagada')?.value,
     }
 
     const nombre = this.personsFormGroup.get('xnombre')?.value + ' ' + this.personsFormGroup.get('xapellido')?.value;

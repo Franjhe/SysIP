@@ -231,40 +231,6 @@
                   <h2 style="text-align: center;"><strong>Especificaciones del Vehículo</strong></h2>
               </div>
               <div class="row">
-                <!-- <div class="col-3">
-                  <mat-form-field class="example-full-width">
-                      <mat-label>Tarifas</mat-label>
-                      <input type="text"
-                            placeholder="Seleccione Tarifa"
-                            aria-label="Seleccione"
-                            matInput
-                            [formControl]="ratesControl"
-                            [matAutocomplete]="rates"
-                            required>
-                      <mat-autocomplete #rates="matAutocomplete" (optionSelected)="onRatesSelection($event)">
-                        <mat-option *ngFor="let rates of filteredRates | async" [value]="rates">
-                          {{ rates }}
-                        </mat-option>
-                      </mat-autocomplete>
-                    </mat-form-field>
-                </div>
-                <div class="col-3">
-                  <mat-form-field class="example-full-width">
-                      <mat-label>Clase</mat-label>
-                      <input type="text"
-                            placeholder="Seleccione Clase"
-                            aria-label="Seleccione"
-                            matInput
-                            [formControl]="classControl"
-                            [matAutocomplete]="class"
-                            required>
-                      <mat-autocomplete #class="matAutocomplete" (optionSelected)="onClassSelection($event)">
-                        <mat-option *ngFor="let class of filteredClass | async" [value]="class">
-                          {{ class }}
-                        </mat-option>
-                      </mat-autocomplete>
-                    </mat-form-field>
-                </div> -->
                 <div class="col-3">
                   <mat-form-field class="example-full-width">
                     <mat-label>Serial de Carroceria</mat-label>
@@ -495,7 +461,7 @@
                     <div class="col-2">
                       <mat-form-field class="example-full-width">
                         <mat-label>Suma Asegurada</mat-label>
-                        <input matInput placeholder="Suma Asegurada" formControlName="msuma_aseg_text"  required>
+                        <input matInput placeholder="Suma Asegurada" formControlName="msuma_aseg"  required>
                       </mat-form-field>
                     </div>
                     <div class="col-3">
@@ -584,24 +550,6 @@
         <mat-step [stepControl]="receiptFormGroup" label="Detalles del Recibo">
             <form [formGroup]="receiptFormGroup">
               <div class="row">
-                <!-- <div class="col-3">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>Fecha Desde</mat-label>
-                    <input matInput [matDatepicker]="pickerDesde" formControlName="fdesde" (ngModelChange)="calculateDate($event)">
-                    <mat-hint>DD/MM/YYYY</mat-hint>
-                    <mat-datepicker-toggle matIconSuffix [for]="pickerDesde"></mat-datepicker-toggle>
-                    <mat-datepicker #pickerDesde></mat-datepicker>
-                  </mat-form-field>
-                </div>
-                <div class="col-3">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>Fecha Hasta</mat-label>
-                    <input matInput [matDatepicker]="pickerHasta" formControlName="fhasta" (ngModelChange)="prueba()">
-                    <mat-hint>DD/MM/YYYY</mat-hint>
-                    <mat-datepicker-toggle matIconSuffix [for]="pickerHasta"></mat-datepicker-toggle>
-                    <mat-datepicker #pickerHasta></mat-datepicker>
-                  </mat-form-field>
-                </div> -->
                 <div class="col-3">
                   <label class="form-label required" for="form3Examplev5">Fecha Desde</label>
                   <input type="date" formControlName="fdesde" class="form-control form-control-lg" (ngModelChange)="calculateDate($event)" />
@@ -627,6 +575,17 @@
                       </mat-autocomplete>
                     </mat-form-field>
                 </div>
+                <div class="col-3" *ngIf="amountTotal">
+                  <mat-form-field>
+                    <mat-label>Modalidad de Pago</mat-label>
+                    <mat-select formControlName="xpago" (selectionChange)="openPaymentModal()">
+                      <mat-option value="PAGO MANUAL">PAGO MANUAL</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <div class="row">
                 <div class="col-3" *ngIf="amountTotal" style="margin-top: 34px;">
                   <P><strong>Monto Total:  </strong>{{montoTotal}}$</P>
                 </div>
@@ -687,3 +646,67 @@
   </mat-tab-group>
 
 </div>
+
+<ng-template #paymentModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Pago Manual</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="receiptFormGroup">
+      <div class="col-12">
+        <div class="form-outline">
+          <label class="form-label required" for="form3Examplev3" style="color: rgba(0, 46, 255, 0.6);">Tipo de Pago</label>
+          <select formControlName="ctipopago" class="form-control form-control-lg colorgris" (change)="getTargetBank()">
+            <option></option>
+            <option *ngFor="let type of typeOfPayList" value="{{ type.id }}">{{ type.value }}</option>
+          </select>                     
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="form-outline">
+          <label class="form-label required" for="form3Examplev3" style="color: rgba(0, 46, 255, 0.6);">Banco</label>
+          <select formControlName="cbanco" class="form-control form-control-lg colorgris">
+            <option></option>
+            <option *ngFor="let bank of bankList" value="{{ bank.id }}">{{ bank.value }}</option>
+          </select>                     
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="form-outline">
+          <label class="form-label required" for="form3Examplev3" style="color: rgba(0, 46, 255, 0.6);">Banco Destino</label>
+          <select formControlName="cbanco_destino" class="form-control form-control-lg colorgris">
+            <option></option>
+            <option *ngFor="let target of targetBankList" value="{{ target.id }}">{{ target.value }}</option>
+          </select>                     
+        </div>
+      </div>
+      <div class="col-12">
+        <label class="form-label required" for="form3Examplev5">Fecha de Cobro</label>
+        <input type="date" formControlName="fcobro" class="form-control form-control-lg" (ngModelChange)="configurationCollectionDate($event)"/>
+      </div>
+      <div class="col-12">
+        <mat-form-field class="example-full-width">
+          <mat-label>Referencia</mat-label>
+          <input matInput placeholder="Referencia" formControlName="xreferencia">
+        </mat-form-field>
+      </div>
+      <div class="row">
+        <div class="col-6" style="margin-top: 34px;">
+          <P><strong>Monto en Dólares:  </strong>{{montoTotal}}$</P>
+        </div>
+        <div class="col-6">
+          <mat-form-field >
+            <mat-label>Monto en Bolívares</mat-label>
+            <input matInput type="number" formControlName="mprima_bs">
+          </mat-form-field>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="modal.close('result')">Aceptar</button>
+  </div>
+</ng-template>

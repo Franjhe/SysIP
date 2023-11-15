@@ -767,9 +767,9 @@ export class PdfGenerationService {
 			this.xobservaciones = response.data.xobservaciones;
 			this.xnombrerepresentantelegal = response.data.xnombrerepresentantelegal;
 			this.xdocidentidadrepresentantelegal = response.data.xdocidentidadrepresentantelegal;
-			this.xnombrecliente = response.data.xnombrecliente;
+			this.xnombrecliente = response.data.xnombrecliente.toUpperCase();
 			this.xdocidentidadcliente = response.data.xdocidentidadcliente;
-			this.xdireccionfiscalcliente = response.data.xdireccionfiscalcliente;
+			this.xdireccionfiscalcliente = response.data.xdireccionfiscalcliente.toUpperCase();
 			this.xciudadcliente = response.data.xciudadcliente;
 			this.xestadocliente = response.data.xestadocliente;
 			this.fdesde_pol = response.data.fdesde_pol;
@@ -780,7 +780,7 @@ export class PdfGenerationService {
 				this.xtelefonocliente = ' ';
 			}
 			if (response.data.xemailcliente) {
-				this.xemailcliente = response.data.xemailcliente;
+				this.xemailcliente = response.data.xemailcliente.toUpperCase();
 			} else {
 				this.xemailcliente = ' ';
 			}
@@ -798,8 +798,8 @@ export class PdfGenerationService {
 				this.canalventa = 'DIRECTO'
 			}
 			this.xnombrecorredor = response.data.xcorredor;
-			this.xnombrepropietario = response.data.xnombrepropietario;
-			this.xapellidopropietario = response.data.xapellidopropietario;
+			this.xnombrepropietario = response.data.xnombrepropietario.toUpperCase();
+			this.xapellidopropietario = response.data.xapellidopropietario.toUpperCase();
 			this.xtipodocidentidadpropietario = response.data.xtipodocidentidadpropietario ;
 			this.xdocidentidadpropietario = response.data.xdocidentidadpropietario ;
 			this.xdireccionpropietario = response.data.xdireccionpropietario ;
@@ -847,19 +847,19 @@ export class PdfGenerationService {
 			this.fdesde_rec = response.data.finiciorecibo;
 			this.fhasta_rec = response.data.fhastarecibo;
 			if(response.data.xtomador){
-				this.xtomador = response.data.xtomador;
+				this.xtomador = response.data.xtomador.toUpperCase();
 			}else{
 				this.xtomador = this.xnombrecliente;
 			}
 
 			if(response.data.xrif_tomador){
-				this.xrif_tomador = response.data.xrif_tomador;
+				this.xrif_tomador = response.data.xrif_tomador.toUpperCase();
 			}else{
 				this.xrif_tomador = this.xdocidentidadcliente;
 			}
 			
 			if(response.data.xzona_postal_tomador){
-				this.xzona_postal_tomador = response.data.xzona_postal_tomador;
+				this.xzona_postal_tomador = response.data.xzona_postal_tomador.toUpperCase();
 			}else{
 				this.xzona_postal_tomador = ' ';
 			}
@@ -871,25 +871,25 @@ export class PdfGenerationService {
 			}
 
 			if(response.data.xcorreo_tomador){
-				this.xcorreo_tomador = response.data.xcorreo_tomador;
+				this.xcorreo_tomador = response.data.xcorreo_tomador.toUpperCase();
 			}else{
 				this.xcorreo_tomador = this.xemailcliente;
 			}
 
 			if(response.data.xestado_tomador){
-				this.xestado_tomador = response.data.xestado_tomador;
+				this.xestado_tomador = response.data.xestado_tomador.toUpperCase();
 			}else{
 				this.xestado_tomador = this.xestadocliente;
 			}
 
 			if(response.data.xciudad_tomador){
-				this.xciudad_tomador = response.data.xciudad_tomador;
+				this.xciudad_tomador = response.data.xciudad_tomador.toUpperCase();
 			}else{
 				this.xciudad_tomador = this.xciudadcliente;
 			}
 
 			if(response.data.xdireccion_tomador){
-				this.xdireccion_tomador = response.data.xdireccion_tomador;
+				this.xdireccion_tomador = response.data.xdireccion_tomador.toUpperCase();
 			}else{
 				this.xdireccion_tomador = this.xdireccionfiscalcliente;
 			}
