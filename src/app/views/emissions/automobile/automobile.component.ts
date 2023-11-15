@@ -1353,16 +1353,11 @@ export class AutomobileComponent {
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/premium-amount', data).subscribe((response: any) => {
       if (response.status) {
         this.montoTotal = response.data.mprima
-        if(this.currentUser.data.crol == 5 && this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv'){
-          if(this.montoTotal){
-            this.amountTotal = true;
-          }else{
-            this.amountTotal = false;
-          }
+        if(this.montoTotal){
+          this.amountTotal = true;
         }else{
           this.amountTotal = false;
         }
-
       }else{
         this.amountTotal = false;
       }
