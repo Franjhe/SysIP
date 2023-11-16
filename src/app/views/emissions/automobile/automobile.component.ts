@@ -126,6 +126,7 @@ export class AutomobileComponent {
   xmetodologia!: any;
   xprimaAccesorio!: any;
   ubii!: any;
+  bcv!: any ;
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -218,6 +219,12 @@ export class AutomobileComponent {
 
 
   ngOnInit(){
+
+    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
+    .then((response) => response.json())
+    .then(data => {
+      this.bcv = data.monitors.usd.price
+    })
 
     this.today = new Date();
     const formattedDate = this.today.toISOString();
