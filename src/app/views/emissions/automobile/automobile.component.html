@@ -575,7 +575,7 @@
                       </mat-autocomplete>
                     </mat-form-field>
                 </div>
-                <div class="col-3" *ngIf="amountTotal">
+                <!-- <div class="col-3" *ngIf="amountTotal">
                   <mat-form-field>
                     <mat-label>Modalidad de Pago</mat-label>
                     <mat-select formControlName="xpago" (selectionChange)="getPaymentSelection()">
@@ -583,24 +583,33 @@
                       <mat-option value="UBII">UBII PAGOS</mat-option>
                     </mat-select>
                   </mat-form-field>
-                </div>
+                </div> -->
               </div>
 
               <div class="row">
                 <div class="col-3" *ngIf="amountTotal" style="margin-top: 34px;">
-                  <P><strong>Monto Total:  </strong>{{montoTotal}}$</P>
+                  <h4><strong>Monto Total:  </strong>{{montoTotal}}$</h4>
+                </div>
+              </div>
+
+              <div class="ms-4 ps-5 text-center container row">
+                <div class="col-lg-5 mt-2">
+                  <button type="button" class="btn btn-light btn-lg" data-mdb-ripple-color="dark" (click)="openPaymentModal()">
+                    Pago Manual
+                  </button>
+                </div>
+                <div class="col-lg-5 mt-2">
+                  <div style="width: 220px;height: 48px;margin-top: 10px;margin-left: 100px;" class="button">
+                      <button id="ubiiboton"></button>
+                  </div> 
                 </div>
               </div>
 
               <div class="row justify-content-center">
                 <div class="col-4" *ngIf="buttonEmissions">
                   <button mat-raised-button color="primary" (click)="onSubmit()" style="width: 42%; margin-top: 44px;margin-left: 89px;">Emitir</button>
-                </div>
-                <div class="col-sm-12 mt-2" *ngIf="bpagarubii">
-                  <div style="width: 220px;height: 48px;margin-top: 10px;margin-left: 100px;" class="button">
-                      <button id="ubiiboton" (click)="operationUbii()"></button>
-                  </div> 
               </div>
+              
                 <div class="col-4" *ngIf="loadingEmissions">
                   <div id="container">
                     <label class="loading-title">Cargando</label>

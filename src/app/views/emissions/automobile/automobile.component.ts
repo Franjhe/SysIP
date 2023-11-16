@@ -12,6 +12,7 @@ import { MatDatepicker } from '@angular/material/datepicker';
 import { ChangeDetectorRef } from '@angular/core';
 import { format, addYears } from 'date-fns';
 import { initUbii } from '@ubiipagos/boton-ubii-dc';
+// import { initUbii } from '@ubiipagos/boton-ubii';
 
 export const MY_FORMATS = {
   parse: {
@@ -217,6 +218,7 @@ export class AutomobileComponent {
 
 
   ngOnInit(){
+
     this.today = new Date();
     const formattedDate = this.today.toISOString();
     
@@ -1357,6 +1359,7 @@ export class AutomobileComponent {
         this.montoTotal = response.data.mprima
         this.ubii = response.data.ccubii
         if(this.montoTotal){
+          this.operationUbii();
           this.amountTotal = true;
         }else{
           this.amountTotal = false;
@@ -1371,7 +1374,7 @@ export class AutomobileComponent {
     if(this.receiptFormGroup.get('xpago')?.value == 'PAGO MANUAL'){
       this.openPaymentModal();
     }else if(this.receiptFormGroup.get('xpago')?.value == 'UBII'){
-      this.bpagarubii = true;
+      this.operationUbii();
     }
   }
 
@@ -1449,30 +1452,32 @@ export class AutomobileComponent {
 
   operationUbii() {
     if (this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv') {
-      let prima = this.montoTotal
-      let prima_ds: string = String(prima.toFixed(2));
-      let prima_bs = prima_ds;
+      let prima = this.montoTotal.toString().split(" ");
+      let prima_ds: String = String(parseFloat(prima[0]).toFixed(2));
+      let prima_bs: String = String(parseFloat(prima[0]).toFixed(2));
       let orden: string = "UB_" + 250;
+
+      this.bpagarubii = true;
+
+      console.log(prima_ds)
+      console.log(prima_bs)
+      console.log(orden)
 
       initUbii(
         'ubiiboton',
         {
           amount_ds: prima_ds,
-          amount_bs: prima_bs,
+          amount_bs:  prima_bs,
           concept: "COMPRA",
-          principal: "bs",
+          principal: "ds",
           clientId:"f2514eda-610b-11ed-8e56-000c29b62ba1",
           orderId: orden
         },
-        
         this.callbackFn.bind(this),
-        
         {
-          text: 'Pagar con Ubii Pagos '
-        }
-        
+          text: 'Pagar con Ubii '
+        },
       );
-      
 
     }
   }
