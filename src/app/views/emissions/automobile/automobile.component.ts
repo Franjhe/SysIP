@@ -11,6 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { ChangeDetectorRef } from '@angular/core';
 import { format, addYears } from 'date-fns';
+import { initUbii } from '@ubiipagos/boton-ubii-dc';
 
 export const MY_FORMATS = {
   parse: {
@@ -122,7 +123,7 @@ export class AutomobileComponent {
   today!: Date;
   xmetodologia!: any;
   xprimaAccesorio!: any;
-  
+  ubii!: any;
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -1353,6 +1354,7 @@ export class AutomobileComponent {
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/premium-amount', data).subscribe((response: any) => {
       if (response.status) {
         this.montoTotal = response.data.mprima
+        this.ubii = response.data.ccubii
         if(this.montoTotal){
           this.amountTotal = true;
         }else{
@@ -1434,6 +1436,83 @@ export class AutomobileComponent {
       this.buttonEmissions = true;
     }
 
+  }
+
+  operationUbii(){
+    if (this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv'){
+      let prima = this.montoTotal;
+      let prima_ds: String = String(parseFloat(prima[0]).toFixed(2));
+      let orden : string = "UB_" + this.ubii;
+
+      initUbii(
+        'ubiiboton',
+        {
+          amount_ds: prima_ds,
+          // amount_bs:  prima_bs,
+          concept: "COMPRA",
+          principal: "ds",
+          clientId:"f2514eda-610b-11ed-8e56-000c29b62ba1",
+          orderId: orden
+        },
+        this.callbackFn.bind(this),
+        {
+          text: 'Pagar con Ubii '
+        },
+      
+      );
+    }
+  }
+
+  async onSubmitUbii() {
+
+      const response = await fetch(`${environment.apiUrl}/api/fleet-contract-management/create/individualContract`, {
+        "method": "POST",
+        "headers": {
+          "CONTENT-TYPE": "Application/json",
+          "X-CLIENT-CHANNEL": "BTN-API",
+          "Authorization": `Bearer ${this.currentUser.data.csession}`
+        },
+        "body": JSON.stringify({
+
+        }) 
+      });
+      let res = await response.json();
+  }
+
+  async callbackFn(answer: any) {
+
+    if(answer.data.R == 0){
+      await this.onSubmitUbii();
+      let ctipopago;
+      if(answer.data.method == "ZELLE"){
+        ctipopago = 4;
+      }
+      if(answer.data.method == "P2C") {
+        ctipopago = 3;
+      }
+      let datetimeformat = answer.data.date.split(' ');
+      let dateformat = datetimeformat[0].split('/');
+      let fcobro = dateformat[2] + '-' + dateformat[1] + '-' + dateformat[0] + ' ' + datetimeformat[1];
+      const response = await fetch(`${environment.apiUrl}/api/fleet-contract-management/ubii/update`, {
+        "method": "POST",
+        "headers": {
+          "CONTENT-TYPE": "Application/json",
+          "Authorization": `Bearer ${this.currentUser.data.csession}`
+        },
+        "body": JSON.stringify({
+          paymentData: {
+            ccontratoflota: this.ccontratoflota,
+            orderId: answer.data.orderID,
+            ctipopago: ctipopago,
+            xreferencia: answer.data.ref,
+            fcobro: fcobro,
+            mprima_pagada: answer.data.m
+          }
+        }) });
+    }
+    if (answer.data.R == 1) {
+      window.alert(`No se pudo procesar el pago. Motivo: ${answer.data.M}, intente nuevamente`);
+    }
   }
   
   onSubmit(){
