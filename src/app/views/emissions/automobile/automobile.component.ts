@@ -11,7 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { ChangeDetectorRef } from '@angular/core';
 import { format, addYears } from 'date-fns';
-import { initUbii } from '@ubiipagos/boton-ubii-dc';
+import { initUbii } from '@ubiipagos/boton-ubii';
 
 export const MY_FORMATS = {
   parse: {
@@ -1466,8 +1466,11 @@ export class AutomobileComponent {
         {
           text: 'Pagar con Ubii '
         },
-      
+
       );
+
+      console.log(this.callbackFn , initUbii )
+
     }
   }
 
