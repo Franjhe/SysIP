@@ -1461,13 +1461,10 @@ export class AutomobileComponent {
     if (this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv') {
       let prima = this.montoTotal.toString().split(" ");
       let prima_ds: String = String(parseFloat(prima[0]).toFixed(2));
-      let prima_bs: String = String(parseFloat(prima[0]).toFixed(2));
-      let orden: string = "UB_" + 250;
+      let prima_bs: String = String( (Math.round( ( (parseFloat(prima[0]) * (this.bcv) ) + Number.EPSILON ) * 100 ) /100).toFixed(2) );
+      let orden: string = "UB_" + this.ubii;
 
       this.bpagarubii = true;
-
-      console.log(prima_ds)
-      console.log(prima_bs)
       console.log(orden)
 
       initUbii(
@@ -1558,7 +1555,7 @@ export class AutomobileComponent {
         }) 
       });
       let res = await response.json();
-      if (res.data.status) {
+      if (res.data) {
         this.ccontratoflota = res.data.ccontratoflota;
       }
   }
@@ -1592,9 +1589,26 @@ export class AutomobileComponent {
             ctipopago: ctipopago,
             xreferencia: answer.data.ref,
             fcobro: fcobro,
-            mprima_pagada: answer.data.m
+            mprima_pagada: answer.data.m,
+            mtasa_cambio: this.bcv
           }
         }) });
+        this.check = true;
+        const observable = from(this.pdfGenerationService.LoadDataCertifiqued(this.ccontratoflota));
+
+        observable.subscribe(
+          (data) => {
+            this.check = true;
+            this.loadingPdf = false
+          },
+          (error) => {
+            console.log(error)
+          }
+        );
+
+        this.snackBar.open(`Se ha generado exitósamente el contrato n° ${this.ccontratoflota}`, '', {
+          duration: 3000,
+        });
     }
     if (answer.data.R == 1) {
       window.alert(`No se pudo procesar el pago. Motivo: ${answer.data.M}, intente nuevamente`);
