@@ -16,18 +16,25 @@ export class AutomobileQuotesComponent {
   brandList: any[] = [];
   modelList: any[] = [];
   versionList: any[] = [];
+  ratesList: any[] = [];
+  utilityVehicleList:  any[] = [];
 
   brandControl = new FormControl('');
   modelControl = new FormControl('');
   versionControl = new FormControl('');
+  ratesControl = new FormControl('');
+  utilityVehicleControl = new FormControl('');
 
   filteredBrand!: Observable<string[]>;
   filteredModel!: Observable<string[]>;
   filteredVersion!: Observable<string[]>;
+  filteredRates!: Observable<string[]>;
+  filteredUtilityVehicle!: Observable<string[]>;
 
   vector: boolean = true;
   loading: boolean = false;
   buttonQuotes: boolean = false;
+  activateRate: boolean = false;
 
   quotesForm = this._formBuilder.group({
     xmarca: ['', Validators.required],
@@ -36,14 +43,21 @@ export class AutomobileQuotesComponent {
     fano: ['', Validators.required],
     xcobertura: ['', Validators.required],
     xnombre: ['', Validators.required],
-    xtelefono: ['', Validators.required],
-    email: ['', Validators.required]
+    xapellido: ['', Validators.required],
+    email: ['', Validators.required],
+    ctarifa_exceso: [''],
+    cuso: [''],
+    id_inma: [''],
   });
 
   constructor( private _formBuilder: FormBuilder,
                private http: HttpClient,
                private snackBar: MatSnackBar,
              ) {}
+
+  ngOnInit(){
+    this.getUtilityVehicle();
+  }
 
 
   changeYears() {
@@ -185,8 +199,84 @@ export class AutomobileQuotesComponent {
     const selectedVersion = this.versionList.find(version => version.value === selectedValue);
     if (selectedVersion) {
       this.quotesForm.get('xversion')?.setValue(selectedVersion.value);
+      this.quotesForm.get('ctarifa_exceso')?.setValue(selectedVersion.ctarifa_exceso);
+      this.quotesForm.get('id_inma')?.setValue(selectedVersion.id_inma);
+
+      if(!this.quotesForm.get('ctarifa_exceso')?.value){
+        this.activateRate = true;
+        this.getRates();
+      }else{
+        this.activateRate = false;
+      }
     }
   }
+
+  getRates(){
+    this.http.post(environment.apiUrl + '/api/v1/valrep/rates', null).subscribe((response: any) => {
+      if (response.data.rates) {
+        for (let i = 0; i < response.data.rates.length; i++) {
+          this.ratesList.push({
+            id: response.data.rates[i].ctarifa_exceso,
+            value: response.data.rates[i].xgrupo,
+          });
+        }
+        this.filteredRates = this.ratesControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filterRates(value || ''))
+        );
+      }
+    });
+  }
+
+  private _filterRates(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.ratesList
+      .map(rates => rates.value)
+      .filter(rates => rates.toLowerCase().includes(filterValue));
+  }
+
+  onRatesSelection(event: any) {
+    const selectedValue = event.option.value;
+    const selectedRates = this.ratesList.find(rates => rates.value === selectedValue);
+    if (selectedRates) {
+      this.quotesForm.get('ctarifa_exceso')?.setValue(selectedRates.id);
+      this.activateRate = false;
+    }
+  }
+
+  getUtilityVehicle(){
+    this.http.post(environment.apiUrl + '/api/v1/valrep/utility', null).subscribe((response: any) => {
+      if (response.data.utility) {
+        for (let i = 0; i < response.data.utility.length; i++) {
+          this.utilityVehicleList.push({
+            id: response.data.utility[i].cuso,
+            value: response.data.utility[i].xuso,
+            precargo: response.data.utility[i].precargo,
+          });
+        }
+        this.filteredUtilityVehicle = this.utilityVehicleControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filterUtilityVehicle(value || ''))
+        );
+      }
+    });
+  }
+
+  private _filterUtilityVehicle(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.utilityVehicleList
+      .map(utility => utility.value)
+      .filter(utility => utility.toLowerCase().includes(filterValue));
+  }
+
+  onUtilityVehicleSelection(event: any) {
+    const selectedValue = event.option.value;
+    const selectedUtilityVehicle = this.utilityVehicleList.find(utility => utility.value === selectedValue);
+    if (selectedUtilityVehicle) {
+      this.quotesForm.get('cuso')?.setValue(selectedUtilityVehicle.id);
+    }
+  }
+
 
   validateForm() {
     if (this.quotesForm.invalid){
@@ -199,6 +289,23 @@ export class AutomobileQuotesComponent {
   onSubmit(){
     this.loading = true;
     this.buttonQuotes = false;
+
+    let data = {
+      id_inma: this.quotesForm.get('id_inma')?.value,
+      fano: this.quotesForm.get('fano')?.value,
+      xcobertura: this.quotesForm.get('xcobertura')?.value,
+      xnombre: this.quotesForm.get('xnombre')?.value?.toUpperCase(),
+      xapellido: this.quotesForm.get('xapellido')?.value?.toUpperCase(),
+      email: this.quotesForm.get('email')?.value?.toUpperCase(),
+      ctarifa_exceso: this.quotesForm.get('ctarifa_exceso')?.value,
+      cuso: this.quotesForm.get('cuso')?.value
+    }
+
+    this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/create', data).subscribe((response: any) => {
+      if (response.status) {
+        console.log(response.data.list)
+      }
+    })
   }
 
 }

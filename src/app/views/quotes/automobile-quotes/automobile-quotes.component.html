@@ -70,7 +70,26 @@
                             </div>
                         </div>
 
-                        <div class="col-12">
+                        <div class="col-12" *ngIf="activateRate">
+                          <mat-form-field class="example-full-width">
+                              <mat-label>Tarifas</mat-label>
+                              <input type="text"
+                                    placeholder="Seleccione Tarifa"
+                                    aria-label="Seleccione"
+                                    matInput
+                                    [formControl]="ratesControl"
+                                    [matAutocomplete]="rates"
+                                    required>
+                              <mat-autocomplete #rates="matAutocomplete" (optionSelected)="onRatesSelection($event)">
+                                <mat-option *ngFor="let rates of filteredRates | async" [value]="rates">
+                                  {{ rates }}
+                                </mat-option>
+                              </mat-autocomplete>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="row">
+                          <div class="col-6">
                             <mat-form-field class="example-full-width">
                               <mat-label>Coberturas</mat-label>
                               <mat-select formControlName="xcobertura">
@@ -79,6 +98,24 @@
                                 <mat-option value="Perdida Total">PERDIDA TOTAL</mat-option>
                               </mat-select>
                             </mat-form-field>
+                          </div>
+                          <div class="col-6">
+                            <mat-form-field class="example-full-width">
+                                <mat-label>Uso</mat-label>
+                                <input type="text"
+                                      placeholder="Seleccione Uso"
+                                      aria-label="Seleccione"
+                                      matInput
+                                      [formControl]="utilityVehicleControl"
+                                      [matAutocomplete]="utility"
+                                      >
+                                <mat-autocomplete #utility="matAutocomplete" (optionSelected)="onUtilityVehicleSelection($event)">
+                                  <mat-option *ngFor="let utility of filteredUtilityVehicle | async" [value]="utility">
+                                    {{ utility }}
+                                  </mat-option>
+                                </mat-autocomplete>
+                              </mat-form-field>
+                          </div>
                         </div>
 
                         <div class="col-12">
@@ -90,8 +127,8 @@
 
                         <div class="col-12">
                             <mat-form-field class="example-full-width">
-                                <mat-label>Teléfono</mat-label>
-                                <input matInput placeholder="Teléfono" formControlName="xtelefono" required>
+                                <mat-label>Apelllido</mat-label>
+                                <input matInput placeholder="Apelllido" formControlName="xapellido" required>
                             </mat-form-field>
                         </div>
 
