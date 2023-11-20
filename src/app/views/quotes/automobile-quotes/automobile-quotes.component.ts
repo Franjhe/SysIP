@@ -18,6 +18,7 @@ export class AutomobileQuotesComponent {
   versionList: any[] = [];
   ratesList: any[] = [];
   utilityVehicleList:  any[] = [];
+  quotesList:  any[] = [];
 
   brandControl = new FormControl('');
   modelControl = new FormControl('');
@@ -303,7 +304,8 @@ export class AutomobileQuotesComponent {
 
     this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/create', data).subscribe((response: any) => {
       if (response.status) {
-        console.log(response.data.list)
+        this.vector = false;
+        this.quotesList = response.data.list.result;
       }
     })
   }

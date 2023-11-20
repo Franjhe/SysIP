@@ -1,7 +1,7 @@
 <div class="card container registration-form">
-    <div class="row">
+    <div class="row" *ngIf="vector">
         <div class="col-6">
-            <div class="card-quotes">
+            <div class="card-quotes" >
                 <form [formGroup]="quotesForm">
                     <div class="bg">
                         <div class="center">
@@ -165,5 +165,21 @@
         <div class="col-6" *ngIf="buttonQuotes">
             <button mat-raised-button color="primary" (click)="onSubmit()" style="width: 42%; margin-top: -150px; margin-left: 630px;"><mat-icon>send</mat-icon>Cotizar</button>
         </div>
+    </div>
+
+    <div class="row">
+      <form [formGroup]="quotesForm">
+        <div class="col-lg-4" *ngFor="let quotes of quotesList">
+          <div class="card">
+            <div class="card-header">
+              {{quotes.xcorreo}}
+            </div>
+            <div class="card-body">
+
+            </div>
+          </div>
+        </div>
+      </form>
+
     </div>
 </div>
