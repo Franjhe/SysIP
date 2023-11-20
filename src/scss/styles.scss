@@ -27,11 +27,11 @@ html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .mdc-text-field--filled:not(.mdc-text-field--disabled) {
-    background-color: #6060601c;
+    background-color: rgb(255 255 255 / 11%)
 }
 
 .mdc-text-field:not(.mdc-text-field--disabled) .mdc-floating-label {
-    color: rgb(0 46 255 / 60%);
+    color: rgb(0 0 0 / 60%);
 }
 
 .mdc-text-field:not(.mdc-text-field--disabled) .mdc-text-field__input {
@@ -117,4 +117,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   .mat-mdc-form-field:not(.mat-form-field-no-animations) .mdc-text-field__input {
     transition: opacity 150ms 0ms cubic-bezier(0.4, 0, 0.2, 1);
     text-transform: uppercase;
+}
+
+.center {
+  display: grid;
+  place-items: center;
 }

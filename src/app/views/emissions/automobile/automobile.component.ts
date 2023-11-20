@@ -510,6 +510,7 @@ export class AutomobileComponent {
         this.snackBar.open(`No puedes colocar un año mayor al 2021. Por favor, vuelve a intentarlo`, '', {
           duration: 5000,
         });
+        this.vehicleFormGroup.get('fano')?.setValue('')
       }else{
         this.getBrand()
       }

@@ -1,0 +1,132 @@
+<div class="card container registration-form">
+    <div class="row">
+        <div class="col-6">
+            <div class="card-quotes">
+                <form [formGroup]="quotesForm">
+                    <div class="bg">
+                        <div class="center">
+                            <h3><strong style="color: #3f51b5;">Cotización de Automóvil</strong></h3>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>Año</mat-label>
+                                  <input matInput type="number" placeholder="Año" formControlName="fano" (change)="changeYears()">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-6">
+                                <mat-form-field class="example-full-width mat-form-field">
+                                  <mat-label>Marca</mat-label>
+                                  <input type="text"
+                                         placeholder="Seleccione Marca"
+                                         aria-label="Seleccione"
+                                         matInput
+                                         [formControl]="brandControl"
+                                         [matAutocomplete]="brand"
+                                         required>
+                                         <mat-autocomplete #brand="matAutocomplete" (optionSelected)="onBrandSelection($event)">
+                                          <mat-option *ngFor="let brand of filteredBrand | async" [value]="brand">
+                                            {{ brand }}
+                                          </mat-option>
+                                        </mat-autocomplete>
+                                </mat-form-field>
+                            </div>
+                        </div>
+        
+                        <div class="row">
+                            <div class="col-6">
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>Modelo</mat-label>
+                                  <input type="text"
+                                        placeholder="Seleccione Modelo"
+                                        aria-label="Seleccione"
+                                        matInput
+                                        [formControl]="modelControl"
+                                        [matAutocomplete]="model"
+                                        required>
+                                        <mat-autocomplete #model="matAutocomplete" (optionSelected)="onModelSelection($event)">
+                                          <mat-option *ngFor="let model of filteredModel | async" [value]="model">
+                                            {{ model }}
+                                          </mat-option>
+                                        </mat-autocomplete>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-6">
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>Version</mat-label>
+                                  <input type="text"
+                                        placeholder="Seleccione Version"
+                                        aria-label="Seleccione"
+                                        matInput
+                                        [formControl]="versionControl"
+                                        [matAutocomplete]="version"
+                                        required>
+                                        <mat-autocomplete #version="matAutocomplete" (optionSelected)="onVersionSelection($event)">
+                                          <mat-option *ngFor="let version of filteredVersion | async" [value]="version">
+                                            {{ version }}
+                                          </mat-option>
+                                        </mat-autocomplete>
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <mat-form-field class="example-full-width">
+                              <mat-label>Coberturas</mat-label>
+                              <mat-select formControlName="xcobertura">
+                                <mat-option value="Rcv">RCV</mat-option>
+                                <mat-option value="Cobertura Amplia">COBERTURA AMPLIA</mat-option>
+                                <mat-option value="Perdida Total">PERDIDA TOTAL</mat-option>
+                              </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-12">
+                            <mat-form-field class="example-full-width">
+                                <mat-label>Nombre</mat-label>
+                                <input matInput placeholder="Nombre" formControlName="xnombre">
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-12">
+                            <mat-form-field class="example-full-width">
+                                <mat-label>Teléfono</mat-label>
+                                <input matInput placeholder="Teléfono" formControlName="xtelefono" required>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-12">
+                            <mat-form-field class="example-full-width">
+                                <mat-label>Correo</mat-label>
+                                <input matInput placeholder="Correo" formControlName="email" (change)="validateForm()" required>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="bg-loading" *ngIf="loading">
+                        <div class="center">
+                            <h3><strong style="color: #3f51b5;">Cotización de Automóvil</strong></h3>
+                        </div>
+                        <div class="col-4" *ngIf="loading" style="margin-top: 172px; margin-left: 109px;">
+                            <div id="container">
+                              <label class="loading-title">Cargando Cotización</label>
+                              <span class="loading-circle sp1">
+                                <span class="loading-circle sp2">
+                                  <span class="loading-circle sp3"></span>
+                                </span>
+                              </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-6" *ngIf="vector">
+            <img src="../../../../assets/images/Vector-Automovil.jpg" style="width: 108%;margin-left: -93px;height: 418px">
+        </div>
+
+        <div class="col-6" *ngIf="buttonQuotes">
+            <button mat-raised-button color="primary" (click)="onSubmit()" style="width: 42%; margin-top: -150px; margin-left: 630px;"><mat-icon>send</mat-icon>Cotizar</button>
+        </div>
+    </div>
+</div>
