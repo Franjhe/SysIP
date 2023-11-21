@@ -1,5 +1,5 @@
 import {Component, ViewChild  } from '@angular/core';
-import {FormBuilder, Validators, FormGroup, FormControl} from '@angular/forms';
+import {FormBuilder, Validators, FormGroup, FormControl , FormArray} from '@angular/forms';
 import {from, Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
@@ -139,6 +139,7 @@ export class AutomobileComponent {
     cciudad: ['', Validators.required],
     xdireccion: ['', Validators.required],
   });
+
   vehicleFormGroup = this._formBuilder.group({
     ccotizacion: [{ value: '', disabled: false }],
     cinspeccion: [{ value: '', disabled: false }],
@@ -161,6 +162,7 @@ export class AutomobileComponent {
     cclase: ['', Validators.required],
     id_inma: ['', Validators.required],
   });
+
   planFormGroup = this._formBuilder.group({
     cplan: ['', Validators.required],
     ccorredor: ['', Validators.required],
@@ -188,8 +190,15 @@ export class AutomobileComponent {
     pblindaje: [{ value: '', disabled: true }],
     msuma_blindaje: [''],
     mprima_blindaje: [{ value: '', disabled: true }],
+    accesorios :  this._formBuilder.array([{
+      xaccesorio: '',
+      ptasa: '',
+      sumaAsegurada : '',
+      xprimaAccesorio: '',
+    }]),
     msuma_aseg_acce: [{ value: '', disabled: false }],
   });
+
   receiptFormGroup = this._formBuilder.group({
     xpago: ['', Validators.required],
     femision: ['', Validators.required],
@@ -202,7 +211,8 @@ export class AutomobileComponent {
     fcobro: [''],
     xreferencia: [''],
     mprima_pagada: [''],
-    mprima_bs: ['']
+    mprima_bs: [''],
+
   });
 
   constructor( private _formBuilder: FormBuilder,
@@ -217,8 +227,12 @@ export class AutomobileComponent {
 
               }
 
+  get accesorios() : FormArray {
+    return this.planFormGroup.get("accesorios") as unknown as FormArray
+  }
 
   ngOnInit(){
+    console.log(this.planFormGroup)
 
     fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
     .then((response) => response.json())
@@ -939,13 +953,14 @@ export class AutomobileComponent {
     }
   }
 
-  onCoverageChange(): void {
+  onCoverageChange() {
     if(this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv'){
       this.helmet = false;
       this.activateInspection = false;
 
 
-    }else{
+    }
+    else if(this.vehicleFormGroup.get('xcobertura')?.value !== 'Rcv'){
       this.validateYearsFromHullPrice()
       this.activateInspection = true;
       this.helmet = true;
@@ -1156,6 +1171,17 @@ export class AutomobileComponent {
     this.http.post(environment.apiUrl + '/api/v1/valrep/accesories', null).subscribe((response: any) => {
       if (response.data.accesories) {
         for (let i = 0; i < response.data.accesories.length; i++) {
+
+          this.accesorios.push(
+            this._formBuilder.group({
+              caccesorio: response.data.accesories[i].caccesorio,
+              xaccesorio: response.data.accesories[i].xaccesorio,
+              ptasa: response.data.accesories[i].ptasa,
+              sumaAsegurada: '',
+              xprimaAccesorio: ''
+            })
+          )
+
           this.accesoriesList.push({
             caccesorio: response.data.accesories[i].caccesorio,
             xaccesorio: response.data.accesories[i].xaccesorio,
@@ -1180,13 +1206,14 @@ export class AutomobileComponent {
     }
   }
 
-  calculateAccesories(accessory: any) {
-    accessory.xprimaAccesorio = accessory.ptasa * (accessory.sumaAsegurada / 100);
+  calculateAccesories(i: any) {
 
-    if (accessory.sumaAsegurada > 0) {
-      this.accessorySelected.push({ ...accessory });
-    }
-    console.log(this.accessorySelected)
+    const creds = this.planFormGroup.controls.accesorios as FormArray; 
+
+    const xprimaAccesorio = creds.at(i).get('ptasa')?.value  * ( creds.at(i).get('sumaAsegurada')?.value / 100 ) ;
+    creds.at(i).get('xprimaAccesorio')?.setValue(xprimaAccesorio)
+
+
   }
 
   onToppingsChange(selectedToppings: any[]) {
@@ -1476,7 +1503,7 @@ export class AutomobileComponent {
           concept: "COMPRA",
           principal: "ds",
           clientId:"f2514eda-610b-11ed-8e56-000c29b62ba1",
-          orderId: orden
+          orderId: '1'
         },
         this.callbackFn.bind(this),
         {
@@ -1545,7 +1572,7 @@ export class AutomobileComponent {
           pblindaje: this.planFormGroup.get('pblindaje')?.value,
           msuma_blindaje: this.planFormGroup.get('msuma_blindaje')?.value,
           mprima_blindaje: this.planFormGroup.get('mprima_blindaje')?.value,
-          accesorios: this.accessorySelected,
+          accesorios: this.planFormGroup.controls.accesorios.value,
           xpago: this.receiptFormGroup.get('xpago')?.value,
           femision: this.receiptFormGroup.get('femision')?.value,
           cmetodologiapago: this.receiptFormGroup.get('cmetodologiapago')?.value,
@@ -1669,7 +1696,7 @@ export class AutomobileComponent {
       pblindaje: this.planFormGroup.get('pblindaje')?.value,
       msuma_blindaje: this.planFormGroup.get('msuma_blindaje')?.value,
       mprima_blindaje: this.planFormGroup.get('mprima_blindaje')?.value,
-      accesorios: this.accessorySelected,
+      accesorios: this.planFormGroup.controls.accesorios.value,
       xpago: this.receiptFormGroup.get('xpago')?.value,
       femision: this.receiptFormGroup.get('femision')?.value,
       cmetodologiapago: this.receiptFormGroup.get('cmetodologiapago')?.value,

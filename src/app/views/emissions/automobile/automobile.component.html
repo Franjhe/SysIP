@@ -512,7 +512,7 @@
                     </div>
                   </div>
                 </mat-tab>
-                <mat-tab label="Accesorios">
+                <mat-tab label="Accesorios" formArrayName="accesorios">
                   <table class="accesories-table">
                     <thead>
                       <tr>
@@ -522,14 +522,14 @@
                         <th>Prima</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <tr *ngFor="let accessory of accesoriesList">
-                        <td>{{ accessory.xaccesorio }}</td>
-                        <td>{{ accessory.ptasa }}</td>
+                    <tbody *ngFor="let creds of accesorios.controls; let i=index">
+                      <tr [formGroupName]="i">
+                        <td >{{creds.value.xaccesorio}}</td>
+                        <td>{{creds.value.ptasa}}</td>
                         <td class="items">
-                          <input matInput type="number" (change)="updateSumaAsegurada(accessory, $event)" placeholder="Ingrese valor" />
+                          <input  type="number" formControlName="sumaAsegurada" (change)="calculateAccesories(i)" placeholder="Ingrese valor" />
                         </td>
-                        <td>{{ accessory.xprimaAccesorio }}</td>
+                        <td >{{creds.value.xprimaAccesorio}}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -541,7 +541,7 @@
                   <button mat-button matStepperPrevious>Regresar</button>
                 </div>
                 <div class="col-1">
-                  <button mat-button matStepperNext>Continuar</button>
+                  <button mat-button matStepperNext >Continuar</button>
                 </div>
               </div>
 
