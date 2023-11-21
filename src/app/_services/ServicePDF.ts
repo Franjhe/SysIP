@@ -1350,9 +1350,9 @@ export class PdfGenerationService {
 			{
 				style: 'data',
 				table: {
-				  widths: [400],
+				  widths: [500],
 				  body: [
-					[{text: 'Si el pago es en Dólares debe cancelar el 3% del IGTF', alignment: 'left', bold: true, border: [false, false, false, false]}]
+					[{text: 'La prima no incluye el impuesto del  3% de  IGFT, el cual debe pagar en caso que su moneda de pago sea diferente de bolívares', alignment: 'center', bold: true, border: [false, false, false, false]}]
 				  ]
 				}
 			  },

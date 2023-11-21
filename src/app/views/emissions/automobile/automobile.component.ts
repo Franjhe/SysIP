@@ -1155,8 +1155,34 @@ export class AutomobileComponent {
     this.descuento = this.planFormGroup.get('pdescuento')?.value;
   }
 
-  getRecharge(){
-    
+  getRecharge() {
+    const precargaValue = this.planFormGroup.get('precarga')?.value;
+    const pcascoValue = this.planFormGroup.get('pcasco')?.value;
+    const casco = this.planFormGroup.get('mprima_casco')?.value;
+
+    let division: number = 0;
+    let multiplicacion: number = 0;
+    let calculo_recarga: number = 0;
+  
+    if (typeof precargaValue === 'number' && typeof pcascoValue === 'number' && typeof casco === 'string') {
+      const calculatedAmount = (precargaValue / 100) * pcascoValue;
+      const sumRecharge = pcascoValue + calculatedAmount;
+
+      const cascoNumero = parseFloat(casco);
+      
+      division = sumRecharge / 100;
+      multiplicacion = cascoNumero * division;
+      calculo_recarga = cascoNumero + multiplicacion;
+
+      let valorTotal = calculo_recarga.toFixed(2)
+
+      this.planFormGroup.get('mprima_casco')?.setValue(calculo_recarga.toString());
+      this.planFormGroup.get('mprima_casco_text')?.setValue(valorTotal);
+
+      const recharge = sumRecharge.toFixed(2)
+
+      this.planFormGroup.get('pcasco')?.setValue(recharge.toString())
+    }
   }
 
   calculationPremiumsShielding(){
