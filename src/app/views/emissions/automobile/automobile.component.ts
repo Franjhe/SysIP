@@ -182,6 +182,7 @@ export class AutomobileComponent {
     mprima_casco_text: [{ value: '', disabled: true }],
     mprima_bruta_text: [{ value: '', disabled: true }],
     pdescuento: [''],
+    precarga: [''],
     pmotin: [{ value: '', disabled: true }],
     pcatastrofico: [{ value: '', disabled: true }],
     mprima_casco: [{ value: '', disabled: true }],
@@ -1152,6 +1153,10 @@ export class AutomobileComponent {
       this.enableInfo = true;
     }
     this.descuento = this.planFormGroup.get('pdescuento')?.value;
+  }
+
+  getRecharge(){
+    
   }
 
   calculationPremiumsShielding(){

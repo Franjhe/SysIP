@@ -1348,6 +1348,15 @@ export class PdfGenerationService {
 			  }
 			},
 			{
+				style: 'data',
+				table: {
+				  widths: [400],
+				  body: [
+					[{text: 'Si el pago es en Dólares debe cancelar el 3% del IGTF', alignment: 'left', bold: true, border: [false, false, false, false]}]
+				  ]
+				}
+			  },
+			{
 			  style: 'data',
 			  margin: [0, 0, 0, 2],
 			  table: {
