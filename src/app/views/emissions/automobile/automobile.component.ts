@@ -11,7 +11,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { ChangeDetectorRef } from '@angular/core';
 import { format, addYears } from 'date-fns';
-import { initUbii } from '@ubiipagos/boton-ubii';
+import { initUbii, closeUbii } from '@ubiipagos/boton-ubii-dc';
+
 
 export const MY_FORMATS = {
   parse: {
@@ -113,6 +114,7 @@ export class AutomobileComponent {
   isModalActive: boolean = false; 
   activateRate: boolean = false;
   methodOfPayment: boolean = false;
+  bpagarubii: boolean = false;
   primaBruta!: any;
   descuento!: any;
   sumaAsegurada!: any;
@@ -223,6 +225,29 @@ export class AutomobileComponent {
     .then(data => {
       this.bcv = data.monitors.usd.price
     })
+
+    initUbii(
+      'ubiiboton',
+      {
+        amount_ds: "100.00",
+        amount_bs: "100.00",
+        concept: "COMPRA",
+        principal: "bs",
+        clientId:"f2514eda-610b-11ed-8e56-000c29b62ba1",
+        orderId: '1'
+      },
+      
+      this.callbackFn.bind(this),
+      
+      {
+        text: 'Pagar con Ubii '
+      },
+
+    );
+
+    console.log(initUbii  )
+
+
 
     this.today = new Date();
     const formattedDate = this.today.toISOString();
@@ -1374,6 +1399,14 @@ export class AutomobileComponent {
     });
   }
 
+  getPaymentSelection(){
+    if(this.receiptFormGroup.get('xpago')?.value == 'PAGO MANUAL'){
+      this.openPaymentModal();
+    }else if(this.receiptFormGroup.get('xpago')?.value == 'UBII'){
+      this.bpagarubii = true;
+    }
+  }
+
   getFormControl(name: string) {
     return this.receiptFormGroup.get(name);
   }
@@ -1446,51 +1479,112 @@ export class AutomobileComponent {
 
   }
 
-  operationUbii(){
-    if (this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv'){
-      let prima = this.montoTotal;
-      let prima_ds: String = String(parseFloat(prima[0]).toFixed(2));
-      let orden : string = "UB_" + this.ubii;
+  operationUbii() {
+    if (this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv') {
+      let prima = this.montoTotal
+      let prima_ds: string = String(prima.toFixed(2));
+      let prima_bs = prima_ds;
+      let orden: string = "UB_" + 250;
 
       initUbii(
         'ubiiboton',
         {
-          amount_ds: prima_ds,
-          // amount_bs:  prima_bs,
+          amount_ds: "100.00",
+          amount_bs: "100.00",
           concept: "COMPRA",
-          principal: "ds",
+          principal: "bs",
           clientId:"f2514eda-610b-11ed-8e56-000c29b62ba1",
-          orderId: orden
+          orderId: '1'
         },
+        
         this.callbackFn.bind(this),
+        
         {
           text: 'Pagar con Ubii '
         },
 
       );
 
-      console.log(this.callbackFn , initUbii )
-
     }
   }
 
   async onSubmitUbii() {
 
-      const response = await fetch(`${environment.apiUrl}/api/fleet-contract-management/create/individualContract`, {
+      const response = await fetch(`${environment.apiUrl}/api/v1/emissions/automobile/create`, {
         "method": "POST",
         "headers": {
           "CONTENT-TYPE": "Application/json",
           "X-CLIENT-CHANNEL": "BTN-API",
-          "Authorization": `Bearer ${this.currentUser.data.csession}`
+          "Authorization": `Bearer ${this.currentUser.data.token}`
         },
         "body": JSON.stringify({
-
+          icedula: this.personsFormGroup.get('icedula')?.value,
+          xrif_cliente: this.personsFormGroup.get('xrif_cliente')?.value,
+          xnombre: this.personsFormGroup.get('xnombre')?.value?.toUpperCase(),
+          xapellido: this.personsFormGroup.get('xapellido')?.value?.toUpperCase(),
+          xtelefono_emp: this.personsFormGroup.get('xtelefono_emp')?.value,
+          email: this.personsFormGroup.get('email')?.value?.toUpperCase(),
+          cestado: this.personsFormGroup.get('cestado')?.value,
+          cciudad: this.personsFormGroup.get('cciudad')?.value,
+          xdireccion: this.personsFormGroup.get('xdireccion')?.value?.toUpperCase(),
+          xplaca: this.vehicleFormGroup.get('xplaca')?.value?.toUpperCase(),
+          xmarca: this.vehicleFormGroup.get('xmarca')?.value,
+          xmodelo: this.vehicleFormGroup.get('xmodelo')?.value,
+          xversion: this.vehicleFormGroup.get('xversion')?.value,
+          fano: this.vehicleFormGroup.get('fano')?.value,
+          npasajeros: this.vehicleFormGroup.get('npasajeros')?.value,
+          xcolor: this.vehicleFormGroup.get('xcolor')?.value,
+          xserialcarroceria: this.vehicleFormGroup.get('xserialcarroceria')?.value?.toUpperCase(),
+          xserialmotor: this.vehicleFormGroup.get('xserialmotor')?.value?.toUpperCase(),
+          xcobertura: this.vehicleFormGroup.get('xcobertura')?.value,
+          ctarifa_exceso: this.vehicleFormGroup.get('ctarifa_exceso')?.value,
+          cclasificacion: this.vehicleFormGroup.get('cclasificacion')?.value,
+          ctomador: this.planFormGroup.get('ctomador')?.value,
+          xtomador: this.planFormGroup.get('xtomador')?.value,
+          xrif_tomador: this.planFormGroup.get('xrif_tomador')?.value,
+          xemail_tomador: this.planFormGroup.get('xemail_tomador')?.value,
+          cestado_tomador: this.planFormGroup.get('cestado_tomador')?.value,
+          cciudad_tomador: this.planFormGroup.get('cciudad_tomador')?.value,
+          xdireccion_tomador: this.planFormGroup.get('xdireccion_tomador')?.value,
+          xzona_postal_tomador: this.planFormGroup.get('xzona_postal_tomador')?.value,
+          xtelefono_tomador: this.planFormGroup.get('xtelefono_tomador')?.value,
+          ccotizacion: this.vehicleFormGroup.get('ccotizacion')?.value,
+          cinspeccion: this.vehicleFormGroup.get('cinspeccion')?.value,
+          fdesde_pol: this.receiptFormGroup.get('fdesde')?.value,
+          fhasta_pol: this.receiptFormGroup.get('fhasta')?.value,
+          cplan_rc: this.planFormGroup.get('cplan')?.value,
+          ccorredor: this.planFormGroup.get('ccorredor')?.value,
+          pcasco: this.planFormGroup.get('pcasco')?.value,
+          msuma_aseg: this.planFormGroup.get('msuma_aseg')?.value,
+          mprima_bruta: this.planFormGroup.get('mprima_bruta')?.value,
+          pdescuento: this.planFormGroup.get('pdescuento')?.value,
+          pmotin: this.planFormGroup.get('pmotin')?.value,
+          pcatastrofico: this.planFormGroup.get('pcatastrofico')?.value,
+          mprima_casco: this.planFormGroup.get('mprima_casco')?.value,
+          mcatastrofico: this.planFormGroup.get('mcatastrofico')?.value,
+          mmotin: this.planFormGroup.get('mmotin')?.value,
+          pblindaje: this.planFormGroup.get('pblindaje')?.value,
+          msuma_blindaje: this.planFormGroup.get('msuma_blindaje')?.value,
+          mprima_blindaje: this.planFormGroup.get('mprima_blindaje')?.value,
+          accesorios: this.accessorySelected,
+          xpago: this.receiptFormGroup.get('xpago')?.value,
+          femision: this.receiptFormGroup.get('femision')?.value,
+          cmetodologiapago: this.receiptFormGroup.get('cmetodologiapago')?.value,
+          id_inma: this.vehicleFormGroup.get('id_inma')?.value,
+          cuso: this.vehicleFormGroup.get('cuso')?.value,
+          cpais: 58,
+          cusuario: this.currentUser.data.cusuario,
         }) 
       });
       let res = await response.json();
+      if (res.data.status) {
+        this.ccontratoflota = res.data.ccontratoflota;
+      }
   }
 
   async callbackFn(answer: any) {
+
+    console.log(answer)
 
     if(answer.data.R == 0){
       await this.onSubmitUbii();
@@ -1504,11 +1598,11 @@ export class AutomobileComponent {
       let datetimeformat = answer.data.date.split(' ');
       let dateformat = datetimeformat[0].split('/');
       let fcobro = dateformat[2] + '-' + dateformat[1] + '-' + dateformat[0] + ' ' + datetimeformat[1];
-      const response = await fetch(`${environment.apiUrl}/api/fleet-contract-management/ubii/update`, {
+      const response = await fetch(`${environment.apiUrl}/api/v1/emissions/automobile/ubii/update`, {
         "method": "POST",
         "headers": {
           "CONTENT-TYPE": "Application/json",
-          "Authorization": `Bearer ${this.currentUser.data.csession}`
+          "Authorization": `Bearer ${this.currentUser.data.token}`
         },
         "body": JSON.stringify({
           paymentData: {

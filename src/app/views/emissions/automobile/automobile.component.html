@@ -578,8 +578,9 @@
                 <div class="col-3" *ngIf="amountTotal">
                   <mat-form-field>
                     <mat-label>Modalidad de Pago</mat-label>
-                    <mat-select formControlName="xpago" (selectionChange)="openPaymentModal()">
+                    <mat-select formControlName="xpago" (selectionChange)="getPaymentSelection()">
                       <mat-option value="PAGO MANUAL">PAGO MANUAL</mat-option>
+                      <mat-option value="UBII">UBII PAGOS</mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>
@@ -595,6 +596,11 @@
                 <div class="col-4" *ngIf="buttonEmissions">
                   <button mat-raised-button color="primary" (click)="onSubmit()" style="width: 42%; margin-top: 44px;margin-left: 89px;">Emitir</button>
                 </div>
+                <div class="col-sm-12 mt-2" *ngIf="bpagarubii">
+                  <div style="width: 220px;height: 48px;margin-top: 10px;margin-left: 100px;" class="button">
+                      <button id="ubiiboton" (click)="operationUbii()"></button>
+                  </div> 
+              </div>
                 <div class="col-4" *ngIf="loadingEmissions">
                   <div id="container">
                     <label class="loading-title">Cargando</label>
