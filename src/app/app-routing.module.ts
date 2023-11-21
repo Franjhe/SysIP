@@ -76,6 +76,11 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/emissions/emissions.module').then((m) => m.EmissionsModule)
       },
+      {
+        path: 'quotes',
+        loadChildren: () =>
+          import('./views/quotes/quotes.module').then((m) => m.QuotesModule)
+      },
     ]
   },
   {

@@ -38,7 +38,7 @@
     "@coreui/utils": "^2.0.2",
     "@ng-bootstrap/ng-bootstrap": "^15.0.1",
     "@ubiipagos/boton-ubii": "^2.2.3",
-    "@ubiipagos/boton-ubii-dc": "^0.3.5",
+    "@ubiipagos/boton-ubii-dc": "^0.2.7",
     "chart.js": "^3.9.1",
     "cors": "^2.8.5",
     "date-fns": "^2.30.0",

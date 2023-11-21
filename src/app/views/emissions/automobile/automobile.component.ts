@@ -1,5 +1,5 @@
 import {Component, ViewChild  } from '@angular/core';
-import {FormBuilder, Validators, FormGroup, FormControl} from '@angular/forms';
+import {FormBuilder, Validators, FormGroup, FormControl , FormArray} from '@angular/forms';
 import {from, Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
@@ -11,8 +11,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { ChangeDetectorRef } from '@angular/core';
 import { format, addYears } from 'date-fns';
-import { initUbii, closeUbii } from '@ubiipagos/boton-ubii-dc';
-
+import { initUbii } from '@ubiipagos/boton-ubii-dc';
+// import { initUbii } from '@ubiipagos/boton-ubii';
 
 export const MY_FORMATS = {
   parse: {
@@ -139,6 +139,7 @@ export class AutomobileComponent {
     cciudad: ['', Validators.required],
     xdireccion: ['', Validators.required],
   });
+
   vehicleFormGroup = this._formBuilder.group({
     ccotizacion: [{ value: '', disabled: false }],
     cinspeccion: [{ value: '', disabled: false }],
@@ -161,6 +162,7 @@ export class AutomobileComponent {
     cclase: ['', Validators.required],
     id_inma: ['', Validators.required],
   });
+
   planFormGroup = this._formBuilder.group({
     cplan: ['', Validators.required],
     ccorredor: ['', Validators.required],
@@ -188,8 +190,15 @@ export class AutomobileComponent {
     pblindaje: [{ value: '', disabled: true }],
     msuma_blindaje: [''],
     mprima_blindaje: [{ value: '', disabled: true }],
+    accesorios :  this._formBuilder.array([{
+      xaccesorio: '',
+      ptasa: '',
+      sumaAsegurada : '',
+      xprimaAccesorio: '',
+    }]),
     msuma_aseg_acce: [{ value: '', disabled: false }],
   });
+
   receiptFormGroup = this._formBuilder.group({
     xpago: ['', Validators.required],
     femision: ['', Validators.required],
@@ -202,7 +211,8 @@ export class AutomobileComponent {
     fcobro: [''],
     xreferencia: [''],
     mprima_pagada: [''],
-    mprima_bs: ['']
+    mprima_bs: [''],
+
   });
 
   constructor( private _formBuilder: FormBuilder,
@@ -217,37 +227,18 @@ export class AutomobileComponent {
 
               }
 
+  get accesorios() : FormArray {
+    return this.planFormGroup.get("accesorios") as unknown as FormArray
+  }
 
   ngOnInit(){
+    console.log(this.planFormGroup)
 
     fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
     .then((response) => response.json())
     .then(data => {
       this.bcv = data.monitors.usd.price
     })
-
-    initUbii(
-      'ubiiboton',
-      {
-        amount_ds: "100.00",
-        amount_bs: "100.00",
-        concept: "COMPRA",
-        principal: "bs",
-        clientId:"f2514eda-610b-11ed-8e56-000c29b62ba1",
-        orderId: '1'
-      },
-      
-      this.callbackFn.bind(this),
-      
-      {
-        text: 'Pagar con Ubii '
-      },
-
-    );
-
-    console.log(initUbii  )
-
-
 
     this.today = new Date();
     const formattedDate = this.today.toISOString();
@@ -533,6 +524,7 @@ export class AutomobileComponent {
         this.snackBar.open(`No puedes colocar un año mayor al 2021. Por favor, vuelve a intentarlo`, '', {
           duration: 5000,
         });
+        this.vehicleFormGroup.get('fano')?.setValue('')
       }else{
         this.getBrand()
       }
@@ -961,13 +953,14 @@ export class AutomobileComponent {
     }
   }
 
-  onCoverageChange(): void {
+  onCoverageChange() {
     if(this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv'){
       this.helmet = false;
       this.activateInspection = false;
 
 
-    }else{
+    }
+    else if(this.vehicleFormGroup.get('xcobertura')?.value !== 'Rcv'){
       this.validateYearsFromHullPrice()
       this.activateInspection = true;
       this.helmet = true;
@@ -1178,6 +1171,17 @@ export class AutomobileComponent {
     this.http.post(environment.apiUrl + '/api/v1/valrep/accesories', null).subscribe((response: any) => {
       if (response.data.accesories) {
         for (let i = 0; i < response.data.accesories.length; i++) {
+
+          this.accesorios.push(
+            this._formBuilder.group({
+              caccesorio: response.data.accesories[i].caccesorio,
+              xaccesorio: response.data.accesories[i].xaccesorio,
+              ptasa: response.data.accesories[i].ptasa,
+              sumaAsegurada: '',
+              xprimaAccesorio: ''
+            })
+          )
+
           this.accesoriesList.push({
             caccesorio: response.data.accesories[i].caccesorio,
             xaccesorio: response.data.accesories[i].xaccesorio,
@@ -1202,13 +1206,14 @@ export class AutomobileComponent {
     }
   }
 
-  calculateAccesories(accessory: any) {
-    accessory.xprimaAccesorio = accessory.ptasa * (accessory.sumaAsegurada / 100);
+  calculateAccesories(i: any) {
 
-    if (accessory.sumaAsegurada > 0) {
-      this.accessorySelected.push({ ...accessory });
-    }
-    console.log(this.accessorySelected)
+    const creds = this.planFormGroup.controls.accesorios as FormArray; 
+
+    const xprimaAccesorio = creds.at(i).get('ptasa')?.value  * ( creds.at(i).get('sumaAsegurada')?.value / 100 ) ;
+    creds.at(i).get('xprimaAccesorio')?.setValue(xprimaAccesorio)
+
+
   }
 
   onToppingsChange(selectedToppings: any[]) {
@@ -1389,6 +1394,7 @@ export class AutomobileComponent {
         this.montoTotal = response.data.mprima
         this.ubii = response.data.ccubii
         if(this.montoTotal){
+          this.operationUbii();
           this.amountTotal = true;
         }else{
           this.amountTotal = false;
@@ -1403,7 +1409,7 @@ export class AutomobileComponent {
     if(this.receiptFormGroup.get('xpago')?.value == 'PAGO MANUAL'){
       this.openPaymentModal();
     }else if(this.receiptFormGroup.get('xpago')?.value == 'UBII'){
-      this.bpagarubii = true;
+      this.operationUbii();
     }
   }
 
@@ -1481,28 +1487,28 @@ export class AutomobileComponent {
 
   operationUbii() {
     if (this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv') {
-      let prima = this.montoTotal
-      let prima_ds: string = String(prima.toFixed(2));
-      let prima_bs = prima_ds;
-      let orden: string = "UB_" + 250;
+      let prima = this.montoTotal.toString().split(" ");
+      let prima_ds: String = String(parseFloat(prima[0]).toFixed(2));
+      let prima_bs: String = String( (Math.round( ( (parseFloat(prima[0]) * (this.bcv) ) + Number.EPSILON ) * 100 ) /100).toFixed(2) );
+      let orden: string = "UB_" + this.ubii;
+
+      this.bpagarubii = true;
+      console.log(orden)
 
       initUbii(
         'ubiiboton',
         {
-          amount_ds: "100.00",
-          amount_bs: "100.00",
+          amount_ds: prima_ds,
+          amount_bs:  prima_bs,
           concept: "COMPRA",
-          principal: "bs",
+          principal: "ds",
           clientId:"f2514eda-610b-11ed-8e56-000c29b62ba1",
           orderId: '1'
         },
-        
         this.callbackFn.bind(this),
-        
         {
           text: 'Pagar con Ubii '
         },
-
       );
 
     }
@@ -1566,7 +1572,7 @@ export class AutomobileComponent {
           pblindaje: this.planFormGroup.get('pblindaje')?.value,
           msuma_blindaje: this.planFormGroup.get('msuma_blindaje')?.value,
           mprima_blindaje: this.planFormGroup.get('mprima_blindaje')?.value,
-          accesorios: this.accessorySelected,
+          accesorios: this.planFormGroup.controls.accesorios.value,
           xpago: this.receiptFormGroup.get('xpago')?.value,
           femision: this.receiptFormGroup.get('femision')?.value,
           cmetodologiapago: this.receiptFormGroup.get('cmetodologiapago')?.value,
@@ -1577,7 +1583,7 @@ export class AutomobileComponent {
         }) 
       });
       let res = await response.json();
-      if (res.data.status) {
+      if (res.data) {
         this.ccontratoflota = res.data.ccontratoflota;
       }
   }
@@ -1611,9 +1617,26 @@ export class AutomobileComponent {
             ctipopago: ctipopago,
             xreferencia: answer.data.ref,
             fcobro: fcobro,
-            mprima_pagada: answer.data.m
+            mprima_pagada: answer.data.m,
+            mtasa_cambio: this.bcv
           }
         }) });
+        this.check = true;
+        const observable = from(this.pdfGenerationService.LoadDataCertifiqued(this.ccontratoflota));
+
+        observable.subscribe(
+          (data) => {
+            this.check = true;
+            this.loadingPdf = false
+          },
+          (error) => {
+            console.log(error)
+          }
+        );
+
+        this.snackBar.open(`Se ha generado exitósamente el contrato n° ${this.ccontratoflota}`, '', {
+          duration: 3000,
+        });
     }
     if (answer.data.R == 1) {
       window.alert(`No se pudo procesar el pago. Motivo: ${answer.data.M}, intente nuevamente`);
@@ -1673,7 +1696,7 @@ export class AutomobileComponent {
       pblindaje: this.planFormGroup.get('pblindaje')?.value,
       msuma_blindaje: this.planFormGroup.get('msuma_blindaje')?.value,
       mprima_blindaje: this.planFormGroup.get('mprima_blindaje')?.value,
-      accesorios: this.accessorySelected,
+      accesorios: this.planFormGroup.controls.accesorios.value,
       xpago: this.receiptFormGroup.get('xpago')?.value,
       femision: this.receiptFormGroup.get('femision')?.value,
       cmetodologiapago: this.receiptFormGroup.get('cmetodologiapago')?.value,
