@@ -1069,12 +1069,24 @@ export class AutomobileComponent {
   }
 
   validateTaker(){
-    if(this.planFormGroup.get('ctomador')?.value && this.planFormGroup.get('xtomador')?.value){
-      this.planFormGroup.get('xtomador')?.setValue('')
-      this.takersInfo = false;
-    }else{
-      this.takersInfo = true;
+    if(this.planFormGroup.get('xtomador')?.value){
+      if(this.planFormGroup.get('ctomador')?.value){
+        this.planFormGroup.get('xtomador')?.setValue('')
+        this.takersInfo = false;
+      }else{
+        this.takersInfo = true;
+      }
     }
+
+
+    // if(this.planFormGroup.get('ctomador')?.value, this.planFormGroup.get('xtomador')?.value){
+    //   console.log('hola')
+    //   this.planFormGroup.get('xtomador')?.setValue('')
+    //   this.takersInfo = false;
+    // }else{
+    //   console.log('aaaaa')
+    //   this.takersInfo = true;
+    // }
   }
 
   openDiscount(){
@@ -1184,6 +1196,52 @@ export class AutomobileComponent {
       this.planFormGroup.get('pcasco')?.setValue(recharge.toString())
     }
   }
+
+  premiumRecalculation() {
+    const msumaAsegRaw = this.planFormGroup.get('msuma_aseg')!.value;
+    
+    // Verifica si msumaAsegRaw no es null antes de convertirlo a un número
+    if (msumaAsegRaw !== null) {
+        let msumaAseg = parseFloat(msumaAsegRaw);
+
+        const pcasco = this.planFormGroup.get('pcasco')?.value;
+        const pcatastrofico = this.planFormGroup.get('pcatastrofico')?.value;
+        const pmotin = this.planFormGroup.get('pmotin')?.value;
+
+        console.log(msumaAseg);
+
+        let calculo: number = 0;
+        let catastrofico: number = 0;
+        let motin: number = 0;
+
+        if (!isNaN(msumaAseg) && typeof pcasco === 'number') {
+            calculo = (msumaAseg * pcasco) / 100;
+
+            // Redondear la prima a dos decimales
+            const primaRedondeada = calculo.toFixed(2);
+
+            this.planFormGroup.get('mprima_casco')?.setValue(primaRedondeada);
+            this.planFormGroup.get('mprima_bruta')?.setValue(primaRedondeada);
+            this.planFormGroup.get('mprima_casco_text')?.setValue(primaRedondeada);
+            this.planFormGroup.get('mprima_bruta_text')?.setValue(primaRedondeada);
+            this.primaBruta = this.planFormGroup.get('mprima_bruta_text')?.value;
+        }
+
+        if (!isNaN(msumaAseg) && typeof pcatastrofico === 'number') {
+            catastrofico = (msumaAseg * pcatastrofico) / 100;
+
+            this.planFormGroup.get('mcatastrofico')?.setValue(catastrofico.toString());
+        }
+
+        if (!isNaN(msumaAseg) && typeof pmotin === 'number') {
+            motin = (msumaAseg * pmotin) / 100;
+
+            this.planFormGroup.get('mmotin')?.setValue(motin.toString());
+        }
+        this.sumaAsegurada = msumaAseg;
+    }
+  }
+
 
   calculationPremiumsShielding(){
     const msumaAseg = this.planFormGroup.get('msuma_blindaje')?.value;

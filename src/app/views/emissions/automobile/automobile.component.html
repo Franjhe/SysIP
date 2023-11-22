@@ -295,14 +295,14 @@
                 </div>
                 <div class="col-3">
                   <mat-form-field class="example-full-width">
-                      <mat-label>Uso</mat-label>
+                      <mat-label>Recargo por Uso</mat-label>
                       <input type="text"
-                            placeholder="Seleccione Uso"
+                            placeholder="Seleccione Recargo por Uso"
                             aria-label="Seleccione"
                             matInput
                             [formControl]="utilityVehicleControl"
                             [matAutocomplete]="utility"
-                            required>
+                            >
                       <mat-autocomplete #utility="matAutocomplete" (optionSelected)="onUtilityVehicleSelection($event)">
                         <mat-option *ngFor="let utility of filteredUtilityVehicle | async" [value]="utility">
                           {{ utility }}
@@ -369,7 +369,7 @@
                             matInput
                             [formControl]="takersControl"
                             [matAutocomplete]="takers"
-                            required>
+                            >
                       <mat-autocomplete #takers="matAutocomplete" (optionSelected)="onTakersSelection($event)">
                         <mat-option *ngFor="let takers of filteredTakers | async" [value]="takers">
                           {{ takers }}
@@ -461,7 +461,7 @@
                     <div class="col-2">
                       <mat-form-field class="example-full-width">
                         <mat-label>Suma Asegurada</mat-label>
-                        <input matInput placeholder="Suma Asegurada" formControlName="msuma_aseg"  required>
+                        <input matInput placeholder="Suma Asegurada" formControlName="msuma_aseg" (change)="premiumRecalculation()" required>
                       </mat-form-field>
                     </div>
                     <div class="col-3">
@@ -474,12 +474,12 @@
                       <button mat-button [matMenuTriggerFor]="aboveMenu" style="margin-top: 25px;">Descuento / Recarga</button>
                       <mat-menu #aboveMenu="matMenu" yPosition="above">
                         <mat-form-field style="margin-left: 14px;">
-                          <mat-label>Descuento</mat-label>
-                          <input matInput type="number" placeholder="Descuento" formControlName="pdescuento" (click)="$event.stopPropagation()" (change)="getDiscount()">
+                          <mat-label>Porcentaje del Descuento</mat-label>
+                          <input matInput type="number" placeholder="Porcentaje del Descuento" formControlName="pdescuento" (click)="$event.stopPropagation()" (change)="getDiscount()">
                         </mat-form-field>
                         <mat-form-field style="margin-left: 14px;">
-                          <mat-label>Recarga</mat-label>
-                          <input matInput type="number" placeholder="Recarga" formControlName="precarga" (click)="$event.stopPropagation()" (change)="getRecharge()">
+                          <mat-label>Porcentaje de Recarga</mat-label>
+                          <input matInput type="number" placeholder="Porcentaje de Recarga" formControlName="precarga" (click)="$event.stopPropagation()" (change)="getRecharge()">
                         </mat-form-field>
                       </mat-menu>
                     </div>
