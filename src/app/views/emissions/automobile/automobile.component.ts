@@ -232,7 +232,6 @@ export class AutomobileComponent {
   }
 
   ngOnInit(){
-    console.log(this.planFormGroup)
 
     fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
     .then((response) => response.json())

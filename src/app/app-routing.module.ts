@@ -6,6 +6,7 @@ import { Page404Component } from './views/pages/page404/page404.component';
 import { Page500Component } from './views/pages/page500/page500.component';
 import { LoginComponent } from './views/pages/login/login.component';
 import { RegisterComponent } from './views/pages/register/register.component';
+import { PaymentReportComponent } from './views/collection/payment-report/payment-report.component';
 
 const routes: Routes = [
   {
@@ -77,6 +78,11 @@ const routes: Routes = [
           import('./views/emissions/emissions.module').then((m) => m.EmissionsModule)
       },
       {
+        path: 'collection',
+        loadChildren: () =>
+          import('./views/collection/collection.module').then((m) => m.CollectionModule)
+      },
+      {
         path: 'quotes',
         loadChildren: () =>
           import('./views/quotes/quotes.module').then((m) => m.QuotesModule)
@@ -95,6 +101,13 @@ const routes: Routes = [
     component: Page500Component,
     data: {
       title: 'Page 500'
+    }
+  },
+  {
+    path: 'payment-report',
+    component: PaymentReportComponent,
+    data: {
+      title: 'Payment Report '
     }
   },
   {

@@ -1,0 +1,167 @@
+
+    <div style="background-color: #003478;height: 30vh;" class="container-fluid pb-5 pt-5 ">
+        <img 
+        src="assets/img/brand/logo-white.png" alt=""
+        widt="250" 
+        height="100 " 
+        style="   
+            z-index: 4;
+            position: sticky;
+            left: 28px;
+            margin-top: -35px;
+            "
+        >
+    </div>
+
+    <div class="card container col-lg-12" style="margin-top: -7.5rem">
+        <form [formGroup]="searchReceipt">
+            <div class="row">
+                <div class="text-center">
+                    <h1>Reporte de Pago</h1>
+                    <h3>
+                        Estimado usuario,
+
+                        Para garantizar una correcta identificación de tu pago, te solicitamos seguir los siguientes pasos:
+                    </h3>
+                </div>
+
+                <hr>
+
+                <div class="col-lg-4 text-center p-5">
+                    <h1>Consulte sus recibos</h1>
+            
+                    <div class="form-group mb-3">
+                        <label  class="form-label">Ingrese su número de cédula</label>
+                        <input  type="text"  class="form-control rounded-input" formControlName="xcedula" >
+                        <button class="btn btn-primary mt-5" (click)="searchDataReceipt()"> Consultar</button>
+                    </div>
+                    
+                </div>
+                <div class="col-lg-8">
+                    <div formArrayName="receipt" *ngIf="viewData">
+                        <table class="table border">
+                          <thead>
+                            <tr>
+                              <th>N° Poliza</th>
+                              <th>Fecha Desde</th>
+                              <th>Fecha Hasta</th>
+                              <th>Total del recibo</th>
+                              <th>Seleccione los recibos a pagar </th>
+                            </tr>
+                          </thead>
+                          <tbody *ngFor="let creds of receipt.value let i=index">
+                            <tr [formGroupName]="i">
+                              <td >{{creds.cnpoliza}}</td>
+                              <td>{{creds.fdesde}}</td>
+                              <td > {{creds.fhasta}}</td>
+                              <td >{{creds.mprimabrutaext}} {{creds.cmoneda}}</td>
+                              <td>
+                                <mat-checkbox formControlName="seleccionado" (change)="calculateMount(i)"> </mat-checkbox>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                    </div>
+                    <div *ngIf="viewData" class="container text-center">
+                        <h2>Tasa de cobro {{bcv}} Bs</h2> 
+                        <h2>Total a Pagar {{mount}} $  -- {{mountBs}} Bs</h2>
+                        
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="row mt-5">
+                <div class="col-lg-8 text-center">
+                    <h1>Nuestras Cuentas Bancarias</h1>
+
+                    <h3>
+                        Por favor, identifica claramente los números de cuenta a los cuales realizarás la transferencia. Asegúrate de verificar cuidadosamente cada dígito para evitar errores.
+                    </h3>
+
+
+                        <div class="col-6 ">
+                            <h2><strong>Cuentas Nacionales</strong></h2>
+                            <div class="col">
+                                Banco 
+                                <strong>Cuentas corrientes</strong>
+                                <h4>BANESCO </h4>
+                                <h4>BANPLUS</h4>
+                                <h4>BANCAMIGA</h4>
+                                <h4>BANCO NACIONAL DE CREDITO</h4>
+                                <h4>BANCO DE VENEZUELA</h4>
+                                <h4>BANCO PLAZA </h4>
+                            </div>
+                            <div class="col">
+                                Número de cuenta
+                                <h4>0134 0371 61 3711015662</h4>
+                                <h4>0174 0131 96 1314500040</h4>
+                                <h4>0172 0111 53 1118494549</h4>
+                                <h4>0191 0098 73 2198370018</h4>
+                                <h4>0102 0762 21 0000100104</h4>
+                                <h4>0138 0040 59 0400012987</h4>
+    
+                            </div>
+    
+    
+    
+                        </div>
+                        <div class="col-6 ">
+                            <h2><strong>Cuentas Internacionales</strong></h2>
+                            <div class="col">
+                                Beneficiary
+                                Bank
+                                Address
+    
+                                Account
+                                Routing Number
+                                Swift
+                                Zelle
+                            </div>
+                            <div class="col">
+                                Bee Insurance Managemen LLC
+                                Well Fargo
+                                1110 Brickell Ave Suite 406 Miami Fl 33131-3135
+    
+                                3814894881
+                                063107513
+                                WFBIUS6SXXX
+                                paymentslamundial@gmail.com
+                            </div>
+    
+                        </div>
+    
+                </div>
+
+                <div class="col-lg-4 text-left">
+                    <h1>Confirmación</h1>
+                    <h3>
+                        Una vez hayas completado la transferencia, adjunta el comprobante de pago para que podamos procesar tu transacción de manera rápida y precisa. 
+                        Puedes adjuntar imágenes o archivos PDF del comprobante.                    
+                    </h3>
+                    <div class="col-md-5">
+                        <div class="form-group mb-3">
+                          <input  type="file"  class="form-control rounded-input">
+                        </div>
+                      </div>
+                </div>
+
+            </div>
+
+            <div class="text-center p-3">
+                <h2>
+                    Una vez hayamos recibido tu información y verificado el pago, te enviaremos una confirmación por correo electrónico.
+
+                    Agradecemos tu colaboración. Si tienes alguna pregunta o necesitas asistencia adicional, no dudes en ponerte en contacto con nuestro equipo de soporte.
+                    
+                    ¡Gracias por tu confianza!
+                    
+                    Atentamente,                   
+                </h2>
+               <h2>La Mundial de Seguros</h2> 
+            </div>
+        </form>
+    </div>
+
+
+
