@@ -191,12 +191,7 @@ export class AutomobileComponent {
     pblindaje: [{ value: '', disabled: true }],
     msuma_blindaje: [''],
     mprima_blindaje: [{ value: '', disabled: true }],
-    accesorios :  this._formBuilder.array([{
-      xaccesorio: '',
-      ptasa: '',
-      sumaAsegurada : '',
-      xprimaAccesorio: '',
-    }]),
+    accesorios :  this._formBuilder.array([]),
     msuma_aseg_acce: [{ value: '', disabled: false }],
   });
 
