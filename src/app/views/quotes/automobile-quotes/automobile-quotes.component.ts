@@ -37,6 +37,13 @@ export class AutomobileQuotesComponent {
   buttonQuotes: boolean = false;
   activateRate: boolean = false;
   distributionCard: boolean = false;
+  quotesBoolean: boolean = true;
+  check: boolean = false;
+
+  cotizacion!: any;
+  nombreCompleto!: any;
+  vehiculo!: any;
+  version!: any;
 
   quotesForm = this._formBuilder.group({
     xmarca: ['', Validators.required],
@@ -307,9 +314,40 @@ export class AutomobileQuotesComponent {
       if (response.status) {
         this.vector = false;
         this.distributionCard = true;
+        this.loading = false;
+        this.quotesBoolean = true;
         this.quotesList = response.data.list.result;
+
+        this.nombreCompleto = data.xnombre + ' ' + data.xapellido;
+        this.vehiculo = this.quotesForm.get('xmarca')?.value + ' ' + this.quotesForm.get('xmodelo')?.value;
+        this.cotizacion = response.data.list.result[0].ccotizacion;
+        this.version = this.quotesForm.get('xversion')?.value
       }
     })
+  }
+
+  selectedPlan(index: number) {
+    this.quotesBoolean = false;
+    this.loading = true;
+    const selectedQuote = this.quotesList[index];
+
+    let data = {
+      ccotizacion: selectedQuote.ccotizacion,
+      cplan_rc: selectedQuote.cplan_rc,
+      iaceptado: true
+    }
+
+    this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/update', data).subscribe((response: any) => {
+      if (response.status) {
+        this.loading = false;
+        this.check = true;
+
+        this.snackBar.open(`Se ha cotizado con el ${selectedQuote.xplan_rc} exitosamente.`, '', {
+          duration: 5000,
+        });
+      }
+    })
+
   }
 
 }
