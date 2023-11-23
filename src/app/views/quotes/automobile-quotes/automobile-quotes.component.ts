@@ -36,6 +36,7 @@ export class AutomobileQuotesComponent {
   loading: boolean = false;
   buttonQuotes: boolean = false;
   activateRate: boolean = false;
+  distributionCard: boolean = false;
 
   quotesForm = this._formBuilder.group({
     xmarca: ['', Validators.required],
@@ -305,6 +306,7 @@ export class AutomobileQuotesComponent {
     this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/create', data).subscribe((response: any) => {
       if (response.status) {
         this.vector = false;
+        this.distributionCard = true;
         this.quotesList = response.data.list.result;
       }
     })

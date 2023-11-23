@@ -167,21 +167,26 @@
         </div>
     </div>
 
-    <div class="row">
-      <form [formGroup]="quotesForm">
-        <div class="col-lg-12 d-flex justify-content-center"> <!-- Alinea las cartas al centro -->
-          <div class="d-flex flex-wrap"> <!-- Utiliza d-flex y flex-wrap para permitir el ajuste de líneas -->
-            <div class="card col-lg-3 mb-3 m-1 text-center" *ngFor="let quotes of quotesList">
-              <div class="card-header bg-transparent border-0">
-                <strong>{{quotes.xplan_rc}}</strong>
-                <h5>Responsabilidad Civil</h5>
-              </div>
-              <div class="card-body">
-                <strong>{{quotes.mprima}}</strong>$ / Anual
+    <div class="container" *ngIf="distributionCard">
+      <h2 class="text-center" style="font-size: xx-large;">Cotización de Automóvil</h2>
+      <div class="row justify-content-center">
+        <form [formGroup]="quotesForm">
+          <div class="col-lg-12 d-flex justify-content-center">
+            <div class="d-flex flex-wrap justify-content-center"> <!-- Añadir la clase 'justify-content-center' aquí -->
+              <div class="card col-lg-3 mb-3 m-1 text-center" *ngFor="let quotes of quotesList">
+                <div class="card-header bg-transparent border-0">
+                  <strong>{{quotes.xplan_rc}}</strong>
+                  <br>
+                  <h5>Responsabilidad Civil</h5>
+                </div>
+                <div class="card-body">
+                  <strong>{{quotes.mprima}}</strong>$ / Anual
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
+    
 </div>

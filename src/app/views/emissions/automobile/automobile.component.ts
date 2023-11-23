@@ -115,6 +115,7 @@ export class AutomobileComponent {
   activateRate: boolean = false;
   methodOfPayment: boolean = false;
   bpagarubii: boolean = false;
+  paymentButtons: boolean = true;
   primaBruta!: any;
   descuento!: any;
   sumaAsegurada!: any;
@@ -953,13 +954,13 @@ export class AutomobileComponent {
     if(this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv'){
       this.helmet = false;
       this.activateInspection = false;
-
-
+      this.paymentButtons = true;
     }
     else if(this.vehicleFormGroup.get('xcobertura')?.value !== 'Rcv'){
       this.validateYearsFromHullPrice()
       this.activateInspection = true;
       this.helmet = true;
+      this.paymentButtons = false;
     }
   }
 

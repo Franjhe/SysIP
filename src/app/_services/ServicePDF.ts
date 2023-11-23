@@ -1023,8 +1023,8 @@ export class PdfGenerationService {
 		if (this.accesoriesList.length > 0){
 		  this.accesoriesList.forEach(function(row) {
 			let dataRow = [];
-			dataRow.push({text: row.xaccesorio, alignment: 'center', border: [false, false, false, false]});
-			dataRow.push({text: row.maccesoriocontratoflota, alignment: 'center', border: [false, false, false, false]})
+			dataRow.push({text: row.xaccesorio, margin: [11, 0, 0, 0], alignment: 'left', bold: true, border: [false, false, false, false]});
+			dataRow.push({text: row.maccesoriocontratoflota.toFixed(2), alignment: 'right', border: [false, false, false, false]})
 			body.push(dataRow);
 		  })
 		} else {
@@ -1363,6 +1363,13 @@ export class PdfGenerationService {
 				body: this.buildCoverageBody2()
 			  }
 			},
+			{
+				style: 'data',
+				table: {
+				  widths: [100, '*'],
+				  body: this.buildAccesoriesBody()
+				}
+			  },
 			{
 				style: 'data',
 				table: {

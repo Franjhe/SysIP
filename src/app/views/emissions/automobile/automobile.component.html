@@ -597,7 +597,7 @@
                 </div>
               </div>
 
-              <div class="ms-4 ps-5 text-center container row">
+              <div class="ms-4 ps-5 text-center container row" *ngIf="paymentButtons">
                 <div class="col-lg-5 mt-2">
                   <button type="button" class="btn btn-light btn-lg" data-mdb-ripple-color="dark" (click)="openPaymentModal()">
                     Pago Manual
