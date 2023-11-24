@@ -49,23 +49,7 @@ export class PaymentReportComponent {
       this.bcv = data.monitors.usd.price
     })
 
-    let data = {
-      ctipopago: ''
-    }
 
-    this.http.post(environment.apiUrl + '/api/v1/valrep/target-bank', data).subscribe((response: any) => {
-      if (response.data.targetBank) {
-        for (let i = 0; i < response.data.targetBank.length; i++) {
-          this.targetBankList.push({
-            id: response.data.targetBank[i].cbanco_destino,
-            value: response.data.targetBank[i].xbanco,
-          });
-        }
-      }
-    });
-
-
-  
   }
 
   searchDataReceipt(){
@@ -129,7 +113,8 @@ export class PaymentReportComponent {
     }, 0);
 
     this.mount = sumaTotal 
-    this.mountBs = this.mount * this.bcv
+    const operation = this.mount * this.bcv
+    this.mountBs = operation.toFixed(2)
 
   }
 
