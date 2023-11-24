@@ -473,14 +473,27 @@
                     <div class="col-2" *ngIf="discount" style="margin-left: 29px;">
                       <button mat-button [matMenuTriggerFor]="aboveMenu" style="margin-top: 25px;">Descuento / Recarga</button>
                       <mat-menu #aboveMenu="matMenu" yPosition="above">
-                        <mat-form-field style="margin-left: 14px;">
+                        <!-- <mat-form-field style="margin-left: 14px;">
                           <mat-label>Porcentaje del Descuento</mat-label>
                           <input matInput type="number" placeholder="Porcentaje del Descuento" formControlName="pdescuento" (click)="$event.stopPropagation()" (change)="getDiscount()">
-                        </mat-form-field>
-                        <mat-form-field style="margin-left: 14px;">
+                        </mat-form-field> -->
+                        <div class="col-10">
+                          <div class="form-outline">
+                            <label class="form-label required">Porcentaje del Descuento</label>
+                            <input type="number" formControlName="pdescuento" class="form-control form-control-lg" (click)="$event.stopPropagation()" (change)="getDiscount()" />
+                          </div>
+                        </div>
+                        <!-- <mat-form-field style="margin-left: 14px;">
                           <mat-label>Porcentaje de Recarga</mat-label>
                           <input matInput type="number" placeholder="Porcentaje de Recarga" formControlName="precarga" (click)="$event.stopPropagation()" (change)="getRecharge()">
-                        </mat-form-field>
+                        </mat-form-field> -->
+                        <div class="col-10">
+                          <div class="form-outline">
+                            <label class="form-label required">Porcentaje de Recarga</label>
+                            <input type="number" formControlName="precarga" class="form-control form-control-lg" (click)="$event.stopPropagation()" (change)="getRecharge()" />
+                          </div>
+                        </div>
+
                       </mat-menu>
                     </div>
                     <div class="col-1" *ngIf="enableInfo">
@@ -676,6 +689,15 @@
   </div>
   <div class="modal-body">
     <form [formGroup]="receiptFormGroup">
+      <div class="col-12">
+        <div class="form-outline">                        
+          <label class="form-label" for="form3Examplev3" style="color: rgba(0, 46, 255, 0.6);">Moneda</label>
+          <select formControlName="xmoneda" class="form-control form-control-lg">
+            <option value="Bs">BOLÍVARES</option>
+            <option value="Ds">DÓLARES</option>
+          </select>                         
+        </div>
+      </div>
       <div class="col-12">
         <div class="form-outline">
           <label class="form-label required" for="form3Examplev3" style="color: rgba(0, 46, 255, 0.6);">Tipo de Pago</label>

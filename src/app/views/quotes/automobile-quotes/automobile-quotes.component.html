@@ -94,8 +94,8 @@
                               <mat-label>Coberturas</mat-label>
                               <mat-select formControlName="xcobertura">
                                 <mat-option value="Rcv">RCV</mat-option>
-                                <mat-option value="Cobertura Amplia">COBERTURA AMPLIA</mat-option>
-                                <mat-option value="Perdida Total">PERDIDA TOTAL</mat-option>
+                                <!-- <mat-option value="Cobertura Amplia">COBERTURA AMPLIA</mat-option>
+                                <mat-option value="Perdida Total">PERDIDA TOTAL</mat-option> -->
                               </mat-select>
                             </mat-form-field>
                           </div>
@@ -172,17 +172,21 @@
 
     <div class="row rounded justify-content-center py-2" style="background-color: #447bd7;">
       <h2 class="text-center text-light mb-4" style="font-size: xx-large;">Cotización de Automóvil</h2>
-      <div class="col-lg-4 text-center text-light">
+      <div class="col-lg-3 text-center text-light">
         <mat-icon  style="width: 48px; height: 39px;font-size: 47px;">toc</mat-icon>
         <h4>N° de Cotización: {{cotizacion}}</h4>
       </div>
-      <div class="col-lg-4 text-center text-light">
+      <div class="col-lg-3 text-center text-light">
         <mat-icon style="width: 48px; height: 37px;font-size: 39px;">assignment_ind</mat-icon>
         <h4>{{nombreCompleto}}</h4>
       </div>
-      <div class="col-lg-4 text-center text-light">
+      <div class="col-lg-3 text-center text-light">
         <mat-icon style="width: 48px; height: 39px;font-size: 47px;">directions_car</mat-icon>
         <h4>{{vehiculo}}</h4>
+      </div>
+      <div class="col-lg-3 text-center text-light">
+        <mat-icon style="width: 48px; height: 39px;font-size: 47px;">account_balance_wallet</mat-icon>
+        <h4>Tasa de Cambio: {{bcv}}</h4>
       </div>
     </div>
     <div class="row justify-content-center mt-4">

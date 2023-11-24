@@ -44,6 +44,7 @@ export class AutomobileQuotesComponent {
   nombreCompleto!: any;
   vehiculo!: any;
   version!: any;
+  bcv!: any ;
 
   quotesForm = this._formBuilder.group({
     xmarca: ['', Validators.required],
@@ -65,6 +66,12 @@ export class AutomobileQuotesComponent {
              ) {}
 
   ngOnInit(){
+    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
+    .then((response) => response.json())
+    .then(data => {
+      this.bcv = data.monitors.usd.price
+    })
+    
     this.getUtilityVehicle();
   }
 
