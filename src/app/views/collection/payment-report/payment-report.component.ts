@@ -1,11 +1,11 @@
-import {Component, ViewChild  } from '@angular/core';
+import {Component, TemplateRef, ViewChild  } from '@angular/core';
 import {FormBuilder, Validators, FormGroup, FormControl , FormArray} from '@angular/forms';
 import {from, Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
+import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-payment-report',
@@ -13,6 +13,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./payment-report.component.scss']
 })
 export class PaymentReportComponent {
+
+  @ViewChild('Alerta') Alerta!: TemplateRef<any>;
 
   bcv : any
   targetBankList : any = []
@@ -30,7 +32,7 @@ export class PaymentReportComponent {
 
   constructor( private _formBuilder: FormBuilder,
     private http: HttpClient,
-    private modalService: NgbModal,
+    readonly dialog: MatDialog,
     ) {
    }
    
@@ -46,6 +48,22 @@ export class PaymentReportComponent {
     .then(data => {
       this.bcv = data.monitors.usd.price
     })
+
+    let data = {
+      ctipopago: ''
+    }
+
+    this.http.post(environment.apiUrl + '/api/v1/valrep/target-bank', data).subscribe((response: any) => {
+      if (response.data.targetBank) {
+        for (let i = 0; i < response.data.targetBank.length; i++) {
+          this.targetBankList.push({
+            id: response.data.targetBank[i].cbanco_destino,
+            value: response.data.targetBank[i].xbanco,
+          });
+        }
+      }
+    });
+
 
   
   }
@@ -100,7 +118,6 @@ export class PaymentReportComponent {
 
   }
 
-
   calculateMount(i :any){
     const creds = this.searchReceipt.get("receipt") as FormArray
 
@@ -116,7 +133,11 @@ export class PaymentReportComponent {
 
   }
 
+  Alert(config?: MatDialogConfig) {
 
+    return this.dialog.open(this.Alerta, config);
+
+  }
 
 
 
