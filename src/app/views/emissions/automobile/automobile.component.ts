@@ -138,7 +138,7 @@ export class AutomobileComponent {
     email: ['', Validators.required],
     cestado: ['', Validators.required],
     cciudad: ['', Validators.required],
-    xdireccion: ['', Validators.required],
+    xdireccion: [''],
   });
 
   vehicleFormGroup = this._formBuilder.group({
@@ -150,18 +150,18 @@ export class AutomobileComponent {
     xversion: ['', Validators.required],
     fano: ['',[Validators.required, Validators.maxLength(4)]],
     npasajeros: [{ value: '', disabled: true }],
-    cclasificacion: ['', Validators.required], 
-    xtipovehiculo: ['', Validators.required],
+    cclasificacion: [''], 
+    xtipovehiculo: [''],
     xcolor: ['', Validators.required],
     xserialcarroceria: ['', [Validators.required, Validators.maxLength(17)]],
     xserialmotor: ['', [Validators.required, Validators.maxLength(17)]],
     xcobertura: ['', Validators.required],
     ctarifa_exceso: ['', Validators.required],
     cuso: [''],
-    precargo: ['', Validators.required],
-    ctipovehiculo: ['', Validators.required],
-    cclase: ['', Validators.required],
-    id_inma: ['', Validators.required],
+    precargo: [''],
+    ctipovehiculo: [''],
+    cclase: [''],
+    id_inma: [''],
   });
 
   planFormGroup = this._formBuilder.group({
@@ -169,15 +169,15 @@ export class AutomobileComponent {
     ccorredor: ['', Validators.required],
     ctomador: [{ value: '', disabled: false }],
     xtomador: [{ value: '', disabled: false }],
-    xrif_tomador: ['', Validators.required],
-    cestado_tomador: ['', Validators.required],
-    cciudad_tomador: ['', Validators.required],
-    xemail_tomador: ['', Validators.required],
-    xdireccion_tomador: ['', Validators.required],
-    xzona_postal_tomador: ['', Validators.required],
-    xtelefono_tomador: ['', Validators.required],
+    xrif_tomador: [''],
+    cestado_tomador: [''],
+    cciudad_tomador: [''],
+    xemail_tomador: [''],
+    xdireccion_tomador: [''],
+    xzona_postal_tomador: [''],
+    xtelefono_tomador: [''],
     pcasco: [{ value: '', disabled: true }],
-    msuma_aseg: ['', Validators.required],
+    msuma_aseg: [''],
     msuma_aseg_text: [{ value: '', disabled: true }],
     mprima_bruta: [{ value: '', disabled: true }],
     mprima_casco_text: [{ value: '', disabled: true }],
@@ -187,8 +187,8 @@ export class AutomobileComponent {
     pmotin: [{ value: '', disabled: true }],
     pcatastrofico: [{ value: '', disabled: true }],
     mprima_casco: [{ value: '', disabled: true }],
-    mcatastrofico: ['', Validators.required],
-    mmotin: ['', Validators.required],
+    mcatastrofico: [''],
+    mmotin: [''],
     pblindaje: [{ value: '', disabled: true }],
     msuma_blindaje: [''],
     mprima_blindaje: [{ value: '', disabled: true }],
@@ -197,8 +197,8 @@ export class AutomobileComponent {
   });
 
   receiptFormGroup = this._formBuilder.group({
-    xpago: ['', Validators.required],
-    femision: ['', Validators.required],
+    xpago: [''],
+    femision: [''],
     fdesde: ['', Validators.required],
     fhasta: ['', Validators.required],
     cmetodologiapago: ['', Validators.required],
@@ -1730,6 +1730,46 @@ export class AutomobileComponent {
   onSubmit(){
     this.buttonEmissions = false;
     this.loadingEmissions = true;
+
+    if(this.personsFormGroup.invalid){
+      this.snackBar.open(`Por favor, revise la información antes de emitir esta póliza.`, '', {
+        duration: 3000,
+      });
+
+      this.buttonEmissions = true;
+      this.loadingEmissions = false;
+      return;
+    }
+
+    if(this.vehicleFormGroup.invalid){
+      this.snackBar.open(`Por favor, revise la información antes de emitir esta póliza.`, '', {
+        duration: 3000,
+      });
+
+      this.buttonEmissions = true;
+      this.loadingEmissions = false;
+      return;
+    }
+
+    if(this.planFormGroup.invalid){
+      this.snackBar.open(`Por favor, revise la información antes de emitir esta póliza.`, '', {
+        duration: 3000,
+      });
+
+      this.buttonEmissions = true;
+      this.loadingEmissions = false;
+      return;
+    }
+
+    if(this.receiptFormGroup.invalid){
+      this.snackBar.open(`Por favor, revise la información antes de emitir esta póliza.`, '', {
+        duration: 3000,
+      });
+
+      this.buttonEmissions = true;
+      this.loadingEmissions = false;
+      return;
+    }
 
     let data = {
       icedula: this.personsFormGroup.get('icedula')?.value,

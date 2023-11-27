@@ -1303,7 +1303,7 @@ export class PdfGenerationService {
 			{
 				style: 'data',
 				table: {
-				  widths: [70, 60, 65, 65, 30, 40, 70, '*'],
+				  widths: [70, 70, 65, 70, 30, 40, 50, '*'],
 				  body: [
 					[{text: 'SERIAL CARROCERIA:', bold: true, border: [false, false, false, false]}, {text: this.xserialcarroceria, border: [false, false, false, false]}, {text: 'SERIAL DEL MOTOR:', bold: true, border: [false, false, false, false]}, {text: this.xserialmotor, border: [false, false, false, false]}, {text: 'PLACA:', bold: true, border: [false, false, false, false]}, {text: this.xplaca, border: [false, false, false, false]}, {text: 'TRANSMISIÓN:', bold: true, border: [false, false, false, false]}, {text: this.xtransmision, border: [false, false, false, false]}]
 				  ]
@@ -1595,7 +1595,7 @@ export class PdfGenerationService {
 			{
 				style: 'data',
 				table: {
-				  widths: [70, 60, 65, 65, 30, 40, 70, '*'],
+				  widths: [70, 70, 65, 70, 30, 40, 50, '*'],
 				  body: [
 					[{text: 'SERIAL CARROCERIA:', bold: true, border: [false, false, false, false]}, {text: this.xserialcarroceria, border: [false, false, false, false]}, {text: 'SERIAL DEL MOTOR:', bold: true, border: [false, false, false, false]}, {text: this.xserialmotor, border: [false, false, false, false]}, {text: 'PLACA:', bold: true, border: [false, false, false, false]}, {text: this.xplaca, border: [false, false, false, false]}, {text: 'TRANSMISIÓN:', bold: true, border: [false, false, false, false]}, {text: this.xtransmision, border: [false, false, false, false]}]
 				  ]
@@ -1874,7 +1874,7 @@ export class PdfGenerationService {
 			{
 				style: 'data',
 				table: {
-				  widths: [70, 60, 65, 65, 30, 40, 70, '*'],
+				  widths: [70, 70, 65, 70, 30, 40, 50, '*'],
 				  body: [
 					[{text: 'SERIAL CARROCERIA:', bold: true, border: [false, false, false, false]}, {text: this.xserialcarroceria, border: [false, false, false, false]}, {text: 'SERIAL DEL MOTOR:', bold: true, border: [false, false, false, false]}, {text: this.xserialmotor, border: [false, false, false, false]}, {text: 'PLACA:', bold: true, border: [false, false, false, false]}, {text: this.xplaca, border: [false, false, false, false]}, {text: 'TRANSMISIÓN:', bold: true, border: [false, false, false, false]}, {text: this.xtransmision, border: [false, false, false, false]}]
 				  ]
@@ -1906,6 +1906,32 @@ export class PdfGenerationService {
 				  widths: [500],
 				  body: this.buildServiceArysBody()
 				}
+			},
+			{
+				style: 'data',
+				table: {
+				  widths: ['*'],
+				  body: [
+					[{text: 'NOTIFICACIÓN DE INDEMNIZACIÓN O SERVICIO DE AUTOMÓVIL', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
+				  ]
+				}
+			},
+			{
+				margin: [0, 0, 0, 2],
+				table: {
+				  widths: ['*'],
+				  body: [
+					[{text: [{text: `El tomador, Asegurado, o Beneficiario, deberá notificar dentre de los primeros cinco (5) días hábiles luego de ocurrido el siniestro o en el momento que tenga conocimiento al Call Center atención al cliente 24/7`}], alignment: 'justify', fontSize: 7, bold: true, border: [false, false, false, false]} ]
+				  ]
+				},
+			},
+			{
+				table: {
+				  widths: ['*'],
+				  body: [
+					[{text: [{text: `+58 0500-2797288 ó +58 0241-8200184`}], alignment: 'center', fontSize: 7, bold: true, border: [false, false, false, false]} ]
+				  ]
+				},
 			},
 		  ], 
 		  styles: {
