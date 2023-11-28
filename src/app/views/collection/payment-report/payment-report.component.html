@@ -28,7 +28,7 @@
                 <hr>
 
                 <div class="col-lg-4 text-center p-5">
-                    <h1>Consulte sus recibos</h1>
+                    <h1>Consulte sus recibos pendientes</h1>
             
                     <div class="form-group mb-3">
                         <label  class="form-label">Ingrese su número de cédula</label>
@@ -139,12 +139,20 @@
                     <strong>En caso de no coincidir los montos su reporte pasara a supervición. </strong>             
                 </h3>
 
-                <div class="form-group mb-3">
-                  <input  type="file"  class="form-control rounded-input" >
+                <div class="form-group mb-3 row" style="place-content: space-around;">
+                  <h3>Por favor ingreser el monto exacto de su deposito junto a su Screenshot </h3>
+                  <div class="col-lg-4">
+                    <input  type="text"  class="form-control rounded-input" placeholder="Ingresar monto depositado" formControlName="mount">
+                  </div>
+                  <div class="col-lg-4">
+                    <input type="file"  class="form-control rounded-input" name="ximagen" formControlName="ximagen" (change)="onFileSelect($event)" #Ximagen>
+                  </div>
+
                 </div>
 
                 <div  class="text-center col-lg-12">
-                  <button class="btn btn-primary mt-5">
+                  <button class="btn btn-primary mt-5" (click)="onSubmit()">
+
                     Registrar Pago
                   </button>
                 </div>
@@ -190,7 +198,19 @@
     
     
           </mat-dialog-content>
-      </ng-template>
+        </ng-template>
+
+        <ng-template #NotFound >
+          <mat-dialog-content  >
+              <div class="header">
+                <div class="content">
+                  <h2 class="title">Cliente no encontrado</h2>
+                  <h4>Valide sus datos</h4>
+    
+                </div>
+              </div>
+          </mat-dialog-content>
+        </ng-template>
     </div>
 
 

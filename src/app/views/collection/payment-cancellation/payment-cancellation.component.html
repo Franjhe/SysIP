@@ -1,1 +1,48 @@
-<p>payment-cancellation works!</p>
+<div class="card">
+    <form [formGroup]="searchReceipt">
+        <div class="text-center">
+            <h1>Conciliación de Pagos</h1>
+        </div>
+        <div class="row">
+            <div class="col-lg-5">
+                <h2>Consulta de recibos pendientes</h2>
+            
+                <div class="form-group mb-3">
+                    <label  class="form-label">Localización del cliente por su identificación</label>
+                    <input  type="text"  class="form-control rounded-input" formControlName="xcedula" >
+                    <button class="btn btn-primary mt-5" (click)="searchDataReceipt()"> Buscar</button>
+                </div>
+            </div>
+            <div class="col-lg-7" *ngIf="viewData">
+                <div formArrayName="receipt" >
+                    <table class="table border">
+                      <thead>
+                        <tr>
+                          <th>N° Poliza</th>
+                          <th>Fecha Desde</th>
+                          <th>Fecha Hasta</th>
+                          <th>Total del recibo</th>
+                          <th>Seleccione los recibos para confirmar el pago </th>
+                        </tr>
+                      </thead>
+                      <tbody *ngFor="let creds of receipt.value let i=index">
+                        <tr [formGroupName]="i">
+                          <td >{{creds.cnpoliza}}</td>
+                          <td>{{creds.fdesde}}</td>
+                          <td > {{creds.fhasta}}</td>
+                          <td >{{creds.mprimabrutaext}} {{creds.cmoneda}}</td>
+                          <td>
+                            <mat-checkbox formControlName="seleccionado"></mat-checkbox>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-lg-7 text-center" *ngIf="!viewData">
+                <img style="height: 50vh;" src="assets/img/brand/payment-report.avif">
+            </div>
+        </div>
+    </form>
+
+</div>

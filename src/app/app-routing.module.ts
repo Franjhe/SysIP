@@ -87,6 +87,11 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/quotes/quotes.module').then((m) => m.QuotesModule)
       },
+      {
+        path: 'collection',
+        loadChildren: () =>
+          import('./views/collection/collection.module').then((m) => m.CollectionModule)
+      },
     ]
   },
   {
