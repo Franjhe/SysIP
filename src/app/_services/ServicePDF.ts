@@ -839,6 +839,7 @@ export class PdfGenerationService {
 			this.xplancoberturas = response.data.xplancoberturas;
 			this.xplanservicios = response.data.xplanservicios;
 			this.mprimatotal = response.data.mprimatotal;
+			console.log(this.mprimatotal)
 			this.mprimaprorratatotal = response.data.mprimaprorratatotal;
 			this.xzona_postal_propietario = response.data.xzona_postal_propietario;
 			this.cestatusgeneral = response.data.cestatusgeneral;
@@ -1024,13 +1025,11 @@ export class PdfGenerationService {
 		  this.accesoriesList.forEach(function(row) {
 			let dataRow = [];
 			dataRow.push({text: row.xaccesorio, margin: [11, 0, 0, 0], alignment: 'left', bold: true, border: [false, false, false, false]});
-			dataRow.push({text: row.maccesoriocontratoflota.toFixed(2), alignment: 'right', border: [false, false, false, false]})
 			body.push(dataRow);
 		  })
 		} else {
 		  let dataRow = [];
 		  dataRow.push({text: ' ', border: [false, false, false, false]});
-		  dataRow.push({text: ' ', border: [false, false, false, false]})
 		  body.push(dataRow);
 		}
 		return body;
@@ -1071,8 +1070,8 @@ export class PdfGenerationService {
 			  } else {
 				dataRow.push({text: ` `, alignment: 'right', border: [false, false, false, false]});
 			  }
-			  if(row.mprima){
-				dataRow.push({text: `${new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(row.mprima)}`, fillColor: '#FFFFFF', alignment: 'right', border:[false, false, false, false]});
+			  if(row.m2){
+				dataRow.push({text: row.m2, fillColor: '#FFFFFF', alignment: 'right', border:[false, false, false, false]});
 			  } else {
 				dataRow.push({text: ` `, alignment: 'right', border: [false, false, false, false]});
 			  }
@@ -1366,7 +1365,7 @@ export class PdfGenerationService {
 			{
 				style: 'data',
 				table: {
-				  widths: [100, '*'],
+				  widths: [100],
 				  body: this.buildAccesoriesBody()
 				}
 			  },
