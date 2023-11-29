@@ -13,6 +13,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class AutomobileQuotesComponent {
 
+  isActive: boolean = false;
+
   brandList: any[] = [];
   modelList: any[] = [];
   versionList: any[] = [];
@@ -334,26 +336,27 @@ export class AutomobileQuotesComponent {
   }
 
   selectedPlan(index: number) {
-    this.quotesBoolean = false;
-    this.loading = true;
-    const selectedQuote = this.quotesList[index];
+    // this.quotesBoolean = false;
+    this.isActive = true
+    // this.loading = true;
+    // const selectedQuote = this.quotesList[index];
 
-    let data = {
-      ccotizacion: selectedQuote.ccotizacion,
-      cplan_rc: selectedQuote.cplan_rc,
-      iaceptado: true
-    }
+    // let data = {
+    //   ccotizacion: selectedQuote.ccotizacion,
+    //   cplan_rc: selectedQuote.cplan_rc,
+    //   iaceptado: true
+    // }
 
-    this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/update', data).subscribe((response: any) => {
-      if (response.status) {
-        this.loading = false;
-        this.check = true;
+    // this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/update', data).subscribe((response: any) => {
+    //   if (response.status) {
+    //     this.loading = false;
+    //     this.check = true;
 
-        this.snackBar.open(`Se ha cotizado con el ${selectedQuote.xplan_rc} exitosamente.`, '', {
-          duration: 5000,
-        });
-      }
-    })
+    //     this.snackBar.open(`Se ha cotizado con el ${selectedQuote.xplan_rc} exitosamente.`, '', {
+    //       duration: 5000,
+    //     });
+    //   }
+    // })
 
   }
 

@@ -1099,8 +1099,10 @@ export class PdfGenerationService {
 			  dataRow.push({text: row.crecibo, margin: [10, 0, 0, 0], bold: true, border: [false, false, false, false]});
 			  dataRow.push({text: row.fdesde_rec, alignment: 'right', border:[false, false, false, false]});
 			  dataRow.push({text: row.fhasta_rec, alignment: 'right', border:[false, false, false, false]});
+			  dataRow.push({text: row.fcobro, alignment: 'right', border:[false, false, false, false]});
 			  dataRow.push({text: row.xmoneda, alignment: 'right', border:[false, false, false, false]});
 			  dataRow.push({text: row.mprima, alignment: 'right', border:[false, false, false, false]});
+			  dataRow.push({text: row.xestatus, alignment: 'right', border:[false, false, false, false]});
 
 			  body.push(dataRow);
 		  });
@@ -1302,7 +1304,7 @@ export class PdfGenerationService {
 			{
 				style: 'data',
 				table: {
-				  widths: [70, 70, 65, 70, 30, 40, 50, '*'],
+				  widths: [70, 75, 65, 70, 30, 40, 50, '*'],
 				  body: [
 					[{text: 'SERIAL CARROCERIA:', bold: true, border: [false, false, false, false]}, {text: this.xserialcarroceria, border: [false, false, false, false]}, {text: 'SERIAL DEL MOTOR:', bold: true, border: [false, false, false, false]}, {text: this.xserialmotor, border: [false, false, false, false]}, {text: 'PLACA:', bold: true, border: [false, false, false, false]}, {text: this.xplaca, border: [false, false, false, false]}, {text: 'TRANSMISIÓN:', bold: true, border: [false, false, false, false]}, {text: this.xtransmision, border: [false, false, false, false]}]
 				  ]
@@ -1594,7 +1596,7 @@ export class PdfGenerationService {
 			{
 				style: 'data',
 				table: {
-				  widths: [70, 70, 65, 70, 30, 40, 50, '*'],
+				  widths: [70, 75, 65, 70, 30, 40, 50, '*'],
 				  body: [
 					[{text: 'SERIAL CARROCERIA:', bold: true, border: [false, false, false, false]}, {text: this.xserialcarroceria, border: [false, false, false, false]}, {text: 'SERIAL DEL MOTOR:', bold: true, border: [false, false, false, false]}, {text: this.xserialmotor, border: [false, false, false, false]}, {text: 'PLACA:', bold: true, border: [false, false, false, false]}, {text: this.xplaca, border: [false, false, false, false]}, {text: 'TRANSMISIÓN:', bold: true, border: [false, false, false, false]}, {text: this.xtransmision, border: [false, false, false, false]}]
 				  ]
@@ -1641,9 +1643,9 @@ export class PdfGenerationService {
 			{
 				style: 'data',
 				table: {
-				  widths: [150, 100, 60, 50, '*'],
+				  widths: [50, 60, 60, 60, 60, 60, '*'],
 				  body: [
-					[{text: 'NO. RECIBO', bold: true, border: [false, false, false, false]}, {text: 'FECHA DESDE', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'FECHA HASTA', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'MONEDA', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'PRIMA', alignment: 'center', bold: true, border: [false, false, false, false]}]
+					[{text: 'NO. RECIBO', bold: true, border: [false, false, false, false]}, {text: 'FECHA DESDE', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'FECHA HASTA', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'FECHA COBRO', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'MONEDA', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'PRIMA', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'ESTATUS', alignment: 'center', bold: true, border: [false, false, false, false]},]
 				  ]
 				}
 			},
@@ -1651,7 +1653,7 @@ export class PdfGenerationService {
 				style: 'data',
 				margin: [0, 0, 0, 2],
 				table: {
-				  widths: [135, 80, 80, 45, 82],
+				  widths: [40, 60, 55, 60, 50, 62, 92],
 				  body: this.buildReceiptBody()
 				}
 			},
@@ -1873,7 +1875,7 @@ export class PdfGenerationService {
 			{
 				style: 'data',
 				table: {
-				  widths: [70, 70, 65, 70, 30, 40, 50, '*'],
+				  widths: [70, 75, 65, 70, 30, 40, 50, '*'],
 				  body: [
 					[{text: 'SERIAL CARROCERIA:', bold: true, border: [false, false, false, false]}, {text: this.xserialcarroceria, border: [false, false, false, false]}, {text: 'SERIAL DEL MOTOR:', bold: true, border: [false, false, false, false]}, {text: this.xserialmotor, border: [false, false, false, false]}, {text: 'PLACA:', bold: true, border: [false, false, false, false]}, {text: this.xplaca, border: [false, false, false, false]}, {text: 'TRANSMISIÓN:', bold: true, border: [false, false, false, false]}, {text: this.xtransmision, border: [false, false, false, false]}]
 				  ]
