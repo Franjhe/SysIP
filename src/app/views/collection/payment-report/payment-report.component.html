@@ -28,13 +28,23 @@
                 <hr>
 
                 <div class="col-lg-4 text-center p-5">
-                    <h1>Consulte sus recibos pendientes</h1>
+                  <div  *ngIf="!viewData">
+                     <h1>Consulte sus recibos pendientes</h1>
             
                     <div class="form-group mb-3">
                         <label  class="form-label">Ingrese su número de cédula</label>
                         <input  type="text"  class="form-control rounded-input" formControlName="xcedula" >
                         <button class="btn btn-primary mt-5" (click)="searchDataReceipt()"> Consultar</button>
-                    </div>
+                    </div>                   
+                  </div>
+
+                  <div  *ngIf="viewData">
+                    <h1> Estimado </h1>
+                    <h1><strong>{{cliente}}</strong></h1>
+                    <h1> Sus recibos pendientes </h1>
+                  </div>
+
+
                     
                 </div>
 
@@ -53,8 +63,8 @@
                           <tbody *ngFor="let creds of receipt.value let i=index">
                             <tr [formGroupName]="i">
                               <td >{{creds.cnpoliza}}</td>
-                              <td>{{creds.fdesde}}</td>
-                              <td > {{creds.fhasta}}</td>
+                              <td>{{creds.fdesde_rec}}</td>
+                              <td > {{creds.fhasta_rec}}</td>
                               <td >{{creds.mprimabrutaext}} {{creds.cmoneda}}</td>
                               <td>
                                 <mat-checkbox formControlName="seleccionado" (change)="calculateMount(i)"> </mat-checkbox>
@@ -135,14 +145,27 @@
                 <h3>
                     Una vez hayas completado la transferencia, adjunta el comprobante de pago para que podamos procesar tu transacción de manera rápida y precisa. 
                     Puedes adjuntar imágenes o archivos PDF del comprobante.  <br>   
-                    <strong>Para reportar tu pago debes transferir un TOTAL de  <h1 class="bold mt-4" style="font-size:2.1rem">{{mount}} $  -- {{mountBs}} Bs</h1></strong>   <br>
+                    <strong>Para reportar tu pago debes transferir un TOTAL de  
+                      <h1 class="bold mt-4" style="font-size:2.1rem">{{mount}} $  -- {{mountBs}} Bs</h1></strong>   
+                      <br>
                     <strong>En caso de no coincidir los montos su reporte pasara a supervición. </strong>             
                 </h3>
 
                 <div class="form-group mb-3 row" style="place-content: space-around;">
                   <h3>Por favor ingreser el monto exacto de su deposito junto a su Screenshot </h3>
-                  <div class="col-lg-4">
-                    <input  type="text"  class="form-control rounded-input" placeholder="Ingresar monto depositado" formControlName="mount">
+                  <div class="col-lg-3">
+                    <input  type="text"  class="form-control rounded-input" placeholder="Ingresar monto depositado" formControlName="mpago_dec">
+                  </div>
+
+                  <div class="col-lg-3">
+
+                    <div class="form-outline" >
+                      <select formControlName="cmoneda" class="form-control rounded-input form-control-lg colorgris">
+                        <option *ngFor="let coin of coinList" value="{{ coin.id }}">{{ coin.id }}</option>
+                      </select>                     
+                    </div>
+
+                 
                   </div>
                   <div class="col-lg-4">
                     <input type="file"  class="form-control rounded-input" name="ximagen" formControlName="ximagen" (change)="onFileSelect($event)" #Ximagen>

@@ -23,11 +23,17 @@ export class PaymentReportComponent {
   cliente : any
   mount : any
   mountBs : any
+
+  coinList : any = []
+  receiptList : any = []
+
   searchReceipt = this._formBuilder.group({
-    xcedula: [''],
     receipt :  this._formBuilder.array([]),
     ximagen : [{}],
-    mount : ['']
+    xcedula: [''],
+    cmoneda : [''],
+    mpago_dec : [''],
+    ccategoria: [''],
 
   });
   
@@ -75,31 +81,54 @@ export class PaymentReportComponent {
           const fhastaP = new Date(response.searchReceipt.receipt[i].fhasta);
           let ISOFhastaP = fhastaP.toISOString().substring(0, 10);
 
+          const fdesdePol = new Date(response.searchReceipt.receipt[i].fdesde_pol);
+          let ISOFdesdePol = fdesdePol.toISOString().substring(0, 10);
+
+          const fhastaPol = new Date(response.searchReceipt.receipt[i].fhasta_pol);
+          let ISOFhastaPol = fhastaPol.toISOString().substring(0, 10);
+
           this.receipt.push(
             this._formBuilder.group({
-              crecibo: response.searchReceipt.receipt[i].crecibo,
-              fdesde: ISOFdesdeP,
-              fhasta: ISOFhastaP,
-              mprimabrutaext: response.searchReceipt.receipt[i].mprimabrutaext,
-              cmoneda: response.searchReceipt.receipt[i].cmoneda,
-              cnrecibo: response.searchReceipt.receipt[i].cnrecibo,
               cnpoliza: response.searchReceipt.receipt[i].cnpoliza,
+              cnrecibo: response.searchReceipt.receipt[i].cnrecibo,
+              cpoliza: response.searchReceipt.receipt[i].cpoliza,
+              fanopol: response.searchReceipt.receipt[i].fanopol,
+              fmespol: response.searchReceipt.receipt[i].fmespol,
               cramo: response.searchReceipt.receipt[i].cramo,
-              seleccionado : false
+              cmoneda: response.searchReceipt.receipt[i].cmoneda,
+              fdesde_pol: ISOFdesdePol,
+              fhasta_pol: ISOFhastaPol,
+              fdesde_rec: ISOFdesdeP,
+              fhasta_rec: ISOFhastaP,
+              mprimabruta: response.searchReceipt.receipt[i].mprimabruta,
+              mprimabrutaext: response.searchReceipt.receipt[i].mprimabrutaext,
+              ptasamon: response.searchReceipt.receipt[i].ptasamon,
+              seleccionado : false,
+              iestadorec : 'N'
               
             })
           )
 
         }
-
         for(let i = 0; i < response.searchReceipt.client.length; i++){
-          this.cliente = response.searchReceipt.client.xcliente
+
+          this.cliente = response.searchReceipt.client[i].xcliente
         }        
       }else{
 
         this.Found()
       }
 
+    });
+
+    this.http.post(environment.apiUrl + '/api/v1/valrep/coin', client ).subscribe((coin: any) => {
+
+      for(let i = 0; i < coin.data.coins.length; i++){
+        this.coinList.push({
+          id: coin.data.coins[i].cmoneda,
+          value: coin.data.coins[i].xdescripcion_l,
+        })
+      }
     });
 
   }
@@ -139,31 +168,73 @@ export class PaymentReportComponent {
 
   }
 
-  onSubmit(){
+  async llenarlistas(){
+
+    const creds = this.searchReceipt.get("receipt") as FormArray
+
+    for(let i = 0; i < creds.length; i++){
+      if(creds.value[i].seleccionado == true){
+        this.receiptList.push({
+          cnpoliza: creds.value[i].cnpoliza,
+          cnrecibo: creds.value[i].cnrecibo,
+          cpoliza: creds.value[i].cpoliza,
+          fanopol: creds.value[i].fanopol,
+          fmespol: creds.value[i].fmespol,
+          cramo: creds.value[i].cramo,        
+          cmoneda: creds.value[i].cmoneda,
+          fdesde_pol: creds.value[i].fdesde_pol,
+          fhasta_pol: creds.value[i].fhasta_pol,
+          fdesde_rec: creds.value[i].fdesde_rec,
+          fhasta_rec: creds.value[i].fhasta_rec,
+          mprimabruta: creds.value[i].mprimabruta,
+          mprimabrutaext: creds.value[i].mprimabrutaext,
+          ptasamon: creds.value[i].ptasamon,
+          seleccionado : creds.value[i].seleccionado,
+          iestadorec : creds.value[i].iestadorec
+
+        });
+      }
+
+    }   
+    
+  }
+
+  async onSubmit(){
 
     const formData = new FormData();
     formData.append('file', this.searchReceipt.get('ximagen')?.value!);
 
     this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((response: any) => {
-
         const rutaimage  =  response.uploadedFile.filename
+        if(response.status){
 
-        const receipt = this.searchReceipt.get("receipt") as FormArray
+           this.llenarlistas()
 
-        const savePaymentReport = {
-          xcedula: this.searchReceipt.get('xcedula')?.value,
-          receipt : receipt,
-          ximagen : rutaimage,
-          mount : this.searchReceipt.get('mount')?.value
+          const fecha = new Date()
+          const savePaymentReport = {
+            receipt : this.receiptList,
+            xruta : rutaimage,
+            casegurado: this.searchReceipt.get('xcedula')?.value,
+            cmoneda : this.searchReceipt.get('cmoneda')?.value,
+            mpago_dec : this.searchReceipt.get('mpago_dec')?.value,
+            mpago : this.mountBs,
+            mpagoext : this.mount,
+            ptasamon : this.bcv,
+            freporte : fecha ,
+            cprog : 'Reporte de pago web',
+            cusuario : 13,
+            ccategoria : this.searchReceipt.get('ccategoria')?.value,
+          }
+
+          this.http.post(environment.apiUrl + '/api/v1/collection/create',savePaymentReport).subscribe((response: any) => {
+      
+            console.log(response)
+          })          
         }
-    
-        this.http.post(environment.apiUrl + '/api/v1/collection/search', savePaymentReport ).subscribe((response: any) => {
-    
-        })
+
+
 
     });
-
-
 
   }
 
