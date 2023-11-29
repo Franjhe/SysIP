@@ -18,6 +18,7 @@ export class AutomobileQuotesComponent {
   versionList: any[] = [];
   ratesList: any[] = [];
   utilityVehicleList:  any[] = [];
+  quotesList:  any[] = [];
 
   brandControl = new FormControl('');
   modelControl = new FormControl('');
@@ -35,6 +36,15 @@ export class AutomobileQuotesComponent {
   loading: boolean = false;
   buttonQuotes: boolean = false;
   activateRate: boolean = false;
+  distributionCard: boolean = false;
+  quotesBoolean: boolean = true;
+  check: boolean = false;
+
+  cotizacion!: any;
+  nombreCompleto!: any;
+  vehiculo!: any;
+  version!: any;
+  bcv!: any ;
 
   quotesForm = this._formBuilder.group({
     xmarca: ['', Validators.required],
@@ -56,6 +66,12 @@ export class AutomobileQuotesComponent {
              ) {}
 
   ngOnInit(){
+    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
+    .then((response) => response.json())
+    .then(data => {
+      this.bcv = data.monitors.usd.price
+    })
+    
     this.getUtilityVehicle();
   }
 
@@ -303,9 +319,42 @@ export class AutomobileQuotesComponent {
 
     this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/create', data).subscribe((response: any) => {
       if (response.status) {
-        console.log(response.data.list)
+        this.vector = false;
+        this.distributionCard = true;
+        this.loading = false;
+        this.quotesBoolean = true;
+        this.quotesList = response.data.list.result;
+
+        this.nombreCompleto = data.xnombre + ' ' + data.xapellido;
+        this.vehiculo = this.quotesForm.get('xmarca')?.value + ' ' + this.quotesForm.get('xmodelo')?.value;
+        this.cotizacion = response.data.list.result[0].ccotizacion;
+        this.version = this.quotesForm.get('xversion')?.value
       }
     })
+  }
+
+  selectedPlan(index: number) {
+    this.quotesBoolean = false;
+    this.loading = true;
+    const selectedQuote = this.quotesList[index];
+
+    let data = {
+      ccotizacion: selectedQuote.ccotizacion,
+      cplan_rc: selectedQuote.cplan_rc,
+      iaceptado: true
+    }
+
+    this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/update', data).subscribe((response: any) => {
+      if (response.status) {
+        this.loading = false;
+        this.check = true;
+
+        this.snackBar.open(`Se ha cotizado con el ${selectedQuote.xplan_rc} exitosamente.`, '', {
+          duration: 5000,
+        });
+      }
+    })
+
   }
 
 }

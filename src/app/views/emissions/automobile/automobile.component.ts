@@ -115,6 +115,7 @@ export class AutomobileComponent {
   activateRate: boolean = false;
   methodOfPayment: boolean = false;
   bpagarubii: boolean = false;
+  paymentButtons: boolean = true;
   primaBruta!: any;
   descuento!: any;
   sumaAsegurada!: any;
@@ -137,7 +138,7 @@ export class AutomobileComponent {
     email: ['', Validators.required],
     cestado: ['', Validators.required],
     cciudad: ['', Validators.required],
-    xdireccion: ['', Validators.required],
+    xdireccion: [''],
   });
 
   vehicleFormGroup = this._formBuilder.group({
@@ -149,18 +150,18 @@ export class AutomobileComponent {
     xversion: ['', Validators.required],
     fano: ['',[Validators.required, Validators.maxLength(4)]],
     npasajeros: [{ value: '', disabled: true }],
-    cclasificacion: ['', Validators.required], 
-    xtipovehiculo: ['', Validators.required],
+    cclasificacion: [''], 
+    xtipovehiculo: [''],
     xcolor: ['', Validators.required],
     xserialcarroceria: ['', [Validators.required, Validators.maxLength(17)]],
     xserialmotor: ['', [Validators.required, Validators.maxLength(17)]],
     xcobertura: ['', Validators.required],
     ctarifa_exceso: ['', Validators.required],
     cuso: [''],
-    precargo: ['', Validators.required],
-    ctipovehiculo: ['', Validators.required],
-    cclase: ['', Validators.required],
-    id_inma: ['', Validators.required],
+    precargo: [''],
+    ctipovehiculo: [''],
+    cclase: [''],
+    id_inma: [''],
   });
 
   planFormGroup = this._formBuilder.group({
@@ -168,40 +169,36 @@ export class AutomobileComponent {
     ccorredor: ['', Validators.required],
     ctomador: [{ value: '', disabled: false }],
     xtomador: [{ value: '', disabled: false }],
-    xrif_tomador: ['', Validators.required],
-    cestado_tomador: ['', Validators.required],
-    cciudad_tomador: ['', Validators.required],
-    xemail_tomador: ['', Validators.required],
-    xdireccion_tomador: ['', Validators.required],
-    xzona_postal_tomador: ['', Validators.required],
-    xtelefono_tomador: ['', Validators.required],
+    xrif_tomador: [''],
+    cestado_tomador: [''],
+    cciudad_tomador: [''],
+    xemail_tomador: [''],
+    xdireccion_tomador: [''],
+    xzona_postal_tomador: [''],
+    xtelefono_tomador: [''],
     pcasco: [{ value: '', disabled: true }],
-    msuma_aseg: ['', Validators.required],
+    msuma_aseg: [''],
     msuma_aseg_text: [{ value: '', disabled: true }],
     mprima_bruta: [{ value: '', disabled: true }],
     mprima_casco_text: [{ value: '', disabled: true }],
     mprima_bruta_text: [{ value: '', disabled: true }],
     pdescuento: [''],
+    precarga: [''],
     pmotin: [{ value: '', disabled: true }],
     pcatastrofico: [{ value: '', disabled: true }],
     mprima_casco: [{ value: '', disabled: true }],
-    mcatastrofico: ['', Validators.required],
-    mmotin: ['', Validators.required],
+    mcatastrofico: [''],
+    mmotin: [''],
     pblindaje: [{ value: '', disabled: true }],
     msuma_blindaje: [''],
     mprima_blindaje: [{ value: '', disabled: true }],
-    accesorios :  this._formBuilder.array([{
-      xaccesorio: '',
-      ptasa: '',
-      sumaAsegurada : '',
-      xprimaAccesorio: '',
-    }]),
+    accesorios :  this._formBuilder.array([]),
     msuma_aseg_acce: [{ value: '', disabled: false }],
   });
 
   receiptFormGroup = this._formBuilder.group({
-    xpago: ['', Validators.required],
-    femision: ['', Validators.required],
+    xpago: [''],
+    femision: [''],
     fdesde: ['', Validators.required],
     fhasta: ['', Validators.required],
     cmetodologiapago: ['', Validators.required],
@@ -956,13 +953,13 @@ export class AutomobileComponent {
     if(this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv'){
       this.helmet = false;
       this.activateInspection = false;
-
-
+      this.paymentButtons = true;
     }
     else if(this.vehicleFormGroup.get('xcobertura')?.value !== 'Rcv'){
       this.validateYearsFromHullPrice()
       this.activateInspection = true;
       this.helmet = true;
+      this.paymentButtons = false;
     }
   }
 
@@ -1067,12 +1064,24 @@ export class AutomobileComponent {
   }
 
   validateTaker(){
-    if(this.planFormGroup.get('ctomador')?.value && this.planFormGroup.get('xtomador')?.value){
-      this.planFormGroup.get('xtomador')?.setValue('')
-      this.takersInfo = false;
-    }else{
-      this.takersInfo = true;
+    if(this.planFormGroup.get('xtomador')?.value){
+      if(this.planFormGroup.get('ctomador')?.value){
+        this.planFormGroup.get('xtomador')?.setValue('')
+        this.takersInfo = false;
+      }else{
+        this.takersInfo = true;
+      }
     }
+
+
+    // if(this.planFormGroup.get('ctomador')?.value, this.planFormGroup.get('xtomador')?.value){
+    //   console.log('hola')
+    //   this.planFormGroup.get('xtomador')?.setValue('')
+    //   this.takersInfo = false;
+    // }else{
+    //   console.log('aaaaa')
+    //   this.takersInfo = true;
+    // }
   }
 
   openDiscount(){
@@ -1152,6 +1161,82 @@ export class AutomobileComponent {
     }
     this.descuento = this.planFormGroup.get('pdescuento')?.value;
   }
+
+  getRecharge() {
+    const precargaValue = this.planFormGroup.get('precarga')?.value;
+    const pcascoValue = this.planFormGroup.get('pcasco')?.value;
+    const casco = this.planFormGroup.get('mprima_casco')?.value;
+
+    let division: number = 0;
+    let multiplicacion: number = 0;
+    let calculo_recarga: number = 0;
+  
+    if (typeof precargaValue === 'number' && typeof pcascoValue === 'number' && typeof casco === 'string') {
+      const calculatedAmount = (precargaValue / 100) * pcascoValue;
+      const sumRecharge = pcascoValue + calculatedAmount;
+
+      const cascoNumero = parseFloat(casco);
+      
+      division = sumRecharge / 100;
+      multiplicacion = cascoNumero * division;
+      calculo_recarga = cascoNumero + multiplicacion;
+
+      let valorTotal = calculo_recarga.toFixed(2)
+
+      this.planFormGroup.get('mprima_casco')?.setValue(calculo_recarga.toString());
+      this.planFormGroup.get('mprima_casco_text')?.setValue(valorTotal);
+
+      const recharge = sumRecharge.toFixed(2)
+
+      this.planFormGroup.get('pcasco')?.setValue(recharge.toString())
+    }
+  }
+
+  premiumRecalculation() {
+    const msumaAsegRaw = this.planFormGroup.get('msuma_aseg')!.value;
+    
+    // Verifica si msumaAsegRaw no es null antes de convertirlo a un número
+    if (msumaAsegRaw !== null) {
+        let msumaAseg = parseFloat(msumaAsegRaw);
+
+        const pcasco = this.planFormGroup.get('pcasco')?.value;
+        const pcatastrofico = this.planFormGroup.get('pcatastrofico')?.value;
+        const pmotin = this.planFormGroup.get('pmotin')?.value;
+
+        console.log(msumaAseg);
+
+        let calculo: number = 0;
+        let catastrofico: number = 0;
+        let motin: number = 0;
+
+        if (!isNaN(msumaAseg) && typeof pcasco === 'number') {
+            calculo = (msumaAseg * pcasco) / 100;
+
+            // Redondear la prima a dos decimales
+            const primaRedondeada = calculo.toFixed(2);
+
+            this.planFormGroup.get('mprima_casco')?.setValue(primaRedondeada);
+            this.planFormGroup.get('mprima_bruta')?.setValue(primaRedondeada);
+            this.planFormGroup.get('mprima_casco_text')?.setValue(primaRedondeada);
+            this.planFormGroup.get('mprima_bruta_text')?.setValue(primaRedondeada);
+            this.primaBruta = this.planFormGroup.get('mprima_bruta_text')?.value;
+        }
+
+        if (!isNaN(msumaAseg) && typeof pcatastrofico === 'number') {
+            catastrofico = (msumaAseg * pcatastrofico) / 100;
+
+            this.planFormGroup.get('mcatastrofico')?.setValue(catastrofico.toString());
+        }
+
+        if (!isNaN(msumaAseg) && typeof pmotin === 'number') {
+            motin = (msumaAseg * pmotin) / 100;
+
+            this.planFormGroup.get('mmotin')?.setValue(motin.toString());
+        }
+        this.sumaAsegurada = msumaAseg;
+    }
+  }
+
 
   calculationPremiumsShielding(){
     const msumaAseg = this.planFormGroup.get('msuma_blindaje')?.value;
@@ -1645,6 +1730,46 @@ export class AutomobileComponent {
   onSubmit(){
     this.buttonEmissions = false;
     this.loadingEmissions = true;
+
+    if(this.personsFormGroup.invalid){
+      this.snackBar.open(`Por favor, revise la información antes de emitir esta póliza.`, '', {
+        duration: 3000,
+      });
+
+      this.buttonEmissions = true;
+      this.loadingEmissions = false;
+      return;
+    }
+
+    if(this.vehicleFormGroup.invalid){
+      this.snackBar.open(`Por favor, revise la información antes de emitir esta póliza.`, '', {
+        duration: 3000,
+      });
+
+      this.buttonEmissions = true;
+      this.loadingEmissions = false;
+      return;
+    }
+
+    if(this.planFormGroup.invalid){
+      this.snackBar.open(`Por favor, revise la información antes de emitir esta póliza.`, '', {
+        duration: 3000,
+      });
+
+      this.buttonEmissions = true;
+      this.loadingEmissions = false;
+      return;
+    }
+
+    if(this.receiptFormGroup.invalid){
+      this.snackBar.open(`Por favor, revise la información antes de emitir esta póliza.`, '', {
+        duration: 3000,
+      });
+
+      this.buttonEmissions = true;
+      this.loadingEmissions = false;
+      return;
+    }
 
     let data = {
       icedula: this.personsFormGroup.get('icedula')?.value,
