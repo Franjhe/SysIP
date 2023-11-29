@@ -144,22 +144,26 @@ export class PaymentReportComponent {
     const formData = new FormData();
     formData.append('file', this.searchReceipt.get('ximagen')?.value!);
 
-    this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe(response => {
-        console.log(response)
+    this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((response: any) => {
+
+        const rutaimage  =  response.uploadedFile.filename
+
+        const receipt = this.searchReceipt.get("receipt") as FormArray
+
+        const savePaymentReport = {
+          xcedula: this.searchReceipt.get('xcedula')?.value,
+          receipt : receipt,
+          ximagen : rutaimage,
+          mount : this.searchReceipt.get('mount')?.value
+        }
+    
+        this.http.post(environment.apiUrl + '/api/v1/collection/search', savePaymentReport ).subscribe((response: any) => {
+    
+        })
+
     });
 
-    const receipt = this.searchReceipt.get("receipt") as FormArray
 
-    const savePaymentReport = {
-      xcedula: this.searchReceipt.get('xcedula')?.value,
-      receipt : receipt,
-      ximagen : this.searchReceipt.get('ximagen')?.value,
-      mount : this.searchReceipt.get('mount')?.value
-    }
-
-    // this.http.post(environment.apiUrl + '/api/v1/collection/search', savePaymentReport ).subscribe((response: any) => {
-
-    // })
 
   }
 
