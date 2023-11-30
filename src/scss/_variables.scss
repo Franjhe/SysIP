@@ -6,7 +6,7 @@
 
 // Color system
 
-// $white:     #fff;
+//$white:     #fff;
 // $gray-base: #3c4b64;
 // $gray-100:  #ebedef;
 // $gray-200:  #d8dbe0;
@@ -1197,13 +1197,13 @@
 
 
 // Toasts
-// scss-docs-start toast-variables
+//scss-docs-start toast-variables
 // $toast-max-width:                   350px;
 // $toast-padding-x:                   .75rem;
 // $toast-padding-y:                   .5rem;
 // $toast-font-size:                   .875rem;
 // $toast-color:                       unset;
-// $toast-background-color:            rgba($white, .85);
+// $toast-background-color:            rgba(#fff, .85);
 // $toast-border-width:                1px;
 // $toast-border-color:                rgba(0, 0, 0, .1);
 // $toast-border-radius:               $border-radius;
@@ -1211,9 +1211,9 @@
 // $toast-spacing:                     $container-padding-x;
 
 // $toast-header-color:                $gray-600;
-// $toast-header-background-color:     rgba($white, .85);
+// $toast-header-background-color:     rgba($#fff, .85);
 // $toast-header-border-color:         rgba(0, 0, 0, .05);
-// scss-docs-end toast-variables
+//scss-docs-end toast-variables
 
 
 // Badges

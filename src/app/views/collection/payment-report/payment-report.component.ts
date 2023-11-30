@@ -32,12 +32,18 @@ export class PaymentReportComponent {
 
   searchReceipt = this._formBuilder.group({
     receipt :  this._formBuilder.array([]),
-    ximagen : [{}],
     xcedula: ['', Validators.required],
     cmoneda : [''],
     mpago_dec : [''],
     ccategoria: [''],
+  });
 
+  detailPayment = this._formBuilder.group({
+    cmoneda : ['', Validators.required],
+    mpago_dec : ['', Validators.required],
+    ximagen : [{}],
+    xreferencia : ['', Validators.required],
+    ccategoria: [''],
   });
   
 
@@ -87,9 +93,6 @@ export class PaymentReportComponent {
       }
 
     })
-
-
-
 
   }
 
@@ -194,10 +197,21 @@ export class PaymentReportComponent {
 
   }
 
+  validateMount(){
+    const mountDeclare = this.detailPayment.get('mpago_dec')?.value!
+    if(mountDeclare < this.mount ){
+      this.toast.open('El monto no puede ser menor al estimado de pago, valide su seleccion de recibos o ingrese el monto correcto', '', {
+        duration: 3000,
+        verticalPosition: 'top',
+        panelClass: ['error-toast']
+      });  
+    }
+
+  }
   onFileSelect(event : any){
 
     const file = event.target.files[0]
-    this.searchReceipt.get('ximagen')?.setValue(file);
+    this.detailPayment.get('ximagen')?.setValue(file);
 
   }
 
@@ -238,7 +252,7 @@ export class PaymentReportComponent {
   async onSubmit(){
 
     const formData = new FormData();
-    formData.append('file', this.searchReceipt.get('ximagen')?.value!);
+    formData.append('file', this.detailPayment.get('ximagen')?.value!);
 
     this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((response: any) => {
         const rutaimage  =  response.uploadedFile.filename
@@ -251,8 +265,8 @@ export class PaymentReportComponent {
             receipt : this.receiptList,
             xruta : rutaimage,
             casegurado: this.searchReceipt.get('xcedula')?.value,
-            cmoneda : this.searchReceipt.get('cmoneda')?.value,
-            mpago_dec : this.searchReceipt.get('mpago_dec')?.value,
+            cmoneda : this.detailPayment.get('cmoneda')?.value,
+            mpago_dec : this.detailPayment.get('mpago_dec')?.value,
             mpago : this.mountBs,
             mpagoext : this.mount,
             ptasamon : this.bcv,
@@ -261,18 +275,18 @@ export class PaymentReportComponent {
             cusuario : 13,
             iestadorec : 'N',
             ccategoria : this.searchReceipt.get('ccategoria')?.value,
+            xreferencia : this.detailPayment.get('xreferencia')?.value,
           }
 
-          this.http.post(environment.apiUrl + '/api/v1/collection/create',savePaymentReport).subscribe((response: any) => {
+          this.http.post(environment.apiUrl + '/api/v1/collection/create',savePaymentReport).subscribe(async (response: any) => {
       
-            console.log(response)
-
             this.toast.open(response.message, '', {
-              duration: 3000,
+              duration: 5000,
               verticalPosition: 'top',
               panelClass: ['success-toast']
             });  
 
+            await this.toast 
             location.reload();
 
           })          
