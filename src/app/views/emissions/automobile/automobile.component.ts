@@ -118,8 +118,6 @@ export class AutomobileComponent {
   activateRate: boolean = false;
   methodOfPayment: boolean = false;
   bpagarubii: boolean = false;
-  amountDollar: boolean = false;
-  amountBs: boolean = false;
   paymentButtons: boolean = true;
   primaBruta!: any;
   descuento!: any;
@@ -128,8 +126,6 @@ export class AutomobileComponent {
   sumaAseguradaMax!: any;
   sumaAseguradaMin!: any;
   montoTotal!: any;
-  montoDollar!: any;
-  montoBs!: any;
   ccontratoflota!: any;
   currentUser!: any
   token!: any
@@ -222,7 +218,7 @@ export class AutomobileComponent {
     fcobro: [''],
     xreferencia: [''],
     mprima_pagada: [''],
-    mpagado: [''],
+    mprima_bs: [''],
     xmoneda: [''],
   });
 
@@ -546,11 +542,6 @@ export class AutomobileComponent {
       
       if (fanoValue > 2021) {
         this.snackBar.open(`No puedes colocar un año mayor al 2021. Por favor, vuelve a intentarlo`, '', {
-          duration: 5000,
-        });
-        this.vehicleFormGroup.get('fano')?.setValue('')
-      }else if(fanoValue < 1980){
-        this.snackBar.open(`No puedes colocar un año menor a 1980. Por favor, vuelve a intentarlo`, '', {
           duration: 5000,
         });
         this.vehicleFormGroup.get('fano')?.setValue('')
@@ -933,37 +924,8 @@ export class AutomobileComponent {
     }
   }
 
-  validationBank(){
-    if(this.receiptFormGroup.get('xmoneda')?.value == 'Bs'){
-      this.itipo = 'V';
-      this.amountDollar = false;
-      this.amountBs = true;
-
-      let cambio = this.montoTotal * this.bcv;
-      this.montoBs = cambio.toFixed(2) 
-
-      this.getBank();
-      this.getTypeOfPay()
-    }else{
-      this.itipo = 'E';
-      this.amountDollar = true;
-      this.amountBs = false;
-
-      let igtf = this.montoTotal * 0.03
-      let total = this.montoTotal + igtf;
-
-      this.montoDollar = total.toFixed(2)
-
-      this.getBank();
-      this.getTypeOfPay()
-    }
-  }
-
   getTypeOfPay(){
-    let data = {
-      itipo: this.itipo
-    }
-    this.http.post(environment.apiUrl + '/api/v1/valrep/type-of-payment', data).subscribe((response: any) => {
+    this.http.post(environment.apiUrl + '/api/v1/valrep/type-of-payment', null).subscribe((response: any) => {
       if (response.data.typePayment) {
         this.typeOfPayList = [];
         for (let i = 0; i < response.data.typePayment.length; i++) {
@@ -974,6 +936,17 @@ export class AutomobileComponent {
         }
       }
     });
+  }
+
+  validationBank(){
+    console.log(this.receiptFormGroup.get('xmoneda')?.value)
+    if(this.receiptFormGroup.get('xmoneda')?.value == 'Bs'){
+      this.itipo = 'V';
+      this.getBank();
+    }else{
+      this.itipo = 'E';
+      this.getBank();
+    }
   }
 
   getBank(){
@@ -994,7 +967,7 @@ export class AutomobileComponent {
   }
 
   getTargetBank(){
-    if(this.receiptFormGroup.get('ctipopago')?.value == '5' || this.receiptFormGroup.get('ctipopago')?.value == '6'){
+    if(this.receiptFormGroup.get('ctipopago')?.value == '5'){
       this.receiptFormGroup.get('cbanco_destino')?.disable();
       this.receiptFormGroup.get('cbanco')?.disable();
     }else{
@@ -1199,7 +1172,6 @@ export class AutomobileComponent {
 
   getDiscount(){
     const descuento = this.planFormGroup.get('pdescuento')?.value;
-    const pcascoValue = this.planFormGroup.get('pcasco')?.value;
     const casco = this.planFormGroup.get('mprima_casco')?.value;
     
     let division: number = 0;
@@ -1207,13 +1179,11 @@ export class AutomobileComponent {
     let calculo_descuento: number = 0;
 
     if(descuento){
-      if (typeof descuento === 'number' && typeof pcascoValue === 'number' && typeof casco === 'string') {
-        const calculatedAmount = (descuento / 100) * pcascoValue;
-        const restRecharge = pcascoValue - calculatedAmount;
+      if (typeof descuento === 'number' && typeof casco === 'string') {
 
         const cascoNumero = parseFloat(casco);
       
-        division = restRecharge / 100;
+        division = descuento / 100;
         multiplicacion = cascoNumero * division;
         calculo_descuento = cascoNumero - multiplicacion;
 
@@ -1221,10 +1191,6 @@ export class AutomobileComponent {
   
         this.planFormGroup.get('mprima_casco')?.setValue(calculo_descuento.toString());
         this.planFormGroup.get('mprima_casco_text')?.setValue(valorTotal);
-
-        const discount = restRecharge.toFixed(2)
-
-      this.planFormGroup.get('pcasco')?.setValue(discount.toString())
       }
     }else{
       this.planFormGroup.get('mprima_casco')?.setValue(this.primaBruta);
@@ -1602,38 +1568,6 @@ export class AutomobileComponent {
     return this.receiptFormGroup.get(name);
   }
 
-  validateAmount(){
-    if(this.receiptFormGroup.get('xmoneda')?.value == 'Bs'){
-      const bs = this.montoBs;
-      const montoControl = this.receiptFormGroup.get('mpagado');
-
-      if (montoControl) {
-        const monto = montoControl.value;
-  
-        if (monto !== null && monto !== undefined) {
-          if (monto < bs) {
-            window.alert('El monto que colocó es menor al monto a pagar.');
-            montoControl.setValue('');
-          }
-        }
-      }
-    }else{
-      const ds = this.montoDollar;
-      const montoControl = this.receiptFormGroup.get('mpagado');
-
-      if (montoControl) {
-        const monto = montoControl.value;
-  
-        if (monto !== null && monto !== undefined) {
-          if (monto < ds) {
-            window.alert('El monto que colocó es menor al monto a pagar.');
-            montoControl.setValue('');
-          }
-        }
-      }
-    }
-  }
-
   openPaymentModal() {
     const currentDate = new Date();
 
@@ -1645,14 +1579,13 @@ export class AutomobileComponent {
   
     modalRef.result.then((result) => {
       if (result === 'result') {
-        const pagado = this.getFormControl('mpagado')?.value;
         this.getFormControl('ctipopago')?.value;
         this.getFormControl('cbanco')?.value;
         this.getFormControl('cbanco_destino')?.value;
         this.getFormControl('fcobro')?.value;
         this.getFormControl('xreferencia')?.value;
-        this.getFormControl('mpagado')?.value;
-        this.receiptFormGroup.get('mprima_pagada')?.setValue(pagado);
+        this.getFormControl('mprima_bs')?.value;
+        this.receiptFormGroup.get('mprima_pagada')?.setValue(this.montoTotal);
         this.buttonEmissions = true;
       }
     }).catch((reason) => {
@@ -1970,7 +1903,7 @@ export class AutomobileComponent {
       cbanco_destino: this.receiptFormGroup.get('cbanco_destino')?.value,
       fcobro: this.receiptFormGroup.get('fcobro')?.value,
       xreferencia: this.receiptFormGroup.get('xreferencia')?.value,
-      mpagado: this.receiptFormGroup.get('mpagado')?.value,
+      mprima_bs: this.receiptFormGroup.get('mprima_bs')?.value,
       mprima_pagada: this.receiptFormGroup.get('mprima_pagada')?.value,
     }
 

@@ -1025,6 +1025,7 @@ export class PdfGenerationService {
 		  this.accesoriesList.forEach(function(row) {
 			let dataRow = [];
 			dataRow.push({text: row.xaccesorio, margin: [11, 0, 0, 0], alignment: 'left', bold: true, border: [false, false, false, false]});
+			dataRow.push({text: row.msuma_aseg, margin: [11, 0, 0, 0], alignment: 'left', bold: true, border: [false, false, false, false]});
 			body.push(dataRow);
 		  })
 		} else {
@@ -1367,7 +1368,7 @@ export class PdfGenerationService {
 			{
 				style: 'data',
 				table: {
-				  widths: [100],
+				  widths: [100, 100],
 				  body: this.buildAccesoriesBody()
 				}
 			  },
