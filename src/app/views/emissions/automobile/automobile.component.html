@@ -109,6 +109,39 @@
             </div>
 
             <div class="row justify-content-center">
+              <div class="col-4">
+                <!-- <label class="form-label required" for="form3Examplev5">Fecha de Nacimiento</label>
+                  <input type="date" formControlName="fnacimiento" class="form-control form-control-lg" (ngModelChange)="calculateYears($event)" /> -->
+                  <mat-form-field>
+                    <mat-label>Fecha de Nacimiento</mat-label>
+                    <input matInput [matDatepicker]="picker" formControlName="fnacimiento" (dateChange)="calculateYears($event)">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </mat-form-field>
+              </div> 
+              <div class="col-4">
+                <mat-form-field>
+                  <mat-label>Estado Civil</mat-label>
+                  <mat-select formControlName="isexo">
+                    <mat-option value="M">MASCULINO</mat-option>
+                    <mat-option value="F">FEMENINO</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-4">
+                <mat-form-field>
+                  <mat-label>Sexo</mat-label>
+                  <mat-select formControlName="iestado_civil">
+                    <mat-option value="S">SOLTERO / A</mat-option>
+                    <mat-option value="C">CASADO / A</mat-option>
+                    <mat-option value="D">DIVORCIADO / A</mat-option>
+                    <mat-option value="V">VIUDO / A</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div> 
+            </div>
+
+            <div class="row justify-content-center">
               <div class="col-6">
                   <mat-form-field class="example-full-width">
                       <mat-label>Dirección</mat-label>
@@ -692,7 +725,7 @@
       <div class="col-12">
         <div class="form-outline">                        
           <label class="form-label" for="form3Examplev3" style="color: rgba(0, 46, 255, 0.6);">Moneda</label>
-          <select formControlName="xmoneda" class="form-control form-control-lg">
+          <select formControlName="xmoneda" class="form-control form-control-lg colorgris" (change)="validationBank()">
             <option value="Bs">BOLÍVARES</option>
             <option value="Ds">DÓLARES</option>
           </select>                         
@@ -726,7 +759,7 @@
         </div>
       </div>
       <div class="col-12">
-        <label class="form-label required" for="form3Examplev5">Fecha de Cobro</label>
+        <label class="form-label required" for="form3Examplev5">Fecha de Pago</label>
         <input type="date" formControlName="fcobro" class="form-control form-control-lg" (ngModelChange)="configurationCollectionDate($event)"/>
       </div>
       <div class="col-12">
@@ -735,17 +768,36 @@
           <input matInput placeholder="Referencia" formControlName="xreferencia">
         </mat-form-field>
       </div>
+
       <div class="row">
-        <div class="col-6" style="margin-top: 34px;">
+        <div class="col-6" style="margin-top: 10px;">
           <P><strong>Monto en Dólares:  </strong>{{montoTotal}}$</P>
         </div>
+        <div class="col-6" style="margin-top: 10px;" *ngIf="amountBs">
+          <P><strong>Tasa del Día:  </strong>{{bcv}}$</P>
+        </div>
+      </div>
+
+
+      <h4 class="text-center" *ngIf="amountDollar"><strong style="color: #b2b2b2;">Incluyendo el 3% del IGTF</strong></h4>
+
+      <div class="col-6" *ngIf="amountDollar">
+        <h3><strong>Monto en Total a Pagar:  </strong>{{montoDollar}}$</h3>
+      </div>
+
+      <div class="col-7" *ngIf="amountBs">
+        <h3><strong>Monto en Total a Pagar:  </strong>{{montoBs}} Bs</h3>
+      </div>
+
+      <div class="center">
         <div class="col-6">
           <mat-form-field >
-            <mat-label>Monto en Bolívares</mat-label>
-            <input matInput type="number" formControlName="mprima_bs">
+            <mat-label>Monto Pagado</mat-label>
+            <input matInput type="number" formControlName="mpagado" (change)="validateAmount()">
           </mat-form-field>
         </div>
       </div>
+
     </form>
   </div>
   <div class="modal-footer">

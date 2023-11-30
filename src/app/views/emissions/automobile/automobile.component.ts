@@ -16,12 +16,12 @@ import { initUbii } from '@ubiipagos/boton-ubii-dc';
 
 export const MY_FORMATS = {
   parse: {
-    dateInput: 'LL',
+    dateInput: 'DD/MM/YYYY',
   },
   display: {
     dateInput: 'DD/MM/YYYY',
     monthYearLabel: 'MMM YYYY',
-    dateA11yLabel: 'LL',
+    dateA11yLabel: 'DD/MM/YYYY',
     monthYearA11yLabel: 'MMMM YYYY',
   },
 };
@@ -29,7 +29,10 @@ export const MY_FORMATS = {
 @Component({
   selector: 'app-automobile',
   templateUrl: './automobile.component.html',
-  styleUrls: ['./automobile.component.scss']
+  styleUrls: ['./automobile.component.scss'],
+  providers: [
+    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
+  ],
 })
 
 export class AutomobileComponent {
@@ -115,11 +118,18 @@ export class AutomobileComponent {
   activateRate: boolean = false;
   methodOfPayment: boolean = false;
   bpagarubii: boolean = false;
+  amountDollar: boolean = false;
+  amountBs: boolean = false;
   paymentButtons: boolean = true;
   primaBruta!: any;
   descuento!: any;
   sumaAsegurada!: any;
+  sumaAseguradaBase!: any;
+  sumaAseguradaMax!: any;
+  sumaAseguradaMin!: any;
   montoTotal!: any;
+  montoDollar!: any;
+  montoBs!: any;
   ccontratoflota!: any;
   currentUser!: any
   token!: any
@@ -128,16 +138,20 @@ export class AutomobileComponent {
   xprimaAccesorio!: any;
   ubii!: any;
   bcv!: any ;
+  itipo!: any ;
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
     xrif_cliente: ['', Validators.required],
     xnombre: ['', Validators.required],
     xapellido: ['', Validators.required],
+    fnacimiento: ['', Validators.required],
     xtelefono_emp: ['', Validators.required],
     email: ['', Validators.required],
     cestado: ['', Validators.required],
     cciudad: ['', Validators.required],
+    iestado_civil: ['', Validators.required],
+    isexo: ['', Validators.required],
     xdireccion: [''],
   });
 
@@ -208,8 +222,8 @@ export class AutomobileComponent {
     fcobro: [''],
     xreferencia: [''],
     mprima_pagada: [''],
-    mprima_bs: [''],
-
+    mpagado: [''],
+    xmoneda: [''],
   });
 
   constructor( private _formBuilder: FormBuilder,
@@ -276,7 +290,6 @@ export class AutomobileComponent {
         this.getTakers();
         this.setDefaultDates();
         this.getTypeOfPay();
-        this.getBank();
     }
   }
 
@@ -285,6 +298,21 @@ export class AutomobileComponent {
       minimumFractionDigits: 2,
     });
     return formatter.format(value);
+  }
+
+  calculateYears(event: any) {
+    const selectedDate = new Date(event.value);
+    const currentDate = new Date();
+    const eighteenYearsAgo = new Date(currentDate.getFullYear() - 18, currentDate.getMonth(), currentDate.getDate());
+    if (selectedDate > eighteenYearsAgo) {
+      this.snackBar.open('El propietario es menor de edad, por ende no se puede emitir esta póliza', '', {
+        duration: 5000,
+      });
+
+      this.personsFormGroup.get('fnacimiento')?.setValue('')
+
+      return
+    }
   }
 
   searchPropietary(){
@@ -521,6 +549,11 @@ export class AutomobileComponent {
           duration: 5000,
         });
         this.vehicleFormGroup.get('fano')?.setValue('')
+      }else if(fanoValue < 1980){
+        this.snackBar.open(`No puedes colocar un año menor a 1980. Por favor, vuelve a intentarlo`, '', {
+          duration: 5000,
+        });
+        this.vehicleFormGroup.get('fano')?.setValue('')
       }else{
         this.getBrand()
       }
@@ -655,6 +688,7 @@ export class AutomobileComponent {
       this.vehicleFormGroup.get('xtipovehiculo')?.setValue(selectedVersion.xtipovehiculo);
       this.vehicleFormGroup.get('ctarifa_exceso')?.setValue(selectedVersion.ctarifa_exceso);
       this.sumaAsegurada = selectedVersion.msum;
+      this.sumaAseguradaBase = selectedVersion.msum;
 
 
       if(!this.vehicleFormGroup.get('xtipovehiculo')?.value){
@@ -899,8 +933,37 @@ export class AutomobileComponent {
     }
   }
 
+  validationBank(){
+    if(this.receiptFormGroup.get('xmoneda')?.value == 'Bs'){
+      this.itipo = 'V';
+      this.amountDollar = false;
+      this.amountBs = true;
+
+      let cambio = this.montoTotal * this.bcv;
+      this.montoBs = cambio.toFixed(2) 
+
+      this.getBank();
+      this.getTypeOfPay()
+    }else{
+      this.itipo = 'E';
+      this.amountDollar = true;
+      this.amountBs = false;
+
+      let igtf = this.montoTotal * 0.03
+      let total = this.montoTotal + igtf;
+
+      this.montoDollar = total.toFixed(2)
+
+      this.getBank();
+      this.getTypeOfPay()
+    }
+  }
+
   getTypeOfPay(){
-    this.http.post(environment.apiUrl + '/api/v1/valrep/type-of-payment', null).subscribe((response: any) => {
+    let data = {
+      itipo: this.itipo
+    }
+    this.http.post(environment.apiUrl + '/api/v1/valrep/type-of-payment', data).subscribe((response: any) => {
       if (response.data.typePayment) {
         this.typeOfPayList = [];
         for (let i = 0; i < response.data.typePayment.length; i++) {
@@ -914,8 +977,12 @@ export class AutomobileComponent {
   }
 
   getBank(){
-    this.http.post(environment.apiUrl + '/api/v1/valrep/bank', null).subscribe((response: any) => {
+    let data = {
+      itipo: this.itipo
+    }
+    this.http.post(environment.apiUrl + '/api/v1/valrep/bank', data).subscribe((response: any) => {
       if (response.data.bank) {
+        this.bankList = [];
         for (let i = 0; i < response.data.bank.length; i++) {
           this.bankList.push({
             id: response.data.bank[i].cbanco,
@@ -927,7 +994,7 @@ export class AutomobileComponent {
   }
 
   getTargetBank(){
-    if(this.receiptFormGroup.get('ctipopago')?.value == '5'){
+    if(this.receiptFormGroup.get('ctipopago')?.value == '5' || this.receiptFormGroup.get('ctipopago')?.value == '6'){
       this.receiptFormGroup.get('cbanco_destino')?.disable();
       this.receiptFormGroup.get('cbanco')?.disable();
     }else{
@@ -1132,6 +1199,7 @@ export class AutomobileComponent {
 
   getDiscount(){
     const descuento = this.planFormGroup.get('pdescuento')?.value;
+    const pcascoValue = this.planFormGroup.get('pcasco')?.value;
     const casco = this.planFormGroup.get('mprima_casco')?.value;
     
     let division: number = 0;
@@ -1139,11 +1207,13 @@ export class AutomobileComponent {
     let calculo_descuento: number = 0;
 
     if(descuento){
-      if (typeof descuento === 'number' && typeof casco === 'string') {
+      if (typeof descuento === 'number' && typeof pcascoValue === 'number' && typeof casco === 'string') {
+        const calculatedAmount = (descuento / 100) * pcascoValue;
+        const restRecharge = pcascoValue - calculatedAmount;
 
         const cascoNumero = parseFloat(casco);
       
-        division = descuento / 100;
+        division = restRecharge / 100;
         multiplicacion = cascoNumero * division;
         calculo_descuento = cascoNumero - multiplicacion;
 
@@ -1151,6 +1221,10 @@ export class AutomobileComponent {
   
         this.planFormGroup.get('mprima_casco')?.setValue(calculo_descuento.toString());
         this.planFormGroup.get('mprima_casco_text')?.setValue(valorTotal);
+
+        const discount = restRecharge.toFixed(2)
+
+      this.planFormGroup.get('pcasco')?.setValue(discount.toString())
       }
     }else{
       this.planFormGroup.get('mprima_casco')?.setValue(this.primaBruta);
@@ -1199,11 +1273,38 @@ export class AutomobileComponent {
     if (msumaAsegRaw !== null) {
         let msumaAseg = parseFloat(msumaAsegRaw);
 
+        let max = this.sumaAseguradaBase * 0.30
+        let min = this.sumaAseguradaBase * 0.10
+
+        let MaxSum = this.sumaAseguradaBase + max;
+        let MinSum = this.sumaAseguradaBase - min;
+
+        this.sumaAseguradaMax = MaxSum.toFixed(2)
+        this.sumaAseguradaMin = MinSum.toFixed(2)
+
+        if(msumaAseg > this.sumaAseguradaMax){
+          this.snackBar.open('La Suma Asegurada excedió el 30%.', '', {
+            duration: 5000,
+          });
+
+          this.planFormGroup.get('msuma_aseg')?.setValue(this.sumaAseguradaBase);
+          this.premiumRecalculation()
+          return
+        }
+
+        if(msumaAseg < this.sumaAseguradaMin){
+          this.snackBar.open('La Suma Asegurada es menor al 10%.', '', {
+            duration: 5000,
+          });
+
+          this.planFormGroup.get('msuma_aseg')?.setValue(this.sumaAseguradaBase);
+          this.premiumRecalculation()
+          return
+        }
+
         const pcasco = this.planFormGroup.get('pcasco')?.value;
         const pcatastrofico = this.planFormGroup.get('pcatastrofico')?.value;
         const pmotin = this.planFormGroup.get('pmotin')?.value;
-
-        console.log(msumaAseg);
 
         let calculo: number = 0;
         let catastrofico: number = 0;
@@ -1501,6 +1602,38 @@ export class AutomobileComponent {
     return this.receiptFormGroup.get(name);
   }
 
+  validateAmount(){
+    if(this.receiptFormGroup.get('xmoneda')?.value == 'Bs'){
+      const bs = this.montoBs;
+      const montoControl = this.receiptFormGroup.get('mpagado');
+
+      if (montoControl) {
+        const monto = montoControl.value;
+  
+        if (monto !== null && monto !== undefined) {
+          if (monto < bs) {
+            window.alert('El monto que colocó es menor al monto a pagar.');
+            montoControl.setValue('');
+          }
+        }
+      }
+    }else{
+      const ds = this.montoDollar;
+      const montoControl = this.receiptFormGroup.get('mpagado');
+
+      if (montoControl) {
+        const monto = montoControl.value;
+  
+        if (monto !== null && monto !== undefined) {
+          if (monto < ds) {
+            window.alert('El monto que colocó es menor al monto a pagar.');
+            montoControl.setValue('');
+          }
+        }
+      }
+    }
+  }
+
   openPaymentModal() {
     const currentDate = new Date();
 
@@ -1512,13 +1645,14 @@ export class AutomobileComponent {
   
     modalRef.result.then((result) => {
       if (result === 'result') {
+        const pagado = this.getFormControl('mpagado')?.value;
         this.getFormControl('ctipopago')?.value;
         this.getFormControl('cbanco')?.value;
         this.getFormControl('cbanco_destino')?.value;
         this.getFormControl('fcobro')?.value;
         this.getFormControl('xreferencia')?.value;
-        this.getFormControl('mprima_bs')?.value;
-        this.receiptFormGroup.get('mprima_pagada')?.setValue(this.montoTotal);
+        this.getFormControl('mpagado')?.value;
+        this.receiptFormGroup.get('mprima_pagada')?.setValue(pagado);
         this.buttonEmissions = true;
       }
     }).catch((reason) => {
@@ -1780,6 +1914,9 @@ export class AutomobileComponent {
       email: this.personsFormGroup.get('email')?.value?.toUpperCase(),
       cestado: this.personsFormGroup.get('cestado')?.value,
       cciudad: this.personsFormGroup.get('cciudad')?.value,
+      fnacimiento: this.personsFormGroup.get('fnacimiento')?.value,
+      iestado_civil: this.personsFormGroup.get('iestado_civil')?.value,
+      isexo: this.personsFormGroup.get('isexo')?.value,
       xdireccion: this.personsFormGroup.get('xdireccion')?.value?.toUpperCase(),
       xplaca: this.vehicleFormGroup.get('xplaca')?.value?.toUpperCase(),
       xmarca: this.vehicleFormGroup.get('xmarca')?.value,
@@ -1833,7 +1970,7 @@ export class AutomobileComponent {
       cbanco_destino: this.receiptFormGroup.get('cbanco_destino')?.value,
       fcobro: this.receiptFormGroup.get('fcobro')?.value,
       xreferencia: this.receiptFormGroup.get('xreferencia')?.value,
-      mprima_bs: this.receiptFormGroup.get('mprima_bs')?.value,
+      mpagado: this.receiptFormGroup.get('mpagado')?.value,
       mprima_pagada: this.receiptFormGroup.get('mprima_pagada')?.value,
     }
 
