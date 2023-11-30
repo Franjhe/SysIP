@@ -1,5 +1,5 @@
 
-    <div style="background-color: #003478;height: 30vh;" class="container-fluid pb-5 pt-5 ">
+    <div style="Atrasground-color: #003478;height: 30vh;" class="container-fluid pb-5 pt-5 ">
         <img 
         src="assets/img/brand/logo-white.png" alt=""
         widt="250" 
@@ -14,189 +14,204 @@
     </div>
 
     <div class="card container col-lg-12" style="margin-top: -7.5rem">
-        <form [formGroup]="searchReceipt">
-            <div class="row">
-                <div class="text-center">
-                    <h1>Reporte de Pago</h1>
-                    <h3>
-                        Estimado usuario,
+      <div class="text-center">
+        <h1>Reporte de Pago</h1>
+        <h3>
+            Estimado usuario,
 
-                        Para garantizar una correcta identificación de tu pago, te solicitamos seguir los siguientes pasos:
-                    </h3>
+            Para garantizar una correcta identificación de tu pago, te solicitamos seguir los siguientes pasos:
+        </h3>
+    </div>
+      <mat-stepper linear #stepper>
+
+        <mat-step [stepControl]="searchReceipt" >
+          <form [formGroup]="searchReceipt">
+            <ng-template matStepLabel>Consulte sus recibos pendientes</ng-template>
+              <div class="container row">
+                <div class="col-lg-4 p-5 mt-5">
+                  <mat-form-field>
+                    <mat-label>Cedula</mat-label>
+                    <input matInput type="number"  formControlName="xcedula" placeholder="Ingrese su numero de cedula o rif " required>
+                  </mat-form-field> 
                 </div>
-
-                <hr>
-
-                <div class="col-lg-4 text-center p-5">
-                  <div  *ngIf="!viewData">
-                     <h1>Consulte sus recibos pendientes</h1>
-            
-                    <div class="form-group mb-3">
-                        <label  class="form-label">Ingrese su número de cédula</label>
-                        <input  type="text"  class="form-control rounded-input" formControlName="xcedula" >
-                        <button class="btn btn-primary mt-5" (click)="searchDataReceipt()"> Consultar</button>
-                    </div>                   
+                <div class="col-lg-5">
+                  <div class="col-lg-7 text-center">
+                    <img style="height: 40vh;" src="assets/img/brand/payment-report.avif">
                   </div>
-
-                  <div  *ngIf="viewData">
-                    <h1> Estimado </h1>
-                    <h1><strong>{{cliente}}</strong></h1>
-                    <h1> Sus recibos pendientes </h1>
-                  </div>
-
-
-                    
                 </div>
 
-                <div class="col-lg-8" *ngIf="viewData">
-                    <div formArrayName="receipt" >
-                        <table class="table border">
-                          <thead>
-                            <tr>
-                              <th>N° Poliza</th>
-                              <th>Fecha Desde</th>
-                              <th>Fecha Hasta</th>
-                              <th>Total del recibo</th>
-                              <th>Seleccione los recibos a pagar </th>
-                            </tr>
-                          </thead>
-                          <tbody *ngFor="let creds of receipt.value let i=index">
-                            <tr [formGroupName]="i">
-                              <td >{{creds.cnpoliza}}</td>
-                              <td>{{creds.fdesde_rec}}</td>
-                              <td > {{creds.fhasta_rec}}</td>
-                              <td >{{creds.mprimabrutaext}} {{creds.cmoneda}}</td>
-                              <td>
-                                <mat-checkbox formControlName="seleccionado" (change)="calculateMount(i)"> </mat-checkbox>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                    </div>
-                    <div *ngIf="viewData" class="container text-center">
-                        <h2>Tasa de cobro {{bcv}} Bs</h2> 
-                        <h2>Total a Pagar {{mount}} $  -- {{mountBs}} Bs</h2>
-                        
+              </div>
+            <div>
+              <button mat-button matStepperNext (click)="searchDataReceipt()">Siguiente</button>
+            </div>
+          </form>
+        </mat-step>
 
-                    </div>
+        <mat-step [stepControl]="searchReceipt" >
+          <form [formGroup]="searchReceipt">
+            <ng-template matStepLabel>Seleccione los recibos pendientes que desea cancelar</ng-template>
+
+            <h1> Estimado </h1>
+            <h1><strong>{{cliente}}</strong></h1>
+            <h1> Sus recibos pendientes </h1>
+
+            <div formArrayName="receipt" >
+              <table class="table border">
+                <thead>
+                  <tr>
+                    <th>N° Poliza</th>
+                    <th>Fecha Desde</th>
+                    <th>Fecha Hasta</th>
+                    <th>Total del recibo</th>
+                    <th>Seleccione los recibos a pagar </th>
+                  </tr>
+                </thead>
+                <tbody *ngFor="let creds of receipt.value let i=index">
+                  <tr [formGroupName]="i">
+                    <td >{{creds.cnpoliza}}</td>
+                    <td>{{creds.fdesde_rec}}</td>
+                    <td > {{creds.fhasta_rec}}</td>
+                    <td >{{creds.mprimabrutaext}} {{creds.cmoneda}}</td>
+                    <td>
+                      <mat-checkbox formControlName="seleccionado" (change)="calculateMount(i)"> </mat-checkbox>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+          </div>
+          <div class="container text-center">
+              <h2>Tasa de cobro {{bcv}} Bs</h2> 
+              <h2>Total a Pagar {{mount}} $  -- {{mountBs}} Bs</h2>
+          </div>
+            <div>
+              <button mat-button matStepperPrevious>Atras</button>
+              <button mat-button matStepperNext>Siguiente</button>
+            </div>
+          </form>
+        </mat-step>
+
+        <mat-step>
+          <ng-template matStepLabel>Identifica los números de cuenta a los cuales realizarás la transferencia</ng-template>
+          <div class="row text-center">
+            <h1>Nuestras Cuentas Bancarias</h1>
+
+            <h3>
+                Por favor, identifica claramente los números de cuenta a los cuales realizarás la transferencia.
+                 Asegúrate de verificar cuidadosamente cada dígito para evitar errores.
+            </h3>
+
+            <mat-accordion class="col-lg-6">
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+
+                    <mat-panel-title>
+                      Cuentas Nacionales 
+                    </mat-panel-title>
+
+                  </mat-expansion-panel-header>
+                  <p class="text-start">
+                    <strong>BANESCO </strong>                         0134 0371 61 3711015662 <br>
+                    <strong>BANPLUS</strong>                         0174 0131 96 1314500040 <br>
+                    <strong>BANCAMIGA</strong>                       0172 0111 53 1118494549 <br>
+                    <strong>BANCO NACIONAL DE CREDITO </strong>      0191 0098 73 2198370018 <br>
+                    <strong>BANCO DE VENEZUELA </strong>             0102 0762 21 0000100104 <br>
+                    <strong>BANCO PLAZA</strong>                     0138 0040 59 0400012987
+                  </p>
+                </mat-expansion-panel>
+            </mat-accordion>
+
+            <mat-accordion class="col-lg-6">
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+
+                    <mat-panel-title>
+                      Cuentas internacionales
+                    </mat-panel-title>
+
+                  </mat-expansion-panel-header>
+                    <p class="text-start">
+                      <strong>Beneficiary</strong>     Bee Insurance Managemen LLC <br>
+                      <strong>Bank </strong>           Well Fargo <br>
+                      <strong>Address</strong>         1110 Brickell Ave Suite 406 Miami Fl 33131-3135 <br>
+                      <strong>Account</strong>         3814894881 <br>
+                      <strong>Routing Number</strong>  063107513 <br>
+                      <strong>Swift </strong>          WFBIUS6SXXX <br>
+                      <strong>Zelle </strong>          paymentslamundial@gmail.com
+                    </p>
+                </mat-expansion-panel>
+            </mat-accordion>
+
+        </div>
+          <div>
+            <button mat-button matStepperPrevious>Atras</button>
+            <button mat-button matStepperNext>Siguiente</button>
+ 
+          </div>
+        </mat-step>
+
+        <mat-step>
+          <ng-template matStepLabel>Confirmacion</ng-template>
+          <div class="text-center container">
+            <h1>Confirmación</h1>
+            <h3>
+                Una vez hayas completado la transferencia, adjunta el comprobante de pago para que podamos procesar tu transacción de manera rápida y precisa. 
+                Puedes adjuntar imágenes o archivos PDF del comprobante.  <br>   
+                <strong>Para reportar tu pago debes transferir un TOTAL de  
+                  <h1 class="bold mt-4" style="font-size:2.1rem">{{mount}} $  -- {{mountBs}} Bs</h1></strong>   
+                  <br>
+                <strong>En caso de no coincidir los montos su reporte pasara a supervición. </strong>             
+            </h3>
+
+            <div class="form-group mb-3 row" style="place-content: space-around;">
+              <h3>Por favor ingreser el monto exacto de su deposito junto a su Screenshot </h3>
+              <div class="col-lg-3">
+                <input  type="text"  class="form-control rounded-input" placeholder="Ingresar monto depositado" formControlName="mpago_dec">
+              </div>
+
+              <div class="col-lg-3">
+
+                <div class="form-outline" >
+                  <select formControlName="cmoneda" class="form-control rounded-input form-control-lg colorgris">
+                    <option *ngFor="let coin of coinList" value="{{ coin.id }}">{{ coin.id }}</option>
+                  </select>                     
                 </div>
 
-                <div class="col-lg-8 text-center" *ngIf="!viewData">
-                    <img style="height: 50vh;" src="assets/img/brand/payment-report.avif">
-                </div>
+             
+              </div>
+              <div class="col-lg-4">
+                <input type="file"  class="form-control rounded-input" name="ximagen" formControlName="ximagen" (change)="onFileSelect($event)" #Ximagen>
+              </div>
 
             </div>
-            <div class="row mt-5  container">
-                <div class="row text-center">
-                    <h1>Nuestras Cuentas Bancarias</h1>
 
-                    <h3>
-                        Por favor, identifica claramente los números de cuenta a los cuales realizarás la transferencia.
-                         Asegúrate de verificar cuidadosamente cada dígito para evitar errores.
-                    </h3>
+            <div  class="text-center col-lg-12">
+              <button class="btn btn-primary mt-5" (click)="onSubmit()">
 
-                    <mat-accordion class="col-lg-6">
-                        <mat-expansion-panel>
-                          <mat-expansion-panel-header>
-
-                            <mat-panel-title>
-                              Cuentas Nacionales 
-                            </mat-panel-title>
-
-                          </mat-expansion-panel-header>
-                          <p class="text-start">
-                            <strong>BANESCO </strong>                         0134 0371 61 3711015662 <br>
-                            <strong>BANPLUS</strong>                         0174 0131 96 1314500040 <br>
-                            <strong>BANCAMIGA</strong>                       0172 0111 53 1118494549 <br>
-                            <strong>BANCO NACIONAL DE CREDITO </strong>      0191 0098 73 2198370018 <br>
-                            <strong>BANCO DE VENEZUELA </strong>             0102 0762 21 0000100104 <br>
-                            <strong>BANCO PLAZA</strong>                     0138 0040 59 0400012987
-                          </p>
-                        </mat-expansion-panel>
-                    </mat-accordion>
-
-                    <mat-accordion class="col-lg-6">
-                        <mat-expansion-panel>
-                          <mat-expansion-panel-header>
-
-                            <mat-panel-title>
-                              Cuentas internacionales
-                            </mat-panel-title>
-
-                          </mat-expansion-panel-header>
-                            <p class="text-start">
-                              <strong>Beneficiary</strong>     Bee Insurance Managemen LLC <br>
-                              <strong>Bank </strong>           Well Fargo <br>
-                              <strong>Address</strong>         1110 Brickell Ave Suite 406 Miami Fl 33131-3135 <br>
-                              <strong>Account</strong>         3814894881 <br>
-                              <strong>Routing Number</strong>  063107513 <br>
-                              <strong>Swift </strong>          WFBIUS6SXXX <br>
-                              <strong>Zelle </strong>          paymentslamundial@gmail.com
-                            </p>
-                        </mat-expansion-panel>
-                    </mat-accordion>
-    
-                </div>
+                Registrar Pago
+              </button>
             </div>
 
-            <div class="mt-5">
-              <div class="text-center container">
-                <h1>Confirmación</h1>
-                <h3>
-                    Una vez hayas completado la transferencia, adjunta el comprobante de pago para que podamos procesar tu transacción de manera rápida y precisa. 
-                    Puedes adjuntar imágenes o archivos PDF del comprobante.  <br>   
-                    <strong>Para reportar tu pago debes transferir un TOTAL de  
-                      <h1 class="bold mt-4" style="font-size:2.1rem">{{mount}} $  -- {{mountBs}} Bs</h1></strong>   
-                      <br>
-                    <strong>En caso de no coincidir los montos su reporte pasara a supervición. </strong>             
-                </h3>
+          </div>
+          <div>
+            <button mat-button matStepperPrevious>Atras</button>
+            <button mat-button (click)="stepper.reset()">Reset</button>
+          </div>
+        </mat-step>
 
-                <div class="form-group mb-3 row" style="place-content: space-around;">
-                  <h3>Por favor ingreser el monto exacto de su deposito junto a su Screenshot </h3>
-                  <div class="col-lg-3">
-                    <input  type="text"  class="form-control rounded-input" placeholder="Ingresar monto depositado" formControlName="mpago_dec">
-                  </div>
+      </mat-stepper>
 
-                  <div class="col-lg-3">
+        <div class="text-center p-3">
+          <h2>
+              Una vez hayamos recibido tu información y verificado el pago, te enviaremos una confirmación por correo electrónico.
 
-                    <div class="form-outline" >
-                      <select formControlName="cmoneda" class="form-control rounded-input form-control-lg colorgris">
-                        <option *ngFor="let coin of coinList" value="{{ coin.id }}">{{ coin.id }}</option>
-                      </select>                     
-                    </div>
-
-                 
-                  </div>
-                  <div class="col-lg-4">
-                    <input type="file"  class="form-control rounded-input" name="ximagen" formControlName="ximagen" (change)="onFileSelect($event)" #Ximagen>
-                  </div>
-
-                </div>
-
-                <div  class="text-center col-lg-12">
-                  <button class="btn btn-primary mt-5" (click)="onSubmit()">
-
-                    Registrar Pago
-                  </button>
-                </div>
-
-            </div>
-            </div>
-
-
-            <div class="text-center p-3">
-                <h2>
-                    Una vez hayamos recibido tu información y verificado el pago, te enviaremos una confirmación por correo electrónico.
-
-                    Agradecemos tu colaboración. Si tienes alguna pregunta o necesitas asistencia adicional, no dudes en ponerte en contacto con nuestro equipo de soporte.
-                    
-                    ¡Gracias por tu confianza!
-                    
-                    Atentamente,                   
-                </h2>
-               <h2>La Mundial de Seguros</h2> 
-            </div>
-        </form>
+              Agradecemos tu colaboración. Si tienes alguna pregunta o necesitas asistencia adicional, no dudes en ponerte en contacto con nuestro equipo de soporte.
+              
+              ¡Gracias por tu confianza!
+              
+              Atentamente,                   
+            </h2>
+          <h2>La Mundial de Seguros</h2> 
+        </div>
 
         <ng-template #Alerta >
           <mat-dialog-content  >

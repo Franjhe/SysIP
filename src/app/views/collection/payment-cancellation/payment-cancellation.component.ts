@@ -3,6 +3,9 @@ import {FormBuilder, Validators, FormGroup, FormControl , FormArray} from '@angu
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-payment-cancellation',
@@ -11,9 +14,23 @@ import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 })
 export class PaymentCancellationComponent {
 
+  displayedColumns: string[] = ['casegurado', 'cmoneda', 'freporte', 'ptasamon', 'mpago_dec'];
+  dataSource!: MatTableDataSource<any>;
+
+  @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
+  @ViewChild(MatSort) sort: MatSort | undefined;
+
+  @ViewChild('Alerta') InfoReceipt!: TemplateRef<any>;
+  @ViewChild('Pending') Pending!: TemplateRef<any>;
+  
+  apiUrl = environment.apiUrl 
+
   bcv : any
   viewData : boolean = false
   cliente : any
+
+  listReceipt : any = []
+  listPending : any = []
 
   searchReceipt = this._formBuilder.group({
     xcedula: [{ value: '', disabled: false }],
@@ -27,8 +44,18 @@ export class PaymentCancellationComponent {
     ) {
    }
 
-   get receipt() : FormArray {
+  get receipt() : FormArray {
     return this.searchReceipt.get("receipt") as FormArray
+  }
+
+  ngAfterViewInit() {
+    this.listPending.paginator = this.paginator;
+    this.listPending.sort = this.sort;
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
   ngOnInit(){
@@ -39,6 +66,20 @@ export class PaymentCancellationComponent {
       this.bcv = data.monitors.usd.price
     })
 
+    fetch(environment.apiUrl + '/api/v1/collection/search-notification' )
+    .then((response) => response.json())
+    .then(data => {
+      this.listReceipt = data.searchPaymentReport.recibo
+      this.listReceipt.paginator = this.paginator;
+      
+    })
+
+    fetch(environment.apiUrl + '/api/v1/collection/search-pending' )
+    .then((response) => response.json())
+    .then(data => {
+      this.listPending = data.searchPaymentPendingData.recibo
+      
+    })
 
   }
 
@@ -86,6 +127,18 @@ export class PaymentCancellationComponent {
 
     });
 
+
+  }
+
+  Alert(config?: MatDialogConfig) {
+
+    return this.dialog.open(this.InfoReceipt, config);
+
+  }
+
+  PendindAlert(config?: MatDialogConfig) {
+
+    return this.dialog.open(this.Pending, config);
 
   }
 

@@ -3,6 +3,7 @@ import {FormBuilder, Validators, FormGroup, FormControl , FormArray} from '@angu
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-payment-report',
@@ -13,6 +14,7 @@ export class PaymentReportComponent {
 
   @ViewChild('Alerta') Alerta!: TemplateRef<any>;
   @ViewChild('NotFound') NotFound!: TemplateRef<any>;
+
 
   bcv : any
   targetBankList : any = []
@@ -26,11 +28,12 @@ export class PaymentReportComponent {
 
   coinList : any = []
   receiptList : any = []
+  tradesList : any = []
 
   searchReceipt = this._formBuilder.group({
     receipt :  this._formBuilder.array([]),
     ximagen : [{}],
-    xcedula: [''],
+    xcedula: ['', Validators.required],
     cmoneda : [''],
     mpago_dec : [''],
     ccategoria: [''],
@@ -41,6 +44,7 @@ export class PaymentReportComponent {
   constructor( private _formBuilder: FormBuilder,
     private http: HttpClient,
     readonly dialog: MatDialog,
+    private toast: MatSnackBar,
     ) {
    }
    
@@ -55,6 +59,36 @@ export class PaymentReportComponent {
     .then(data => {
       this.bcv = data.monitors.usd.price
     })
+
+    fetch(environment.apiUrl + '/api/v1/valrep/trade')
+    .then((response) => response.json())
+    .then(responde => {
+
+      this.tradesList = []
+      for(let i = 0; i < responde.data.trades.length; i++){
+        this.tradesList.push({
+          id: responde.data.trades[i].cramo,
+          value: responde.data.trades[i].xdescripcion_l,
+        })
+      }
+
+    })
+
+    fetch(environment.apiUrl + '/api/v1/valrep/coin')
+    .then((response) => response.json())
+    .then(coin => {
+
+      this.coinList = []
+      for(let i = 0; i < coin.data.coins.length; i++){
+        this.coinList.push({
+          id: coin.data.coins[i].cmoneda,
+          value: coin.data.coins[i].xdescripcion_l,
+        })
+      }
+
+    })
+
+
 
 
   }
@@ -87,14 +121,21 @@ export class PaymentReportComponent {
           const fhastaPol = new Date(response.searchReceipt.receipt[i].fhasta_pol);
           let ISOFhastaPol = fhastaPol.toISOString().substring(0, 10);
 
+          let id = response.searchReceipt.receipt[i].cramo
+          let treatments = this.tradesList
+          let filterdata = treatments.filter((data: { id: any; }) => data.id == id)
+          const xramo = filterdata[0].value
+
           this.receipt.push(
             this._formBuilder.group({
               cnpoliza: response.searchReceipt.receipt[i].cnpoliza,
               cnrecibo: response.searchReceipt.receipt[i].cnrecibo,
+              crecibo: response.searchReceipt.receipt[i].crecibo,
               cpoliza: response.searchReceipt.receipt[i].cpoliza,
               fanopol: response.searchReceipt.receipt[i].fanopol,
               fmespol: response.searchReceipt.receipt[i].fmespol,
               cramo: response.searchReceipt.receipt[i].cramo,
+              xramo : xramo ,
               cmoneda: response.searchReceipt.receipt[i].cmoneda,
               fdesde_pol: ISOFdesdePol,
               fhasta_pol: ISOFhastaPol,
@@ -121,15 +162,7 @@ export class PaymentReportComponent {
 
     });
 
-    this.http.post(environment.apiUrl + '/api/v1/valrep/coin', client ).subscribe((coin: any) => {
 
-      for(let i = 0; i < coin.data.coins.length; i++){
-        this.coinList.push({
-          id: coin.data.coins[i].cmoneda,
-          value: coin.data.coins[i].xdescripcion_l,
-        })
-      }
-    });
 
   }
 
@@ -172,11 +205,14 @@ export class PaymentReportComponent {
 
     const creds = this.searchReceipt.get("receipt") as FormArray
 
+    this.receiptList = []
+
     for(let i = 0; i < creds.length; i++){
       if(creds.value[i].seleccionado == true){
         this.receiptList.push({
           cnpoliza: creds.value[i].cnpoliza,
           cnrecibo: creds.value[i].cnrecibo,
+          crecibo: creds.value[i].crecibo,
           cpoliza: creds.value[i].cpoliza,
           fanopol: creds.value[i].fanopol,
           fmespol: creds.value[i].fmespol,
@@ -223,12 +259,22 @@ export class PaymentReportComponent {
             freporte : fecha ,
             cprog : 'Reporte de pago web',
             cusuario : 13,
+            iestadorec : 'N',
             ccategoria : this.searchReceipt.get('ccategoria')?.value,
           }
 
           this.http.post(environment.apiUrl + '/api/v1/collection/create',savePaymentReport).subscribe((response: any) => {
       
             console.log(response)
+
+            this.toast.open(response.message, '', {
+              duration: 3000,
+              verticalPosition: 'top',
+              panelClass: ['success-toast']
+            });  
+
+            location.reload();
+
           })          
         }
 
