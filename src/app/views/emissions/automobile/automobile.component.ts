@@ -139,6 +139,8 @@ export class AutomobileComponent {
   ubii!: any;
   bcv!: any ;
   itipo!: any ;
+  tasaCascoInicial!: any ;
+  primaCascoInicial!: any ;
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -1073,6 +1075,7 @@ export class AutomobileComponent {
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/hull-price', data).subscribe((response: any) => {
       if(response.status){
         let SumaAsegurada = this.sumaAsegurada
+        this.tasaCascoInicial = response.data.ptasa_casco
         this.planFormGroup.get('pcasco')?.setValue(response.data.ptasa_casco);
         this.planFormGroup.get('pblindaje')?.setValue(response.data.ptasa_casco);
         this.planFormGroup.get('pmotin')?.setValue(response.data.ptasa_casco);
@@ -1175,7 +1178,8 @@ export class AutomobileComponent {
   
       // Redondear la prima a dos decimales
       const primaRedondeada = calculo.toFixed(2);
-      
+      this.primaCascoInicial = primaRedondeada;
+
       this.planFormGroup.get('mprima_casco')?.setValue(primaRedondeada);
       this.planFormGroup.get('mprima_bruta')?.setValue(primaRedondeada);
       this.planFormGroup.get('mprima_casco_text')?.setValue(primaRedondeada);
@@ -1227,6 +1231,8 @@ export class AutomobileComponent {
       this.planFormGroup.get('pcasco')?.setValue(discount.toString())
       }
     }else{
+      this.planFormGroup.get('pcasco')?.setValue(this.tasaCascoInicial);
+      this.planFormGroup.get('mprima_casco_text')?.setValue(this.primaCascoInicial)
       this.planFormGroup.get('mprima_casco')?.setValue(this.primaBruta);
     }
 
@@ -1245,25 +1251,33 @@ export class AutomobileComponent {
     let multiplicacion: number = 0;
     let calculo_recarga: number = 0;
   
-    if (typeof precargaValue === 'number' && typeof pcascoValue === 'number' && typeof casco === 'string') {
-      const calculatedAmount = (precargaValue / 100) * pcascoValue;
-      const sumRecharge = pcascoValue + calculatedAmount;
-
-      const cascoNumero = parseFloat(casco);
+    if(precargaValue){
+      if (typeof precargaValue === 'number' && typeof pcascoValue === 'number' && typeof casco === 'string') {
       
-      division = sumRecharge / 100;
-      multiplicacion = cascoNumero * division;
-      calculo_recarga = cascoNumero + multiplicacion;
-
-      let valorTotal = calculo_recarga.toFixed(2)
-
-      this.planFormGroup.get('mprima_casco')?.setValue(calculo_recarga.toString());
-      this.planFormGroup.get('mprima_casco_text')?.setValue(valorTotal);
-
-      const recharge = sumRecharge.toFixed(2)
-
-      this.planFormGroup.get('pcasco')?.setValue(recharge.toString())
+        console.log('hola')
+        const calculatedAmount = (precargaValue / 100) * pcascoValue;
+        const sumRecharge = pcascoValue + calculatedAmount;
+  
+        const cascoNumero = parseFloat(casco);
+        
+        division = sumRecharge / 100;
+        multiplicacion = cascoNumero * division;
+        calculo_recarga = cascoNumero + multiplicacion;
+  
+        let valorTotal = calculo_recarga.toFixed(2)
+  
+        this.planFormGroup.get('mprima_casco')?.setValue(calculo_recarga.toString());
+        this.planFormGroup.get('mprima_casco_text')?.setValue(valorTotal);
+  
+        const recharge = sumRecharge.toFixed(2)
+  
+        this.planFormGroup.get('pcasco')?.setValue(recharge.toString())
+      }
+    }else{
+      this.planFormGroup.get('pcasco')?.setValue(this.tasaCascoInicial);
+      this.planFormGroup.get('mprima_casco_text')?.setValue(this.primaCascoInicial)
     }
+
   }
 
   premiumRecalculation() {
