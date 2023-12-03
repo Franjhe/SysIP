@@ -14,11 +14,18 @@ import { MatPaginator } from '@angular/material/paginator';
 })
 export class PaymentCancellationComponent {
 
-  displayedColumns: string[] = ['casegurado', 'cmoneda', 'freporte', 'ptasamon', 'mpago_dec'];
-  dataSource!: MatTableDataSource<any>;
+  Receipt: string[] = ['casegurado', 'cmoneda', 'freporte', 'ptasamon', 'mpago_dec'];
+  PendingData: string[] = ['casegurado', 'cmoneda', 'freporte', 'ptasamon', 'mpago_dec'];
+  Collected: string[] = ['casegurado', 'cmoneda', 'freporte', 'ptasamon', 'mpago_dec'];
 
-  @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
-  @ViewChild(MatSort) sort: MatSort | undefined;
+  dataSourceReceipt!: MatTableDataSource<any>;
+  dataSourcePendingData!: MatTableDataSource<any>;
+  dataSourceCollected!: MatTableDataSource<any>;
+
+  // @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginatorReceipt!: MatPaginator;
+  @ViewChild(MatPaginator) paginatorPendingData!: MatPaginator;
+  @ViewChild(MatPaginator) paginatorCollected!: MatPaginator;
 
   @ViewChild('Alerta') InfoReceipt!: TemplateRef<any>;
   @ViewChild('Pending') Pending!: TemplateRef<any>;
@@ -31,6 +38,7 @@ export class PaymentCancellationComponent {
 
   listReceipt : any = []
   listPending : any = []
+  listCollected : any = []
 
   searchReceipt = this._formBuilder.group({
     xcedula: [{ value: '', disabled: false }],
@@ -48,14 +56,14 @@ export class PaymentCancellationComponent {
     return this.searchReceipt.get("receipt") as FormArray
   }
 
-  ngAfterViewInit() {
-    this.listPending.paginator = this.paginator;
-    this.listPending.sort = this.sort;
-  }
-
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.dataSourceReceipt.filter = filterValue.trim().toLowerCase();
+  }
+
+  applyFilterPending(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSourcePendingData.filter = filterValue.trim().toLowerCase();
   }
 
   ngOnInit(){
@@ -69,15 +77,24 @@ export class PaymentCancellationComponent {
     fetch(environment.apiUrl + '/api/v1/collection/search-notification' )
     .then((response) => response.json())
     .then(data => {
-      this.listReceipt = data.searchPaymentReport.recibo
-      this.listReceipt.paginator = this.paginator;
+      this.listReceipt = new MatTableDataSource(data.searchPaymentReport.recibo);
+      this.listReceipt.paginator = this.paginatorReceipt;
       
     })
 
     fetch(environment.apiUrl + '/api/v1/collection/search-pending' )
     .then((response) => response.json())
     .then(data => {
-      this.listPending = data.searchPaymentPendingData.recibo
+      this.listPending = new MatTableDataSource(data.searchPaymentPendingData.recibo);
+      this.listPending.paginator = this.paginatorPendingData;
+      
+    })
+
+    fetch(environment.apiUrl + '/api/v1/collection/search-payments-collected' )
+    .then((response) => response.json())
+    .then(data => {
+      this.listCollected = new MatTableDataSource(data.searchPaymentsCollected.recibo);
+      this.listPending.paginator = this.paginatorCollected;
       
     })
 
