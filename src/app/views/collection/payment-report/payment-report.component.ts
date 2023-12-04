@@ -148,8 +148,7 @@ export class PaymentReportComponent {
               mprimabrutaext: response.searchReceipt.receipt[i].mprimabrutaext,
               ptasamon: response.searchReceipt.receipt[i].ptasamon,
               seleccionado : false,
-              iestadorec : 'N'
-              
+
             })
           )
 
@@ -239,8 +238,6 @@ export class PaymentReportComponent {
           mprimabruta: creds.value[i].mprimabruta,
           mprimabrutaext: creds.value[i].mprimabrutaext,
           ptasamon: creds.value[i].ptasamon,
-          seleccionado : creds.value[i].seleccionado,
-          iestadorec : creds.value[i].iestadorec
 
         });
       }
@@ -274,6 +271,7 @@ export class PaymentReportComponent {
             cprog : 'Reporte de pago web',
             cusuario : 13,
             iestadorec : 'N',
+            ifuente : 'Web Sys2000',
             ccategoria : this.searchReceipt.get('ccategoria')?.value,
             xreferencia : this.detailPayment.get('xreferencia')?.value,
           }
