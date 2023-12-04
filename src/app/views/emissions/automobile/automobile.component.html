@@ -625,7 +625,7 @@
                       </mat-autocomplete>
                     </mat-form-field>
                 </div>
-                <!-- <div class="col-3" *ngIf="amountTotal">
+                <!-- <div class="col-3" *ngIf="amountTotalRcv">
                   <mat-form-field>
                     <mat-label>Modalidad de Pago</mat-label>
                     <mat-select formControlName="xpago" (selectionChange)="getPaymentSelection()">
@@ -636,10 +636,13 @@
                 </div> -->
               </div>
 
-              <div class="row">
-                <div class="col-3" *ngIf="amountTotal" style="margin-top: 34px;">
-                  <h4><strong>Monto Total:  </strong>{{montoTotal}}$</h4>
+              <div class="row justify-content-center">
+                <div class="col-3" *ngIf="amountTotalRcv" style="margin-top: 34px;">
+                  <h4><strong>Monto Total RCV:  </strong>{{montoTotal}}$</h4>
                   <h4><strong>Tasa del día:</strong> {{bcv}}</h4>
+                </div>
+                <div class="col-4" *ngIf="amountTotalCasco" style="margin-top: 34px;">
+                  <h4><strong>Monto Total Casco:  </strong>{{xprimaTotalCasco}}$</h4>
                 </div>
               </div>
 
