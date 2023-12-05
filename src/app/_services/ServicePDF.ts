@@ -1026,6 +1026,7 @@ export class PdfGenerationService {
 			let dataRow = [];
 			dataRow.push({text: row.xaccesorio, margin: [11, 0, 0, 0], alignment: 'left', bold: true, border: [false, false, false, false]});
 			dataRow.push({text: row.msuma_aseg.toFixed(2), margin: [11, 0, 0, 0], alignment: 'left', border: [false, false, false, false]});
+			dataRow.push({text: row.maccesoriocontratoflota.toFixed(2), margin: [11, 0, 0, 0], alignment: 'left', border: [false, false, false, false]});
 			body.push(dataRow);
 		  })
 		} else {
@@ -1071,8 +1072,13 @@ export class PdfGenerationService {
 			  } else {
 				dataRow.push({text: ` `, alignment: 'right', border: [false, false, false, false]});
 			  }
-			  if(row.m2){
-				dataRow.push({text: row.m2, fillColor: '#FFFFFF', alignment: 'right', border:[false, false, false, false]});
+			//   if(row.m2){
+			// 	dataRow.push({text: row.m2, fillColor: '#FFFFFF', alignment: 'right', border:[false, false, false, false]});
+			//   } else {
+			// 	dataRow.push({text: ` `, alignment: 'right', border: [false, false, false, false]});
+			//   }
+			if(row.mprima){
+				dataRow.push({text: `${new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(row.mprima)}`, alignment: 'center', border:[false, false, false, false]});
 			  } else {
 				dataRow.push({text: ` `, alignment: 'right', border: [false, false, false, false]});
 			  }
@@ -1368,7 +1374,7 @@ export class PdfGenerationService {
 			{
 				style: 'data',
 				table: {
-				  widths: [219, 200],
+				  widths: [219, 200, '*'],
 				  body: this.buildAccesoriesBody()
 				}
 			  },

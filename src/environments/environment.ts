@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-     apiUrl : " http://localhost:5253",
-     //apiUrl : "https://qaapisys2000.lamundialdeseguros.com",
+    //  apiUrl : " http://localhost:5253",
+     apiUrl : "https://qaapisys2000.lamundialdeseguros.com",
 
 };
 
