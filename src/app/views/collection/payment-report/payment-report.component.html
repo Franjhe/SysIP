@@ -144,8 +144,8 @@
           </div>
         </mat-step>
 
-        <mat-step [stepControl]="detailPayment" >
-          <form [formGroup]="detailPayment">
+        <mat-step [stepControl]="searchReceipt" >
+          <form [formGroup]="searchReceipt">
             <ng-template matStepLabel>Confirmacion</ng-template>
             <div class="text-center container">
               <h1>Confirmación</h1>
@@ -161,27 +161,55 @@
               <div class="form-group mb-3 row" style="place-content: space-around;">
                 <h3>Por favor ingreser el monto exacto de su deposito junto a su Screenshot </h3>
 
-                <div class="col-lg-2">
-                  <input  type="text"  class="form-control rounded-input" placeholder="Ingresar monto depositado" formControlName="mpago_dec" (change)="validateMount()">
-                </div>
+                <!-- array con datos de las transferencias  -->
+                <div *ngFor="let creds of transfer.controls let i=index">
+                  <div [formGroupName]="i" class="row justify-content-center">
 
-                <div class="col-lg-2">
+                    <div class="col-lg-4">
+                        <div class="form-outline" >
+                          <select formControlName="cmoneda" class="form-control rounded-input form-control-lg colorgris" (change)="validateCoin(i)">
+                            <option *ngFor="let coin of coinList" value="{{ coin.id }}">{{ coin.id }}</option>
+                          </select>                     
+                        </div>
 
-                  <div class="form-outline" >
-                    <select formControlName="cmoneda" class="form-control rounded-input form-control-lg colorgris">
-                      <option *ngFor="let coin of coinList" value="{{ coin.id }}">{{ coin.id }}</option>
-                    </select>                     
+                        <div class="form-outline mt-3" >
+                          <select formControlName="cbanco" class="form-control rounded-input form-control-lg colorgris">
+                            <option *ngFor="let backE of backEmitter" value="{{ backE.id }}">{{ backE.value }}</option>
+                          </select>                     
+                        </div>
+
+                        <div class="form-outline mt-3" *ngIf="!viewBank">
+                          <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris">
+                            <option *ngFor="let backR of backReceptors" value="{{ backR.id }}">{{ backR.value }}</option>
+                          </select>                     
+                        </div>
+
+                        <div class="form-outline mt-3" *ngIf="viewBank">
+                          <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris">
+                            <option *ngFor="let backR of bankList" value="{{ backR.id }}">{{ backR.value }}</option>
+                          </select>                     
+                        </div>
+
+                    </div>
+
+                    <div class="col-lg-4">
+
+                      <input  type="text"  class="form-control rounded-input " placeholder="Ingresar monto depositado" formControlName="mpago" (change)="validateMount(i)">
+
+                      <input  type="text"  class="form-control rounded-input mt-3" placeholder="Ingrese la referencia" formControlName="xreferencia">
+
+                      <input type="file"  class="form-control rounded-input mt-3" name="ximagen" formControlName="ximagen" (change)="onFileSelect($event ,i)" #Ximagen>
+
+                    </div>
+
+                    <div>
+                      <button mat-button  (click)="addPayment()">Anadir movimiento</button>
+
+                      <button mat-button  (click)="removePayment(i)">Eliminar movimiento</button>
+                    </div>
+  
                   </div>
 
-              
-                </div>
-
-                <div class="col-lg-3">
-                  <input  type="text"  class="form-control rounded-input" placeholder="Ingrese la referencia" formControlName="xreferencia">
-                </div>
-
-                <div class="col-lg-4">
-                  <input type="file"  class="form-control rounded-input" name="ximagen" formControlName="ximagen" (change)="onFileSelect($event)" #Ximagen>
                 </div>
 
               </div>

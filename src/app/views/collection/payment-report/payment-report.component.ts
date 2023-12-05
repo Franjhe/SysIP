@@ -22,30 +22,27 @@ export class PaymentReportComponent {
   currentFile?: File;
 
   viewData : boolean = false
+  viewBank : boolean = false
+
   cliente : any
   mount : any
   mountBs : any
 
+  bankList : any = []
+  backReceptors : any = []
+  backEmitter : any = []
   coinList : any = []
   receiptList : any = []
   tradesList : any = []
 
   searchReceipt = this._formBuilder.group({
     receipt :  this._formBuilder.array([]),
+    transfer : this._formBuilder.array([]),
     xcedula: ['', Validators.required],
     cmoneda : [''],
     mpago_dec : [''],
     ccategoria: [''],
   });
-
-  detailPayment = this._formBuilder.group({
-    cmoneda : ['', Validators.required],
-    mpago_dec : ['', Validators.required],
-    ximagen : [{}],
-    xreferencia : ['', Validators.required],
-    ccategoria: [''],
-  });
-  
 
   constructor( private _formBuilder: FormBuilder,
     private http: HttpClient,
@@ -58,7 +55,26 @@ export class PaymentReportComponent {
     return this.searchReceipt.get("receipt") as FormArray
   }
 
-   ngOnInit(){
+  get transfer() : FormArray {
+    return this.searchReceipt.get("transfer") as FormArray
+  }
+
+  newTransfer(): FormGroup {
+    return this._formBuilder.group({
+      cmoneda : '',
+      cbanco : '',
+      cbanco_destino : '',
+      mpago : '',
+      mpagoext : '',
+      ptasamon : '',
+      ptasaref : '',
+      freporte : '',
+      xreferencia : '',
+      ximagen :'',
+     })
+  }
+
+  ngOnInit(){
 
     fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
     .then((response) => response.json())
@@ -94,8 +110,69 @@ export class PaymentReportComponent {
 
     })
 
+
+    this.http.post(environment.apiUrl + '/api/v1/valrep/target-bank', '' ).subscribe((response: any) => {
+      for(let i = 0; i < response.data.targetBank.length; i++){
+        this.bankList.push({
+          id: response.data.targetBank[i].cbanco_destino,
+          value: response.data.targetBank[i].xbanco,
+        })        
+      }
+
+
+    })
+
+    let venezolano = {
+      itipo: 'v'
+    }
+
+    this.http.post(environment.apiUrl + '/api/v1/valrep/bank', venezolano).subscribe((response: any) => {
+      for(let i = 0; i < response.data.bank.length; i++){
+        this.backEmitter.push({
+          id: response.data.bank[i].cbanco,
+          value: response.data.bank[i].xbanco,
+        })        
+      }
+    })
+
+    let extranjero = {
+      itipo: 'e'
+    }
+
+    this.http.post(environment.apiUrl + '/api/v1/valrep/bank', extranjero).subscribe((response: any) => {
+      for(let i = 0; i < response.data.bank.length; i++){
+        this.backReceptors.push({
+          id: response.data.bank[i].cbanco,
+          value: response.data.bank[i].xbanco,
+        })        
+      }
+    })
+
   }
 
+  newPayment(): FormGroup {
+    return this._formBuilder.group({
+      cmoneda:'',
+      cbanco:'',
+      cbanco_destino: '',
+      mpago: '',
+      mpagoext: '',
+      ptasamon: '',
+      ptasaref: '',
+      freporte: '',
+      xreferencia: '',
+      xruta: '',
+    })
+  }
+  
+  addPayment() {
+    this.transfer.push(this.newPayment());
+  }
+
+  removePayment(i:number) {
+    this.transfer.removeAt(i);
+  }
+  
   searchDataReceipt(){
     const client = {
       cedula: this.searchReceipt.get('xcedula')?.value 
@@ -151,12 +228,13 @@ export class PaymentReportComponent {
 
             })
           )
-
         }
         for(let i = 0; i < response.searchReceipt.client.length; i++){
 
           this.cliente = response.searchReceipt.client[i].xcliente
-        }        
+        }     
+        this.addPayment()
+
       }else{
 
         this.Found()
@@ -196,8 +274,11 @@ export class PaymentReportComponent {
 
   }
 
-  validateMount(){
-    const mountDeclare = this.detailPayment.get('mpago_dec')?.value!
+  validateMount(i : number ){
+
+    const creds = this.searchReceipt.get("transfer") as FormArray
+
+    const mountDeclare = creds.at(i).get('mpago')?.value!
     if(mountDeclare < this.mount ){
       this.toast.open('El monto no puede ser menor al estimado de pago, valide su seleccion de recibos o ingrese el monto correcto', '', {
         duration: 3000,
@@ -207,10 +288,31 @@ export class PaymentReportComponent {
     }
 
   }
-  onFileSelect(event : any){
+
+  validateCoin(i : number ){
+
+    const creds = this.searchReceipt.get("transfer") as FormArray
+
+    const mountDeclare = creds.at(i).get('cmoneda')?.value!
+
+    console.log(mountDeclare)
+
+    if(mountDeclare == '$' || mountDeclare == 'EUR' ){
+        this.viewBank = false 
+    } else {
+      this.viewBank = true 
+    }
+
+  }
+
+
+  onFileSelect(event : any , i : number){
 
     const file = event.target.files[0]
-    this.detailPayment.get('ximagen')?.setValue(file);
+
+    const creds = this.searchReceipt.get("transfer") as FormArray
+
+    creds.at(i).get('ximagen')?.setValue(file);
 
   }
 
@@ -249,7 +351,7 @@ export class PaymentReportComponent {
   async onSubmit(){
 
     const formData = new FormData();
-    formData.append('file', this.detailPayment.get('ximagen')?.value!);
+    formData.append('file', this.searchReceipt.get('ximagen')?.value!);
 
     this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((response: any) => {
         const rutaimage  =  response.uploadedFile.filename
@@ -262,8 +364,8 @@ export class PaymentReportComponent {
             receipt : this.receiptList,
             xruta : rutaimage,
             casegurado: this.searchReceipt.get('xcedula')?.value,
-            cmoneda : this.detailPayment.get('cmoneda')?.value,
-            mpago_dec : this.detailPayment.get('mpago_dec')?.value,
+            cmoneda : this.searchReceipt.get('cmoneda')?.value,
+            mpago_dec : this.searchReceipt.get('mpago_dec')?.value,
             mpago : this.mountBs,
             mpagoext : this.mount,
             ptasamon : this.bcv,
@@ -273,7 +375,7 @@ export class PaymentReportComponent {
             iestadorec : 'N',
             ifuente : 'Web Sys2000',
             ccategoria : this.searchReceipt.get('ccategoria')?.value,
-            xreferencia : this.detailPayment.get('xreferencia')?.value,
+            xreferencia : this.searchReceipt.get('xreferencia')?.value,
           }
 
           this.http.post(environment.apiUrl + '/api/v1/collection/create',savePaymentReport).subscribe(async (response: any) => {
