@@ -147,6 +147,7 @@ export class AutomobileComponent {
   primaMotin!: any ;  
   primaRiesgo!: any ; 
   primaRobo!: any ; 
+  primaFinal!: any ; 
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -1652,6 +1653,7 @@ export class AutomobileComponent {
         if(this.montoTotal){
           this.operationUbii();
           this.amountTotalRcv = true;
+          this.calculationsPremiumsCascoTotal()
           if(this.vehicleFormGroup.get('xcobertura')?.value !== 'Rcv'){
             this.amountTotalCasco = true;
           }else{
@@ -1812,7 +1814,13 @@ export class AutomobileComponent {
                 this.xprimaTotalCasco += Number(this.primaRobo)
               }
 
-      this.xprimaTotalCasco.toFixed(2)
+      this.xprimaTotalCasco = Number(this.xprimaTotalCasco.toFixed(2));
+
+      console.log('Prima Casco: ', this.xprimaTotalCasco)
+      console.log('Monto rcv: ', this.montoTotal)
+      this.primaFinal = this.xprimaTotalCasco + this.montoTotal;
+      // Corregir redondeo aquí también
+      this.primaFinal = Number(this.primaFinal.toFixed(2));
     } else {
       this.xprimaTotalCasco = 0;
     }
