@@ -142,7 +142,11 @@ export class AutomobileComponent {
   itipo!: any ;
   tasaCascoInicial!: any ;
   primaCascoInicial!: any ;
-  xprimaTotalCasco!: any ; 
+  xprimaTotalCasco!: any ;
+  pmotin!: any ;  
+  primaMotin!: any ;  
+  primaRiesgo!: any ; 
+  primaRobo!: any ; 
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -228,6 +232,7 @@ export class AutomobileComponent {
     mprima_pagada: [''],
     mpagado: [''],
     xmoneda: [''],
+    mprima_accesorio: ['']
   });
 
   constructor( private _formBuilder: FormBuilder,
@@ -1168,13 +1173,32 @@ export class AutomobileComponent {
   calculationPremiums(){
     const msumaAseg = this.planFormGroup.get('msuma_aseg')?.value;
     const pcasco = this.planFormGroup.get('pcasco')?.value;
-    const pcatastrofico = this.planFormGroup.get('pcatastrofico')?.value;
-    const pmotin = this.planFormGroup.get('pmotin')?.value;
+    const pcatastrofico = 0.10;
+    const msumaAsegRobo = 600;
+    const probo = 4.48;
+    let pmotin = 0
     
     let calculo: number = 0;
     let catastrofico: number = 0;
     let motin: number = 0;
-    
+    let robo: number = 0;
+
+    let data = {
+      xcobertura: this.vehicleFormGroup.get('xcobertura')?.value
+    }
+    this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/riot-rate', data).subscribe((response: any) => {
+      if(response.status){
+        this.pmotin = response.data.pmotin;
+        if (typeof msumaAseg === 'number' && typeof pmotin === 'number') {
+          motin = (msumaAseg * this.pmotin) / 100;
+        
+          this.planFormGroup.get('mmotin')?.setValue(motin.toString());
+          this.primaMotin = motin.toFixed(2);
+          this.calculationsPremiumsCascoTotal()
+        }
+      }
+    });
+
     if (typeof msumaAseg === 'number' && typeof pcasco === 'number') {
       calculo = (msumaAseg * pcasco) / 100;
   
@@ -1194,13 +1218,17 @@ export class AutomobileComponent {
       catastrofico = (msumaAseg * pcatastrofico) / 100;
     
       this.planFormGroup.get('mcatastrofico')?.setValue(catastrofico.toString());
+      this.primaRiesgo = catastrofico.toFixed(2);
+      this.calculationsPremiumsCascoTotal()
+    }
+
+    if (typeof msumaAsegRobo === 'number' && typeof probo === 'number') {
+      robo = (msumaAsegRobo * probo) / 100;
+    
+      this.primaRobo = robo.toFixed(2);
+      this.calculationsPremiumsCascoTotal()
     }
     
-    if (typeof msumaAseg === 'number' && typeof pmotin === 'number') {
-      motin = (msumaAseg * pmotin) / 100;
-    
-      this.planFormGroup.get('mmotin')?.setValue(motin.toString());
-    }
     this.sumaAsegurada = msumaAseg;
   }
 
@@ -1287,7 +1315,11 @@ export class AutomobileComponent {
 
   premiumRecalculation() {
     const msumaAsegRaw = this.planFormGroup.get('msuma_aseg')!.value;
-    
+    const pcatastrofico = 0.10;
+    const msumaAsegRobo = 600;
+    const probo = 4.48;
+
+    let robo: number = 0;
     // Verifica si msumaAsegRaw no es null antes de convertirlo a un número
     if (msumaAsegRaw !== null) {
         let msumaAseg = parseFloat(msumaAsegRaw);
@@ -1322,8 +1354,6 @@ export class AutomobileComponent {
         }
 
         const pcasco = this.planFormGroup.get('pcasco')?.value;
-        const pcatastrofico = this.planFormGroup.get('pcatastrofico')?.value;
-        const pmotin = this.planFormGroup.get('pmotin')?.value;
 
         let calculo: number = 0;
         let catastrofico: number = 0;
@@ -1350,12 +1380,23 @@ export class AutomobileComponent {
             catastrofico = (msumaAseg * pcatastrofico) / 100;
 
             this.planFormGroup.get('mcatastrofico')?.setValue(catastrofico.toString());
+            this.primaRiesgo = catastrofico.toFixed(2);
+            this.calculationsPremiumsCascoTotal()
         }
 
-        if (!isNaN(msumaAseg) && typeof pmotin === 'number') {
-            motin = (msumaAseg * pmotin) / 100;
+        if (typeof msumaAseg === 'number' && typeof this.pmotin === 'number') {
+          motin = (msumaAseg * this.pmotin) / 100;
 
-            this.planFormGroup.get('mmotin')?.setValue(motin.toString());
+          this.planFormGroup.get('mmotin')?.setValue(motin.toString());
+          this.primaMotin = motin.toFixed(2);
+          this.calculationsPremiumsCascoTotal()
+        }
+
+        if (typeof msumaAsegRobo === 'number' && typeof probo === 'number') {
+          robo = (msumaAsegRobo * probo) / 100;
+        
+          this.primaRobo = robo.toFixed(2);
+          this.calculationsPremiumsCascoTotal()
         }
         this.sumaAsegurada = msumaAseg;
     }
@@ -1416,14 +1457,19 @@ export class AutomobileComponent {
   }
 
   calculateAccesories(i: any) {
-
-    const creds = this.planFormGroup.controls.accesorios as FormArray; 
-
-    const xprimaAccesorio = creds.at(i).get('ptasa')?.value  * ( creds.at(i).get('sumaAsegurada')?.value / 100 ) ;
-    creds.at(i).get('xprimaAccesorio')?.setValue(xprimaAccesorio)
-
+    const creds = this.planFormGroup.controls.accesorios as FormArray;
+  
+    const xprimaAccesorio = creds.at(i).get('ptasa')?.value * (creds.at(i).get('sumaAsegurada')?.value / 100);
+    creds.at(i).get('xprimaAccesorio')?.setValue(xprimaAccesorio);
+  
     this.calculationsPremiumsCascoTotal();
-
+  
+    let totalXprimaAccesorio = 0;
+    for (let j = 0; j < creds.length; j++) {
+      totalXprimaAccesorio += creds.at(j).get('xprimaAccesorio')?.value || 0;
+    }
+  
+    this.receiptFormGroup.get('mprima_accesorio')?.setValue(totalXprimaAccesorio.toString())
   }
 
   onToppingsChange(selectedToppings: any[]) {
@@ -1744,14 +1790,29 @@ export class AutomobileComponent {
         this.xprimaTotalCasco += Number(primaBlindajeControl.value);
       }
   
-      if (
-        this.accesorios.value[0].xprimaAccesorio !== 0 &&
-        this.accesorios.value[0].xprimaAccesorio !== ""
-      ) {
         for(let i = 0; i < this.accesorios.value.length; i++){
-          this.xprimaTotalCasco += Number(this.accesorios.value[i].xprimaAccesorio);
+          if (
+            this.accesorios.value[i].xprimaAccesorio !== 0 &&
+            this.accesorios.value[i].xprimaAccesorio !== ""
+          ) {
+            this.xprimaTotalCasco += Number(this.accesorios.value[i].xprimaAccesorio);
+          }
+
         }
-      }
+          
+          if(this.primaMotin !== 0 || this.primaMotin !== ""){
+            this.xprimaTotalCasco += Number(this.primaMotin)
+          }
+
+            if(this.primaRiesgo !== 0 || this.primaRiesgo !== ""){
+              this.xprimaTotalCasco += Number(this.primaRiesgo)
+            }
+
+              if(this.primaRobo !== 0 || this.primaRobo !== ""){
+                this.xprimaTotalCasco += Number(this.primaRobo)
+              }
+
+      this.xprimaTotalCasco.toFixed(2)
     } else {
       this.xprimaTotalCasco = 0;
     }
@@ -2029,6 +2090,7 @@ export class AutomobileComponent {
       xreferencia: this.receiptFormGroup.get('xreferencia')?.value,
       mpagado: this.receiptFormGroup.get('mpagado')?.value,
       mprima_pagada: this.receiptFormGroup.get('mprima_pagada')?.value,
+      mprima_accesorio: this.receiptFormGroup.get('mprima_accesorio')?.value
     }
 
     const nombre = this.personsFormGroup.get('xnombre')?.value + ' ' + this.personsFormGroup.get('xapellido')?.value;
