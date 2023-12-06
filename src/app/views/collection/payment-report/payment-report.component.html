@@ -153,8 +153,11 @@
                   Una vez hayas completado la transferencia, adjunta el comprobante de pago para que podamos procesar tu transacción de manera rápida y precisa. 
                   Puedes adjuntar imágenes o archivos PDF del comprobante.  <br>   
                   <strong>Para reportar tu pago debes transferir un TOTAL de  
-                    <h1 class="bold mt-4" style="font-size:2.5rem">{{mount}} $   --- {{mountBs}} Bs</h1></strong>   
-                    <br>
+                    <h1 class="bold mt-4" style="font-size:2.5rem">{{mountIGTF}} $   --- {{mountBs}} Bs</h1> 
+                    <h1 class="bold mt-4" >Tasa de calculo {{bcv}} Bs</h1>
+                    <h2 class="bold mt-4" >El total incluye IGTF</h2>
+                  </strong>  
+
                   <strong>En caso de no coincidir los montos su reporte pasara a supervición. </strong>             
               </h3>
 
@@ -206,10 +209,16 @@
   
                       </div>
   
-                      <div>
+                      <!-- <div class="mt-3">
                         <button mat-button  (click)="addPayment()">Anadir movimiento</button>
   
                         <button mat-button  (click)="removePayment(i)">Eliminar movimiento</button>
+                      </div> -->
+
+                      <div class="mt-5">
+                        <button mat-button matStepperPrevious>Atras</button>
+                        <button mat-button (click)="stepper.reset()">Reset</button>
+                        <button mat-button  (click)="onSubmit()">Registrar Pago</button>
                       </div>
     
                     </div>
@@ -221,11 +230,7 @@
               </div>
 
             </div>
-            <div class="mt-5">
-              <button mat-button matStepperPrevious>Atras</button>
-              <button mat-button (click)="stepper.reset()">Reset</button>
-              <button mat-button  (click)="onSubmit()">Registrar Pago</button>
-            </div>
+
           </form >
         </mat-step>
 

@@ -23,10 +23,16 @@ export class PaymentReportComponent {
 
   viewData : boolean = false
   viewBank : boolean = false
+  paymentMix : boolean = false
 
   cliente : any
-  mount : any
-  mountBs : any
+
+  mount : any //monto de la suma de los recibos 
+  mountIGTF : any //monto con el calculo igtf 
+  mountBs : any //monto en bolivares multiplicado por bcv 
+  mountP : any //monto del porcentaje del igtf 
+  mountBsP : any //monto en bolivares del porcentaje igtf 
+  mountBsExt : any //monto en bolivares del monto total en dolares con igtf
 
   bankList : any = []
   backReceptors : any = []
@@ -165,10 +171,27 @@ export class PaymentReportComponent {
   
   addPayment() {
     this.transfer.push(this.newPayment());
+
+    const trasnfer = this.searchReceipt.get("transfer") as FormArray
+
+    if(trasnfer.length > 0){
+      this.paymentMix = true
+    }else{
+      this.paymentMix = false
+    }
   }
 
   removePayment(i:number) {
     this.transfer.removeAt(i);
+
+    const trasnfer = this.searchReceipt.get("transfer") as FormArray
+
+    if(trasnfer.length > 0){
+      this.paymentMix = true
+    }else{
+      this.paymentMix = false
+    }
+
   }
   
   searchDataReceipt(){
@@ -264,8 +287,21 @@ export class PaymentReportComponent {
     }, 0);
 
     this.mount = sumaTotal 
+
+    const mountIGTF = this.mount + ((3/100)*this.mount) 
+    this.mountIGTF = mountIGTF.toFixed(2)
+
     const operation = this.mount * this.bcv
     this.mountBs = operation.toFixed(2)
+
+    const porcentaje = (3/100)*this.mount
+    this.mountP = porcentaje.toFixed(2)
+
+    const porcentajeBs = this.bcv * ((3/100)*this.mount) 
+    this.mountBsP = porcentajeBs.toFixed(2)
+
+    const mountBs = this.mount*this.bcv
+    this.mountBsExt = mountBs.toFixed(2)
 
   }
 
@@ -284,18 +320,54 @@ export class PaymentReportComponent {
   validateMount(i : number ){
 
     const creds = this.searchReceipt.get("transfer") as FormArray
+    const mountDeclare = creds.at(i).get('mpago')?.value
 
-    const mountDeclare = creds.at(i).get('mpago')?.value!
-    if(mountDeclare < this.mount ){
-      this.toast.open('El monto no puede ser menor al estimado de pago, valide su seleccion de recibos o ingrese el monto correcto', '', {
-        duration: 3000,
-        verticalPosition: 'top',
-        panelClass: ['error-toast']
-      }); 
-      
-      creds.at(i).get('mpago')?.setValue('')
+    if(this.paymentMix){
 
+
+    }else{
+      if(creds.at(i).get('cmoneda')?.value == "$   "){
+
+        if(mountDeclare < this.mount ){
+          this.toast.open('El monto no puede ser menor al estimado de pago, valide su seleccion de recibos o ingrese el monto correcto', '', {
+            duration: 3000,
+            verticalPosition: 'top',
+            panelClass: ['error-toast']
+          }); 
+          
+          creds.at(i).get('mpago')?.setValue('')
+  
+        }
+  
+      }
+      if(creds.at(i).get('cmoneda')?.value == ""){
+  
+        creds.at(i).get('mpago')?.setValue('')
+  
+        this.toast.open('Debe seleccionar una moneda antes de proceder a registrar su monto', '', {
+          duration: 3000,
+          verticalPosition: 'top',
+          panelClass: ['error-toast']
+        }); 
+      }
+      if(creds.at(i).get('cmoneda')?.value == "BS  "){
+  
+        if(mountDeclare < this.mountBs ){
+          this.toast.open('El monto no puede ser menor al estimado de pago, valide su seleccion de recibos o ingrese el monto correcto', '', {
+            duration: 3000,
+            verticalPosition: 'top',
+            panelClass: ['error-toast']
+          }); 
+          
+          creds.at(i).get('mpago')?.setValue('')
+    
+        }
+  
+      }
     }
+
+
+
 
   }
 
@@ -309,6 +381,10 @@ export class PaymentReportComponent {
         this.viewBank = false 
     } else {
       this.viewBank = true 
+    }
+
+    if(creds.at(i).get('mpago')?.value){
+      creds.at(i).get('mpago')?.setValue('')
     }
 
   }
@@ -358,81 +434,104 @@ export class PaymentReportComponent {
 
   async onSubmit(){
 
-      this.llenarlistas()
+    this.llenarlistas()
 
-      const fecha = new Date()
-      const savePaymentTrans = {
-        receipt : this.receiptList,
-        casegurado: this.searchReceipt.get('xcedula')?.value,
-        mpago : this.mountBs,
-        mpagoext : this.mount,
-        ptasamon : this.bcv,
-        freporte : fecha ,
-        cprog : 'Reporte de pago web',
-        cusuario : 13,
-        iestadorec : 'N',
-        ifuente : 'Web Sys2000',
-        ccategoria : this.searchReceipt.get('ccategoria')?.value,
-      }
+    const transfer = this.searchReceipt.get("transfer") as FormArray
 
-      //primero llenamos el recipo y la tabla de transacciones 
-      this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe(async (response: any) => {
+    const fecha = new Date()
+    const savePaymentTrans = {
+      receipt : this.receiptList,
+      casegurado: this.searchReceipt.get('xcedula')?.value,
+      mpago : this.mountBs,
+      mpagoext : this.mountIGTF,
+      ptasamon : this.bcv,
+      freporte : fecha ,
+      cprog : 'Reporte de pago web',
+      cusuario : 13,
+      iestadorec : 'N',
+      ifuente : 'Web_Sys',
+      ccategoria : this.searchReceipt.get('ccategoria')?.value,
+    }
+    //primero llenamos el recipo y la tabla de transacciones 
+    this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe(async (response: any) => {
 
-        const transfer = this.searchReceipt.get("transfer") as FormArray
+      const transaccion = response.ctransaccion.result
 
-        //obtenemos el codigo de transaccion 
-        if(response.data.ctransaccion){
+      //obtenemos el codigo de transaccion 
+      if(transaccion){
 
-          for(let i = 0; i < transfer.length; i++){
+        for(let i = 0; i < transfer.length; i++){
 
-            const formData = new FormData();
-            formData.append('file', transfer.at(i).get('ximagen')?.value!);
-        
-            //cargamos las imagenes con el codigo de transaccion
-            this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((response: any) => {
-                const rutaimage  =  response.uploadedFile.filename //ruta de imagen por registro 
+          const formData = new FormData();
+          formData.append('file', transfer.at(i).get('ximagen')?.value!);
+      
+          //cargamos las imagenes con el codigo de transaccion
+          this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((response: any) => {
+              const rutaimage  =  response.uploadedFile.filename //ruta de imagen por registro 
 
+              if(transfer.at(i).get('cmoneda')?.value == "$   " ){
                 this.transferList.push({
                   cmoneda: transfer.value[i].cmoneda,
                   cbanco: transfer.value[i].cbanco,
                   cbanco_destino: transfer.value[i].cbanco_destino,
-                  mpago: transfer.value[i].mpago,
-                  mpagoext: transfer.value[i].mpagoext,
-                  ptasamon: transfer.value[i].ptasamon,
-                  ptasaref: transfer.value[i].ptasaref,        
-                  freporte: transfer.value[i].freporte,
+                  mpago: this.mountBsExt,
+                  mpagoext: this.mountIGTF,
+                  mpagoigtf: this.mountBsP,
+                  mpagoigtfext: this.mountP ,
+                  ptasamon: this.bcv,
+                  ptasaref: 0,        
                   xreferencia: transfer.value[i].xreferencia,
                   ximagen: rutaimage,
                 });
+              }
+              if(transfer.at(i).get('cmoneda')?.value == "BS  "){
+                this.transferList.push({
+                  cmoneda: transfer.value[i].cmoneda,
+                  cbanco: transfer.value[i].cbanco,
+                  cbanco_destino: transfer.value[i].cbanco_destino,
+                  mpago: this.mountBsExt,
+                  mpagoext: this.mount,
+                  mpagoigtf: 0,
+                  mpagoigtfext: 0 ,
+                  ptasamon: 0,
+                  ptasaref: this.bcv,        
+                  xreferencia: transfer.value[i].xreferencia,
+                  ximagen: rutaimage,
+                });
+              }
 
-                const reporData = {
-                  report : this.transferList,
-                  ctransaccion : response.data.ctransaccion
-                }
+              const reporData = {
+                report : this.transferList,
+                ctransaccion : transaccion,
+                casegurado: this.searchReceipt.get('xcedula')?.value,
 
-                if(response.status){
-                  this.http.post(environment.apiUrl + '/api/v1/collection/create-report', reporData).subscribe((response: any) => {
+              }
+              if(response.status){
+                this.http.post(environment.apiUrl + '/api/v1/collection/create-report', reporData).subscribe((response: any) => {
 
-                  })
+                  this.toast.open(response.message, '', {
+                    duration: 5000,
+                    verticalPosition: 'top',
+                    panelClass: ['success-toast']
+                  });  
+                  location.reload()
 
-                }
-            
-              })
+                })
 
-          }
+              }
+          
+            })
 
-          this.toast.open(response.message, '', {
-            duration: 5000,
-            verticalPosition: 'top',
-            panelClass: ['success-toast']
-          });  
-  
-          await this.toast 
         }
-  
 
 
-      })          
+
+        await this.toast 
+      }
+
+
+
+    })          
         
 
   }
