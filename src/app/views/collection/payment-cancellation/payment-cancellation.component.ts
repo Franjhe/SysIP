@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatSort } from '@angular/material/sort';
+import { MatSort , MatSortModule } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
@@ -14,18 +14,17 @@ import { MatPaginator } from '@angular/material/paginator';
 })
 export class PaymentCancellationComponent {
 
-  Receipt: string[] = ['casegurado', 'cmoneda', 'freporte', 'ptasamon', 'mpago_dec'];
-  PendingData: string[] = ['casegurado', 'cmoneda', 'freporte', 'ptasamon', 'mpago_dec'];
-  Collected: string[] = ['casegurado', 'cmoneda', 'freporte', 'ptasamon', 'mpago_dec'];
+  dataSource1 = new MatTableDataSource<any>;
+  dataSource2 = new MatTableDataSource<any>;
 
-  dataSourceReceipt!: MatTableDataSource<any>;
-  dataSourcePendingData!: MatTableDataSource<any>;
-  dataSourceCollected!: MatTableDataSource<any>;
+  @ViewChild('table1Paginator') paginator1!: MatPaginator;
+  @ViewChild('table1Sort') sort1!: MatSort;
 
-  // @ViewChild(MatSort) sort!: MatSort;
-  @ViewChild(MatPaginator) paginatorReceipt!: MatPaginator;
-  @ViewChild(MatPaginator) paginatorPendingData!: MatPaginator;
-  @ViewChild(MatPaginator) paginatorCollected!: MatPaginator;
+  @ViewChild('table2Paginator') paginator2!: MatPaginator;
+  @ViewChild('table2Sort') sort2!: MatSort;
+
+  displayedColumns1: string[] = ['cedula', 'asegurado', 'fecha', 'tasa', 'mount' , 'mountBs'];
+  displayedColumns2: string[] = ['recibo', 'poliza','ramo','asegurado', 'mount' , 'mountBs'];
 
   @ViewChild('Alerta') InfoReceipt!: TemplateRef<any>;
   @ViewChild('Pending') Pending!: TemplateRef<any>;
@@ -36,9 +35,8 @@ export class PaymentCancellationComponent {
   viewData : boolean = false
   cliente : any
 
-  listReceipt : any = []
-  listPending : any = []
   listCollected : any = []
+  listReceipt: any = []
 
   searchReceipt = this._formBuilder.group({
     xcedula: [{ value: '', disabled: false }],
@@ -56,16 +54,6 @@ export class PaymentCancellationComponent {
     return this.searchReceipt.get("receipt") as FormArray
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSourceReceipt.filter = filterValue.trim().toLowerCase();
-  }
-
-  applyFilterPending(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSourcePendingData.filter = filterValue.trim().toLowerCase();
-  }
-
   ngOnInit(){
 
     fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
@@ -77,27 +65,50 @@ export class PaymentCancellationComponent {
     fetch(environment.apiUrl + '/api/v1/collection/search-notification' )
     .then((response) => response.json())
     .then(data => {
-      this.listReceipt = new MatTableDataSource(data.searchPaymentReport.recibo);
-      this.listReceipt.paginator = this.paginatorReceipt;
-      
+      this.dataSource1 = new MatTableDataSource(data.searchPaymentReport.recibo);
     })
 
     fetch(environment.apiUrl + '/api/v1/collection/search-pending' )
     .then((response) => response.json())
     .then(data => {
-      this.listPending = new MatTableDataSource(data.searchPaymentPendingData.recibo);
-      this.listPending.paginator = this.paginatorPendingData;
-      
+      this.dataSource2 = new MatTableDataSource(data.searchPaymentPendingData.recibo);
+
     })
 
     fetch(environment.apiUrl + '/api/v1/collection/search-payments-collected' )
     .then((response) => response.json())
     .then(data => {
       this.listCollected = new MatTableDataSource(data.searchPaymentsCollected.recibo);
-      this.listPending.paginator = this.paginatorCollected;
       
     })
 
+
+  }
+
+  async ngAfterViewInit(){
+    this.dataSource1.paginator = this.paginator1;
+    this.dataSource1.sort = this.sort1;
+
+    this.ngAfterViewInitP();
+  }
+
+  async ngAfterViewInitP(){
+    this.dataSource2.paginator = this.paginator2;
+    this.dataSource2.sort = this.sort2;
+  }
+
+  ngAfterViewInitC(){
+
+  }
+
+  applyFilter1(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource1.filter = filterValue.trim().toLowerCase();
+  }
+
+  applyFilter2(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource2.filter = filterValue.trim().toLowerCase();
   }
 
   searchDataReceipt(){
@@ -153,10 +164,21 @@ export class PaymentCancellationComponent {
 
   }
 
-  PendindAlert(config?: MatDialogConfig) {
+  async dataNotificayion(transaccion : any){
+    console.log(transaccion);
 
+    fetch(environment.apiUrl + '/api/v1/collection/search-notification-data/' + transaccion)
+    .then((response) => response.json())
+    .then(data => {
+      console.log(data)
+    })
+
+
+    this.PendindAlert()
+  }
+
+  async PendindAlert(config?: MatDialogConfig) {
     return this.dialog.open(this.Pending, config);
-
   }
 
 }
