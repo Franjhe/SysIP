@@ -6,6 +6,7 @@ import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort , MatSortModule } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-payment-cancellation',
@@ -29,7 +30,7 @@ export class PaymentCancellationComponent {
   @ViewChild('Alerta') InfoReceipt!: TemplateRef<any>;
   @ViewChild('Pending') Pending!: TemplateRef<any>;
   
-  apiUrl = environment.apiUrl 
+  apiUrl = environment.apiUrl + '/public/documents/'
 
   bcv : any
   viewData : boolean = false
@@ -38,11 +39,15 @@ export class PaymentCancellationComponent {
   listCollected : any = []
   listReceipt: any = []
 
+  dataReport: any = []
+  dataSoport: any = []
+
   searchReceipt = this._formBuilder.group({
     xcedula: [{ value: '', disabled: false }],
     receipt :  this._formBuilder.array([]),
 
   });
+  sanitizer: any;
 
   constructor( private _formBuilder: FormBuilder,
     private http: HttpClient,
@@ -53,6 +58,12 @@ export class PaymentCancellationComponent {
   get receipt() : FormArray {
     return this.searchReceipt.get("receipt") as FormArray
   }
+
+
+  sanitizeImageUrl(imageUrl: string): SafeUrl {
+    return this.sanitizer.bypassSecurityTrustUrl( imageUrl);
+}
+
 
   ngOnInit(){
 
@@ -165,12 +176,41 @@ export class PaymentCancellationComponent {
   }
 
   async dataNotificayion(transaccion : any){
-    console.log(transaccion);
 
     fetch(environment.apiUrl + '/api/v1/collection/search-notification-data/' + transaccion)
     .then((response) => response.json())
     .then(data => {
-      console.log(data)
+       this.dataReport = []
+       this.dataSoport = []
+
+      for(let i = 0; i < data.searchPaymentReport.recibo.length; i++){
+        this.dataReport.push({
+          cpoliza : data.searchPaymentReport.recibo[i].cpoliza,
+          crecibo : data.searchPaymentReport.recibo[i].crecibo,
+          casegurado : data.searchPaymentReport.recibo[i].casegurado,
+          cramo : data.searchPaymentReport.recibo[i].cramo,
+          mprimabrutaext : data.searchPaymentReport.recibo[i].mprimabrutaext,
+          mprimabruta : data.searchPaymentReport.recibo[i].mprimabruta
+        })
+
+      }
+
+      for(let i = 0; i < data.searchPaymentReport.soporte.length; i++){
+        this.dataSoport.push({
+          cbanco:data.searchPaymentReport.soporte[i].cbanco,
+          cbanco_destino:data.searchPaymentReport.soporte[i].cbanco_destino,
+          cmoneda:data.searchPaymentReport.soporte[i].cmoneda,
+          mpago:data.searchPaymentReport.soporte[i].mpago,
+          mpagoext:data.searchPaymentReport.soporte[i].mpagoext,
+          mpagoigtf:data.searchPaymentReport.soporte[i].mpagoigtf,
+          mpagoigtfext:data.searchPaymentReport.soporte[i].mpagoigtfext,
+          ptasamon:data.searchPaymentReport.soporte[i].ptasamon,
+          ptasaref:data.searchPaymentReport.soporte[i].ptasaref,
+          xreferencia:data.searchPaymentReport.soporte[i].xreferencia,
+          ximagen: this.apiUrl + data.searchPaymentReport.soporte[i].xruta,
+        })
+      }
+
     })
 
 
