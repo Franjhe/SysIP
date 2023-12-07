@@ -144,8 +144,8 @@
           </div>
         </mat-step>
 
-        <mat-step [stepControl]="detailPayment" >
-          <form [formGroup]="detailPayment">
+        <mat-step [stepControl]="searchReceipt" >
+          <form [formGroup]="searchReceipt">
             <ng-template matStepLabel>Confirmacion</ng-template>
             <div class="text-center container">
               <h1>Confirmación</h1>
@@ -153,45 +153,84 @@
                   Una vez hayas completado la transferencia, adjunta el comprobante de pago para que podamos procesar tu transacción de manera rápida y precisa. 
                   Puedes adjuntar imágenes o archivos PDF del comprobante.  <br>   
                   <strong>Para reportar tu pago debes transferir un TOTAL de  
-                    <h1 class="bold mt-4" style="font-size:2.5rem">{{mount}} $   --- {{mountBs}} Bs</h1></strong>   
-                    <br>
+                    <h1 class="bold mt-4" style="font-size:2.5rem">{{mountIGTF}} $   --- {{mountBs}} Bs</h1> 
+                    <h1 class="bold mt-4" >Tasa de calculo {{bcv}} Bs</h1>
+                    <h2 class="bold mt-4" >El total incluye IGTF</h2>
+                  </strong>  
+
                   <strong>En caso de no coincidir los montos su reporte pasara a supervición. </strong>             
               </h3>
 
               <div class="form-group mb-3 row" style="place-content: space-around;">
                 <h3>Por favor ingreser el monto exacto de su deposito junto a su Screenshot </h3>
 
-                <div class="col-lg-2">
-                  <input  type="text"  class="form-control rounded-input" placeholder="Ingresar monto depositado" formControlName="mpago_dec" (change)="validateMount()">
-                </div>
+                <!-- array con datos de las transferencias  -->
+                <div formArrayName="transfer" >
+                  <div *ngFor="let creds of transfer.controls let i=index">
+                    <div [formGroupName]="i" class="row justify-content-center">
+  
+                      <div class="col-lg-4">
+                          <div class="form-outline" >
+                            <select formControlName="cmoneda" class="form-control rounded-input form-control-lg colorgris" (change)="validateCoin(i)">
+                              <option *ngFor="let coin of coinList" value="{{ coin.id }}">{{ coin.id }}</option>
+                            </select>                     
+                          </div>
+  
+                          <div class="form-outline mt-3" >
+                            <select formControlName="cbanco" class="form-control rounded-input form-control-lg colorgris">
+                              <option disabled>Seleccione el banco remitente</option>
+                              <option *ngFor="let backE of backEmitter" value="{{ backE.id }}">{{ backE.value }}</option>
+                            </select>                     
+                          </div>
+  
+                          <div class="form-outline mt-3" *ngIf="!viewBank">
+                            <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris">
+                              <option disabled>Seleccione el banco receptor</option>
+                              <option *ngFor="let backR of backReceptors" value="{{ backR.id }}">{{ backR.value }}</option>
+                            </select>                     
+                          </div>
+  
+                          <div class="form-outline mt-3" *ngIf="viewBank">
+                            <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris">
+                              <option disabled>Seleccione el banco receptor</option>
+                              <option *ngFor="let backR of bankList" value="{{ backR.id }}">{{ backR.value }}</option>
+                            </select>                     
+                          </div>
+  
+                      </div>
+  
+                      <div class="col-lg-4">
+  
+                        <input  type="text"  class="form-control rounded-input " placeholder="Ingresar monto depositado" formControlName="mpago" (change)="validateMount(i)">
+  
+                        <input  type="text"  class="form-control rounded-input mt-3" placeholder="Ingrese la referencia" formControlName="xreferencia">
+  
+                        <input type="file"  class="form-control rounded-input mt-3" name="ximagen" formControlName="ximagen" (change)="onFileSelect($event ,i)" #Ximagen>
+  
+                      </div>
+  
+                      <!-- <div class="mt-3">
+                        <button mat-button  (click)="addPayment()">Anadir movimiento</button>
+  
+                        <button mat-button  (click)="removePayment(i)">Eliminar movimiento</button>
+                      </div> -->
 
-                <div class="col-lg-2">
-
-                  <div class="form-outline" >
-                    <select formControlName="cmoneda" class="form-control rounded-input form-control-lg colorgris">
-                      <option *ngFor="let coin of coinList" value="{{ coin.id }}">{{ coin.id }}</option>
-                    </select>                     
+                      <div class="mt-5">
+                        <button mat-button matStepperPrevious>Atras</button>
+                        <button mat-button (click)="stepper.reset()">Reset</button>
+                        <button mat-button  (click)="onSubmit()">Registrar Pago</button>
+                      </div>
+    
+                    </div>
+  
                   </div>
-
-              
                 </div>
 
-                <div class="col-lg-3">
-                  <input  type="text"  class="form-control rounded-input" placeholder="Ingrese la referencia" formControlName="xreferencia">
-                </div>
-
-                <div class="col-lg-4">
-                  <input type="file"  class="form-control rounded-input" name="ximagen" formControlName="ximagen" (change)="onFileSelect($event)" #Ximagen>
-                </div>
 
               </div>
 
             </div>
-            <div class="mt-5">
-              <button mat-button matStepperPrevious>Atras</button>
-              <button mat-button (click)="stepper.reset()">Reset</button>
-              <button mat-button  (click)="onSubmit()">Registrar Pago</button>
-            </div>
+
           </form >
         </mat-step>
 
