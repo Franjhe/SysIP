@@ -953,6 +953,7 @@ export class PdfGenerationService {
 			this.annexList = response.data.coverageAnnexes;
 			this.receiptList = response.data.receipt;
 			this.accesoriesList = response.data.accesories;
+			this.createConditionArys();
 			// await window.alert(`Se ha generado exitósamente la póliza n° ${this.xpoliza} del cliente ${this.xnombrecliente} para el vehículo de placa ${this.xplaca}`);
 			try {this.createPDF()}
 			catch(err) {console.log()};
@@ -1963,6 +1964,19 @@ export class PdfGenerationService {
 
 	  }
 		catch(err){console.log()}
+	  }
+
+	  createConditionArys() {
+		const filename = 'ArysClub.pdf';
+	  
+		const url = `${environment.apiUrl}/api/get-document/${filename}`;
+		
+		this.http.get(url, { responseType: 'blob' }).subscribe(async (response: any) => {
+		  const blob = new Blob([response], { type: 'application/pdf' });
+		  const objectUrl = window.URL.createObjectURL(blob);
+		  
+		  window.open(objectUrl, '_blank');
+		});
 	  }
 
 
