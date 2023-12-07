@@ -9,44 +9,50 @@
           <mat-tab label="Recibos notificados"> 
             <mat-form-field>
               <mat-label>Cedula</mat-label>
-              <input matInput (keyup)="applyFilter($event)" placeholder="Numero de cedula del asegurado" #input>
+              <input matInput (keyup)="applyFilter1($event)" placeholder="Numero de cedula del asegurado" #input>
             </mat-form-field>
             
             <div class="mat-elevation-z8">
-              <table mat-table [dataSource]="listReceipt" matSort>
+              <table mat-table [dataSource]="dataSource1" #table1Sort matSort >
             
                 <!-- ID Column -->
-                <ng-container matColumnDef="casegurado">
+                <ng-container matColumnDef="cedula">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header> Cedula de Identidad </th>
-                  <td mat-cell *matCellDef="let row" (click)="PendindAlert()"> {{row.casegurado}} </td>
+                  <td mat-cell *matCellDef="let row" (click)="dataNotificayion(row.ctransaccion)"> {{row.casegurado}} </td>
                 </ng-container>
             
                 <!-- Progress Column -->
-                <ng-container matColumnDef="cmoneda">
+                <ng-container matColumnDef="asegurado">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header> Moneda de Cobro </th>
-                  <td mat-cell *matCellDef="let row" (click)="PendindAlert()"> {{row.cmoneda}} </td>
+                  <td mat-cell *matCellDef="let row" (click)="dataNotificayion(row.ctransaccion)"> {{row.casegurado}} </td>
                 </ng-container>
             
                 <!-- Name Column -->
-                <ng-container matColumnDef="freporte">
+                <ng-container matColumnDef="fecha">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha de notificacion de pago </th>
-                  <td mat-cell *matCellDef="let row" (click)="PendindAlert()"> {{row.freporte}} </td>
+                  <td mat-cell *matCellDef="let row" (click)="dataNotificayion(row.ctransaccion)"> {{row.freporte}} </td>
                 </ng-container>
             
                 <!-- Fruit Column -->
-                <ng-container matColumnDef="ptasamon">
+                <ng-container matColumnDef="tasa">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header> Tasa BCV </th>
-                  <td mat-cell *matCellDef="let row" (click)="PendindAlert()"> {{row.ptasamon}} </td>
+                  <td mat-cell *matCellDef="let row" (click)="dataNotificayion(row.ctransaccion)"> {{row.ptasamon}} </td>
                 </ng-container>
 
                 <!-- Fruit Column -->
-                <ng-container matColumnDef="mpago_dec">
+                <ng-container matColumnDef="mount">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header> Pago declarado </th>
-                  <td mat-cell *matCellDef="let row" (click)="PendindAlert()"> {{row.mpago_dec}} </td>
+                  <td mat-cell *matCellDef="let row" (click)="dataNotificayion(row.ctransaccion)"> {{row.mpago}} </td>
+                </ng-container>
+
+                <!-- Fruit Column -->
+                <ng-container matColumnDef="mountBs">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Pago declarado </th>
+                  <td mat-cell *matCellDef="let row" (click)="dataNotificayion(row.ctransaccion)"> {{row.mpagoext}} </td>
                 </ng-container>
             
-                <tr mat-header-row *matHeaderRowDef="Receipt"></tr>
-                <tr mat-row *matRowDef="let row; columns: Receipt;"></tr>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns1"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns1;"></tr>
             
                 <!-- Row shown when there is no matching data. -->
                 <tr class="mat-row" *matNoDataRow>
@@ -54,52 +60,57 @@
                 </tr>
               </table>
             
-              <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+              <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users" #table1Paginator></mat-paginator>
             </div>
           </mat-tab>
 
-          <!-- recibos pendientes -->
-          <mat-tab label="Recibos pendientes"> 
+          <mat-tab label="Recibos Pendientes"> 
             <mat-form-field>
-              <mat-label>Ingrese un valor</mat-label>
-              <input matInput (keyup)="applyFilterPending($event)" placeholder="Numero de cedula del asegurado" #input>
+              <mat-label>Cedula</mat-label>
+              <input matInput (keyup)="applyFilter2($event)" placeholder="Numero de cedula del asegurado" #input>
             </mat-form-field>
             
             <div class="mat-elevation-z8">
-              <table mat-table [dataSource]="listPending" matSort>
+              <table mat-table [dataSource]="dataSource2" #table2Sort matSort >
             
                 <!-- ID Column -->
-                <ng-container matColumnDef="casegurado">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Poliza</th>
-                  <td mat-cell *matCellDef="let row" (click)="PendindAlert()"> {{row.cnpoliza}} </td>
+                <ng-container matColumnDef="recibo">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Recibo</th>
+                  <td mat-cell *matCellDef="let row" (click)="dataNotificayion(row.ctransaccion)"> {{row.crecibo}} </td>
                 </ng-container>
             
                 <!-- Progress Column -->
-                <ng-container matColumnDef="cmoneda">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Recibo </th>
-                  <td mat-cell *matCellDef="let row" (click)="PendindAlert()"> {{row.cnrecibo}} </td>
+                <ng-container matColumnDef="poliza">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Poliza </th>
+                  <td mat-cell *matCellDef="let row" (click)="dataNotificayion(row.ctransaccion)"> {{row.cnpoliza}} </td>
                 </ng-container>
             
                 <!-- Name Column -->
-                <ng-container matColumnDef="freporte">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Ramo</th>
-                  <td mat-cell *matCellDef="let row" (click)="PendindAlert()"> {{row.cramo}} </td>
+                <ng-container matColumnDef="ramo">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Ramo </th>
+                  <td mat-cell *matCellDef="let row" (click)="dataNotificayion(row.ctransaccion)"> {{row.cramo}} </td>
                 </ng-container>
             
                 <!-- Fruit Column -->
-                <ng-container matColumnDef="ptasamon">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Prima</th>
-                  <td mat-cell *matCellDef="let row" (click)="PendindAlert()"> {{row.mprimabrutaext}} {{row.cmoneda}} </td>
+                <ng-container matColumnDef="asegurado">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Asegurado </th>
+                  <td mat-cell *matCellDef="let row" (click)="dataNotificayion(row.ctransaccion)"> {{row.casegurado}} </td>
                 </ng-container>
 
                 <!-- Fruit Column -->
-                <ng-container matColumnDef="mpago_dec">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Vencimiento del recibo</th>
-                  <td mat-cell *matCellDef="let row" (click)="PendindAlert()"> {{row.fhasta}} </td>
+                <ng-container matColumnDef="mount">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Prima BS </th>
+                  <td mat-cell *matCellDef="let row" (click)="dataNotificayion(row.ctransaccion)"> {{row.mprimabruta}} </td>
+                </ng-container>
+
+                <!-- Fruit Column -->
+                <ng-container matColumnDef="mountBs">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Prima Dolares </th>
+                  <td mat-cell *matCellDef="let row" (click)="dataNotificayion(row.ctransaccion)"> {{row.mprimabrutaext}} </td>
                 </ng-container>
             
-                <tr mat-header-row *matHeaderRowDef="PendingData"></tr>
-                <tr mat-row *matRowDef="let row; columns: PendingData;"></tr>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
             
                 <!-- Row shown when there is no matching data. -->
                 <tr class="mat-row" *matNoDataRow>
@@ -107,62 +118,10 @@
                 </tr>
               </table>
             
-              <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
-            </div>          
+              <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="5"  aria-label="Select page of users" #table2Paginator></mat-paginator>
+            </div>
           </mat-tab>
 
-          <!-- recibos cobrados -->
-          <mat-tab label="Recibos cobrados"> 
-            <mat-form-field>
-              <mat-label>Ingrese un valor</mat-label>
-              <input matInput (keyup)="applyFilter($event)" placeholder="Ingrese el numero de cedula del asegurado" #input>
-            </mat-form-field>
-            
-            <div class="mat-elevation-z8">
-              <table mat-table [dataSource]="Collected" matSort>
-            
-                <!-- ID Column -->
-                <ng-container matColumnDef="casegurado">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Poliza</th>
-                  <td mat-cell *matCellDef="let row" (click)="PendindAlert()"> {{row.cnpoliza}} </td>
-                </ng-container>
-            
-                <!-- Progress Column -->
-                <ng-container matColumnDef="cmoneda">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Recibo </th>
-                  <td mat-cell *matCellDef="let row" (click)="PendindAlert()"> {{row.cnrecibo}} </td>
-                </ng-container>
-            
-                <!-- Name Column -->
-                <ng-container matColumnDef="freporte">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Ramo</th>
-                  <td mat-cell *matCellDef="let row" (click)="PendindAlert()"> {{row.cramo}} </td>
-                </ng-container>
-            
-                <!-- Fruit Column -->
-                <ng-container matColumnDef="ptasamon">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Prima</th>
-                  <td mat-cell *matCellDef="let row" (click)="PendindAlert()"> {{row.mprimabrutaext}} {{row.cmoneda}} </td>
-                </ng-container>
-
-                <!-- Fruit Column -->
-                <ng-container matColumnDef="mpago_dec">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Vencimiento del recibo</th>
-                  <td mat-cell *matCellDef="let row" (click)="PendindAlert()"> {{row.fhasta}} </td>
-                </ng-container>
-            
-                <tr mat-header-row *matHeaderRowDef="dataSourceCollected"></tr>
-                <tr mat-row *matRowDef="let row; columns: dataSourceCollected;"></tr>
-            
-                <!-- Row shown when there is no matching data. -->
-                <tr class="mat-row" *matNoDataRow>
-                  <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
-                </tr>
-              </table>
-            
-              <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
-            </div>          
-          </mat-tab>
         </mat-tab-group>
 
         <ng-template #Alerta >
@@ -195,28 +154,49 @@
 
         <ng-template #Pending >
           <mat-dialog-content  >
-            
-            <div class="card">
-              <div class="header">
-                <div class="image">
-                  <svg viewbox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
-                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                  <g id="SVGRepo_iconCarrier">
-                    <path d="M20 7L9.00004 18L3.99994 13" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="8.5"></path>
-                  </g></svg>
-                </div>
-                <mat-radio-group aria-label="Select an option">
-                  <mat-radio-button value="1">Pago Movil</mat-radio-button>
-                  <mat-radio-button value="2">transferencia</mat-radio-button>
-                  <mat-radio-button value="3">Deposito</mat-radio-button>
-                  <mat-radio-button value="4">Efectivo</mat-radio-button>
-                  <mat-radio-button value="5">Pasarela</mat-radio-button>
-                  <mat-radio-button value="6">ConsulPagos</mat-radio-button>
-                </mat-radio-group>
+
+            <div class="container-fluid row" >
+
+              <div  class="col-4" *ngFor="let data of dataReport let i=index">
+                <h2>Datos del recibo notificado</h2>
+                <p><strong>Poliza: </strong> {{data.cpoliza}}</p>
+                <p><strong>Recibo: </strong> {{data.crecibo}}</p>
+                <p><strong>Asegurado: </strong> {{data.casegurado}}</p>
+                <p><strong>Ramo: </strong> {{data.cramo}}</p>
+                <p><strong>Prima $: </strong> {{data.mprimabrutaext}}</p>
+                <p><strong>Prima Bs: </strong> {{data.mprimabruta}}</p>
               </div>
-            </div>
-    
+
+              <div *ngFor="let data of dataSoport let i=index" class="row">
+                <h2>Soporte de pago</h2>
+                <div class="col" >
+                  <p><strong>Banco remitente: </strong> {{data.cbanco}}</p>
+                  <p><strong>Banco destino: </strong> {{data.cbanco_destino}}</p>
+                  <p><strong>Moneda: </strong> {{data.cmoneda}}</p>
+                  <p><strong>Pago Bs: </strong> {{data.mpago}}</p>
+                  <p><strong>Pago $: </strong> {{data.mpagoext}}</p>
+                </div>
+                <div class="col" >
+                  <p><strong>IGTF Bs: </strong> {{data.mpagoigtf}}</p>
+                  <p><strong>IGTF: </strong> {{data.mpagoigtfext}}</p>
+                  <p><strong>Tasa: </strong> {{data.ptasamon}}</p>
+                  <p><strong>Tasa referencial: </strong> {{data.ptasaref}}</p>
+                  <p><strong>Referencia : </strong> {{data.xreferencia}}</p>
+                </div>
+                <img [src]="data.ximagen" alt="">
+            
+              </div>
+
+            </div> 
+
+
+            <mat-radio-group aria-label="Select an option">
+              <mat-radio-button value="PM">Pago Movil</mat-radio-button>
+              <mat-radio-button value="EF">Efectivo</mat-radio-button>
+              <mat-radio-button value="TR">Tranferencia</mat-radio-button>
+              <mat-radio-button value="PS">Pasarela</mat-radio-button>
+              <mat-radio-button value="DP">Deposito</mat-radio-button>
+            </mat-radio-group>
     
           </mat-dialog-content>
         </ng-template>

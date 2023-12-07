@@ -22,30 +22,31 @@ export class PaymentReportComponent {
   currentFile?: File;
 
   viewData : boolean = false
-  cliente : any
-  mount : any
-  mountBs : any
+  viewBank : boolean = false
+  paymentMix : boolean = false
 
+  cliente : any
+
+  mount : any //monto de la suma de los recibos 
+  mountIGTF : any //monto con el calculo igtf 
+  mountBs : any //monto en bolivares multiplicado por bcv 
+  mountP : any //monto del porcentaje del igtf 
+  mountBsP : any //monto en bolivares del porcentaje igtf 
+  mountBsExt : any //monto en bolivares del monto total en dolares con igtf
+
+  bankList : any = []
+  backReceptors : any = []
+  backEmitter : any = []
   coinList : any = []
   receiptList : any = []
+  transferList : any = []
   tradesList : any = []
 
   searchReceipt = this._formBuilder.group({
     receipt :  this._formBuilder.array([]),
+    transfer : this._formBuilder.array([]),
     xcedula: ['', Validators.required],
-    cmoneda : [''],
-    mpago_dec : [''],
-    ccategoria: [''],
   });
-
-  detailPayment = this._formBuilder.group({
-    cmoneda : ['', Validators.required],
-    mpago_dec : ['', Validators.required],
-    ximagen : [{}],
-    xreferencia : ['', Validators.required],
-    ccategoria: [''],
-  });
-  
 
   constructor( private _formBuilder: FormBuilder,
     private http: HttpClient,
@@ -58,7 +59,26 @@ export class PaymentReportComponent {
     return this.searchReceipt.get("receipt") as FormArray
   }
 
-   ngOnInit(){
+  get transfer() : FormArray {
+    return this.searchReceipt.get("transfer") as FormArray
+  }
+
+  newTransfer(): FormGroup {
+    return this._formBuilder.group({
+      cmoneda : '',
+      cbanco : '',
+      cbanco_destino : '',
+      mpago : '',
+      mpagoext : '',
+      ptasamon : '',
+      ptasaref : '',
+      freporte : '',
+      xreferencia : '',
+      ximagen :'',
+     })
+  }
+
+  ngOnInit(){
 
     fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
     .then((response) => response.json())
@@ -94,20 +114,105 @@ export class PaymentReportComponent {
 
     })
 
+
+    this.http.post(environment.apiUrl + '/api/v1/valrep/target-bank', '' ).subscribe((response: any) => {
+      for(let i = 0; i < response.data.targetBank.length; i++){
+        this.bankList.push({
+          id: response.data.targetBank[i].cbanco_destino,
+          value: response.data.targetBank[i].xbanco,
+        })        
+      }
+
+
+    })
+
+    let venezolano = {
+      itipo: 'v'
+    }
+
+    this.http.post(environment.apiUrl + '/api/v1/valrep/bank', venezolano).subscribe((response: any) => {
+      for(let i = 0; i < response.data.bank.length; i++){
+        this.backEmitter.push({
+          id: response.data.bank[i].cbanco,
+          value: response.data.bank[i].xbanco,
+        })        
+      }
+    })
+
+    let extranjero = {
+      itipo: 'e'
+    }
+
+    this.http.post(environment.apiUrl + '/api/v1/valrep/bank', extranjero).subscribe((response: any) => {
+      for(let i = 0; i < response.data.bank.length; i++){
+        this.backReceptors.push({
+          id: response.data.bank[i].cbanco,
+          value: response.data.bank[i].xbanco,
+        })        
+      }
+    })
+
   }
 
+  newPayment(): FormGroup {
+    return this._formBuilder.group({
+      cmoneda:'',
+      cbanco:'',
+      cbanco_destino: '',
+      mpago: '',
+      mpagoext: '',
+      ptasamon: '',
+      ptasaref: '',
+      freporte: '',
+      xreferencia: '',
+      ximagen: '',
+    })
+  }
+  
+  addPayment() {
+    this.transfer.push(this.newPayment());
+
+    const trasnfer = this.searchReceipt.get("transfer") as FormArray
+
+    if(trasnfer.length > 0){
+      this.paymentMix = true
+    }else{
+      this.paymentMix = false
+    }
+  }
+
+  removePayment(i:number) {
+    this.transfer.removeAt(i);
+
+    const trasnfer = this.searchReceipt.get("transfer") as FormArray
+
+    if(trasnfer.length > 0){
+      this.paymentMix = true
+    }else{
+      this.paymentMix = false
+    }
+
+  }
+  
   searchDataReceipt(){
     const client = {
       cedula: this.searchReceipt.get('xcedula')?.value 
     }
 
-    const creds = this.searchReceipt.get("receipt") as FormArray
+    const receipt = this.searchReceipt.get("receipt") as FormArray
 
-    while (creds.length !== 0) {
-      creds.removeAt(0)
+    while (receipt.length !== 0) {
+      receipt.removeAt(0)
+    }
+
+    const trasnfer = this.searchReceipt.controls.transfer as FormArray;
+
+    while (trasnfer.length !== 0) {
+      trasnfer.removeAt(0)
     }
 
     this.http.post(environment.apiUrl + '/api/v1/collection/search', client ).subscribe((response: any) => {
+
 
       if(response.searchReceipt.receipt.length > 0){
         for(let i = 0; i < response.searchReceipt.receipt.length; i++){
@@ -129,6 +234,7 @@ export class PaymentReportComponent {
           let filterdata = treatments.filter((data: { id: any; }) => data.id == id)
           const xramo = filterdata[0].value
 
+
           this.receipt.push(
             this._formBuilder.group({
               cnpoliza: response.searchReceipt.receipt[i].cnpoliza,
@@ -148,16 +254,17 @@ export class PaymentReportComponent {
               mprimabrutaext: response.searchReceipt.receipt[i].mprimabrutaext,
               ptasamon: response.searchReceipt.receipt[i].ptasamon,
               seleccionado : false,
-              iestadorec : 'N'
-              
+
             })
           )
-
         }
         for(let i = 0; i < response.searchReceipt.client.length; i++){
 
           this.cliente = response.searchReceipt.client[i].xcliente
-        }        
+        }     
+
+        this.addPayment()
+
       }else{
 
         this.Found()
@@ -180,8 +287,21 @@ export class PaymentReportComponent {
     }, 0);
 
     this.mount = sumaTotal 
+
+    const mountIGTF = this.mount + ((3/100)*this.mount) 
+    this.mountIGTF = mountIGTF.toFixed(2)
+
     const operation = this.mount * this.bcv
     this.mountBs = operation.toFixed(2)
+
+    const porcentaje = (3/100)*this.mount
+    this.mountP = porcentaje.toFixed(2)
+
+    const porcentajeBs = this.bcv * ((3/100)*this.mount) 
+    this.mountBsP = porcentajeBs.toFixed(2)
+
+    const mountBs = this.mount*this.bcv
+    this.mountBsExt = mountBs.toFixed(2)
 
   }
 
@@ -197,50 +317,113 @@ export class PaymentReportComponent {
 
   }
 
-  validateMount(){
-    const mountDeclare = this.detailPayment.get('mpago_dec')?.value!
-    if(mountDeclare < this.mount ){
-      this.toast.open('El monto no puede ser menor al estimado de pago, valide su seleccion de recibos o ingrese el monto correcto', '', {
-        duration: 3000,
-        verticalPosition: 'top',
-        panelClass: ['error-toast']
-      });  
+  validateMount(i : number ){
+
+    const creds = this.searchReceipt.get("transfer") as FormArray
+    const mountDeclare = creds.at(i).get('mpago')?.value
+
+    if(this.paymentMix){
+
+
+    }else{
+      if(creds.at(i).get('cmoneda')?.value == "$   "){
+
+        if(mountDeclare < this.mount ){
+          this.toast.open('El monto no puede ser menor al estimado de pago, valide su seleccion de recibos o ingrese el monto correcto', '', {
+            duration: 3000,
+            verticalPosition: 'top',
+            panelClass: ['error-toast']
+          }); 
+          
+          creds.at(i).get('mpago')?.setValue('')
+  
+        }
+  
+      }
+      if(creds.at(i).get('cmoneda')?.value == ""){
+  
+        creds.at(i).get('mpago')?.setValue('')
+  
+        this.toast.open('Debe seleccionar una moneda antes de proceder a registrar su monto', '', {
+          duration: 3000,
+          verticalPosition: 'top',
+          panelClass: ['error-toast']
+        }); 
+      }
+      if(creds.at(i).get('cmoneda')?.value == "BS  "){
+  
+        if(mountDeclare < this.mountBs ){
+          this.toast.open('El monto no puede ser menor al estimado de pago, valide su seleccion de recibos o ingrese el monto correcto', '', {
+            duration: 3000,
+            verticalPosition: 'top',
+            panelClass: ['error-toast']
+          }); 
+          
+          creds.at(i).get('mpago')?.setValue('')
+    
+        }
+  
+      }
+    }
+
+
+
+
+  }
+
+  validateCoin(i : number ){
+
+    const creds = this.searchReceipt.get("transfer") as FormArray
+
+    const mountDeclare = creds.at(i).get('cmoneda')?.value!
+
+    if(mountDeclare == '$' || mountDeclare == 'EUR' ){
+        this.viewBank = false 
+    } else {
+      this.viewBank = true 
+    }
+
+    if(creds.at(i).get('mpago')?.value){
+      creds.at(i).get('mpago')?.setValue('')
     }
 
   }
-  onFileSelect(event : any){
+
+
+  onFileSelect(event : any , i : number){
 
     const file = event.target.files[0]
-    this.detailPayment.get('ximagen')?.setValue(file);
+
+    const creds = this.searchReceipt.get("transfer") as FormArray
+
+    creds.at(i).get('ximagen')?.setValue(file);
 
   }
 
   async llenarlistas(){
 
-    const creds = this.searchReceipt.get("receipt") as FormArray
+    const receipt = this.searchReceipt.get("receipt") as FormArray
 
     this.receiptList = []
 
-    for(let i = 0; i < creds.length; i++){
-      if(creds.value[i].seleccionado == true){
+    for(let i = 0; i < receipt.length; i++){
+      if(receipt.value[i].seleccionado == true){
         this.receiptList.push({
-          cnpoliza: creds.value[i].cnpoliza,
-          cnrecibo: creds.value[i].cnrecibo,
-          crecibo: creds.value[i].crecibo,
-          cpoliza: creds.value[i].cpoliza,
-          fanopol: creds.value[i].fanopol,
-          fmespol: creds.value[i].fmespol,
-          cramo: creds.value[i].cramo,        
-          cmoneda: creds.value[i].cmoneda,
-          fdesde_pol: creds.value[i].fdesde_pol,
-          fhasta_pol: creds.value[i].fhasta_pol,
-          fdesde_rec: creds.value[i].fdesde_rec,
-          fhasta_rec: creds.value[i].fhasta_rec,
-          mprimabruta: creds.value[i].mprimabruta,
-          mprimabrutaext: creds.value[i].mprimabrutaext,
-          ptasamon: creds.value[i].ptasamon,
-          seleccionado : creds.value[i].seleccionado,
-          iestadorec : creds.value[i].iestadorec
+          cnpoliza: receipt.value[i].cnpoliza,
+          cnrecibo: receipt.value[i].cnrecibo,
+          crecibo: receipt.value[i].crecibo,
+          cpoliza: receipt.value[i].cpoliza,
+          fanopol: receipt.value[i].fanopol,
+          fmespol: receipt.value[i].fmespol,
+          cramo: receipt.value[i].cramo,        
+          cmoneda: receipt.value[i].cmoneda,
+          fdesde_pol: receipt.value[i].fdesde_pol,
+          fhasta_pol: receipt.value[i].fhasta_pol,
+          fdesde_rec: receipt.value[i].fdesde_rec,
+          fhasta_rec: receipt.value[i].fhasta_rec,
+          mprimabruta: receipt.value[i].mprimabruta,
+          mprimabrutaext: receipt.value[i].mprimabrutaext,
+          ptasamon: receipt.value[i].ptasamon,
 
         });
       }
@@ -251,50 +434,105 @@ export class PaymentReportComponent {
 
   async onSubmit(){
 
-    const formData = new FormData();
-    formData.append('file', this.detailPayment.get('ximagen')?.value!);
+    this.llenarlistas()
 
-    this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((response: any) => {
-        const rutaimage  =  response.uploadedFile.filename
-        if(response.status){
+    const transfer = this.searchReceipt.get("transfer") as FormArray
 
-           this.llenarlistas()
+    const fecha = new Date()
+    const savePaymentTrans = {
+      receipt : this.receiptList,
+      casegurado: this.searchReceipt.get('xcedula')?.value,
+      mpago : this.mountBs,
+      mpagoext : this.mountIGTF,
+      ptasamon : this.bcv,
+      freporte : fecha ,
+      cprog : 'Reporte de pago web',
+      cusuario : 13,
+      iestadorec : 'N',
+      ifuente : 'Web_Sys',
+      ccategoria : this.searchReceipt.get('ccategoria')?.value,
+    }
+    //primero llenamos el recipo y la tabla de transacciones 
+    this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe(async (response: any) => {
 
-          const fecha = new Date()
-          const savePaymentReport = {
-            receipt : this.receiptList,
-            xruta : rutaimage,
-            casegurado: this.searchReceipt.get('xcedula')?.value,
-            cmoneda : this.detailPayment.get('cmoneda')?.value,
-            mpago_dec : this.detailPayment.get('mpago_dec')?.value,
-            mpago : this.mountBs,
-            mpagoext : this.mount,
-            ptasamon : this.bcv,
-            freporte : fecha ,
-            cprog : 'Reporte de pago web',
-            cusuario : 13,
-            iestadorec : 'N',
-            ccategoria : this.searchReceipt.get('ccategoria')?.value,
-            xreferencia : this.detailPayment.get('xreferencia')?.value,
-          }
+      const transaccion = response.ctransaccion.result
 
-          this.http.post(environment.apiUrl + '/api/v1/collection/create',savePaymentReport).subscribe(async (response: any) => {
+      //obtenemos el codigo de transaccion 
+      if(transaccion){
+
+        for(let i = 0; i < transfer.length; i++){
+
+          const formData = new FormData();
+          formData.append('file', transfer.at(i).get('ximagen')?.value!);
       
-            this.toast.open(response.message, '', {
-              duration: 5000,
-              verticalPosition: 'top',
-              panelClass: ['success-toast']
-            });  
+          //cargamos las imagenes con el codigo de transaccion
+          this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((response: any) => {
+              const rutaimage  =  response.uploadedFile.filename //ruta de imagen por registro 
 
-            await this.toast 
-            location.reload();
+              if(transfer.at(i).get('cmoneda')?.value == "$   " ){
+                this.transferList.push({
+                  cmoneda: transfer.value[i].cmoneda,
+                  cbanco: transfer.value[i].cbanco,
+                  cbanco_destino: transfer.value[i].cbanco_destino,
+                  mpago: this.mountBsExt,
+                  mpagoext: this.mountIGTF,
+                  mpagoigtf: this.mountBsP,
+                  mpagoigtfext: this.mountP ,
+                  ptasamon: this.bcv,
+                  ptasaref: 0,        
+                  xreferencia: transfer.value[i].xreferencia,
+                  ximagen: rutaimage,
+                });
+              }
+              if(transfer.at(i).get('cmoneda')?.value == "BS  "){
+                this.transferList.push({
+                  cmoneda: transfer.value[i].cmoneda,
+                  cbanco: transfer.value[i].cbanco,
+                  cbanco_destino: transfer.value[i].cbanco_destino,
+                  mpago: this.mountBsExt,
+                  mpagoext: this.mount,
+                  mpagoigtf: 0,
+                  mpagoigtfext: 0 ,
+                  ptasamon: 0,
+                  ptasaref: this.bcv,        
+                  xreferencia: transfer.value[i].xreferencia,
+                  ximagen: rutaimage,
+                });
+              }
 
-          })          
+              const reporData = {
+                report : this.transferList,
+                ctransaccion : transaccion,
+                casegurado: this.searchReceipt.get('xcedula')?.value,
+
+              }
+              if(response.status){
+                this.http.post(environment.apiUrl + '/api/v1/collection/create-report', reporData).subscribe((response: any) => {
+
+                  this.toast.open(response.message, '', {
+                    duration: 5000,
+                    verticalPosition: 'top',
+                    panelClass: ['success-toast']
+                  });  
+                  location.reload()
+
+                })
+
+              }
+          
+            })
+
         }
 
 
 
-    });
+        await this.toast 
+      }
+
+
+
+    })          
+        
 
   }
 
