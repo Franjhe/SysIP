@@ -1968,16 +1968,16 @@ export class PdfGenerationService {
 
 	  createConditionArys() {
 		const filename = 'ArysClub.pdf';
-	  
-		const url = `${environment.apiUrl}/api/get-document/${filename}`;
-		
-		this.http.get(url, { responseType: 'blob' }).subscribe(async (response: any) => {
+		const url = `./assets/${filename}`;
+	
+		this.http.get(url, { responseType: 'blob' }).subscribe((response: any) => {
 		  const blob = new Blob([response], { type: 'application/pdf' });
 		  const objectUrl = window.URL.createObjectURL(blob);
-		  
+	
 		  window.open(objectUrl, '_blank');
 		});
 	  }
+	
 
 
 }
