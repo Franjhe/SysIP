@@ -730,8 +730,77 @@
         </mat-step>
       </mat-stepper>  
     </mat-tab>
-    <mat-tab label="Emisión Colectiva"> 
-      <h2>En Desarrollo...</h2>
+    <mat-tab label="Cargas Masivas"> 
+      <mat-stepper>
+        <mat-step label="Emisiones Colectivas" state="phone">
+          <div class="col-6">
+            <input type="file" name="xdocumento" class="form-control"  accept=" .csv" (change)="onFileSelect($event)" #Ximagen>
+          </div>
+
+          <table mat-table [dataSource]="groupList" matSort *ngIf="activateGroup" style="margin-top: 25px;">
+
+            <!-- Columna de ejemplo -->
+            <ng-container matColumnDef="xnombre">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre </th>
+              <td mat-cell *matCellDef="let element"> {{element.xnombre}} </td>
+            </ng-container>
+          
+            <ng-container matColumnDef="xapellido">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Apellido </th>
+              <td mat-cell *matCellDef="let element"> {{element.xapellido}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="xcedula">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Cédula </th>
+              <td mat-cell *matCellDef="let element"> {{element.xcedula}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="xmarca">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Marca </th>
+              <td mat-cell *matCellDef="let element"> {{element.xmarca}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="xmodelo">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Modelo </th>
+              <td mat-cell *matCellDef="let element"> {{element.xmodelo}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="xversion">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Versión </th>
+              <td mat-cell *matCellDef="let element"> {{element.xversion}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="xcobertura">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Cobertura </th>
+              <td mat-cell *matCellDef="let element"> {{element.xcobertura}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="fdesde">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha Desde </th>
+              <td mat-cell *matCellDef="let element"> {{element.fdesde}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="fhasta">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha Hasta </th>
+              <td mat-cell *matCellDef="let element"> {{element.fhasta}} </td>
+            </ng-container>
+          
+            <tr mat-header-row *matHeaderRowDef="displayedColumnsGroup"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumnsGroup;"></tr>
+          </table>
+
+          <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons style="margin-top: 25px;"></mat-paginator>
+
+          <div class="d-flex flex-row-reverse" *ngIf="activateGroup">
+            <div class="p-2">
+              <button mat-raised-button color="primary" (click)="onSubmitGroup()">Guardar</button>
+            </div>
+          </div>
+        </mat-step>
+        <mat-step label="Emisiones de Flotas" state="chat">
+          <p>Socialize with each other.</p>
+        </mat-step>
+      </mat-stepper>
     </mat-tab>
   </mat-tab-group>
 

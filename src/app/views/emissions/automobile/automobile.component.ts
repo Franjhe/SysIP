@@ -13,6 +13,9 @@ import { ChangeDetectorRef } from '@angular/core';
 import { format, addYears } from 'date-fns';
 import { initUbii } from '@ubiipagos/boton-ubii-dc';
 // import { initUbii } from '@ubiipagos/boton-ubii';
+import { Papa } from 'ngx-papaparse';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 
 export const MY_FORMATS = {
   parse: {
@@ -38,6 +41,9 @@ export const MY_FORMATS = {
 export class AutomobileComponent {
   @ViewChild('pickerHasta') pickerHasta!: MatDatepicker<Date>;
   @ViewChild('paymentModal') paymentModal: any;
+  @ViewChild(MatPaginator) paginatorGroup!: MatPaginator;
+  displayedColumnsGroup: string[] = ['xnombre', 'xapellido', 'xcedula', 'xmarca', 'xmodelo', 'xversion', 'xcobertura', 'fdesde', 'fhasta'];
+  dataSource = new MatTableDataSource<any>([]);
 
   identList = ['V', 'P', 'E', 'J', 'C','G'];
   stateList: any[] = [];
@@ -61,6 +67,8 @@ export class AutomobileComponent {
   typeOfPayList: any[] = [];
   bankList: any[] = [];
   targetBankList: any[] = [];
+  groupList: any[] = [];
+  parsedData: any[] = [];
 
   identControl = new FormControl('');
   stateControl = new FormControl('');
@@ -100,7 +108,7 @@ export class AutomobileComponent {
   filteredMethodOfPayment!: Observable<string[]>;
   filteredTakers!: Observable<string[]>;
 
-  isLinear = false;
+  isLinear = true;
   check = false;
   helmet: boolean = false;
   discount: boolean = false;
@@ -122,6 +130,7 @@ export class AutomobileComponent {
   amountDollar: boolean = false;
   amountBs: boolean = false;
   paymentButtons: boolean = true;
+  activateGroup: boolean = false;
   primaBruta!: any;
   descuento!: any;
   sumaAsegurada!: any;
@@ -2126,5 +2135,83 @@ export class AutomobileComponent {
         });
       }
     });
+  }
+
+  parseCSV(file: any) {
+
+    return new Promise <any[]>((resolve, reject) => {
+      let papa = new Papa();
+      papa.parse(file, {
+        header: true,
+        complete: function(results) {
+          return resolve(results.data);
+        }
+      });
+      
+    });
+  }
+
+  async onFileSelect(event: any){
+    
+    let fixedData: any[] = [];
+    let file = event.target.files[0];
+    this.groupList = [];
+    this.parsedData = [];
+    this.parsedData = await this.parseCSV(file);
+    for (let i = 0; i < (this.parsedData.length -1); i++){
+      fixedData.push({
+        xcedula: this.parsedData[i].XCEDULA,
+        xnombre: this.parsedData[i].XNOMBRE,
+        xapellido: this.parsedData[i].XAPELLIDO,
+        fnacimiento: this.parsedData[i].FNACIMIENTO,
+        cplan: this.parsedData[i].CPLAN,
+        ctarifa: this.parsedData[i].CTARIFA,
+        xserialcarroceria: this.parsedData[i].XSERIALCARROCERIA,
+        xserialmotor: this.parsedData[i].XSERIALMOTOR,
+        xplaca: this.parsedData[i].XPLACA,
+        xmarca: this.parsedData[i].XMARCA,
+        xmodelo: this.parsedData[i].XMODELO,
+        xversion: this.parsedData[i].XVERSION,
+        cano: this.parsedData[i].CANO,
+        xcolor: this.parsedData[i].XCOLOR,
+        xcobertura: this.parsedData[i].XCOBERTURA,
+        msuma_aseg: this.parsedData[i].MSUMA_ASEG,
+        pcasco: this.parsedData[i].PCASCO,
+        mprima_bruta: this.parsedData[i].MPRIMA_BRUTA,
+        mprima_casco: this.parsedData[i].MPRIMA_CASCO,
+        pcatastrofico: this.parsedData[i].PACATASTROFICO,
+        mcatastrofico: this.parsedData[i].MACATASTROFICO,
+        msuma_blindaje: this.parsedData[i].MSUMA_BLINDAJE,
+        pblindaje: this.parsedData[i].PBLINDAJE,
+        mprima_blindaje: this.parsedData[i].MPRIMA_BLINDAJE,
+        xdireccion: this.parsedData[i].XDIRECCION,
+        xtelefono: this.parsedData[i].XTELEFONO,
+        email: this.parsedData[i].EMAIL,
+        fdesde: this.parsedData[i].FDESDE,
+        fhasta: this.parsedData[i].FHASTA,
+        ncapacidad: this.parsedData[i].NCAPACIDAD,
+        ccorredor: this.parsedData[i].CCORREDOR,
+        ctomador: this.parsedData[i].CTOMADOR,
+        cclasificacion: this.parsedData[i].CCLASIFICACION,
+        isexo: this.parsedData[i].ISEXO,
+        iestado_civil: this.parsedData[i].IESTADO_CIVIL,
+        cestado: this.parsedData[i].CESTADO,
+        cciudad: this.parsedData[i].CCIUDAD
+      })
+    }
+    this.groupList = fixedData;
+    this.dataSource = new MatTableDataSource<any>(this.groupList);
+    this.dataSource.paginator = this.paginatorGroup;
+    this.activateGroup = true;
+  }
+
+  onSubmitGroup(){
+    let data = {
+      group: this.groupList
+    }
+
+    this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/group', data).subscribe((response: any) => {
+
+    })
   }
 }
