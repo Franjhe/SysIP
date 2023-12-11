@@ -7,6 +7,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSort , MatSortModule } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-payment-cancellation',
@@ -30,11 +31,12 @@ export class PaymentCancellationComponent {
   @ViewChild('Alerta') InfoReceipt!: TemplateRef<any>;
   @ViewChild('Pending') Pending!: TemplateRef<any>;
   
-  apiUrl = environment.apiUrl + '/public/documents/'
-
   bcv : any
   viewData : boolean = false
   cliente : any
+  clienteData : any
+
+  urlImg : any
 
   listCollected : any = []
   listReceipt: any = []
@@ -42,15 +44,23 @@ export class PaymentCancellationComponent {
   dataReport: any = []
   dataSoport: any = []
 
+  ntransaccion : any
+
   searchReceipt = this._formBuilder.group({
     xcedula: [{ value: '', disabled: false }],
     receipt :  this._formBuilder.array([]),
 
   });
-  sanitizer: any;
+
+  updateReceipt = this._formBuilder.group({
+    iestadorec: [{ value: '', disabled: false }],
+    itransaccion: [{ value: '', disabled: false }],
+  });
+
 
   constructor( private _formBuilder: FormBuilder,
     private http: HttpClient,
+    private sanitizer: DomSanitizer,
     readonly dialog: MatDialog,
     ) {
    }
@@ -176,7 +186,7 @@ export class PaymentCancellationComponent {
   }
 
   async dataNotificayion(transaccion : any){
-
+    this.ntransaccion = transaccion
     fetch(environment.apiUrl + '/api/v1/collection/search-notification-data/' + transaccion)
     .then((response) => response.json())
     .then(data => {
@@ -184,18 +194,37 @@ export class PaymentCancellationComponent {
        this.dataSoport = []
 
       for(let i = 0; i < data.searchPaymentReport.recibo.length; i++){
-        this.dataReport.push({
-          cpoliza : data.searchPaymentReport.recibo[i].cpoliza,
-          crecibo : data.searchPaymentReport.recibo[i].crecibo,
-          casegurado : data.searchPaymentReport.recibo[i].casegurado,
-          cramo : data.searchPaymentReport.recibo[i].cramo,
-          mprimabrutaext : data.searchPaymentReport.recibo[i].mprimabrutaext,
-          mprimabruta : data.searchPaymentReport.recibo[i].mprimabruta
-        })
+        const client = {
+          cedula: data.searchPaymentReport.recibo[i].casegurado
+        }
+
+        this.http.post(environment.apiUrl + '/api/v1/collection/search', client).subscribe((response: any) => {
+          this.clienteData = response.searchReceipt.client[0].xcliente
+
+          this.dataReport.push({
+            cpoliza : data.searchPaymentReport.recibo[i].cpoliza,
+            crecibo : data.searchPaymentReport.recibo[i].crecibo,
+            casegurado : response.searchReceipt.client[0].xcliente,
+            cramo : data.searchPaymentReport.recibo[i].cramo,
+            mprimabrutaext : data.searchPaymentReport.recibo[i].mprimabrutaext,
+            mprimabruta : data.searchPaymentReport.recibo[i].mprimabruta
+          })
+        });
+
 
       }
-
+ 
       for(let i = 0; i < data.searchPaymentReport.soporte.length; i++){
+
+        fetch(environment.apiUrl + '/api/get-document/' + data.searchPaymentReport.soporte[i].xruta)
+        .then((response) => response.blob())
+        .then(image => {
+          var url = URL.createObjectURL(image)
+          var img = new Image();
+          img.src = url;
+          this.urlImg = url
+         })
+
         this.dataSoport.push({
           cbanco:data.searchPaymentReport.soporte[i].cbanco,
           cbanco_destino:data.searchPaymentReport.soporte[i].cbanco_destino,
@@ -207,8 +236,10 @@ export class PaymentCancellationComponent {
           ptasamon:data.searchPaymentReport.soporte[i].ptasamon,
           ptasaref:data.searchPaymentReport.soporte[i].ptasaref,
           xreferencia:data.searchPaymentReport.soporte[i].xreferencia,
-          ximagen: this.apiUrl + data.searchPaymentReport.soporte[i].xruta,
+          ximagen: this.urlImg,
+
         })
+
       }
 
     })
@@ -219,6 +250,15 @@ export class PaymentCancellationComponent {
 
   async PendindAlert(config?: MatDialogConfig) {
     return this.dialog.open(this.Pending, config);
+  }
+
+  updateReceiptNotificated(){
+    const data = {
+      receipt : this.dataSoport,
+      transacccion : this.ntransaccion
+    }
+    this.http.post(environment.apiUrl + '/api/v1/collection/search', data ).subscribe((response: any) => {})
+
   }
 
 }
