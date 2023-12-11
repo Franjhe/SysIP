@@ -1040,6 +1040,8 @@ export class AutomobileComponent {
       this.helmet = false;
       this.activateInspection = false;
       this.paymentButtons = true;
+      this.planFormGroup.get('mmotin')?.setValue('');
+      this.planFormGroup.get('mcatastrofico')?.setValue('');
     }
     else if(this.vehicleFormGroup.get('xcobertura')?.value !== 'Rcv'){
       this.validateYearsFromHullPrice()
@@ -1093,10 +1095,12 @@ export class AutomobileComponent {
       if(response.status){
         let SumaAsegurada = this.sumaAsegurada
         this.tasaCascoInicial = response.data.ptasa_casco
-        this.planFormGroup.get('pcasco')?.setValue(response.data.ptasa_casco);
+        if(this.vehicleFormGroup.get('xcobertura')?.value == 'Cobertura Amplia'){
+          this.planFormGroup.get('pcasco')?.setValue(response.data.ptasa_casco);
+        }else{
+          this.planFormGroup.get('pcasco')?.setValue(response.data.pperdida_total);
+        }
         this.planFormGroup.get('pblindaje')?.setValue(response.data.ptasa_casco);
-        this.planFormGroup.get('pmotin')?.setValue(response.data.ptasa_casco);
-        this.planFormGroup.get('pcatastrofico')?.setValue(response.data.ptasa_casco);
         this.planFormGroup.get('msuma_aseg')?.setValue(this.sumaAsegurada);
         if(this.currentUser.data.crol == 5){
           this.planFormGroup.get('msuma_aseg')?.enable();
