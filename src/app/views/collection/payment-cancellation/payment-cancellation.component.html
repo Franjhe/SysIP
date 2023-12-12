@@ -141,8 +141,6 @@
                   <h2 class="title">Pago registrado</h2>
                   <h4>Valide todos los campos antes de registrar el anticipo</h4>
 
-                  <img style="height: 50vh;" src="{{apiUrl}}">
-
                   
                 </div>
               </div>
@@ -155,49 +153,70 @@
         <ng-template #Pending >
           <mat-dialog-content  >
 
-            <div class="container-fluid row" >
+            <form action="" [formGroup]="updateReceipt">
+              <div class="container-fluid row" >
 
-              <div  class="col-4" *ngFor="let data of dataReport let i=index">
-                <h2>Datos del recibo notificado</h2>
-                <p><strong>Poliza: </strong> {{data.cpoliza}}</p>
-                <p><strong>Recibo: </strong> {{data.crecibo}}</p>
-                <p><strong>Asegurado: </strong> {{data.casegurado}}</p>
-                <p><strong>Ramo: </strong> {{data.cramo}}</p>
-                <p><strong>Prima $: </strong> {{data.mprimabrutaext}}</p>
-                <p><strong>Prima Bs: </strong> {{data.mprimabruta}}</p>
-              </div>
-
-              <div *ngFor="let data of dataSoport let i=index" class="row">
-                <h2>Soporte de pago</h2>
-                <div class="col" >
-                  <p><strong>Banco remitente: </strong> {{data.cbanco}}</p>
-                  <p><strong>Banco destino: </strong> {{data.cbanco_destino}}</p>
-                  <p><strong>Moneda: </strong> {{data.cmoneda}}</p>
-                  <p><strong>Pago Bs: </strong> {{data.mpago}}</p>
-                  <p><strong>Pago $: </strong> {{data.mpagoext}}</p>
+                <div  class="col-4" *ngFor="let data of dataReport let i=index">
+                  <h2>Datos del recibo notificado</h2>
+                  <p><strong>Poliza: </strong> {{data.cpoliza}}</p>
+                  <p><strong>Recibo: </strong> {{data.crecibo}}</p>
+                  <p><strong>Asegurado: </strong> {{data.casegurado}}</p>
+                  <p><strong>Ramo: </strong> {{data.cramo}}</p>
+                  <p><strong>Prima $: </strong> {{data.mprimabrutaext}}</p>
+                  <p><strong>Prima Bs: </strong> {{data.mprimabruta}}</p>
                 </div>
-                <div class="col" >
-                  <p><strong>IGTF Bs: </strong> {{data.mpagoigtf}}</p>
-                  <p><strong>IGTF: </strong> {{data.mpagoigtfext}}</p>
-                  <p><strong>Tasa: </strong> {{data.ptasamon}}</p>
-                  <p><strong>Tasa referencial: </strong> {{data.ptasaref}}</p>
-                  <p><strong>Referencia : </strong> {{data.xreferencia}}</p>
+  
+                <div *ngFor="let data of dataSoport let i=index" class="row">
+                  <h2 class="text-center"><strong>Soporte de pago</strong></h2>
+                  <div class="col-4" >
+                    <p><strong>Banco remitente: </strong> {{data.cbanco}}</p>
+                    <p><strong>Banco destino: </strong> {{data.cbanco_destino}}</p>
+                    <p><strong>Moneda: </strong> {{data.cmoneda}}</p>
+                    <p><strong>Pago Bs: </strong> {{data.mpago}}</p>
+                    <p><strong>Pago $: </strong> {{data.mpagoext}}</p>
+                  </div>
+                  <div class="col-4" >
+                    <p><strong>IGTF Bs: </strong> {{data.mpagoigtf}}</p>
+                    <p><strong>IGTF: </strong> {{data.mpagoigtfext}}</p>
+                    <p><strong>Tasa: </strong> {{data.ptasamon}}</p>
+                    <p><strong>Tasa referencial: </strong> {{data.ptasaref}}</p>
+                    <p><strong>Referencia : </strong> {{data.xreferencia}}</p>
+                  </div>
+                  <div class="col-4">
+                    <img [src]="urlImg" alt="" class="img-fluid">
+                  </div>
+  
                 </div>
-                <img [src]="data.ximagen" alt="">
-            
+  
+              </div> 
+  
+              <div class="row">
+                <h2>Seleccione la forma en la que el pago fue registrado</h2>
+                <div class="col-4">
+                  <mat-radio-group aria-label="Select an option" formControlName="itransaccion">
+                    <mat-radio-button value="PM">Pago Movil</mat-radio-button>
+                    <mat-radio-button value="EF">Efectivo</mat-radio-button>
+                    <mat-radio-button value="TR">Tranferencia</mat-radio-button>
+                    <mat-radio-button value="PS">Pasarela</mat-radio-button>
+                    <mat-radio-button value="DP">Deposito</mat-radio-button>
+                  </mat-radio-group>
+                </div>
+  
+  
+                <div class="col-4">
+                  <mat-form-field>
+                    <mat-label>Estado de recibo</mat-label>
+                    <mat-select formControlName="iestadorec">
+                      <mat-option value="C">Cobrado</mat-option>
+                      <mat-option value="">Por definir... </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+  
+                <button mat-button></button>
               </div>
+            </form>
 
-            </div> 
-
-
-            <mat-radio-group aria-label="Select an option">
-              <mat-radio-button value="PM">Pago Movil</mat-radio-button>
-              <mat-radio-button value="EF">Efectivo</mat-radio-button>
-              <mat-radio-button value="TR">Tranferencia</mat-radio-button>
-              <mat-radio-button value="PS">Pasarela</mat-radio-button>
-              <mat-radio-button value="DP">Deposito</mat-radio-button>
-            </mat-radio-group>
-    
           </mat-dialog-content>
         </ng-template>
 
