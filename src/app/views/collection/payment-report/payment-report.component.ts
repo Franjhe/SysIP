@@ -286,22 +286,22 @@ export class PaymentReportComponent {
       return acumulador;
     }, 0);
 
-    this.mount = sumaTotal 
-
-    const mountIGTF = this.mount + ((3/100)*this.mount) 
-    this.mountIGTF = mountIGTF.toFixed(2)
+    this.mount = sumaTotal //suma de los dolares brutos
 
     const operation = this.mount * this.bcv
-    this.mountBs = operation.toFixed(2)
+    this.mountBs = operation.toFixed(2)  //dolares brutos convertidos en bolivares 
 
-    const porcentaje = (3/100)*this.mount
-    this.mountP = porcentaje.toFixed(2)
+    const mountIGTF = this.mount + ((3/100)*this.mount) 
+    this.mountIGTF = mountIGTF.toFixed(2) //dolares netos
+
+    const mountBs = this.mountIGTF*this.bcv
+    this.mountBsExt = mountBs.toFixed(2) //bolivares netos
 
     const porcentajeBs = this.bcv * ((3/100)*this.mount) 
-    this.mountBsP = porcentajeBs.toFixed(2)
+    this.mountBsP = porcentajeBs.toFixed(2) //porcentaje del igtf en bolivares 
 
-    const mountBs = this.mount*this.bcv
-    this.mountBsExt = mountBs.toFixed(2)
+    const porcentaje = (3/100)*this.mount
+    this.mountP = porcentaje.toFixed(2) //porcentaje del igtf en dolares  
 
   }
 
@@ -474,10 +474,12 @@ export class PaymentReportComponent {
                   cmoneda: transfer.value[i].cmoneda,
                   cbanco: transfer.value[i].cbanco,
                   cbanco_destino: transfer.value[i].cbanco_destino,
-                  mpago: this.mountBsExt,
-                  mpagoext: this.mountIGTF,
+                  mpago: this.mountBs,
+                  mpagoext: this.mount,
                   mpagoigtf: this.mountBsP,
                   mpagoigtfext: this.mountP ,
+                  mtotal: this.mountBsExt,
+                  mtotalext: this.mountIGTF,
                   ptasamon: this.bcv,
                   ptasaref: 0,        
                   xreferencia: transfer.value[i].xreferencia,
@@ -489,10 +491,12 @@ export class PaymentReportComponent {
                   cmoneda: transfer.value[i].cmoneda,
                   cbanco: transfer.value[i].cbanco,
                   cbanco_destino: transfer.value[i].cbanco_destino,
-                  mpago: this.mountBsExt,
+                  mpago: this.mountBs,
                   mpagoext: this.mount,
                   mpagoigtf: 0,
                   mpagoigtfext: 0 ,
+                  mtotal:this.mountBs,
+                  mtotalext: this.mount,
                   ptasamon: 0,
                   ptasaref: this.bcv,        
                   xreferencia: transfer.value[i].xreferencia,
