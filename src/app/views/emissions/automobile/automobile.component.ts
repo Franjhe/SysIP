@@ -57,6 +57,7 @@ export class AutomobileComponent {
   ratesList: any[] = [];
   typeVehicleList: any[] = [];
   utilityVehicleList:  any[] = [];
+  utilityList:  any[] = [];
   classList:  any[] = [];
   planList:  any[] = [];
   brokerList:  any[] = [];
@@ -82,6 +83,7 @@ export class AutomobileComponent {
   ratesControl = new FormControl('');
   typeVehicleControl = new FormControl('');
   utilityVehicleControl = new FormControl('');
+  utilityControl = new FormControl('');
   classControl = new FormControl('');
   planControl = new FormControl('');
   brokerControl = new FormControl('');
@@ -102,6 +104,7 @@ export class AutomobileComponent {
   filteredRates!: Observable<string[]>;
   filteredTypeVehicle!: Observable<string[]>;
   filteredUtilityVehicle!: Observable<string[]>;
+  filteredUtility!: Observable<string[]>;
   filteredClass!: Observable<string[]>;
   filteredPlan!: Observable<string[]>;
   filteredBroker!: Observable<string[]>;
@@ -118,6 +121,7 @@ export class AutomobileComponent {
   buttonEmissions: boolean = false;
   loadingEmissions: boolean = false;
   activateInspection: boolean = false;
+  activateUtility: boolean = false;
   loadingPdf: boolean = false;
   firstTime: boolean = true;
   detail: boolean = false;
@@ -190,10 +194,14 @@ export class AutomobileComponent {
     xcobertura: ['', Validators.required],
     ctarifa_exceso: ['', Validators.required],
     cuso: [''],
+    cusoVeh: [''],
+    xuso: [''],
     precargo: [''],
     ctipovehiculo: [''],
     cclase: [''],
     id_inma: [''],
+    npesovacio: [''],
+    ncapcarga: [''],
   });
 
   planFormGroup = this._formBuilder.group({
@@ -309,6 +317,7 @@ export class AutomobileComponent {
         this.getTakers();
         this.setDefaultDates();
         this.getTypeOfPay();
+        this.getUtility();
     }
   }
 
@@ -677,6 +686,9 @@ export class AutomobileComponent {
             msum: response.data.version[i].msum,
             xtipovehiculo: response.data.version[i].xclase_rcv,
             ctarifa_exceso: response.data.version[i].ctarifa_exceso,
+            xuso: response.data.version[i].xuso,
+            npesovacio: response.data.version[i].npesovacio,
+            ncapcarga: response.data.version[i].ncapcarga,
           });
         }
         this.versionList.sort((a, b) => a.value > b.value ? 1 : -1);
@@ -706,6 +718,9 @@ export class AutomobileComponent {
       this.vehicleFormGroup.get('id_inma')?.setValue(selectedVersion.id_inma);
       this.vehicleFormGroup.get('xtipovehiculo')?.setValue(selectedVersion.xtipovehiculo);
       this.vehicleFormGroup.get('ctarifa_exceso')?.setValue(selectedVersion.ctarifa_exceso);
+      this.vehicleFormGroup.get('xuso')?.setValue(selectedVersion.xuso);
+      this.vehicleFormGroup.get('npesovacio')?.setValue(selectedVersion.npesovacio);
+      this.vehicleFormGroup.get('ncapcarga')?.setValue(selectedVersion.ncapcarga);
       this.sumaAsegurada = selectedVersion.msum;
       this.sumaAseguradaBase = selectedVersion.msum;
 
@@ -720,6 +735,12 @@ export class AutomobileComponent {
         this.activateRate = true;
       }else{
         this.activateRate = false;
+      }
+
+      if(!this.vehicleFormGroup.get('xuso')?.value){
+        this.activateUtility = true;
+      }else{
+        this.activateUtility = false;
       }
     }
   }
@@ -822,13 +843,13 @@ export class AutomobileComponent {
   }
 
   getUtilityVehicle(){
-    this.http.post(environment.apiUrl + '/api/v1/valrep/utility', null).subscribe((response: any) => {
-      if (response.data.utility) {
-        for (let i = 0; i < response.data.utility.length; i++) {
+    this.http.post(environment.apiUrl + '/api/v1/valrep/utility-rechange', null).subscribe((response: any) => {
+      if (response.data.utilityR) {
+        for (let i = 0; i < response.data.utilityR.length; i++) {
           this.utilityVehicleList.push({
-            id: response.data.utility[i].cuso,
-            value: response.data.utility[i].xuso,
-            precargo: response.data.utility[i].precargo,
+            id: response.data.utilityR[i].cuso,
+            value: response.data.utilityR[i].xuso,
+            precargo: response.data.utilityR[i].precargo,
           });
         }
         this.filteredUtilityVehicle = this.utilityVehicleControl.valueChanges.pipe(
@@ -853,6 +874,35 @@ export class AutomobileComponent {
       this.vehicleFormGroup.get('cuso')?.setValue(selectedUtilityVehicle.id);
       this.vehicleFormGroup.get('precargo')?.setValue(selectedUtilityVehicle.precargo);
     }
+  }
+
+  getUtility(){
+    this.http.post(environment.apiUrl + '/api/v1/valrep/utility', null).subscribe((response: any) => {
+      if (response.data.utility) {
+        for (let i = 0; i < response.data.utility.length; i++) {
+          this.utilityList.push({
+            value: response.data.utility[i].xuso,
+          });
+        }
+        this.filteredUtility = this.utilityControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filterUtility(value || ''))
+        );
+      }
+    });
+  }
+
+  private _filterUtility(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.utilityList
+      .map(utility => utility.value)
+      .filter(utility => utility.toLowerCase().includes(filterValue));
+  }
+
+  onUtilitySelection(event: any) {
+    const selectedValue = event.option.value;
+    const selectedUtility = this.utilityList.find(utility => utility.value === selectedValue);
+    this.vehicleFormGroup.get('xuso')?.setValue(selectedUtility.value);
   }
 
   getClass(){
@@ -1936,6 +1986,9 @@ export class AutomobileComponent {
           cmetodologiapago: this.receiptFormGroup.get('cmetodologiapago')?.value,
           id_inma: this.vehicleFormGroup.get('id_inma')?.value,
           cuso: this.vehicleFormGroup.get('cuso')?.value,
+          xuso: this.vehicleFormGroup.get('xuso')?.value,
+          npesovacio: this.vehicleFormGroup.get('npesovacio')?.value,
+          ncapcarga: this.vehicleFormGroup.get('ncapcarga')?.value,
           cpais: 58,
           cusuario: this.currentUser.data.cusuario,
         }) 
@@ -2104,6 +2157,7 @@ export class AutomobileComponent {
       cmetodologiapago: this.receiptFormGroup.get('cmetodologiapago')?.value,
       id_inma: this.vehicleFormGroup.get('id_inma')?.value,
       cuso: this.vehicleFormGroup.get('cuso')?.value,
+      xuso: this.vehicleFormGroup.get('xuso')?.value,
       cpais: 58,
       cusuario: this.currentUser.data.cusuario,
       ctipopago: this.receiptFormGroup.get('ctipopago')?.value,
@@ -2113,7 +2167,9 @@ export class AutomobileComponent {
       xreferencia: this.receiptFormGroup.get('xreferencia')?.value,
       mpagado: this.receiptFormGroup.get('mpagado')?.value,
       mprima_pagada: this.receiptFormGroup.get('mprima_pagada')?.value,
-      mprima_accesorio: this.receiptFormGroup.get('mprima_accesorio')?.value
+      mprima_accesorio: this.receiptFormGroup.get('mprima_accesorio')?.value,
+      npesovacio: this.vehicleFormGroup.get('npesovacio')?.value,
+      ncapcarga: this.vehicleFormGroup.get('ncapcarga')?.value,
     }
 
     const nombre = this.personsFormGroup.get('xnombre')?.value + ' ' + this.personsFormGroup.get('xapellido')?.value;

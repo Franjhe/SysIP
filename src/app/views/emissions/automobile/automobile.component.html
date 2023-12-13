@@ -343,6 +343,23 @@
                       </mat-autocomplete>
                     </mat-form-field>
                 </div>
+                <div class="col-3" *ngIf="activateUtility">
+                  <mat-form-field class="example-full-width">
+                      <mat-label>Uso</mat-label>
+                      <input type="text"
+                            placeholder="Seleccione Uso"
+                            aria-label="Seleccione"
+                            matInput
+                            [formControl]="utilityControl"
+                            [matAutocomplete]="utilityL"
+                            >
+                      <mat-autocomplete #utilityL="matAutocomplete" (optionSelected)="onUtilitySelection($event)">
+                        <mat-option *ngFor="let utility of filteredUtility | async" [value]="utility">
+                          {{ utility }}
+                        </mat-option>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                </div>
               </div>
             </div>
 

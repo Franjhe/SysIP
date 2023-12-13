@@ -160,6 +160,8 @@ export class PdfGenerationService {
 	xversion:string | undefined;
 	xplaca:string | undefined;
 	xuso:string | undefined;
+	npesovacio: any;
+	ncapcarga: any;
 	xtipovehiculo:string | undefined;
 	xgrua:string | undefined;
 	fano: number | undefined ;
@@ -823,6 +825,8 @@ export class PdfGenerationService {
 			this.xversion = response.data.xversion;
 			this.xplaca = response.data.xplaca;
 			this.xuso = response.data.xuso;
+			this.ncapcarga = response.data.ncapcarga;
+			this.npesovacio = response.data.npesovacio;
 			this.xtipovehiculo = response.data.xtipovehiculo;
 			this.nkilometraje = response.data.nkilometraje;
 			this.xclase = response.data.xclase;
@@ -1315,6 +1319,15 @@ export class PdfGenerationService {
 				  widths: [70, 75, 65, 70, 30, 40, 50, '*'],
 				  body: [
 					[{text: 'SERIAL CARROCERIA:', bold: true, border: [false, false, false, false]}, {text: this.xserialcarroceria, border: [false, false, false, false]}, {text: 'SERIAL DEL MOTOR:', bold: true, border: [false, false, false, false]}, {text: this.xserialmotor, border: [false, false, false, false]}, {text: 'PLACA:', bold: true, border: [false, false, false, false]}, {text: this.xplaca, border: [false, false, false, false]}, {text: 'TRANSMISIÓN:', bold: true, border: [false, false, false, false]}, {text: this.xtransmision, border: [false, false, false, false]}]
+				  ]
+				}
+			},
+			{
+				style: 'data',
+				table: {
+				  widths: [40, 75, 45, 70, 30, 90, '*', '*'],
+				  body: [
+					[{text: 'USO:', bold: true, border: [false, false, false, false]}, {text: this.xuso, border: [false, false, false, false]}, {text: 'PUESTOS:', bold: true, border: [false, false, false, false]}, {text: this.ncapacidadpasajerosvehiculo, border: [false, false, false, false]}, {text: 'PESO:', bold: true, border: [false, false, false, false]}, {text: this.npesovacio, border: [false, false, false, false]}, {text: 'CAPACIDAD:', bold: true, border: [false, false, false, false]}, {text: this.ncapcarga, border: [false, false, false, false]}]
 				  ]
 				}
 			},
