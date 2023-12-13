@@ -35,7 +35,6 @@ export class PaymentCancellationComponent {
   
   bcv : any
   viewData : boolean = false
-  cliente : any
   clienteData : any
 
   urlImg : any
@@ -43,14 +42,39 @@ export class PaymentCancellationComponent {
   listCollected : any = []
   listReceipt: any = []
 
-  dataReport: any = []
-  dataSoport: any = []
+  dataReport: any = [] //recibos notificados
+  dataSoport: any = [] //recibos notificados
+
   tradesList : any = []
+  coinList : any = []
+  transferList : any = []
+
+  bankInternational : any = []
+  bankNational: any = []
+
+  bankReceptorInternational : any = []
+  bankReceptorNational : any = []
 
   totalPending : any
   totalNotificated : any
 
-  ntransaccion : any
+  mount : any //monto de la suma de los recibos 
+  mountIGTF : any //monto con el calculo igtf 
+  mountBs : any //monto en bolivares multiplicado por bcv 
+  mountP : any //monto del porcentaje del igtf 
+  mountBsP : any //monto en bolivares del porcentaje igtf 
+  mountBsExt : any //monto en bolivares del monto total en dolares con igtf
+
+
+  ntransaccion : any //numero de transaccion de recibo notificado
+
+  nrecibo : any //numero de recibo pendiente
+  asegurado : any
+  cliente : any
+  telefono : any
+  correo : any
+  dataReceiptPending : any = []
+  dataReceiptPendingB: any = []
 
   updateReceipt = this._formBuilder.group({
     iestadorec: [{ value: '', disabled: false }],
@@ -69,6 +93,7 @@ export class PaymentCancellationComponent {
     freporte: '',
     xreferencia: '',
     ximagen: '',
+    iestadorec: '',
   });
 
 
@@ -149,6 +174,76 @@ export class PaymentCancellationComponent {
         })
       }
 
+    })
+
+    fetch(environment.apiUrl + '/api/v1/valrep/coin')
+    .then((response) => response.json())
+    .then(coin => {
+
+      this.coinList = []
+      for(let i = 0; i < coin.data.coins.length; i++){
+        this.coinList.push({
+          id: coin.data.coins[i].cmoneda,
+          value: coin.data.coins[i].xdescripcion_l,
+        })
+      }
+
+    })
+
+    let bankNational = {
+      ctipopago: 2
+    }
+
+    this.http.post(environment.apiUrl + '/api/v1/valrep/target-bank', bankNational ).subscribe((response: any) => {
+      for(let i = 0; i < response.data.targetBank.length; i++){
+        this.bankReceptorNational.push({
+          id: response.data.targetBank[i].cbanco_destino,
+          value: response.data.targetBank[i].xbanco,
+        })        
+      }
+
+
+    })
+
+    let bankInternational = {
+      ctipopago: 1
+    }
+
+    this.http.post(environment.apiUrl + '/api/v1/valrep/target-bank', bankInternational ).subscribe((response: any) => {
+      for(let i = 0; i < response.data.targetBank.length; i++){
+        this.bankReceptorInternational.push({
+          id: response.data.targetBank[i].cbanco_destino,
+          value: response.data.targetBank[i].xbanco,
+        })        
+      }
+
+
+    })
+
+    let extranjero = {
+      itipo: 'e'
+    }
+
+    this.http.post(environment.apiUrl + '/api/v1/valrep/bank', extranjero).subscribe((response: any) => {
+      for(let i = 0; i < response.data.bank.length; i++){
+        this.bankInternational.push({
+          id: response.data.bank[i].cbanco,
+          value: response.data.bank[i].xbanco,
+        })        
+      }
+    })
+
+    let venezolano = {
+      itipo: 'v'
+    }
+
+    this.http.post(environment.apiUrl + '/api/v1/valrep/bank', venezolano).subscribe((response: any) => {
+      for(let i = 0; i < response.data.bank.length; i++){
+        this.bankNational.push({
+          id: response.data.bank[i].cbanco,
+          value: response.data.bank[i].xbanco,
+        })        
+      }
     })
 
   }
@@ -253,66 +348,81 @@ export class PaymentCancellationComponent {
     this.PendindAlert()
   }
 
-  async dataPendient(transaccion : any){
-    this.ntransaccion = transaccion
-    fetch(environment.apiUrl + '/api/v1/collection/search-notification-data/' + transaccion)
+  async dataPendient(recibo : any,asegurado : any){
+    this.nrecibo = recibo
+    this.asegurado = asegurado
+    fetch(environment.apiUrl + '/api/v1/collection/search-receipt-data/' + recibo)
     .then((response) => response.json())
     .then(data => {
-       this.dataReport = []
 
-      for(let i = 0; i < data.searchPaymentReport.recibo.length; i++){
-        const client = {
-          cedula: data.searchPaymentReport.recibo[i].casegurado
-        }
+      this.dataReceiptPending = []
+      for(let i = 0; i < data.searchReceiptClientData.recibo.length; i++){
 
-        this.http.post(environment.apiUrl + '/api/v1/collection/search', client).subscribe((response: any) => {
+        let id = data.searchReceiptClientData.recibo[i].cramo
+        let treatments = this.tradesList
+        let filterdata = treatments.filter((data: { id: any; }) => data.id == id)
+        const xramo = filterdata[0].value
 
-          let id = data.searchPaymentReport.recibo[i].cramo
-          let treatments = this.tradesList
-          let filterdata = treatments.filter((data: { id: any; }) => data.id == id)
-          const xramo = filterdata[0].value
-
-
-          this.dataReport.push({
-            cpoliza : data.searchPaymentReport.recibo[i].cpoliza,
-            crecibo : data.searchPaymentReport.recibo[i].crecibo,
-            casegurado : response.searchReceipt.client[0].xcliente,
-            cramo : data.searchPaymentReport.recibo[i].cramo +' - '+ xramo,
-            mprimabrutaext : data.searchPaymentReport.recibo[i].mprimabrutaext,
-            mprimabruta : data.searchPaymentReport.recibo[i].mprimabruta
-          })
-        });
+        //fecha desde recibo
+          let dateDReceip = new Date(data.searchReceiptClientData.recibo[i].fdesde );
+          let fechaISODesde = dateDReceip.toISOString().substring(0, 10);
 
 
-      }
- 
-      for(let i = 0; i < data.searchPaymentReport.soporte.length; i++){
+        //fecha hasta recibo
+          let dateHReceip = new Date(data.searchReceiptClientData.recibo[i].fhasta );
+          let fechaISOHasta = dateHReceip.toISOString().substring(0, 10);
 
-        fetch(environment.apiUrl + '/api/get-document/' + data.searchPaymentReport.soporte[i].xruta)
-        .then((response) => response.blob())
-        .then(image => {
-          var url = URL.createObjectURL(image)
-          var img = new Image();
-          img.src = url;
-          this.urlImg = url
-         })
 
-        this.dataSoport.push({
-          cbanco:data.searchPaymentReport.soporte[i].cbanco,
-          cbanco_destino:data.searchPaymentReport.soporte[i].cbanco_destino,
-          cmoneda:data.searchPaymentReport.soporte[i].cmoneda,
-          mpago:data.searchPaymentReport.soporte[i].mpago,
-          mpagoext:data.searchPaymentReport.soporte[i].mpagoext,
-          mpagoigtf:data.searchPaymentReport.soporte[i].mpagoigtf,
-          mpagoigtfext:data.searchPaymentReport.soporte[i].mpagoigtfext,
-          ptasamon:data.searchPaymentReport.soporte[i].ptasamon,
-          ptasaref:data.searchPaymentReport.soporte[i].ptasaref,
-          xreferencia:data.searchPaymentReport.soporte[i].xreferencia,
-          ximagen: this.urlImg,
+        this.dataReceiptPending.push({
+          cmoneda : data.searchReceiptClientData.recibo[i].cmoneda ,
+          cnpoliza : data.searchReceiptClientData.recibo[i].cnpoliza ,
+          cnrecibo : data.searchReceiptClientData.recibo[i].cnrecibo ,
+          cpoliza : data.searchReceiptClientData.recibo[i].cpoliza ,
+          cramo : data.searchReceiptClientData.recibo[i].cramo + ' - ' + xramo,
+          crecibo : data.searchReceiptClientData.recibo[i].crecibo ,
+          fanopol : data.searchReceiptClientData.recibo[i].fanopol ,
+          fdesde : fechaISODesde ,
+          fdesde_pol : data.searchReceiptClientData.recibo[i].fdesde_pol ,
+          fhasta : fechaISOHasta ,
+          fhasta_pol : data.searchReceiptClientData.recibo[i].fhasta_pol ,
+          fmespol : data.searchReceiptClientData.recibo[i].fmespol ,
+          mprimabruta : data.searchReceiptClientData.recibo[i].mprimabruta ,
+          mprimabrutaext : data.searchReceiptClientData.recibo[i].mprimabrutaext ,
+          qcuotas : data.searchReceiptClientData.recibo[i].qcuotas
+        })
 
+        this.dataReceiptPendingB.push({
+          cmoneda : data.searchReceiptClientData.recibo[i].cmoneda ,
+          cnpoliza : data.searchReceiptClientData.recibo[i].cnpoliza ,
+          cnrecibo : data.searchReceiptClientData.recibo[i].cnrecibo ,
+          cpoliza : data.searchReceiptClientData.recibo[i].cpoliza ,
+          cramo : data.searchReceiptClientData.recibo[i].cramo,
+          crecibo : data.searchReceiptClientData.recibo[i].crecibo ,
+          fanopol : data.searchReceiptClientData.recibo[i].fanopol ,
+          fdesde : fechaISODesde ,
+          fdesde_pol : data.searchReceiptClientData.recibo[i].fdesde_pol ,
+          fhasta : fechaISOHasta ,
+          fhasta_pol : data.searchReceiptClientData.recibo[i].fhasta_pol ,
+          fmespol : data.searchReceiptClientData.recibo[i].fmespol ,
+          mprimabruta : data.searchReceiptClientData.recibo[i].mprimabruta ,
+          mprimabrutaext : data.searchReceiptClientData.recibo[i].mprimabrutaext ,
+          qcuotas : data.searchReceiptClientData.recibo[i].qcuotas
         })
 
       }
+
+      fetch(environment.apiUrl + '/api/v1/collection/search-client/' + asegurado)
+      .then((response) => response.json())
+      .then(data => {
+        for(let i = 0; i < data.searchClientData.cliente.length; i++){
+          this.cliente = data.searchClientData.cliente[i].xcliente
+          this.telefono = data.searchClientData.cliente[i].xtelefono
+          this.correo = data.searchClientData.cliente[i].xemail
+
+        }
+  
+  
+      })
 
     })
 
@@ -329,7 +439,7 @@ export class PaymentCancellationComponent {
       receipt : this.dataReport,
       transacccion : this.ntransaccion,
       iestadorec: this.updateReceipt.get('iestadorec')?.value ,
-      itransaccion: this.updateReceipt.get('itransaccion')?.value ,
+      itransaccion: this.updateReceipt.get('itransaccion')?.value,
     }
     this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt/', data ).subscribe((response: any) => {
       
@@ -338,6 +448,145 @@ export class PaymentCancellationComponent {
       }
 
     })
+
+  }
+
+  saveUpdateReceiptPending(){
+
+    const fecha = new Date()
+    const savePaymentTrans = {
+      receipt : this.dataReceiptPendingB,
+      casegurado: this.asegurado,
+      mpago : this.mountBs,
+      mpagoext : this.mountIGTF,
+      ptasamon : this.bcv,
+      freporte : fecha ,
+      cprog : 'Cobranza web',
+      cusuario : 13,
+      iestadorec : 'C',
+      iestado : 1,
+      ifuente : 'Web_Sys',
+    }
+
+        //primero llenamos el recipo y la tabla de transacciones 
+        this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe(async (response: any) => {
+
+          const transaccion = response.ctransaccion.result
+    
+          //obtenemos el codigo de transaccion 
+          if(transaccion){
+  
+              const formData = new FormData();
+              formData.append('file', this.updateReceiptPending.get('ximagen')?.value!);
+              console.log(formData)
+          
+              //cargamos las imagenes con el codigo de transaccion
+              this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((response: any) => {
+                  const rutaimage  =  response.uploadedFile.filename //ruta de imagen por registro 
+    
+                  if(this.updateReceiptPending.get('cmoneda')?.value == "$   " ){
+                    this.transferList.push({
+                      cmoneda:  this.updateReceiptPending.get('cmoneda')?.value,
+                      cbanco: this.updateReceiptPending.get('cbanco')?.value,
+                      cbanco_destino:  this.updateReceiptPending.get('cbanco_destino')?.value,
+                      mpago: this.mountBs,
+                      mpagoext: this.mount,
+                      mpagoigtf: this.mountBsP,
+                      mpagoigtfext: this.mountP ,
+                      mtotal: this.mountBsExt,
+                      mtotalext: this.mountIGTF,
+                      ptasamon: this.bcv,
+                      ptasaref: 0,        
+                      xreferencia:  this.updateReceiptPending.get('xreferencia')?.value!,
+                      ximagen: rutaimage,
+                    });
+                  }
+                  if(this.updateReceiptPending.get('cmoneda')?.value == "BS  "){
+                    this.transferList.push({
+                      cmoneda:  this.updateReceiptPending.get('cmoneda')?.value,
+                      cbanco:this.updateReceiptPending.get('cbanco')?.value,
+                      cbanco_destino: this.updateReceiptPending.get('cbanco_destino')?.value,
+                      mpago: this.mountBs,
+                      mpagoext: this.mount,
+                      mpagoigtf: 0,
+                      mpagoigtfext: 0 ,
+                      mtotal:this.mountBs,
+                      mtotalext: this.mount,
+                      ptasamon: 0,
+                      ptasaref: this.bcv,       
+                      xreferencia: this.updateReceiptPending.get('xreferencia')?.value!,
+                      ximagen: rutaimage,
+                    });
+                  }
+    
+                  const reporData = {
+                    report : this.transferList,
+                    ctransaccion : transaccion,
+                    casegurado: this.asegurado,
+    
+                  }
+                  if(response.status){
+                    this.http.post(environment.apiUrl + '/api/v1/collection/create-report', reporData).subscribe((response: any) => {
+    
+                      this.toast.open(response.message, '', {
+                        duration: 5000,
+                        verticalPosition: 'top',
+                        panelClass: ['success-toast']
+                      });  
+                      location.reload()
+    
+                    })
+    
+                  }
+              
+              })
+    
+            await this.toast 
+          }
+    
+        })   
+  }
+
+  validationOperation(){
+    const typeOperation = this.updateReceiptPending.get('itransaccion')?.value
+
+    if(typeOperation != "EF" ){
+      this.updateReceiptPending.enable()
+    }else{
+      this.updateReceiptPending.disable()
+      this.updateReceiptPending.get('itransaccion')?.enable()
+      this.updateReceiptPending.get('cmoneda')?.enable()
+
+    }
+  }
+
+  onFileSelect(event : any ){
+
+    const file = event.target.files[0]
+
+    this.updateReceiptPending.get('ximagen')?.setValue(file)
+
+
+  }
+
+  calculateMount(){
+
+    this.mount = this.updateReceipt.get('mpago')?.value //suma de los dolares brutos
+
+    const operation = this.mount * this.bcv
+    this.mountBs = operation.toFixed(2)  //dolares brutos convertidos en bolivares 
+
+    const mountIGTF = this.mount + ((3/100)*this.mount) 
+    this.mountIGTF = mountIGTF.toFixed(2) //dolares netos
+
+    const mountBs = this.mountIGTF*this.bcv
+    this.mountBsExt = mountBs.toFixed(2) //bolivares netos
+
+    const porcentajeBs = this.bcv * ((3/100)*this.mount) 
+    this.mountBsP = porcentajeBs.toFixed(2) //porcentaje del igtf en bolivares 
+
+    const porcentaje = (3/100)*this.mount
+    this.mountP = porcentaje.toFixed(2) //porcentaje del igtf en dolares  
 
   }
 

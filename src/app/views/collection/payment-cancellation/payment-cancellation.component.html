@@ -68,6 +68,8 @@
               <h2>Total Pendiente {{totalPending}} $</h2>
             </div>
 
+            
+
             <mat-form-field>
               <mat-label>Datos</mat-label>
               <input matInput (keyup)="applyFilter2($event)" placeholder="Datos de busqueda" #input>
@@ -79,43 +81,43 @@
                 <!-- ID Column -->
                 <ng-container matColumnDef="poliza">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header> Poliza</th>
-                  <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo)"> {{row.cpoliza}} </td>
+                  <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.cpoliza}} </td>
                 </ng-container>
             
                 <!-- Progress Column -->
                 <ng-container matColumnDef="recibo">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header> Recibo</th>
-                  <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo)"> {{row.crecibo}} </td>
+                  <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.crecibo}} </td>
                 </ng-container>
 
                 <!-- Progress Column -->
                 <ng-container matColumnDef="cuota">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header> Cuota </th>
-                  <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo)"> {{row.qcuotas}} </td>
+                  <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.qcuotas}} </td>
                 </ng-container>
             
                 <!-- Name Column -->
                 <ng-container matColumnDef="ramo">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header> Ramo </th>
-                  <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo)"> {{row.cramo}} </td>
+                  <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.cramo}} </td>
                 </ng-container>
             
                 <!-- Fruit Column -->
                 <ng-container matColumnDef="asegurado">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header> Asegurado </th>
-                  <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo)"> {{row.casegurado}} </td>
+                  <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.casegurado}} </td>
                 </ng-container>
 
                 <!-- Fruit Column -->
                 <ng-container matColumnDef="mount">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header> Prima BS </th>
-                  <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo)"> {{row.mprimabruta}} </td>
+                  <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.mprimabruta}} </td>
                 </ng-container>
 
                 <!-- Fruit Column -->
                 <ng-container matColumnDef="mountBs">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header> Prima Dolares </th>
-                  <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo)"> {{row.mprimabrutaext}} </td>
+                  <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.mprimabrutaext}} </td>
                 </ng-container>
             
                 <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
@@ -138,10 +140,45 @@
             
             <form action=""  [formGroup]="updateReceiptPending">
               <div class="container-fluid">
+                <h1 class="text-center">Registro de pago</h1>
                 <div class="row">
-                  <h2>Seleccione la forma en la que el pago fue registrado</h2>
+                  <div class="col-3">
+                    <h2>Tasa del dia {{bcv}} Bs</h2>
+
+                    <strong>Cliente</strong>   {{cliente}}<br>
+                    <strong>Correo</strong>    {{correo}}<br>
+                    <strong>Telefono</strong>  {{telefono}}<br>
+                  </div>
+
+
+                  <div class="row col-8" *ngFor="let data of dataReceiptPending let i=index">
+                    <h2 class="text-center">Datos del recibo</h2>
+
+                    <div class="col">
+                      <strong>Moneda</strong>  {{data.cmoneda}} <br>
+                      <strong>Recibo</strong>  {{data.crecibo}} <br>
+                      <strong>Poliza </strong> {{data.cpoliza}}
+
+                    </div>
+                    <div class="col">
+                      <strong>Fecha desde recibo</strong> {{data.fdesde}} <br>
+                      <strong>Fecha hasta recibo</strong> {{data.fhasta}} <br>
+                      <strong>N° Cuota</strong>  {{data.qcuotas}} <br>
+
+                    </div>
+                    <div class="col">
+                      <strong>Prima $</strong> {{data.mprimabrutaext}} <br>
+                      <strong>Prima Bs</strong> {{data.mprimabruta}} <br>
+                      <strong>Ramo</strong> {{data.cramo}}
+
+                    </div>
+ 
+                  </div>
+
+                </div>    
+                <div class="row mt-3">
                   <div class="col-2">
-                    <mat-radio-group aria-label="Select an option" formControlName="itransaccion">
+                    <mat-radio-group aria-label="Select an option" formControlName="itransaccion" (change)="validationOperation()">
                       <mat-radio-button value="PM">Pago Movil</mat-radio-button>
                       <mat-radio-button value="EF">Efectivo</mat-radio-button>
                       <mat-radio-button value="TR">Tranferencia</mat-radio-button>
@@ -150,8 +187,58 @@
                     </mat-radio-group>
                   </div>
 
+                  <div class="col-4 row ">
 
-                  <div class="col-4">
+                    <mat-form-field>
+                      <mat-label>Moneda</mat-label>
+                      <mat-select formControlName="cmoneda">
+                        <mat-option  *ngFor="let data of coinList let i=index" value="{{data.id}}">{{data.value}}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                      <mat-label>Banco Destino</mat-label>
+                      <mat-select formControlName="cbanco_destino" >
+                        <mat-option *ngFor="let data of bankReceptorInternational let i=index" value="{{data.id}}">{{data.value}}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                      <mat-label>Banco Remitente</mat-label>
+                      <mat-select formControlName="cbanco">
+                        <mat-option  *ngFor="let data of bankInternational let i=index" value="{{data.id}}">{{data.value}}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+
+
+                    <!-- <mat-form-field>
+                      <mat-label>Banco Destino</mat-label>
+                      <mat-select formControlName="cbanco_destino" >
+                        <mat-option *ngFor="let data of bankReceptorNational let i=index" value="{{data.id}}">{{data.value}}</mat-option>
+                      </mat-select>
+                    </mat-form-field> -->
+
+                    <!-- <mat-form-field>
+                      <mat-label>Banco Remitente</mat-label>
+                      <mat-select formControlName="cbanco" >
+                        <mat-option  *ngFor="let data of bankNational let i=index" value="{{data.id}}">{{data.value}}</mat-option>
+                      </mat-select>
+                    </mat-form-field> -->
+                  </div>
+
+                  <div class="col-4 row ">
+
+                    <mat-form-field >
+                      <mat-label>Monto pagado</mat-label>
+                      <input matInput  formControlName="mpago">
+                    </mat-form-field>
+
+
+                    <mat-form-field >
+                      <mat-label>Referencia bancaria</mat-label>
+                      <input matInput  formControlName="xreferencia">
+                    </mat-form-field>
+
                     <mat-form-field>
                       <mat-label>Estado de recibo</mat-label>
                       <mat-select formControlName="iestadorec">
@@ -159,30 +246,14 @@
                         <mat-option value="">Por definir... </mat-option>
                       </mat-select>
                     </mat-form-field>
-                  </div>
 
-                  <div class="col-4">
-                    <mat-form-field>
-                      <mat-label>Banco Destino</mat-label>
-                      <mat-select formControlName="cbanco_destino">
-                        <mat-option value="C">Cobrado</mat-option>
-                        <mat-option value="">Por definir... </mat-option>
-                      </mat-select>
-                    </mat-form-field>
                   </div>
-
-                  <div class="col-4">
-                    <mat-form-field>
-                      <mat-label>Banco Remitente</mat-label>
-                      <mat-select formControlName="cbanco">
-                        <mat-option value="C">Cobrado</mat-option>
-                        <mat-option value="">Por definir... </mat-option>
-                      </mat-select>
-                    </mat-form-field>
+                  <div class="form-outline" >
+                    <label for="">Carga de referencia </label>
+                    <input type="file"  accept="image/png, image/jpeg, image/jpg" class="form-control rounded-input mt-3" name="ximagen" formControlName="ximagen" (change)="onFileSelect($event)" #Ximagen>
                   </div>
-
-                  <button mat-button >Cobrar recibo</button>
-                </div>    
+                </div>
+                <button mat-button (click)="saveUpdateReceiptPending()">Cobrar recibo</button>
               </div>
 
             </form>

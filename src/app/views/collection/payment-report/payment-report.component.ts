@@ -450,6 +450,7 @@ export class PaymentReportComponent {
       cusuario : 13,
       iestadorec : 'N',
       ifuente : 'Web_Sys',
+      iestado : 0,
       ccategoria : this.searchReceipt.get('ccategoria')?.value,
     }
     //primero llenamos el recipo y la tabla de transacciones 
