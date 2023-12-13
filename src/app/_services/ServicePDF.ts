@@ -1625,6 +1625,15 @@ export class PdfGenerationService {
 			},
 			{
 				style: 'data',
+				table: {
+				  widths: [40, 75, 45, 70, 30, 90, '*', '*'],
+				  body: [
+					[{text: 'USO:', bold: true, border: [false, false, false, false]}, {text: this.xuso, border: [false, false, false, false]}, {text: 'PUESTOS:', bold: true, border: [false, false, false, false]}, {text: this.ncapacidadpasajerosvehiculo, border: [false, false, false, false]}, {text: 'PESO:', bold: true, border: [false, false, false, false]}, {text: this.npesovacio, border: [false, false, false, false]}, {text: 'CAPACIDAD:', bold: true, border: [false, false, false, false]}, {text: this.ncapcarga, border: [false, false, false, false]}]
+				  ]
+				}
+			},
+			{
+				style: 'data',
 				margin: [0, 0, 0, 2],
 				table: {
 				  widths: [30, 300, 40, 100],
@@ -1899,6 +1908,15 @@ export class PdfGenerationService {
 				  widths: [70, 75, 65, 70, 30, 40, 50, '*'],
 				  body: [
 					[{text: 'SERIAL CARROCERIA:', bold: true, border: [false, false, false, false]}, {text: this.xserialcarroceria, border: [false, false, false, false]}, {text: 'SERIAL DEL MOTOR:', bold: true, border: [false, false, false, false]}, {text: this.xserialmotor, border: [false, false, false, false]}, {text: 'PLACA:', bold: true, border: [false, false, false, false]}, {text: this.xplaca, border: [false, false, false, false]}, {text: 'TRANSMISIÓN:', bold: true, border: [false, false, false, false]}, {text: this.xtransmision, border: [false, false, false, false]}]
+				  ]
+				}
+			},
+			{
+				style: 'data',
+				table: {
+				  widths: [40, 75, 45, 70, 30, 90, '*', '*'],
+				  body: [
+					[{text: 'USO:', bold: true, border: [false, false, false, false]}, {text: this.xuso, border: [false, false, false, false]}, {text: 'PUESTOS:', bold: true, border: [false, false, false, false]}, {text: this.ncapacidadpasajerosvehiculo, border: [false, false, false, false]}, {text: 'PESO:', bold: true, border: [false, false, false, false]}, {text: this.npesovacio, border: [false, false, false, false]}, {text: 'CAPACIDAD:', bold: true, border: [false, false, false, false]}, {text: this.ncapcarga, border: [false, false, false, false]}]
 				  ]
 				}
 			},
