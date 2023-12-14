@@ -235,9 +235,9 @@ export class AutomobileComponent {
     mprima_blindaje: [{ value: '', disabled: true }],
     accesorios :  this._formBuilder.array([]),
     msuma_aseg_acce: [{ value: '', disabled: false }],
-    paditamento: [''],
+    paditamento: [{ value: '', disabled: false }],
     msuma_aditamento: [''],
-    mprima_aditamento: [''],
+    mprima_aditamento: [{ value: '', disabled: false }],
   });
 
   receiptFormGroup = this._formBuilder.group({
