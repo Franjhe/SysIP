@@ -579,6 +579,28 @@
                     </div>
                   </div>
                 </mat-tab>
+                <mat-tab label="Aditamento de Camiones" *ngIf="activateAttachment"> 
+                  <div style="display: flex;">
+                    <div class="col-3">
+                      <mat-form-field >
+                        <mat-label>Tasa de Aditamento</mat-label>
+                        <input matInput type="number" formControlName="paditamento">
+                      </mat-form-field>
+                    </div>
+                    <div class="col-3">
+                      <mat-form-field >
+                        <mat-label>Suma Asegurada</mat-label>
+                        <input matInput type="number" formControlName="msuma_aditamento" (change)="calculationPremiumsAttachment()">
+                      </mat-form-field>
+                    </div>
+                    <div class="col-3">
+                      <mat-form-field >
+                        <mat-label>Prima de Aditamento</mat-label>
+                        <input matInput type="number" formControlName="mprima_aditamento">
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </mat-tab>
                 <mat-tab label="Accesorios" formArrayName="accesorios">
                   <table class="accesories-table">
                     <thead>
