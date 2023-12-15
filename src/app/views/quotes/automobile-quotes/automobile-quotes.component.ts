@@ -19,20 +19,17 @@ export class AutomobileQuotesComponent {
   modelList: any[] = [];
   versionList: any[] = [];
   ratesList: any[] = [];
-  utilityVehicleList:  any[] = [];
   quotesList:  any[] = [];
 
   brandControl = new FormControl('');
   modelControl = new FormControl('');
   versionControl = new FormControl('');
   ratesControl = new FormControl('');
-  utilityVehicleControl = new FormControl('');
 
   filteredBrand!: Observable<string[]>;
   filteredModel!: Observable<string[]>;
   filteredVersion!: Observable<string[]>;
   filteredRates!: Observable<string[]>;
-  filteredUtilityVehicle!: Observable<string[]>;
 
   vector: boolean = true;
   loading: boolean = false;
@@ -41,24 +38,29 @@ export class AutomobileQuotesComponent {
   distributionCard: boolean = false;
   quotesBoolean: boolean = true;
   check: boolean = false;
+  brcv: boolean = false;
+  bamplia: boolean = false;
+  bperdida: boolean = false;
 
   cotizacion!: any;
   nombreCompleto!: any;
   vehiculo!: any;
   version!: any;
   bcv!: any ;
+  plan!: any ;
 
   quotesForm = this._formBuilder.group({
     xmarca: ['', Validators.required],
     xmodelo: ['', Validators.required],
     xversion: ['', Validators.required],
     fano: ['', Validators.required],
-    xcobertura: ['', Validators.required],
     xnombre: ['', Validators.required],
     xapellido: ['', Validators.required],
     email: ['', Validators.required],
+    msuma_aseg: [''],
     ctarifa_exceso: [''],
-    cuso: [''],
+    xclasificacion: [''],
+    npasajeros: [''],
     id_inma: [''],
   });
 
@@ -73,8 +75,6 @@ export class AutomobileQuotesComponent {
     .then(data => {
       this.bcv = data.monitors.usd.price
     })
-    
-    this.getUtilityVehicle();
   }
 
 
@@ -224,6 +224,9 @@ export class AutomobileQuotesComponent {
       this.quotesForm.get('xversion')?.setValue(selectedVersion.value);
       this.quotesForm.get('ctarifa_exceso')?.setValue(selectedVersion.ctarifa_exceso);
       this.quotesForm.get('id_inma')?.setValue(selectedVersion.id_inma);
+      this.quotesForm.get('msuma_aseg')?.setValue(selectedVersion.msuma_aseg);
+      this.quotesForm.get('xclasificacion')?.setValue(selectedVersion.cclasificacion);
+      this.quotesForm.get('npasajeros')?.setValue(selectedVersion.npasajeros);
 
       if(!this.quotesForm.get('ctarifa_exceso')?.value){
         this.activateRate = true;
@@ -267,39 +270,6 @@ export class AutomobileQuotesComponent {
     }
   }
 
-  getUtilityVehicle(){
-    this.http.post(environment.apiUrl + '/api/v1/valrep/utility', null).subscribe((response: any) => {
-      if (response.data.utility) {
-        for (let i = 0; i < response.data.utility.length; i++) {
-          this.utilityVehicleList.push({
-            id: response.data.utility[i].cuso,
-            value: response.data.utility[i].xuso,
-            precargo: response.data.utility[i].precargo,
-          });
-        }
-        this.filteredUtilityVehicle = this.utilityVehicleControl.valueChanges.pipe(
-          startWith(''),
-          map(value => this._filterUtilityVehicle(value || ''))
-        );
-      }
-    });
-  }
-
-  private _filterUtilityVehicle(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    return this.utilityVehicleList
-      .map(utility => utility.value)
-      .filter(utility => utility.toLowerCase().includes(filterValue));
-  }
-
-  onUtilityVehicleSelection(event: any) {
-    const selectedValue = event.option.value;
-    const selectedUtilityVehicle = this.utilityVehicleList.find(utility => utility.value === selectedValue);
-    if (selectedUtilityVehicle) {
-      this.quotesForm.get('cuso')?.setValue(selectedUtilityVehicle.id);
-    }
-  }
-
 
   validateForm() {
     if (this.quotesForm.invalid){
@@ -316,12 +286,13 @@ export class AutomobileQuotesComponent {
     let data = {
       id_inma: this.quotesForm.get('id_inma')?.value,
       fano: this.quotesForm.get('fano')?.value,
-      xcobertura: this.quotesForm.get('xcobertura')?.value,
       xnombre: this.quotesForm.get('xnombre')?.value?.toUpperCase(),
       xapellido: this.quotesForm.get('xapellido')?.value?.toUpperCase(),
       email: this.quotesForm.get('email')?.value?.toUpperCase(),
       ctarifa_exceso: this.quotesForm.get('ctarifa_exceso')?.value,
-      cuso: this.quotesForm.get('cuso')?.value
+      msum: this.quotesForm.get('msuma_aseg')?.value,
+      xclasificacion: this.quotesForm.get('xclasificacion')?.value,
+      ncapacidad_p: this.quotesForm.get('npasajeros')?.value,
     }
 
     this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/create', data).subscribe((response: any) => {
@@ -331,6 +302,7 @@ export class AutomobileQuotesComponent {
         this.loading = false;
         this.quotesBoolean = true;
         this.quotesList = response.data.list.result;
+        this.quotesList.sort((a, b) => a.xplan_rc > b.xplan_rc ? 1 : -1);
 
         this.nombreCompleto = data.xnombre + ' ' + data.xapellido;
         this.vehiculo = this.quotesForm.get('xmarca')?.value + ' ' + this.quotesForm.get('xmodelo')?.value;
@@ -340,29 +312,49 @@ export class AutomobileQuotesComponent {
     })
   }
 
-  selectedPlan(index: number) {
-    // this.quotesBoolean = false;
+  onToggle(cobertura: string, plan: number) {
+    if(cobertura == 'Rcv'){
+      this.brcv = true;
+      this.bamplia = false;
+      this.bperdida = false;
+    }else if(cobertura == 'Cobertura Amplia'){
+      this.brcv = false;
+      this.bamplia = true;
+      this.bperdida = false;
+    }else if(cobertura == 'Perdida Total'){
+      this.brcv = false;
+      this.bamplia = false;
+      this.bperdida = true;
+    }
+
+    this.plan = plan;
+    this.selectedPlan()
+  }
+
+  selectedPlan() {
+    this.quotesBoolean = false;
     this.isActive = true
-    // this.loading = true;
-    // const selectedQuote = this.quotesList[index];
+    this.loading = true;
 
-    // let data = {
-    //   ccotizacion: selectedQuote.ccotizacion,
-    //   cplan_rc: selectedQuote.cplan_rc,
-    //   iaceptado: true
-    // }
+    let data = {
+      ccotizacion: this.cotizacion,
+      cplan_rc: this.plan,
+      brcv: this.brcv,
+      bamplia: this.bamplia,
+      bperdida: this.bperdida,
+      iaceptado: true
+    }
 
-    // this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/update', data).subscribe((response: any) => {
-    //   if (response.status) {
-    //     this.loading = false;
-    //     this.check = true;
+    this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/update', data).subscribe((response: any) => {
+      if (response.status) {
+        this.loading = false;
+        this.check = true;
 
-    //     this.snackBar.open(`Se ha cotizado con el ${selectedQuote.xplan_rc} exitosamente.`, '', {
-    //       duration: 5000,
-    //     });
-    //   }
-    // })
-
+        this.snackBar.open(`Se ha cotizado exitosamente.`, '', {
+          duration: 5000,
+        });
+      }
+    })
   }
 
 }
