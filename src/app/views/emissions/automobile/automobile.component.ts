@@ -207,7 +207,7 @@ export class AutomobileComponent {
 
   planFormGroup = this._formBuilder.group({
     cplan: ['', Validators.required],
-    ccorredor: ['', Validators.required],
+    ccorredor: [''],
     ctomador: [{ value: '', disabled: false }],
     xtomador: [{ value: '', disabled: false }],
     xrif_tomador: [''],
@@ -1496,24 +1496,90 @@ export class AutomobileComponent {
     let calculo: number = 0;
     
     if (typeof msumaAseg === 'number' && typeof pblindaje === 'number') {
-      calculo = msumaAseg * pblindaje / 100;
-      let valorTotal = calculo.toFixed(2)
-      this.planFormGroup.get('mprima_blindaje')?.setValue(valorTotal);
-      this.calculationsPremiumsCascoTotal()
+      let msumaAsegBlin = parseFloat(msumaAseg);
+        if(msumaAseg !== null){
+          
+          let max = this.sumaAseguradaBase * 0.60
+          let min = this.sumaAseguradaBase * 0.10
+  
+          let MaxSum = this.sumaAseguradaBase + max;
+          let MinSum = this.sumaAseguradaBase - min;
+  
+          this.sumaAseguradaMax = MaxSum.toFixed(2)
+          this.sumaAseguradaMin = MinSum.toFixed(2)
+  
+          if(msumaAsegBlin > this.sumaAseguradaMax){
+            this.snackBar.open('La Suma Asegurada excedió el 60%.', '', {
+              duration: 5000,
+            });
+  
+            this.planFormGroup.get('msuma_blindaje')?.setValue(this.sumaAseguradaBase);
+            this.calculationPremiumsShielding()
+            return
+          }
+  
+          if(msumaAsegBlin < this.sumaAseguradaMin){
+            this.snackBar.open('La Suma Asegurada es menor al 10%.', '', {
+              duration: 5000,
+            });
+  
+            this.planFormGroup.get('msuma_blindaje')?.setValue(this.sumaAseguradaBase);
+            this.calculationPremiumsShielding()
+            return
+          }
+
+          calculo = msumaAsegBlin * pblindaje / 100;
+          let valorTotal = calculo.toFixed(2)
+          this.planFormGroup.get('mprima_blindaje')?.setValue(valorTotal);
+          this.calculationsPremiumsCascoTotal()
+        }
     }
   }
   
   calculationPremiumsAttachment(){
-    const msumaAseg = this.planFormGroup.get('msuma_aditamento')?.value;
+    const msumaAsegAdi = this.planFormGroup.get('msuma_aditamento')?.value;
     const paditamento = this.planFormGroup.get('paditamento')?.value;
 
     let calculo: number = 0;
     
-    if (typeof msumaAseg === 'number' && typeof paditamento === 'number') {
-      calculo = msumaAseg * paditamento / 100;
-      let valorTotal = calculo.toFixed(2)
-      this.planFormGroup.get('mprima_aditamento')?.setValue(valorTotal);
-      this.calculationsPremiumsCascoTotal()
+    if (typeof msumaAsegAdi === 'number' && typeof paditamento === 'number') {
+      let msumaAsegBlin = parseFloat(msumaAsegAdi);
+        if(msumaAsegBlin !== null){
+          
+          let max = this.sumaAseguradaBase * 0.60
+          let min = this.sumaAseguradaBase * 0.10
+  
+          let MaxSum = this.sumaAseguradaBase + max;
+          let MinSum = this.sumaAseguradaBase - min;
+  
+          this.sumaAseguradaMax = MaxSum.toFixed(2)
+          this.sumaAseguradaMin = MinSum.toFixed(2)
+  
+          if(msumaAsegBlin > this.sumaAseguradaMax){
+            this.snackBar.open('La Suma Asegurada excedió el 60%.', '', {
+              duration: 5000,
+            });
+  
+            this.planFormGroup.get('msuma_aditamento')?.setValue(this.sumaAseguradaBase);
+            this.calculationPremiumsAttachment()
+            return
+          }
+  
+          if(msumaAsegBlin < this.sumaAseguradaMin){
+            this.snackBar.open('La Suma Asegurada es menor al 10%.', '', {
+              duration: 5000,
+            });
+  
+            this.planFormGroup.get('msuma_aditamento')?.setValue(this.sumaAseguradaBase);
+            this.calculationPremiumsAttachment()
+            return
+          }
+
+          calculo = msumaAsegBlin * paditamento / 100;
+          let valorTotal = calculo.toFixed(2)
+          this.planFormGroup.get('mprima_aditamento')?.setValue(valorTotal);
+          this.calculationsPremiumsCascoTotal()
+        }
     }
   }
 
@@ -1558,18 +1624,25 @@ export class AutomobileComponent {
 
   calculateAccesories(i: any) {
     const creds = this.planFormGroup.controls.accesorios as FormArray;
-  
-    const xprimaAccesorio = creds.at(i).get('ptasa')?.value * (creds.at(i).get('sumaAsegurada')?.value / 100);
-    creds.at(i).get('xprimaAccesorio')?.setValue(xprimaAccesorio);
-  
-    this.calculationsPremiumsCascoTotal();
-  
-    let totalXprimaAccesorio = 0;
-    for (let j = 0; j < creds.length; j++) {
-      totalXprimaAccesorio += creds.at(j).get('xprimaAccesorio')?.value || 0;
+
+    if(creds.at(i).get('sumaAsegurada')?.value > 1500){
+      this.snackBar.open('La Suma Asegurada del Accesorio sobrepasó los 1500$.', '', {
+        duration: 3000,
+      });
+      creds.at(i).get('sumaAsegurada')?.setValue(null)
+    }else{
+      const xprimaAccesorio = creds.at(i).get('ptasa')?.value * (creds.at(i).get('sumaAsegurada')?.value / 100);
+      creds.at(i).get('xprimaAccesorio')?.setValue(xprimaAccesorio);
+    
+      this.calculationsPremiumsCascoTotal();
+    
+      let totalXprimaAccesorio = 0;
+      for (let j = 0; j < creds.length; j++) {
+        totalXprimaAccesorio += creds.at(j).get('xprimaAccesorio')?.value || 0;
+      }
+    
+      this.receiptFormGroup.get('mprima_accesorio')?.setValue(totalXprimaAccesorio.toString())
     }
-  
-    this.receiptFormGroup.get('mprima_accesorio')?.setValue(totalXprimaAccesorio.toString())
   }
 
   onToppingsChange(selectedToppings: any[]) {

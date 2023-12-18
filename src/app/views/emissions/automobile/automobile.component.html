@@ -385,7 +385,7 @@
                           matInput
                           [formControl]="brokerControl"
                           [matAutocomplete]="broker"
-                          required>
+                          >
                     <mat-autocomplete #broker="matAutocomplete" (optionSelected)="onBrokerSelection($event)">
                       <mat-option *ngFor="let broker of filteredBroker | async" [value]="broker">
                         {{ broker }}
