@@ -171,7 +171,7 @@
               <div class="card-body" *ngIf="quotesBoolean">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                   <div>
-                    <strong>Rcv: </strong>{{quotes.mprima}}$ / Anual
+                    <strong>Rcv: </strong>{{quotes.mtotal_rcv}}$ / Anual
                   </div>
                   <div>
                     <mat-slide-toggle color="primary" (change)="onToggle('Rcv', quotes.cplan_rc)"></mat-slide-toggle>
@@ -180,7 +180,7 @@
                 <br>
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                   <div>
-                    <strong>C. Amplia: </strong>{{quotes.mprima}}$ / Anual
+                    <strong>C. Amplia: </strong>{{quotes.mtotal_amplia}}$ / Anual
                   </div>
                   <div>
                     <mat-slide-toggle color="primary" (change)="onToggle('Cobertura Amplia', quotes.cplan_rc)"></mat-slide-toggle>
@@ -189,7 +189,7 @@
                 <br>
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                   <div>
-                    <strong>P. Total: </strong>{{quotes.mprima}}$ / Anual
+                    <strong>P. Total: </strong>{{quotes.mtotal_perdida}}$ / Anual
                   </div>
                   <div>
                     <mat-slide-toggle color="primary" (change)="onToggle('Perdida Total', quotes.cplan_rc)"></mat-slide-toggle>

@@ -224,9 +224,9 @@ export class AutomobileQuotesComponent {
       this.quotesForm.get('xversion')?.setValue(selectedVersion.value);
       this.quotesForm.get('ctarifa_exceso')?.setValue(selectedVersion.ctarifa_exceso);
       this.quotesForm.get('id_inma')?.setValue(selectedVersion.id_inma);
-      this.quotesForm.get('msuma_aseg')?.setValue(selectedVersion.msuma_aseg);
+      this.quotesForm.get('msuma_aseg')?.setValue(selectedVersion.msum);
       this.quotesForm.get('xclasificacion')?.setValue(selectedVersion.cclasificacion);
-      this.quotesForm.get('npasajeros')?.setValue(selectedVersion.npasajeros);
+      this.quotesForm.get('npasajeros')?.setValue(selectedVersion.npasajero);
 
       if(!this.quotesForm.get('ctarifa_exceso')?.value){
         this.activateRate = true;
@@ -294,6 +294,8 @@ export class AutomobileQuotesComponent {
       xclasificacion: this.quotesForm.get('xclasificacion')?.value,
       ncapacidad_p: this.quotesForm.get('npasajeros')?.value,
     }
+
+    console.log(data)
 
     this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/create', data).subscribe((response: any) => {
       if (response.status) {
