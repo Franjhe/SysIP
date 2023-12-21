@@ -1,10 +1,11 @@
-import {Component, ViewChild  } from '@angular/core';
+import {Component, ViewChild, TemplateRef  } from '@angular/core';
 import {FormBuilder, Validators, FormGroup, FormControl} from '@angular/forms';
 import {from, Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-automobile-quotes',
@@ -12,6 +13,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./automobile-quotes.component.scss']
 })
 export class AutomobileQuotesComponent {
+
+  @ViewChild("coverageModal") private coverageModal!: TemplateRef<any>;
 
   isActive: boolean = false;
 
@@ -67,6 +70,7 @@ export class AutomobileQuotesComponent {
   constructor( private _formBuilder: FormBuilder,
                private http: HttpClient,
                private snackBar: MatSnackBar,
+               readonly dialog: MatDialog,
              ) {}
 
   ngOnInit(){
@@ -295,8 +299,6 @@ export class AutomobileQuotesComponent {
       ncapacidad_p: this.quotesForm.get('npasajeros')?.value,
     }
 
-    console.log(data)
-
     this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/create', data).subscribe((response: any) => {
       if (response.status) {
         this.vector = false;
@@ -312,6 +314,10 @@ export class AutomobileQuotesComponent {
         this.version = this.quotesForm.get('xversion')?.value
       }
     })
+  }
+
+  openCoverages(config?: MatDialogConfig){
+    this.dialog.open(this.coverageModal, {width: '725px',})
   }
 
   onToggle(cobertura: string, plan: number) {

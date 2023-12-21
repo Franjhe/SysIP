@@ -195,6 +195,9 @@
                     <mat-slide-toggle color="primary" (change)="onToggle('Perdida Total', quotes.cplan_rc)"></mat-slide-toggle>
                   </div>
                 </div>
+                <button mat-raised-button color="primary" (click)="openCoverages()">
+                  Ver más
+                </button>
               </div>
             </div>
           </div>
@@ -229,3 +232,32 @@
     </div>
   
 </div>
+
+<ng-template #coverageModal >
+  <mat-dialog-content  >
+    
+    <div class="card">
+      <div class="header">
+        <div class="image">
+          <svg viewbox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+          <g id="SVGRepo_iconCarrier">
+            <path d="M20 7L9.00004 18L3.99994 13" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="8.5"></path>
+          </g></svg>
+        </div>
+        <div class="content">
+
+            <h2 class="title">Pago registrado</h2>
+            <h4>Valide todos los campos antes de registrar el anticipo</h4>
+            <h1>Garantizado - Aplica para Bono </h1>
+          
+
+
+        </div>
+      </div>
+    </div>
+
+
+  </mat-dialog-content>
+</ng-template>
