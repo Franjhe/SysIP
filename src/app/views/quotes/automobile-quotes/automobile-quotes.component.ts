@@ -5,7 +5,7 @@ import {map, startWith} from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-automobile-quotes',
@@ -23,6 +23,9 @@ export class AutomobileQuotesComponent {
   versionList: any[] = [];
   ratesList: any[] = [];
   quotesList:  any[] = [];
+  coverageListRcv: any[] = [];
+  coverageListAmplia: any[] = [];
+  coverageListPerdida: any[] = [];
 
   brandControl = new FormControl('');
   modelControl = new FormControl('');
@@ -51,6 +54,9 @@ export class AutomobileQuotesComponent {
   version!: any;
   bcv!: any ;
   plan!: any ;
+  montoRCV!: any ;
+  montoAmplia!: any ;
+  montoPerdida!: any ;
 
   quotesForm = this._formBuilder.group({
     xmarca: ['', Validators.required],
@@ -70,7 +76,7 @@ export class AutomobileQuotesComponent {
   constructor( private _formBuilder: FormBuilder,
                private http: HttpClient,
                private snackBar: MatSnackBar,
-               readonly dialog: MatDialog,
+               private modalService: NgbModal,
              ) {}
 
   ngOnInit(){
@@ -316,8 +322,28 @@ export class AutomobileQuotesComponent {
     })
   }
 
-  openCoverages(config?: MatDialogConfig){
-    this.dialog.open(this.coverageModal, {width: '725px',})
+  openCoverages(quotes: any){
+    const modalRef = this.modalService.open(this.coverageModal, { centered: true, size: 'xl' });
+    
+    this.montoRCV = quotes.mtotal_rcv;
+    this.montoAmplia = quotes.mtotal_amplia;
+    this.montoPerdida = quotes.mtotal_perdida;
+
+    this.searchCoverages();
+  }
+
+  searchCoverages(){
+    this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/search-coverages', null).subscribe((response: any) => {
+      if (response.status) {
+        this.coverageListRcv = response.data.rcv
+        this.coverageListAmplia = response.data.amplia
+        this.coverageListPerdida = response.data.perdida
+
+        this.coverageListRcv.sort((a, b) => a.corden > b.corden ? 1 : -1);
+        this.coverageListAmplia.sort((a, b) => a.corden > b.corden ? 1 : -1);
+        this.coverageListPerdida.sort((a, b) => a.corden > b.corden ? 1 : -1);
+      }
+    })
   }
 
   onToggle(cobertura: string, plan: number) {
