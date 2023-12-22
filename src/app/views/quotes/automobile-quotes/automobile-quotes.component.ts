@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { PdfGenerationService } from '../../../_services/ServicePDF'
 
 @Component({
   selector: 'app-automobile-quotes',
@@ -77,6 +78,7 @@ export class AutomobileQuotesComponent {
                private http: HttpClient,
                private snackBar: MatSnackBar,
                private modalService: NgbModal,
+               private pdfGenerationService: PdfGenerationService,
              ) {}
 
   ngOnInit(){
@@ -323,7 +325,7 @@ export class AutomobileQuotesComponent {
   }
 
   openCoverages(quotes: any){
-    const modalRef = this.modalService.open(this.coverageModal, { centered: true, size: 'xl' });
+    const modalRef = this.modalService.open(this.coverageModal, { centered: true, size: 'lg' });
     
     this.montoRCV = quotes.mtotal_rcv;
     this.montoAmplia = quotes.mtotal_amplia;
@@ -344,6 +346,19 @@ export class AutomobileQuotesComponent {
         this.coverageListPerdida.sort((a, b) => a.corden > b.corden ? 1 : -1);
       }
     })
+  }
+
+  onQuotePdf(){
+    const observable = from(this.pdfGenerationService.LoadDataQuotes(this.cotizacion));
+
+    observable.subscribe(
+      (data) => {
+        this.check = true;
+      },
+      (error) => {
+        console.log(error)
+      }
+    );
   }
 
   onToggle(cobertura: string, plan: number) {

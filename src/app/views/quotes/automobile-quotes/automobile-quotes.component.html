@@ -243,7 +243,7 @@
   <div class="modal-body">
     <mat-tab-group>
       <mat-tab label="Rcv"> 
-        <div class="col-5 py-4 mx-auto">
+        <div class="col-6 py-4 mx-auto">
           <div class="container-coverage">
               <p class="title-coverage">Rcv</p>
               <p class="price-coverage">{{ montoRCV }}$<span> / Anual</span></p>
@@ -262,7 +262,7 @@
         </div>
       </mat-tab>
       <mat-tab label="Cobertura Amplia">
-        <div class="col-5 py-4 mx-auto">
+        <div class="col-6 py-4 mx-auto">
           <div class="container-coverage">
             <p class="title-coverage">Cobertura Amplia</p>
             <p class="price-coverage">{{montoAmplia}}$<span> / Anual</span></p>
@@ -280,7 +280,7 @@
         </div>
       </mat-tab>
       <mat-tab label="Pérdida Total"> 
-        <div class="col-5 py-4 mx-auto">
+        <div class="col-6 py-4 mx-auto">
           <div class="container-coverage">
             <p class="title-coverage">Pérdida Total</p>
             <p class="price-coverage">{{montoPerdida}}$<span> / Anual</span></p>
@@ -298,5 +298,10 @@
         </div>
       </mat-tab>
     </mat-tab-group>
+
+    <div class="col-12" style="text-align: end;">
+      <button mat-raised-button color="primary" (click)="onQuotePdf()">Comparativa</button>
+    </div>
+
   </div>
 </ng-template>
