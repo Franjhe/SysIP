@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
+
 @Component({
   selector: 'app-payment-report',
   templateUrl: './payment-report.component.html',
@@ -14,6 +15,13 @@ export class PaymentReportComponent {
 
   @ViewChild('Alerta') Alerta!: TemplateRef<any>;
   @ViewChild('NotFound') NotFound!: TemplateRef<any>;
+
+  //modales de tipos de pago
+  @ViewChild('Transfer') Transfer!: TemplateRef<any>;
+  @ViewChild('Deposit') Deposit!: TemplateRef<any>;
+  @ViewChild('PagoMovil') PagoMovil!: TemplateRef<any>;
+  @ViewChild('DepositoUSD') DepositoUSD!: TemplateRef<any>;
+
 
 
   bcv : any
@@ -317,6 +325,30 @@ export class PaymentReportComponent {
 
   }
 
+
+  modalTransfer(config?: MatDialogConfig) {
+
+    return this.dialog.open(this.Transfer, config);
+
+  }
+
+  modalDeposit(config?: MatDialogConfig) {
+
+    return this.dialog.open(this.Deposit, config);
+
+  }
+
+  modalPagoMovil(config?: MatDialogConfig) {
+
+    return this.dialog.open(this.PagoMovil, config);
+
+  }
+
+  modalDepositoUSD(config?: MatDialogConfig) {
+
+    return this.dialog.open(this.DepositoUSD, config);
+
+  }
   validateMount(i : number ){
 
     const creds = this.searchReceipt.get("transfer") as FormArray

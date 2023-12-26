@@ -95,46 +95,21 @@
         </mat-step>
 
         <mat-step>
-          <ng-template matStepLabel>Identifica los números de cuenta a los cuales realizarás la transferencia</ng-template>
+          <ng-template matStepLabel>Como vas a pagar</ng-template>
           <div class="row text-center">
-            <h1>Nuestras Cuentas Bancarias</h1>
 
-            <h3>
-                Por favor, identifica claramente los números de cuenta a los cuales realizarás la transferencia.
-                 Asegúrate de verificar cuidadosamente cada dígito para evitar errores.
-            </h3>
+            <strong>Para reportar tu pago debes transferir un TOTAL de  
+              <h1 class="bold mt-4" style="font-size:2.5rem">{{mountIGTF}} $   --- {{mountBs}} Bs</h1> 
+              <h1 class="bold mt-4" >Tasa de calculo {{bcv}} Bs</h1>
+              <h2 class="bold mt-4" >El total incluye IGTF</h2>
+            </strong>  
 
-            <div class="col-lg-6">
-              <div class="card pb-4">
-                <h3><strong>Cuentas Nacionales </strong>    </h3>
-                <p class="text-start">
-                  <strong>BANESCO </strong>                         0134 0371 61 3711015662 <br>
-                  <strong>BANPLUS</strong>                         0174 0131 96 1314500040 <br>
-                  <strong>BANCAMIGA</strong>                       0172 0111 53 1118494549 <br>
-                  <strong>BANCO NACIONAL DE CREDITO </strong>      0191 0098 73 2198370018 <br>
-                  <strong>BANCO DE VENEZUELA </strong>             0102 0762 21 0000100104 <br>
-                  <strong>BANCO PLAZA</strong>                     0138 0040 59 0400012987
-                </p>
-              </div>
-
+            <div class="d-grid gap-2 col-6 mx-auto">
+              <button class="btn btn-primary rounded-pill p-3" type="button" (click)="modalTransfer()"><strong>Transferencia</strong></button>
+              <button class="btn btn-primary rounded-pill p-3" type="button" (click)="modalDeposit()"><strong>Deposito</strong></button>
+              <button class="btn btn-primary rounded-pill p-3" type="button" (click)="modalPagoMovil()"><strong>Pago Movil</strong></button>
+              <button class="btn btn-primary rounded-pill p-3" type="button" (click)="modalDepositoUSD()"><strong>Transferencia USD</strong></button>
             </div>
-
-            <div class="col-lg-6">
-              <div class="card pb-1">
-                <h3><strong> Cuentas internacionales</strong> </h3>
-                <p class="text-start">
-                  <strong>Beneficiary</strong>     Bee Insurance Managemen LLC <br>
-                  <strong>Bank </strong>           Well Fargo <br>
-                  <strong>Address</strong>         1110 Brickell Ave Suite 406 Miami Fl 33131-3135 <br>
-                  <strong>Account</strong>         3814894881 <br>
-                  <strong>Routing Number</strong>  063107513 <br>
-                  <strong>Swift </strong>          WFBIUS6SXXX <br>
-                  <strong>Zelle </strong>          paymentslamundial@gmail.com
-                </p>
-              </div>
-            </div>
-
-
 
           </div>
           <div class="mt-5">
@@ -152,11 +127,6 @@
               <h3>
                   Una vez hayas completado la transferencia, adjunta el comprobante de pago para que podamos procesar tu transacción de manera rápida y precisa. 
                   Puedes adjuntar imágenes o archivos PDF del comprobante.  <br>   
-                  <strong>Para reportar tu pago debes transferir un TOTAL de  
-                    <h1 class="bold mt-4" style="font-size:2.5rem">{{mountIGTF}} $   --- {{mountBs}} Bs</h1> 
-                    <h1 class="bold mt-4" >Tasa de calculo {{bcv}} Bs</h1>
-                    <h2 class="bold mt-4" >El total incluye IGTF</h2>
-                  </strong>  
 
                   <strong>En caso de no coincidir los montos su reporte pasara a supervición. </strong>             
               </h3>
@@ -285,6 +255,135 @@
               </div>
           </mat-dialog-content>
         </ng-template>
+
+        <ng-template #Transfer >
+          <mat-dialog-content  style="width: 70%;">
+              <div class="header">
+                <div class="container">
+                  <div class="row">
+                    <div>
+                      <strong class="title">Monto VES {{mountBs}}</strong>
+                      <button mat-icon-button color="primary" ngxClipboard [cbContent]="mountBs">
+                        <mat-icon>file_copy</mat-icon>
+                      </button>
+                    </div>
+                    <div>
+                      <strong class="title">Rif J-00084644-8</strong>
+                      <button mat-icon-button color="primary" ngxClipboard [cbContent]="'000846448'">
+                        <mat-icon>file_copy</mat-icon>
+                      </button>
+                    </div>
+
+                    <div style="background-color: azure;" class="mt-2">
+                      <strong>Bancos disponibles para esta transaccion</strong> <br>
+                      <strong>BCN </strong>0191 0098 73 2198370018  <button mat-icon-button color="primary" ngxClipboard [cbContent]="'01910098732198370018'"><mat-icon>file_copy</mat-icon></button><br>
+                      <strong>BANESCO </strong>0134 0371 61 3711015662  <button mat-icon-button color="primary" ngxClipboard [cbContent]="'01340371613711015662'"><mat-icon>file_copy</mat-icon></button><br>
+                      <strong>BANPLUS </strong>0174 0131 96 1314500040  <button mat-icon-button color="primary" ngxClipboard [cbContent]="'01740131961314500040'"><mat-icon>file_copy</mat-icon></button><br>
+                      <strong>BANCAMIGA </strong>0172 0111 53 1118494549  <button mat-icon-button color="primary" ngxClipboard [cbContent]="'01720111531118494549'"><mat-icon>file_copy</mat-icon> </button><br>
+                      <strong>BANCO DE VENEZUELA </strong>0102 0762 21 0000100104 <button mat-icon-button color="primary" ngxClipboard [cbContent]="'01020762210000100104'"><mat-icon>file_copy</mat-icon> </button><br>
+                      <strong>BANCO PLAZA</strong> 0138 0040 59 0400012987  <button mat-icon-button color="primary" ngxClipboard [cbContent]="'01380040590400012987'"><mat-icon>file_copy</mat-icon></button>
+                    </div>
+                  </div>
+
+   
+                </div>
+              </div>
+          </mat-dialog-content>
+        </ng-template>
+
+        <ng-template #Deposit >
+          <mat-dialog-content  >
+            <div class="header">
+              <div class="container">
+                <div class="row">
+                  <div>
+                    <strong class="title">Monto VES {{mountBs}}</strong>
+                    <button mat-icon-button color="primary" ngxClipboard [cbContent]="mountBs">
+                      <mat-icon>file_copy</mat-icon>
+                    </button>
+                  </div>
+                  <div>
+                    <strong class="title">Rif J-00084644-8</strong>
+                    <button mat-icon-button color="primary" ngxClipboard [cbContent]="'000846448'">
+                      <mat-icon>file_copy</mat-icon>
+                    </button>
+                  </div>
+
+                  <div style="background-color: azure;" class="mt-2">
+                    <strong>Bancos disponibles para esta transaccion</strong> <br>
+                    <strong>BCN </strong>0191 0098 73 2198370018  <button mat-icon-button color="primary" ngxClipboard [cbContent]="'01910098732198370018'"><mat-icon>file_copy</mat-icon></button><br>
+                    <strong>BANESCO </strong>0134 0371 61 3711015662  <button mat-icon-button color="primary" ngxClipboard [cbContent]="'01340371613711015662'"><mat-icon>file_copy</mat-icon></button><br>
+                    <strong>BANPLUS </strong>0174 0131 96 1314500040  <button mat-icon-button color="primary" ngxClipboard [cbContent]="'01740131961314500040'"><mat-icon>file_copy</mat-icon></button><br>
+                    <strong>BANCAMIGA </strong>0172 0111 53 1118494549  <button mat-icon-button color="primary" ngxClipboard [cbContent]="'01720111531118494549'"><mat-icon>file_copy</mat-icon> </button><br>
+                    <strong>BANCO DE VENEZUELA </strong>0102 0762 21 0000100104 <button mat-icon-button color="primary" ngxClipboard [cbContent]="'01020762210000100104'"><mat-icon>file_copy</mat-icon> </button><br>
+                    <strong>BANCO PLAZA</strong> 0138 0040 59 0400012987  <button mat-icon-button color="primary" ngxClipboard [cbContent]="'01380040590400012987'"><mat-icon>file_copy</mat-icon></button>
+                  </div>
+                </div>
+
+ 
+              </div>
+            </div>
+          </mat-dialog-content>
+        </ng-template>
+
+        <ng-template #PagoMovil >
+          <mat-dialog-content  >
+            <div class="header">
+              <div class="container">
+                <div class="row">
+                  <div>
+                    <strong class="title">Monto VES {{mountBs}}</strong>
+                    <button mat-icon-button color="primary" ngxClipboard [cbContent]="mountBs">
+                      <mat-icon>file_copy</mat-icon>
+                    </button>
+                  </div>
+                  <div>
+                    <strong class="title">Rif J-00084644-8</strong>
+                    <button mat-icon-button color="primary" ngxClipboard [cbContent]="'000846448'">
+                      <mat-icon>file_copy</mat-icon>
+                    </button>
+                  </div>
+
+                  <div style="background-color: azure;" class="mt-2">
+                    <strong>Bancos disponibles para esta transaccion</strong> <br>
+                    <strong>BANESCO </strong> <strong>04143966962</strong> <button mat-icon-button color="primary" ngxClipboard [cbContent]="'04143966962'"><mat-icon>file_copy</mat-icon></button><br>
+                    <strong>BANCAMIGA </strong> <strong>04128176856</strong> <button mat-icon-button color="primary" ngxClipboard [cbContent]="'04128176856'"><mat-icon>file_copy</mat-icon></button><br>
+                  </div>
+                </div>
+
+ 
+              </div>
+            </div>
+          </mat-dialog-content>
+        </ng-template>
+
+        <ng-template #DepositoUSD >
+          <mat-dialog-content  style="width: 70%;">
+              <div class="header">
+                <div class="container">
+                  <div class="">
+                      <strong class="title">Monto {{mountIGTF}} $</strong><button mat-icon-button color="primary" ngxClipboard [cbContent]="mountIGTF"><mat-icon>file_copy</mat-icon></button>
+                      <br><strong class="title">Rif J-00084644-8</strong><button mat-icon-button color="primary" ngxClipboard [cbContent]="'000846448'"><mat-icon>file_copy</mat-icon></button>
+                    <div>
+                      <p class="text-start mt-3">
+                        <strong>Beneficiary</strong>     Bee Insurance Managemen LLC <br>
+                        <strong>Bank </strong>           Well Fargo <br>
+                        <strong>Address</strong>         1110 Brickell Ave Suite 406 Miami Fl 33131-3135 <br>
+                        <strong>Account</strong>         3814894881 <br>
+                        <strong>Routing Number</strong>  063107513 <br>
+                        <strong>Swift </strong>          WFBIUS6SXXX <br>
+                        <strong>Zelle </strong>          paymentslamundial@gmail.com
+                      </p>
+                    </div>
+
+                  </div>
+
+
+                </div>
+              </div>
+          </mat-dialog-content>
+        </ng-template>
+
     </div>
 
 
