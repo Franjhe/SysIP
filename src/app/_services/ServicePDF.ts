@@ -196,12 +196,16 @@ export class PdfGenerationService {
 	xcorreo :string | undefined;
 	xestado :string | undefined;
 	xciudad :string | undefined;
-	 xtransmision: any;
-	 nkilometraje: any;
-	 xzona_postal_propietario: any;
-	 xclase: any;
-	 fmespol:string | undefined;
-	 fanopol:string | undefined;
+	xtransmision: any;
+	nkilometraje: any;
+	xzona_postal_propietario: any;
+	xclase: any;
+	fmespol:string | undefined;
+	fanopol:string | undefined;
+	rcv: any;
+	camplia: any;
+	ptotal: any;
+	allCoverages: any;
 
 
 
@@ -749,7 +753,22 @@ export class PdfGenerationService {
 		}
 	}
 
-	async LoadDataQuotes(cotizacion : any) {
+	async LoadDataQuotes(cotizacion : any, rcv : any, amplia : any, ptotal : any, allCoverages: any, cplan: any) {
+		this.rcv = rcv.toFixed(2);
+		this.camplia = amplia.toFixed(2);
+		this.ptotal = ptotal.toFixed(2);
+		this.allCoverages = allCoverages;
+				
+		let data = {
+			ccotizacion: cotizacion,
+			cplan: cplan,
+			coverage: this.allCoverages
+		}
+
+		this.http.post( environment.apiUrl + '/api/v1/quotes/automobile/detail', data).subscribe( async (response: any) => {
+
+		})
+	  
 		this.quotesPdf();
 	}
 
@@ -1026,6 +1045,22 @@ export class PdfGenerationService {
 		else {
 		  return ' ';
 		}
+	  }
+
+	  buildCoveragesQuotesBody() {
+		let body = [];
+		if (this.allCoverages.length > 0){
+		  this.allCoverages.forEach(function(row: any) {
+			let dataRow = [];
+			dataRow.push({text: row.xcobertura, margin: [11, 10, 0, 0], alignment: 'center', bold: true, border: [false, false, false, false]});
+			body.push(dataRow);
+		  })
+		} else {
+		  let dataRow = [];
+		  dataRow.push({text: ' ', border: [false, false, false, false]});
+		  body.push(dataRow);
+		}
+		return body;
 	  }
 	
 	  buildAccesoriesBody() {
@@ -2052,9 +2087,44 @@ export class PdfGenerationService {
 					style: 'title',
 					margin: [0, 0, 0, 2],
 					text: [
-					  { text: '\nCOTIZACIÓN', bold: true },
-					  { text: '\nAUTOMÓVIL', bold: true },
+					  { text: '\nCOTIZACIÓN AUTOMÓVIL', bold: true }
 					]
+				},
+				{
+					style: 'data',
+					table: {
+					widths: [190, 100, '*'],
+					body: [
+						[{text: 'RCV', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}, {text: 'COBERTURA AMPLIA', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}, {text: 'PÉRDIDA TOTAL', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
+					]
+					}
+				},
+				{
+					style: 'data',
+					margin: [0, 0, 0, 2],
+					table: {
+					  widths: [190, 100, '*'],
+					  body: [
+						[{text: this.rcv, alignment: 'center', bold: true, border: [false, false, false, false]}, {text: this.camplia, alignment: 'center', border: [false, false, false, false]}, {text: this.ptotal, alignment: 'center', bold: true, border: [false, false, false, false]}]
+					  ]
+					}
+				},
+				{
+					style: 'data',
+					table: {
+					widths: [210, 90, 100, '*'],
+					body: [
+						[{text: 'COBERTURAS', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}, {text: 'S.A. RCV', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}, {text: 'S.A. COBERTURA AMPLIA', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}, {text: 'S.A. PÉRDIDA TOTAL', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
+					]
+					}
+				},
+				{
+					style: 'data',
+					margin: [0, 0, 0, 2],
+					table: {
+					  widths: [200],
+					  body: this.buildCoveragesQuotesBody()
+					}
 				},
 			  ], 
 			  styles: {
@@ -2068,7 +2138,7 @@ export class PdfGenerationService {
 				  color: 'gray'
 				},
 				data: {
-				  fontSize: 6.5
+				  fontSize: 7
 				},
 			  }
 			}

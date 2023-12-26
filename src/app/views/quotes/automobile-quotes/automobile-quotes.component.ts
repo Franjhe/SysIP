@@ -27,6 +27,7 @@ export class AutomobileQuotesComponent {
   coverageListRcv: any[] = [];
   coverageListAmplia: any[] = [];
   coverageListPerdida: any[] = [];
+  allCoverages: any[] = [];
 
   brandControl = new FormControl('');
   modelControl = new FormControl('');
@@ -58,6 +59,7 @@ export class AutomobileQuotesComponent {
   montoRCV!: any ;
   montoAmplia!: any ;
   montoPerdida!: any ;
+  planPdf!: any ;
 
   quotesForm = this._formBuilder.group({
     xmarca: ['', Validators.required],
@@ -330,7 +332,7 @@ export class AutomobileQuotesComponent {
     this.montoRCV = quotes.mtotal_rcv;
     this.montoAmplia = quotes.mtotal_amplia;
     this.montoPerdida = quotes.mtotal_perdida;
-
+    this.planPdf = quotes.cplan_rc
     this.searchCoverages();
   }
 
@@ -340,6 +342,7 @@ export class AutomobileQuotesComponent {
         this.coverageListRcv = response.data.rcv
         this.coverageListAmplia = response.data.amplia
         this.coverageListPerdida = response.data.perdida
+        this.allCoverages = response.data.allCoverages
 
         this.coverageListRcv.sort((a, b) => a.corden > b.corden ? 1 : -1);
         this.coverageListAmplia.sort((a, b) => a.corden > b.corden ? 1 : -1);
@@ -349,11 +352,10 @@ export class AutomobileQuotesComponent {
   }
 
   onQuotePdf(){
-    const observable = from(this.pdfGenerationService.LoadDataQuotes(this.cotizacion));
+    const observable = from(this.pdfGenerationService.LoadDataQuotes(this.cotizacion, this.montoRCV, this.montoAmplia, this.montoPerdida, this.allCoverages, this.planPdf));
 
     observable.subscribe(
       (data) => {
-        this.check = true;
       },
       (error) => {
         console.log(error)
