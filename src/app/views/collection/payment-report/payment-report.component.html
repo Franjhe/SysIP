@@ -145,28 +145,63 @@
                               <option *ngFor="let coin of coinList" value="{{ coin.id }}">{{ coin.id }}</option>
                             </select>                     
                           </div>
-  
-                          <div class="form-outline mt-3" >
+
+                          <div class="form-outline mt-3" *ngIf="!usd && !pmovil">
                             <select formControlName="cbanco" class="form-control rounded-input form-control-lg colorgris">
-                              <option disabled>Seleccione el banco remitente</option>
+                              <option disabled>Seleccione el banco de emision</option>
                               <option *ngFor="let backE of backEmitter" value="{{ backE.id }}">{{ backE.value }}</option>
-                            </select>                     
+                            </select>
                           </div>
-  
-                          <div class="form-outline mt-3" *ngIf="!viewBank">
+
+                          <div class="form-outline mt-3" *ngIf="!usd && !pmovil">
                             <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris">
                               <option disabled>Seleccione el banco receptor</option>
-                              <option *ngFor="let backR of backReceptors" value="{{ backR.id }}">{{ backR.value }}</option>
+                              <option value="15">Banesco</option>
+                              <option value="2">Bancamiga</option>
+                              <option value="21">BCN </option>
+                              <option value="18">BANPLUS </option>
+                              <option value="7">BANCO DE VENEZUELA</option>
+                              <option value="11">BANCO PLAZA</option> 
+
                             </select>                     
                           </div>
-  
-                          <div class="form-outline mt-3" *ngIf="viewBank">
+
+                          <!-- pagp movil -->
+
+                          <div class="form-outline mt-3" *ngIf="pmovil && !usd ">
+                            <select formControlName="cbanco" class="form-control rounded-input form-control-lg colorgris">
+                              <option disabled>Seleccione el banco de emision</option>
+                              <option *ngFor="let backE of backEmitter" value="{{ backE.id }}">{{ backE.value }}</option>
+                            </select>
+                          </div>
+
+                          <div class="form-outline mt-3" *ngIf="pmovil && !usd ">
                             <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris">
                               <option disabled>Seleccione el banco receptor</option>
-                              <option *ngFor="let backR of bankList" value="{{ backR.id }}">{{ backR.value }}</option>
+                              <option value="15">Banesco</option>
+                              <option value="2">Bancamiga</option>
                             </select>                     
                           </div>
   
+                          <!-- pago usd  -->
+                          <div class="form-outline mt-3" *ngIf="usd && !pmovil">
+                            <select formControlName="cbanco" class="form-control rounded-input form-control-lg colorgris">
+                              <option disabled>Seleccione el banco de emision</option>
+                              <option value="25">Zelle</option>
+                              <option value="25">Well Fargo</option>
+                            </select>                     
+                          </div>
+
+
+                          <div class="form-outline mt-3" *ngIf="usd && !pmovil">
+                            <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris">
+                              <option disabled>Seleccione el banco receptor</option>
+                              <option value="25">Well Fargo</option>
+                            </select>                     
+                          </div>
+  
+
+
                       </div>
   
                       <div class="col-lg-4">

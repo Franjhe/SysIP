@@ -22,8 +22,6 @@ export class PaymentReportComponent {
   @ViewChild('PagoMovil') PagoMovil!: TemplateRef<any>;
   @ViewChild('DepositoUSD') DepositoUSD!: TemplateRef<any>;
 
-
-
   bcv : any
   targetBankList : any = []
   selectedFiles?: FileList;
@@ -32,6 +30,9 @@ export class PaymentReportComponent {
   viewData : boolean = false
   viewBank : boolean = false
   paymentMix : boolean = false
+
+  usd : boolean = false
+  pmovil : boolean = false
 
   cliente : any
 
@@ -147,18 +148,18 @@ export class PaymentReportComponent {
       }
     })
 
-    let extranjero = {
-      itipo: 'e'
-    }
+    // let extranjero = {
+    //   itipo: 'e'
+    // }
 
-    this.http.post(environment.apiUrl + '/api/v1/valrep/bank', extranjero).subscribe((response: any) => {
-      for(let i = 0; i < response.data.bank.length; i++){
-        this.backReceptors.push({
-          id: response.data.bank[i].cbanco,
-          value: response.data.bank[i].xbanco,
-        })        
-      }
-    })
+    // this.http.post(environment.apiUrl + '/api/v1/valrep/bank', extranjero).subscribe((response: any) => {
+    //   for(let i = 0; i < response.data.bank.length; i++){
+    //     this.backReceptors.push({
+    //       id: response.data.bank[i].cbanco,
+    //       value: response.data.bank[i].xbanco,
+    //     })        
+    //   }
+    // })
 
   }
 
@@ -327,30 +328,30 @@ export class PaymentReportComponent {
 
 
   modalTransfer(config?: MatDialogConfig) {
-
+    this.changeStatusTrans()
     return this.dialog.open(this.Transfer, config);
 
   }
 
   modalDeposit(config?: MatDialogConfig) {
-
+    this.changeStatusTrans()
     return this.dialog.open(this.Deposit, config);
 
   }
 
   modalPagoMovil(config?: MatDialogConfig) {
-
+    this.changeStatusPm()
     return this.dialog.open(this.PagoMovil, config);
 
   }
 
   modalDepositoUSD(config?: MatDialogConfig) {
-
+    this.changeStatusUSD()
     return this.dialog.open(this.DepositoUSD, config);
 
   }
-  validateMount(i : number ){
 
+  validateMount(i : number ){
     const creds = this.searchReceipt.get("transfer") as FormArray
     const mountDeclare = creds.at(i).get('mpago')?.value
 
@@ -571,6 +572,41 @@ export class PaymentReportComponent {
     })          
         
 
+  }
+
+  changeStatusPm(){
+    if(this.pmovil == false){
+      this.pmovil = true
+    }else{
+      this.pmovil = false
+    }
+
+    if(this.usd == true){
+      this.usd = false
+    }
+    
+  }
+
+  changeStatusTrans(){
+    if(this.pmovil == true){
+      this.pmovil = false
+    }
+    if(this.usd == true){
+      this.usd = false
+    }
+    
+  }
+
+  changeStatusUSD(){
+    if(this.usd == false){
+      this.usd = true
+    }else{
+      this.usd = false
+    }
+
+    if(this.pmovil == true){
+      this.pmovil = false
+    }
   }
 
 
