@@ -1,5 +1,6 @@
 import {Component, ViewChild  } from '@angular/core';
 import {FormBuilder, Validators, FormGroup, FormControl , FormArray} from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import {from, Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
@@ -162,6 +163,7 @@ export class AutomobileComponent {
   primaRiesgo!: any ; 
   primaRobo!: any ; 
   primaFinal!: any ; 
+  ccotizacion!: any ; 
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -263,10 +265,19 @@ export class AutomobileComponent {
                private dateAdapter: DateAdapter<Date>,
                private pdfGenerationService: PdfGenerationService,
                private snackBar: MatSnackBar,
-               private cdr: ChangeDetectorRef
+               private cdr: ChangeDetectorRef,
+               private route: ActivatedRoute
                ) {
                 dateAdapter.setLocale('es');
+                this.route.queryParams.subscribe(params => {
+                  const cotizacion = params['cotizacion'];
+                  this.ccotizacion = cotizacion
+                });
 
+                if(this.ccotizacion){
+                  this.vehicleFormGroup.get('ccotizacion')?.setValue(this.ccotizacion);
+                  this.searchQuotes();
+                }
               }
 
   get accesorios() : FormArray {
@@ -2001,6 +2012,26 @@ export class AutomobileComponent {
     }
   }
 
+  searchQuotes(){
+    console.log(this.ccotizacion)
+    let data = {
+      ccotizacion: this.vehicleFormGroup.get('ccotizacion')?.value
+    }
+
+    this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/search-quote', data).subscribe((response: any) => {
+      if(response.status){
+        this.personsFormGroup.get('xnombre')?.setValue(response.data.xnombre);
+        this.personsFormGroup.get('xapellido')?.setValue(response.data.xapellido);
+        this.personsFormGroup.get('email')?.setValue(response.data.email);
+        this.vehicleFormGroup.get('xmarca')?.setValue(response.data.xmarca);
+        this.vehicleFormGroup.get('xmodelo')?.setValue(response.data.xmodelo);
+        this.vehicleFormGroup.get('xversion')?.setValue(response.data.xversion);
+        this.vehicleFormGroup.get('npasajeros')?.setValue(response.data.npasajeros);
+        this.vehicleFormGroup.get('fano')?.setValue(response.data.fano);
+        this.planFormGroup.get('cplan')?.setValue(response.data.cplan);
+      }
+    })
+  }
 
   operationUbii() {
     if (this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv') {

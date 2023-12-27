@@ -206,7 +206,9 @@ export class PdfGenerationService {
 	camplia: any;
 	ptotal: any;
 	allCoverages: any;
-
+	coveragesList:  any;
+	ncotizacion:  any;
+	xusuario:  any;
 
 
   constructor(
@@ -753,11 +755,12 @@ export class PdfGenerationService {
 		}
 	}
 
-	async LoadDataQuotes(cotizacion : any, rcv : any, amplia : any, ptotal : any, allCoverages: any, cplan: any) {
+	async LoadDataQuotes(cotizacion : any, rcv : any, amplia : any, ptotal : any, allCoverages: any, cplan: any, dataVehicle: any) {
 		this.rcv = rcv.toFixed(2);
 		this.camplia = amplia.toFixed(2);
 		this.ptotal = ptotal.toFixed(2);
 		this.allCoverages = allCoverages;
+		
 				
 		let data = {
 			ccotizacion: cotizacion,
@@ -766,7 +769,17 @@ export class PdfGenerationService {
 		}
 
 		this.http.post( environment.apiUrl + '/api/v1/quotes/automobile/detail', data).subscribe( async (response: any) => {
-
+			if(response.status){
+				this.coveragesList = response.data.list;
+				this.xmarca = dataVehicle.xmarca;
+				this.xmodelo = dataVehicle.xmodelo;
+				this.xversion = dataVehicle.xversion;
+				this.ncapacidadpasajerosvehiculo = dataVehicle.npasajeros;
+				this.fano = dataVehicle.fano;
+				this.ncotizacion = cotizacion;
+				this.xusuario = dataVehicle.xusuario.toUpperCase();
+				this.xcorreo = dataVehicle.xcorreo.toUpperCase();
+			}
 		})
 	  
 		this.quotesPdf();
@@ -1047,20 +1060,107 @@ export class PdfGenerationService {
 		}
 	  }
 
-	  buildCoveragesQuotesBody() {
-		let body = [];
-		if (this.allCoverages.length > 0){
-		  this.allCoverages.forEach(function(row: any) {
-			let dataRow = [];
-			dataRow.push({text: row.xcobertura, margin: [11, 10, 0, 0], alignment: 'center', bold: true, border: [false, false, false, false]});
-			body.push(dataRow);
-		  })
-		} else {
-		  let dataRow = [];
-		  dataRow.push({text: ' ', border: [false, false, false, false]});
-		  body.push(dataRow);
-		}
+	buildCoveragesQuotesBody() {
+		const body = this.coveragesList.map((row: any) => ({
+		  coverageName: row.xcobertura,
+		  amount: '', 
+		}));
+	  
 		return body;
+	}
+
+	buildCoveragesQuotesRcvBody(): any[] {
+		const body: any[] = [];
+	  
+		const specificCoverages: string[] = ['Daños a Cosas', 'Daños a Personas', 'Defensa Penal', 'Exceso de Limite', 'Muerte Accidental', 'Invalidez Permanente', 'Gastos Médicos', 'Gastos Funerarios'];
+	  
+		specificCoverages.forEach((specificCoverage: string) => {
+		  const matchingRow = this.coveragesList.find((row: any) => row.xcobertura === specificCoverage);
+	  
+		  const dataRow: any = {
+			coverageName: specificCoverage,
+			amount: matchingRow ? matchingRow.msuma_dc || matchingRow.msuma_persona || matchingRow.msuma_defensa || matchingRow.msuma_exceso || matchingRow.msuma_muerte || matchingRow.msuma_invalidez || matchingRow.msuma_gm || matchingRow.msuma_gf : '',
+		  };
+	  
+		  body.push(dataRow);
+		});
+	  
+		return body;
+	}
+
+	buildCoveragesQuotesCABody(): any[] {
+		const body: any[] = [];
+	  
+		const specificCoverages: string[] = ['Cobertura Amplia', 'Riesgo Catastrofico', 'Indemnizacion Diaria por Robo', 'Daños a Cosas', 'Daños a Personas', 'Defensa Penal', 'Exceso de Limite', 'Muerte Accidental', 'Invalidez Permanente', 'Gastos Médicos', 'Gastos Funerarios'];
+	  
+		specificCoverages.forEach((specificCoverage: string) => {
+		  const matchingRow = this.coveragesList.find((row: any) => row.xcobertura === specificCoverage);
+	  
+		  const dataRow: any = {
+			coverageName: specificCoverage,
+			amount: matchingRow ? matchingRow.msuma_amplia ||matchingRow.msuma_catastrofico ||matchingRow.msuma_indem ||matchingRow.msuma_dc || matchingRow.msuma_persona || matchingRow.msuma_defensa || matchingRow.msuma_exceso || matchingRow.msuma_muerte || matchingRow.msuma_invalidez || matchingRow.msuma_gm || matchingRow.msuma_gf : '',
+		  };
+	  
+		  body.push(dataRow);
+		});
+	  
+		return body;
+	}
+
+	buildCoveragesQuotesPTBody(): any[] {
+		const body: any[] = [];
+	  
+		const specificCoverages: string[] = ['Perdida Total', 'Riesgo Catastrofico', 'Indemnizacion Diaria por Perdida Total', 'Daños a Cosas', 'Daños a Personas', 'Defensa Penal', 'Exceso de Limite', 'Muerte Accidental', 'Invalidez Permanente', 'Gastos Médicos', 'Gastos Funerarios'];
+	  
+		specificCoverages.forEach((specificCoverage: string) => {
+		  const matchingRow = this.coveragesList.find((row: any) => row.xcobertura === specificCoverage);
+	  
+		  const dataRow: any = {
+			coverageName: specificCoverage,
+			amount: matchingRow ? matchingRow.msuma_total || matchingRow.msuma_catastrofico || matchingRow.msuma_indem || matchingRow.msuma_dc || matchingRow.msuma_persona || matchingRow.msuma_defensa || matchingRow.msuma_exceso || matchingRow.msuma_muerte || matchingRow.msuma_invalidez || matchingRow.msuma_gm || matchingRow.msuma_gf : '',
+		  };
+	  
+		  body.push(dataRow);
+		});
+	  
+		return body;
+	}
+
+	combineCoveragesAndAmounts(): any[] {
+		const combinedData: any[] = [];
+	  
+		const body1 = this.buildCoveragesQuotesBody();
+		const body2 = this.buildCoveragesQuotesRcvBody();
+		const body3 = this.buildCoveragesQuotesCABody();
+		const body4 = this.buildCoveragesQuotesPTBody();
+	  
+		const maxLength = Math.max(body1.length, body2.length, body3.length, body4.length);
+	  
+		for (let i = 0; i < maxLength; i++) {
+		  const rowData: any = {};
+	  
+		  // Asegúrate de que body1[i] y body2[i] sean objetos válidos
+		  const row1 = body1[i] || {};
+		  const row2 = body2[i] || {};
+		  const row3 = body3[i] || {};
+		  const row4 = body4[i] || {};
+	  
+		  // Agrega las columnas correspondientes a rowData
+		  rowData.coverageName1 = row1.coverageName || '';
+		  rowData.amount1 = row1.amount || '';
+		  rowData.coverageName2 = row2.coverageName || '';
+		  rowData.amount2 = typeof row2.amount === 'number' ? row2.amount.toFixed(2) : '';
+		  rowData.coverageName3 = row3.coverageName || '';
+		  rowData.amount3 = typeof row3.amount === 'number' ? row3.amount.toFixed(2) : '';
+		  rowData.coverageName4 = row4.coverageName || '';
+		  rowData.amount4 = typeof row4.amount === 'number' ? row4.amount.toFixed(2) : '';
+
+
+	  
+		  combinedData.push(rowData);
+		}
+	  
+		return combinedData;
 	  }
 	
 	  buildAccesoriesBody() {
@@ -2093,15 +2193,71 @@ export class PdfGenerationService {
 				{
 					style: 'data',
 					table: {
-					widths: [190, 100, '*'],
+					widths: ['*'],
 					body: [
-						[{text: 'RCV', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}, {text: 'COBERTURA AMPLIA', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}, {text: 'PÉRDIDA TOTAL', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
+							[{text: 'DATOS DEL USUARIO', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
+						]
+					}
+				},
+				{
+					style: 'data',
+					margin: [0, 0, 0, 3],
+					table: {
+					  widths: [60, 100, 40, 100, 40, '*'],
+					  body: [
+						[{text: 'N° COTIZACIÓN:', bold: true, border: [false, false, false, false]}, {text: this.ncotizacion, border: [false, false, false, false]}, {text: 'CLIENTE:', bold: true, border: [false, false, false, false]}, {text: this.xusuario, border: [false, false, false, false]}, {text: 'EMAIL:', bold: true, border: [false, false, false, false]}, {text: this.xcorreo, border: [false, false, false, false]}]
+					  ]
+					}
+				},
+				{
+					style: 'data',
+					table: {
+					widths: ['*'],
+					body: [
+							[{text: 'DATOS DEL VEHICULO', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
+						]
+					}
+				},
+				{
+					style: 'data',
+					table: {
+					  widths: [40, 100, 40, 100, 40, '*'],
+					  body: [
+						[{text: 'MARCA:', bold: true, border: [false, false, false, false]}, {text: this.xmarca, border: [false, false, false, false]}, {text: 'MODELO:', bold: true, border: [false, false, false, false]}, {text: this.xmodelo, border: [false, false, false, false]}, {text: 'VERSION:', bold: true, border: [false, false, false, false]}, {text: this.xversion, border: [false, false, false, false]}]
+					  ]
+					}
+				},
+				{
+					style: 'data',
+					margin: [0, 0, 0, 3],
+					table: {
+					  widths: [120, 30, 100, 70, '*'],
+					  body: [
+						[{text: ' ', bold: true, border: [false, false, false, false]}, {text: 'AÑO:', bold: true, border: [false, false, false, false]}, {text: this.fano, border: [false, false, false, false]}, {text: 'PASAJEROS', bold: true, border: [false, false, false, false]}, {text: this.ncapacidadpasajerosvehiculo, border: [false, false, false, false]}]
+					  ]
+					}
+				}, 
+				{
+					style: 'data',
+					table: {
+					widths: ['*'],
+					body: [
+						[{text: 'PRIMAS TOTALES', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
 					]
 					}
 				},
 				{
 					style: 'data',
-					margin: [0, 0, 0, 2],
+					table: {
+					widths: [190, 100, '*'],
+					body: [
+						[{text: 'RCV', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'COBERTURA AMPLIA', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'PÉRDIDA TOTAL', alignment: 'center', bold: true, border: [false, false, false, false]}]
+					]
+					}
+				},
+				{
+					style: 'data',
+					margin: [0, 0, 0, 3],
 					table: {
 					  widths: [190, 100, '*'],
 					  body: [
@@ -2112,18 +2268,70 @@ export class PdfGenerationService {
 				{
 					style: 'data',
 					table: {
-					widths: [210, 90, 100, '*'],
+					widths: ['*'],
 					body: [
-						[{text: 'COBERTURAS', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}, {text: 'S.A. RCV', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}, {text: 'S.A. COBERTURA AMPLIA', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}, {text: 'S.A. PÉRDIDA TOTAL', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
+						[{text: 'COBERTURAS RCV', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
 					]
 					}
 				},
 				{
 					style: 'data',
-					margin: [0, 0, 0, 2],
+					margin: [0, 0, 0, 3],
 					table: {
-					  widths: [200],
-					  body: this.buildCoveragesQuotesBody()
+					  widths: [280, '*'],
+					  body: [
+						[{text: 'COBERTURAS', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'SUMA ASEGURADA', alignment: 'left', bold: true, border: [false, false, false, false]}],
+						...this.combineCoveragesAndAmounts().map(row => [
+						  {text: row.coverageName2, alignment: 'center', border: [false, false, false, false]},
+						  {text: row.amount2, alignment: 'left', border: [false, false, false, false]}
+						]),
+					  ]
+					}
+				},
+				{
+					style: 'data',
+					table: {
+					widths: ['*'],
+					body: [
+						[{text: 'COBERTURAS DE COBERTURA AMPLIA', fillColor: '#D7D7D7', alignment: 'center', bold: true, border: [false, false, false, false]}]
+					]
+					}
+				},
+				{
+					style: 'data',
+					margin: [0, 0, 0, 3],
+					table: {
+					  widths: [280, '*'],
+					  body: [
+						[{text: 'COBERTURAS', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'SUMA ASEGURADA', alignment: 'left', bold: true, border: [false, false, false, false]}],
+						...this.combineCoveragesAndAmounts().map(row => [
+						  {text: row.coverageName3, alignment: 'center', border: [false, false, false, false]},
+						  {text: row.amount3, alignment: 'left', border: [false, false, false, false]}
+						]),
+					  ]
+					}
+				},
+				{
+					style: 'data',
+					table: {
+					widths: ['*'],
+					body: [
+						[{text: 'COBERTURAS DE PÉRDIDA TOTAL', fillColor: '#D7D7D7', alignment: 'center', bold: true, border: [false, false, false, false]}]
+					]
+					}
+				},
+				{
+					style: 'data',
+					margin: [0, 0, 0, 3],
+					table: {
+					  widths: [280, '*'],
+					  body: [
+						[{text: 'COBERTURAS', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'SUMA ASEGURADA', alignment: 'left', bold: true, border: [false, false, false, false]}],
+						...this.combineCoveragesAndAmounts().map(row => [
+						  {text: row.coverageName4, alignment: 'center', border: [false, false, false, false]},
+						  {text: row.amount4, alignment: 'left', border: [false, false, false, false]}
+						]),
+					  ]
 					}
 				},
 			  ], 
@@ -2138,7 +2346,7 @@ export class PdfGenerationService {
 				  color: 'gray'
 				},
 				data: {
-				  fontSize: 7
+				  fontSize: 7.5
 				},
 			  }
 			}

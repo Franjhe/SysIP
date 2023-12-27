@@ -1,4 +1,5 @@
 import {Component, ViewChild, TemplateRef  } from '@angular/core';
+import { Router, NavigationExtras, ActivatedRoute } from '@angular/router';
 import {FormBuilder, Validators, FormGroup, FormControl} from '@angular/forms';
 import {from, Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
@@ -28,6 +29,7 @@ export class AutomobileQuotesComponent {
   coverageListAmplia: any[] = [];
   coverageListPerdida: any[] = [];
   allCoverages: any[] = [];
+  dataVehicle!: {}
 
   brandControl = new FormControl('');
   modelControl = new FormControl('');
@@ -81,6 +83,7 @@ export class AutomobileQuotesComponent {
                private snackBar: MatSnackBar,
                private modalService: NgbModal,
                private pdfGenerationService: PdfGenerationService,
+               private router: Router,
              ) {}
 
   ngOnInit(){
@@ -333,6 +336,16 @@ export class AutomobileQuotesComponent {
     this.montoAmplia = quotes.mtotal_amplia;
     this.montoPerdida = quotes.mtotal_perdida;
     this.planPdf = quotes.cplan_rc
+
+    this.dataVehicle = {
+      xmarca: this.quotesForm.get('xmarca')?.value,
+      xmodelo: this.quotesForm.get('xmodelo')?.value,
+      xversion: this.quotesForm.get('xversion')?.value,
+      npasajeros: this.quotesForm.get('npasajeros')?.value,
+      fano: this.quotesForm.get('fano')?.value,
+      xusuario: this.quotesForm.get('xnombre')?.value + ' ' + this.quotesForm.get('xapellido')?.value,
+      xcorreo: this.quotesForm.get('email')?.value
+    }
     this.searchCoverages();
   }
 
@@ -352,7 +365,7 @@ export class AutomobileQuotesComponent {
   }
 
   onQuotePdf(){
-    const observable = from(this.pdfGenerationService.LoadDataQuotes(this.cotizacion, this.montoRCV, this.montoAmplia, this.montoPerdida, this.allCoverages, this.planPdf));
+    const observable = from(this.pdfGenerationService.LoadDataQuotes(this.cotizacion, this.montoRCV, this.montoAmplia, this.montoPerdida, this.allCoverages, this.planPdf, this.dataVehicle));
 
     observable.subscribe(
       (data) => {
@@ -401,9 +414,15 @@ export class AutomobileQuotesComponent {
         this.loading = false;
         this.check = true;
 
-        this.snackBar.open(`Se ha cotizado exitosamente.`, '', {
-          duration: 5000,
-        });
+        const navigationExtras: NavigationExtras = {
+          queryParams: { cotizacion: this.cotizacion }
+        };
+
+        if (window.confirm("¡Se ha cotizado exitosamente!... ¿Desea Emitir la Cotización?")) {
+          this.router.navigate(['/emissions/automobile'], navigationExtras);
+        } else {
+          location.reload();
+        }
       }
     })
   }
