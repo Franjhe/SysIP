@@ -137,6 +137,8 @@ export class AutomobileComponent {
   amountBs: boolean = false;
   paymentButtons: boolean = true;
   activateGroup: boolean = false;
+  activateBrandList: boolean = true;
+  activateBrandText: boolean = false;
   primaBruta!: any;
   descuento!: any;
   sumaAsegurada!: any;
@@ -164,6 +166,9 @@ export class AutomobileComponent {
   primaRobo!: any ; 
   primaFinal!: any ; 
   ccotizacion!: any ; 
+  fano!: any ; 
+  cplan!: any ; 
+  ctarifa!: any ; 
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -184,9 +189,9 @@ export class AutomobileComponent {
     ccotizacion: [{ value: '', disabled: false }],
     cinspeccion: [{ value: '', disabled: false }],
     xplaca: ['',[Validators.required, Validators.maxLength(7)]],
-    xmarca: ['', Validators.required],
-    xmodelo: ['', Validators.required],
-    xversion: ['', Validators.required],
+    xmarca: [{ value: '', disabled: true}, Validators.required],
+    xmodelo: [{ value: '', disabled: true}, Validators.required],
+    xversion: [{ value: '', disabled: true}, Validators.required],
     fano: ['',[Validators.required, Validators.maxLength(4)]],
     npasajeros: [{ value: '', disabled: true }],
     cclasificacion: [''], 
@@ -209,6 +214,7 @@ export class AutomobileComponent {
 
   planFormGroup = this._formBuilder.group({
     cplan: ['', Validators.required],
+    xplan: [{ value: '', disabled: true }],
     ccorredor: [''],
     ctomador: [{ value: '', disabled: false }],
     xtomador: [{ value: '', disabled: false }],
@@ -271,11 +277,24 @@ export class AutomobileComponent {
                 dateAdapter.setLocale('es');
                 this.route.queryParams.subscribe(params => {
                   const cotizacion = params['cotizacion'];
+                  const fano = params['fano'];
+                  const cplan = params['cplan'];
+                  const ctarifa = params['ctarifa_exceso'];
                   this.ccotizacion = cotizacion
+                  this.fano = fano
+                  this.cplan = cplan
+                  this.ctarifa = ctarifa
                 });
 
                 if(this.ccotizacion){
                   this.vehicleFormGroup.get('ccotizacion')?.setValue(this.ccotizacion);
+                  this.vehicleFormGroup.get('fano')?.setValue(this.fano);
+                  this.vehicleFormGroup.get('ctarifa_exceso')?.setValue(this.ctarifa);
+                  if(!this.vehicleFormGroup.get('ctarifa_exceso')?.value){
+                    this.activateRate = true;
+                  }else{
+                    this.activateRate = false;
+                  }
                   this.searchQuotes();
                 }
               }
@@ -509,7 +528,6 @@ export class AutomobileComponent {
   }
 
   getCityTaker(){
-    console.log(this.planFormGroup.get('cestado_tomador')?.value)
     let data = {
       cpais: 58,
       cestado: this.planFormGroup.get('cestado_tomador')?.value
@@ -639,6 +657,9 @@ export class AutomobileComponent {
     if (selectedBrand) {
       this.vehicleFormGroup.get('xmarca')?.setValue(selectedBrand.value);
       this.getModel();
+    }else if(this.ccotizacion){
+      this.vehicleFormGroup.get('xmarca')?.setValue(selectedValue);
+      this.getModel();
     }
   }
 
@@ -679,6 +700,9 @@ export class AutomobileComponent {
     if (selectedModel) {
       this.vehicleFormGroup.get('xmodelo')?.setValue(selectedModel.value);
       this.getVersion();
+    }else if(this.ccotizacion){
+      this.vehicleFormGroup.get('xmodelo')?.setValue(selectedValue);
+      this.getVersion();
     }
   }
 
@@ -708,12 +732,51 @@ export class AutomobileComponent {
         }
         this.versionList.sort((a, b) => a.value > b.value ? 1 : -1);
 
+        if(this.ccotizacion){
+          const selectedValue = this.vehicleFormGroup.get('xversion')?.value;
+          const selectedVersion = this.versionList.find(version => version.value === selectedValue);
+          if (selectedVersion) {
+            console.log(selectedVersion)
+            this.vehicleFormGroup.get('xversion')?.setValue(selectedVersion.value);
+            this.vehicleFormGroup.get('npasajeros')?.setValue(selectedVersion.npasajero);
+            this.vehicleFormGroup.get('cclasificacion')?.setValue(selectedVersion.cclasificacion);
+            this.vehicleFormGroup.get('id_inma')?.setValue(selectedVersion.id_inma);
+            this.vehicleFormGroup.get('xtipovehiculo')?.setValue(selectedVersion.xtipovehiculo);
+            this.getHullPrice()
+            this.vehicleFormGroup.get('xuso')?.setValue(selectedVersion.xuso);
+            this.vehicleFormGroup.get('npesovacio')?.setValue(selectedVersion.npesovacio);
+            this.vehicleFormGroup.get('ncapcarga')?.setValue(selectedVersion.ncapcarga);
+            this.sumaAsegurada = selectedVersion.msum;
+            this.sumaAseguradaBase = selectedVersion.msum;
+      
+      
+            if(!this.vehicleFormGroup.get('xtipovehiculo')?.value){
+              this.activateTypeVehicle = true;
+            }else{
+              this.activateTypeVehicle = false;
+            }
+      
+            if(this.vehicleFormGroup.get('xtipovehiculo')?.value == 'CARGA' || this.vehicleFormGroup.get('xtipovehiculo')?.value == 'Carga'){
+              this.activateAttachment = true;
+            }else{
+              this.activateAttachment = false;
+            }
+      
+            if(!this.vehicleFormGroup.get('xuso')?.value){
+              this.activateUtility = true;
+            }else{
+              this.activateUtility = false;
+            }
+          }
+        }
+
         this.filteredVersion = this.versionControl.valueChanges.pipe(
           startWith(''),
           map(value => this._filterVersion(value || ''))
         );
       }
     });
+    console.log(this.vehicleFormGroup.get('xtipovehiculo')?.value)
   }
 
   private _filterVersion(value: string): string[] {
@@ -967,6 +1030,18 @@ export class AutomobileComponent {
             value: response.data.plan[i].xplan_rc,
           });
         }
+        
+        if(this.ccotizacion){
+          const selectedId = parseInt(this.cplan);
+          const selectedPlan = this.planList.find(plan => plan.id === selectedId);
+          if (selectedPlan) {
+            this.planFormGroup.get('cplan')?.setValue(selectedPlan.id);
+            this.planFormGroup.get('xplan')?.setValue(selectedPlan.value);
+            this.getAmountQuotes();
+          }
+          
+        }
+
         this.filteredPlan = this.planControl.valueChanges.pipe(
           startWith(''),
           map(value => this._filterPlan(value || ''))
@@ -1131,6 +1206,7 @@ export class AutomobileComponent {
   }
 
   validateYearsFromHullPrice() {
+    console.log(this.vehicleFormGroup.get('xtipovehiculo')?.value)
     const yearActual = new Date().getFullYear();
   
     const yearLimite = yearActual - 16;
@@ -1146,14 +1222,12 @@ export class AutomobileComponent {
         });
         this.vehicleFormGroup.get('xcobertura')?.setValue('');
       } else {
+       
         if(this.vehicleFormGroup.get('xtipovehiculo')?.value){
           this.getHullPrice()
         }else{
-          console.log(this.vehicleFormGroup.get('xtipovehiculo')?.value)
         }
       }
-    } else {
-      console.log('fanoValue es nulo o indefinido');
     }
   }
 
@@ -1383,7 +1457,6 @@ export class AutomobileComponent {
     if(precargaValue){
       if (typeof precargaValue === 'number' && typeof pcascoValue === 'number' && typeof casco === 'string') {
       
-        console.log('hola')
         const calculatedAmount = (precargaValue / 100) * pcascoValue;
         const sumRecharge = pcascoValue + calculatedAmount;
   
@@ -1851,6 +1924,34 @@ export class AutomobileComponent {
     });
   }
 
+  getAmountQuotes(){
+    let data = {
+      cplan: this.planFormGroup.get('cplan')?.value,
+      ctarifa_exceso: this.vehicleFormGroup.get('ctarifa_exceso')?.value,
+      npasajeros: this.vehicleFormGroup.get('npasajeros')?.value,
+      cuso: this.vehicleFormGroup.get('cuso')?.value,
+    }
+    this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/premium-amount', data).subscribe((response: any) => {
+      if (response.status) {
+        this.ubii = response.data.ccubii
+        if(this.montoTotal){
+          this.operationUbii();
+          this.amountTotalRcv = true;
+          this.calculationsPremiumsCascoTotal()
+          if(this.vehicleFormGroup.get('xcobertura')?.value !== 'Rcv'){
+            this.amountTotalCasco = true;
+          }else{
+            this.amountTotalCasco = false;
+          }
+        }else{
+          this.amountTotalRcv = false;
+        }
+      }else{
+        this.amountTotalRcv = false;
+      }
+    });
+  }
+
   getPaymentSelection(){
     if(this.receiptFormGroup.get('xpago')?.value == 'PAGO MANUAL'){
       this.openPaymentModal();
@@ -2013,22 +2114,46 @@ export class AutomobileComponent {
   }
 
   searchQuotes(){
-    console.log(this.ccotizacion)
     let data = {
       ccotizacion: this.vehicleFormGroup.get('ccotizacion')?.value
     }
 
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/search-quote', data).subscribe((response: any) => {
       if(response.status){
+        this.activateBrandList = false;
+        this.activateBrandText = true;
         this.personsFormGroup.get('xnombre')?.setValue(response.data.xnombre);
         this.personsFormGroup.get('xapellido')?.setValue(response.data.xapellido);
         this.personsFormGroup.get('email')?.setValue(response.data.email);
         this.vehicleFormGroup.get('xmarca')?.setValue(response.data.xmarca);
+        let eventB = {
+          option: {
+            value: this.vehicleFormGroup.get('xmarca')?.value
+          }
+        }
+        this.onBrandSelection(eventB)
         this.vehicleFormGroup.get('xmodelo')?.setValue(response.data.xmodelo);
+        let eventM = {
+          option: {
+            value: this.vehicleFormGroup.get('xmodelo')?.value
+          }
+        }
+        this.onModelSelection(eventM)
         this.vehicleFormGroup.get('xversion')?.setValue(response.data.xversion);
         this.vehicleFormGroup.get('npasajeros')?.setValue(response.data.npasajeros);
+        this.vehicleFormGroup.get('xcobertura')?.setValue(response.data.xcobertura);
+        this.onCoverageChange()
         this.vehicleFormGroup.get('fano')?.setValue(response.data.fano);
+        this.vehicleFormGroup.get('fano')?.disable();
         this.planFormGroup.get('cplan')?.setValue(response.data.cplan);
+        let event = {
+          option: {
+            id: this.planFormGroup.get('cplan')?.value
+          }
+        }
+        this.onPlanSelection(event)
+        this.montoTotal = response.data.mtotal_rcv
+        console.log(this.montoTotal)
       }
     })
   }
@@ -2041,7 +2166,6 @@ export class AutomobileComponent {
       let orden: string = "UB_" + this.ubii;
 
       this.bpagarubii = true;
-      console.log(orden)
 
       initUbii(
         'ubiiboton',
@@ -2145,8 +2269,6 @@ export class AutomobileComponent {
 
   async callbackFn(answer: any) {
 
-    console.log(answer)
-
     if(answer.data.R == 0){
       await this.onSubmitUbii();
       let ctipopago;
@@ -2185,7 +2307,6 @@ export class AutomobileComponent {
             this.loadingPdf = false
           },
           (error) => {
-            console.log(error)
           }
         );
 
@@ -2335,7 +2456,6 @@ export class AutomobileComponent {
             this.loadingPdf = false
           },
           (error) => {
-            console.log(error)
           }
         );
 

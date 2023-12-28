@@ -415,7 +415,10 @@ export class AutomobileQuotesComponent {
         this.check = true;
 
         const navigationExtras: NavigationExtras = {
-          queryParams: { cotizacion: this.cotizacion }
+          queryParams: { cotizacion: this.cotizacion, 
+                         fano: this.quotesForm.get('fano')?.value,
+                         cplan: this.plan,
+                         ctarifa_exceso: this.quotesForm.get('ctarifa_exceso')?.value }
         };
 
         if (window.confirm("¡Se ha cotizado exitosamente!... ¿Desea Emitir la Cotización?")) {

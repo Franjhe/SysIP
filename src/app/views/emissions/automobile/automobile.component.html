@@ -164,13 +164,19 @@
                   <input matInput type="number" placeholder="N° de Cotizacion" formControlName="ccotizacion">
                 </mat-form-field>
               </div>
-              <div class="col-3">
+              <div class="col-3" *ngIf="activateBrandList">
                 <mat-form-field>
                   <mat-label>Año</mat-label>
                   <input matInput type="number" placeholder="Año" formControlName="fano" [maxlength]="4" (change)="changeYears()" required>
                 </mat-form-field>
               </div>
-              <div class="col-3">
+              <div class="col-3" *ngIf="activateBrandText">
+                <mat-form-field>
+                  <mat-label>Año</mat-label>
+                  <input matInput type="number" formControlName="fano" [maxlength]="4">
+                </mat-form-field>
+              </div>
+              <div class="col-3" *ngIf="activateBrandList">
                   <mat-form-field class="example-full-width">
                     <mat-label>Marca</mat-label>
                     <input type="text"
@@ -187,7 +193,13 @@
                           </mat-autocomplete>
                   </mat-form-field>
               </div>
-              <div class="col-3">
+              <div class="col-3" *ngIf="activateBrandText">
+                <mat-form-field>
+                  <mat-label>Marca</mat-label>
+                  <input matInput formControlName="xmarca">
+                </mat-form-field>
+              </div>
+              <div class="col-3" *ngIf="activateBrandList">
                 <mat-form-field class="example-full-width">
                   <mat-label>Modelo</mat-label>
                   <input type="text"
@@ -204,10 +216,16 @@
                         </mat-autocomplete>
                 </mat-form-field>
               </div>
+              <div class="col-3" *ngIf="activateBrandText">
+                <mat-form-field>
+                  <mat-label>Modelo</mat-label>
+                  <input matInput formControlName="xmodelo">
+                </mat-form-field>
+              </div>
             </div>
 
             <div class="row">
-              <div class="col-3">
+              <div class="col-3" *ngIf="activateBrandList">
                 <mat-form-field class="example-full-width">
                   <mat-label>Version</mat-label>
                   <input type="text"
@@ -222,6 +240,12 @@
                             {{ version }}
                           </mat-option>
                         </mat-autocomplete>
+                </mat-form-field>
+              </div>
+              <div class="col-3" *ngIf="activateBrandText">
+                <mat-form-field>
+                  <mat-label>Version</mat-label>
+                  <input matInput formControlName="xversion">
                 </mat-form-field>
               </div>
               <div class="col-3">
@@ -393,7 +417,7 @@
                     </mat-autocomplete>
                   </mat-form-field>
                 </div>
-                <div class="col-4">
+                <div class="col-4" *ngIf="activateBrandList">
                   <mat-form-field class="example-full-width">
                     <mat-label>Planes</mat-label>
                     <input type="text"
@@ -408,6 +432,12 @@
                         {{ plan }}
                       </mat-option>
                     </mat-autocomplete>
+                  </mat-form-field>
+                </div>
+                <div class="col-4" *ngIf="activateBrandText">
+                  <mat-form-field>
+                    <mat-label>Plan</mat-label>
+                    <input matInput formControlName="xplan">
                   </mat-form-field>
                 </div>
                 <div class="col-4">
@@ -700,7 +730,7 @@
               </div>
 
               
-              <div class="row justify-content-center">
+              <div class="row justify-content-center" *ngIf="amountTotalCasco">
                 <div class="col-4">
                   <h3><strong>Prima Casco + RCV: </strong>{{primaFinal}}$</h3>
                 </div>
