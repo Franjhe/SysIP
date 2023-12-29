@@ -5,11 +5,17 @@ import { QuotesRoutingModule } from './quotes-routing.module';
 import { MaterialExampleModule } from './../../material.module'
 import { ReactiveFormsModule } from '@angular/forms';
 import { AutomobileQuotesComponent } from './automobile-quotes/automobile-quotes.component';
+import { InquiriesComponent } from './inquiries/inquiries.component';
+import { AutomobileInquiriesComponent } from './inquiries/automobile-inquiries/automobile-inquiries.component';
+import { DetailAutomobileComponent } from './inquiries/automobile-inquiries/detail-automobile/detail-automobile.component';
 
 
 @NgModule({
   declarations: [
-    AutomobileQuotesComponent
+    AutomobileQuotesComponent,
+    InquiriesComponent,
+    AutomobileInquiriesComponent,
+    DetailAutomobileComponent
   ],
   imports: [
     CommonModule,
