@@ -1,0 +1,219 @@
+<div class="card container registration-form" *ngIf="showTable">
+    <form>
+      <mat-form-field>
+        <mat-label>Buscar</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Ingresa datos" #input>
+      </mat-form-field>
+            
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+        <ng-container matColumnDef="ccotizacion">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Código de Cotización </th>
+            <td mat-cell *matCellDef="let element"> {{ element.ccotizacion }} </td>
+          </ng-container>
+          
+     
+          <ng-container matColumnDef="xnombres">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre y Apellido</th>
+            <td mat-cell *matCellDef="let element"> {{ element.xnombres }} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="xvehiculo">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Vehiculo </th>
+            <td mat-cell *matCellDef="let element"> {{ element.xvehiculo }} </td>
+          </ng-container>
+          
+          <ng-container matColumnDef="star">
+            <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" type="button">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="onQuotesSelected(element.ccotizacion)" type="button">
+                  <mat-icon>info</mat-icon>
+                  <span>Consultar.</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+          
+            
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" colspan="2">No hay datos que coincidan con el filtro</td>
+        </tr>
+      </table>
+            
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Seleccionar página de Cotizaciones"></mat-paginator>
+    </form>
+</div>
+
+<div class="container bg-white  registration-form" *ngIf="distributionCard">
+
+    <div class="row rounded justify-content-center py-2" style="background-color: #447bd7;">
+      <h2 class="text-center text-light mb-4" style="font-size: xx-large;">Cotización de Automóvil</h2>
+      <div class="col-lg-3 text-center text-light">
+        <mat-icon  style="width: 48px; height: 39px;font-size: 47px;">toc</mat-icon>
+        <h4>N° de Cotización: {{cotizacion}}</h4>
+      </div>
+      <div class="col-lg-3 text-center text-light">
+        <mat-icon style="width: 48px; height: 37px;font-size: 39px;">assignment_ind</mat-icon>
+        <h4>{{nombreCompleto}}</h4>
+      </div>
+      <div class="col-lg-3 text-center text-light">
+        <mat-icon style="width: 48px; height: 39px;font-size: 47px;">directions_car</mat-icon>
+        <h4>{{vehiculo}}</h4>
+      </div>
+      <div class="col-lg-3 text-center text-light">
+        <mat-icon style="width: 48px; height: 39px;font-size: 47px;">account_balance_wallet</mat-icon>
+        <h4>Tasa de Cambio: {{bcv}}</h4>
+      </div>
+    </div>
+    <div class="row justify-content-center mt-4">
+      <form>
+        <div class="col-lg-12 d-flex justify-content-center">
+          <div class="d-flex flex-wrap justify-content-center" *ngIf="quotesBoolean">
+            <div class="card col-lg-3 mb-3 m-1 text-center" *ngFor="let quotes of quotesList; let i = index" [class.activate]="isActive" style="width: 308px;">
+              <div class="card-header bg-transparent border-0" >
+                <strong style="color: #696969c9;">{{quotes.xplan_rc}}</strong>
+                <!-- <h5 class="py-2"><strong>Responsabilidad Civil</strong></h5> -->
+              </div>
+              <div class="card-body" *ngIf="quotesBoolean">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <strong>Rcv: </strong>{{quotes.mtotal_rcv}}$ / Anual
+                  </div>
+                  <div>
+                    <mat-slide-toggle color="primary" (change)="onToggle('Rcv', quotes.cplan_rc)"></mat-slide-toggle>
+                  </div>
+                </div>
+                <br>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <strong>C. Amplia: </strong>{{quotes.mtotal_amplia}}$ / Anual
+                  </div>
+                  <div>
+                    <mat-slide-toggle color="primary" (change)="onToggle('Cobertura Amplia', quotes.cplan_rc)"></mat-slide-toggle>
+                  </div>
+                </div>
+                <br>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <strong>P. Total: </strong>{{quotes.mtotal_perdida}}$ / Anual
+                  </div>
+                  <div>
+                    <mat-slide-toggle color="primary" (change)="onToggle('Perdida Total', quotes.cplan_rc)"></mat-slide-toggle>
+                  </div>
+                </div>
+
+                <div class="col-10 offset-md-6" style="margin-top: 20px;">
+                    <div class="example-button-container">
+                      <button mat-mini-fab color="primary" (click)="openCoverages(quotes, $event)">
+                        <mat-icon>info</mat-icon>
+                      </button>
+                    </div> 
+                  </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="col-4" style="margin-bottom: 67px;" *ngIf="loading">
+            <div id="container">
+              <label class="loading-title">Cargando Cotización</label>
+              <span class="loading-circle sp1">
+                <span class="loading-circle sp2">
+                  <span class="loading-circle sp3"></span>
+                </span>
+              </span>
+            </div>
+          </div>
+
+          <div class="col-4" style="margin-bottom: 67px;" *ngIf="check">
+            <div class="card-listo"> 
+              <button type="button" class="dismiss">×</button> 
+              <div class="header"> 
+                <div class="image">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><g stroke-width="0" id="SVGRepo_bgCarrier"></g><g stroke-linejoin="round" stroke-linecap="round" id="SVGRepo_tracerCarrier"></g><g id="SVGRepo_iconCarrier"> <path stroke-linejoin="round" stroke-linecap="round" stroke-width="1.5" stroke="#000000" d="M20 7L9.00004 18L3.99994 13"></path> </g></svg>
+                  </div> 
+                  <div class="content">
+                     <span class="title">Cotización Exitosa</span> 
+                     </div> 
+                  </div> 
+              </div>
+          </div>
+          
+        </div>
+      </form>
+    </div>
+  
+</div>
+
+<ng-template #coverageModal let-modal>
+  <div class="modal-body">
+    <mat-tab-group>
+      <mat-tab label="Rcv"> 
+        <div class="col-6 py-4 mx-auto">
+          <div class="container-coverage">
+              <p class="title-coverage">Rcv</p>
+              <p class="price-coverage">{{ montoRCV }}$<span> / Anual</span></p>
+    
+              <ng-container *ngFor="let coverage of coverageListRcv">
+                <p *ngIf="coverage.ititulo === 'T'; else normalText" class="bold-text">{{ coverage.xcobertura }}</p>
+                <ng-template #normalText>
+                    <p>{{ coverage.xcobertura }}</p>
+                </ng-template>
+              </ng-container>
+    
+              <div class="ribbon-wrap-coverage">
+                  <div class="ribbon-coverage">Oferta</div>
+              </div>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="Cobertura Amplia">
+        <div class="col-6 py-4 mx-auto">
+          <div class="container-coverage">
+            <p class="title-coverage">Cobertura Amplia</p>
+            <p class="price-coverage">{{montoAmplia}}$<span> / Anual</span></p>
+            <ng-container *ngFor="let coverage of coverageListAmplia">
+              <p *ngIf="coverage.ititulo === 'T'; else normalText" class="bold-text">{{ coverage.xcobertura }}</p>
+              <ng-template #normalText>
+                  <p>{{ coverage.xcobertura }}</p>
+              </ng-template>
+            </ng-container>
+  
+            <div class="ribbon-wrap-coverage">
+              <div class="ribbon-coverage">Oferta</div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="Pérdida Total"> 
+        <div class="col-6 py-4 mx-auto">
+          <div class="container-coverage">
+            <p class="title-coverage">Pérdida Total</p>
+            <p class="price-coverage">{{montoPerdida}}$<span> / Anual</span></p>
+            <ng-container *ngFor="let coverage of coverageListPerdida">
+              <p *ngIf="coverage.ititulo === 'T'; else normalText" class="bold-text">{{ coverage.xcobertura }}</p>
+              <ng-template #normalText>
+                  <p>{{ coverage.xcobertura }}</p>
+              </ng-template>
+            </ng-container>
+  
+            <div class="ribbon-wrap-coverage">
+              <div class="ribbon-coverage">Oferta</div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
+    <div class="col-12" style="text-align: end;">
+      <button mat-raised-button color="primary" (click)="onQuotePdf()">Comparativa</button>
+    </div>
+
+  </div>
+</ng-template>
