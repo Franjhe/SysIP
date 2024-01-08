@@ -9,6 +9,8 @@ import { MatPaginator } from '@angular/material/paginator';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Observable } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 
 @Component({
@@ -76,6 +78,11 @@ export class PaymentCancellationComponent {
   dataReceiptPending : any = []
   dataReceiptPendingB: any = []
 
+
+  listPending: any = []
+  listVencido : any = []
+
+
   updateReceipt = this._formBuilder.group({
     iestadorec: [{ value: '', disabled: false }],
     itransaccion: [{ value: '', disabled: false }],
@@ -140,6 +147,7 @@ export class PaymentCancellationComponent {
     fetch(environment.apiUrl + '/api/v1/collection/search-pending' )
     .then((response) => response.json())
     .then(data => {
+      this.listPending = data.searchPaymentPendingData.recibo
       this.dataSource2 = new MatTableDataSource(data.searchPaymentPendingData.recibo);
 
       const listPending = data.searchPaymentPendingData.recibo
@@ -244,6 +252,12 @@ export class PaymentCancellationComponent {
           value: response.data.bank[i].xbanco,
         })        
       }
+    })
+
+    fetch(environment.apiUrl + '/api/v1/collection/search-vencido' )
+    .then((response) => response.json())
+    .then(data => {
+      this.listVencido = data.searchPaymentData.recibo
     })
 
   }
@@ -588,6 +602,57 @@ export class PaymentCancellationComponent {
     const porcentaje = (3/100)*this.mount
     this.mountP = porcentaje.toFixed(2) //porcentaje del igtf en dolares  
 
+  }
+
+  downloadExcel() {
+
+    // Filtra y renombra los campos que deseas exportar
+    const filteredData = this.listPending.map((item: 
+      { cpoliza: any; crecibo: any; cramo: any; casegurado: any; mprimabruta: any; mprimabrutaext: any}) => ({
+      'Poliza': item.cpoliza,
+      'Recibo': item.crecibo,
+      'Ramo': item.cramo,
+      'Asegurado': item.casegurado,
+      'Prima Bs': item.mprimabruta,
+      'Prima USD': item.mprimabrutaext,
+    }));
+  
+    const worksheet = XLSX.utils.json_to_sheet(filteredData);
+  
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
+  
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  
+    const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  
+    saveAs(excelData, `Reporte de recibos pendientes solicitados.xlsx`);
+  }
+
+  downloadExcelVencido() {
+
+    // Filtra y renombra los campos que deseas exportar
+    const filteredData = this.listVencido.map((item: 
+      { cpoliza: any; crecibo: any; cramo: any; casegurado: any; mprimabruta: any; mprimabrutaext: any; fhasta: any}) => ({
+      'Poliza': item.cpoliza,
+      'Recibo': item.crecibo,
+      'Ramo': item.cramo,
+      'Asegurado': item.casegurado,
+      'Prima Bs': item.mprimabruta,
+      'Prima USD': item.mprimabrutaext,
+      'Fecha hasta recibo': item.fhasta,
+    }));
+  
+    const worksheet = XLSX.utils.json_to_sheet(filteredData);
+  
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
+  
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  
+    const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  
+    saveAs(excelData, `Reporte de recibos vencidos solicitados.xlsx`);
   }
 
 }

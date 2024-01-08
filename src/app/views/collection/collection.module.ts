@@ -8,7 +8,7 @@ import { MaterialExampleModule } from './../../material.module'
 import { CollectionRoutingModule } from './collection-routing.module';
 import { PaymentReportComponent } from './payment-report/payment-report.component';
 import { PaymentCancellationComponent } from './payment-cancellation/payment-cancellation.component';
-
+import { ClipboardModule } from 'ngx-clipboard';
 
 @NgModule({
   declarations: [
@@ -22,7 +22,8 @@ import { PaymentCancellationComponent } from './payment-cancellation/payment-can
     MaterialExampleModule,
     ReactiveFormsModule,
     NgbModule,
-    FormsModule
+    FormsModule,
+    ClipboardModule
   ]
 })
 export class CollectionModule { }
