@@ -206,7 +206,7 @@ export class PdfGenerationService {
 	camplia: any;
 	ptotal: any;
 	allCoverages: any;
-	coveragesList:  any;
+	coveragesList:  any[] = [];
 	ncotizacion:  any;
 	xusuario:  any;
 
@@ -761,7 +761,6 @@ export class PdfGenerationService {
 		this.ptotal = ptotal.toFixed(2);
 		this.allCoverages = allCoverages;
 		
-				
 		let data = {
 			ccotizacion: cotizacion,
 			cplan: cplan,
@@ -770,7 +769,14 @@ export class PdfGenerationService {
 
 		this.http.post( environment.apiUrl + '/api/v1/quotes/automobile/detail', data).subscribe( async (response: any) => {
 			if(response.status){
-				this.coveragesList = response.data.list;
+				for(let i = 0; i < response.data.list.length; i++){
+					this.coveragesList.push({
+						xcobertura: response.data.list[i].xcobertura,
+						m1: response.data.list[i].m1,
+						m2: response.data.list[i].m2,
+						m3: response.data.list[i].m3,
+					})
+				}
 				this.xmarca = dataVehicle.xmarca;
 				this.xmodelo = dataVehicle.xmodelo;
 				this.xversion = dataVehicle.xversion;
@@ -779,6 +785,14 @@ export class PdfGenerationService {
 				this.ncotizacion = cotizacion;
 				this.xusuario = dataVehicle.xusuario.toUpperCase();
 				this.xcorreo = dataVehicle.xcorreo.toUpperCase();
+
+				console.log(this.xmarca)
+				console.log(this.xmodelo)
+				console.log(this.xversion)
+				console.log(this.ncapacidadpasajerosvehiculo)
+				console.log(this.fano)
+				console.log(this.ncotizacion)
+				console.log(this.xusuario)
 			}
 		})
 	  
@@ -1061,109 +1075,25 @@ export class PdfGenerationService {
 	  }
 
 	buildCoveragesQuotesBody() {
-		const body = this.coveragesList.map((row: any) => ({
-		  coverageName: row.xcobertura,
-		  amount: '', 
-		}));
-	  
-		return body;
-	}
-
-	buildCoveragesQuotesRcvBody(): any[] {
-		const body: any[] = [];
-	  
-		const specificCoverages: string[] = ['Daños a Cosas', 'Daños a Personas', 'Defensa Penal', 'Exceso de Limite', 'Muerte Accidental', 'Invalidez Permanente', 'Gastos Médicos', 'Gastos Funerarios'];
-	  
-		specificCoverages.forEach((specificCoverage: string) => {
-		  const matchingRow = this.coveragesList.find((row: any) => row.xcobertura === specificCoverage);
-	  
-		  const dataRow: any = {
-			coverageName: specificCoverage,
-			amount: matchingRow ? matchingRow.msuma_dc || matchingRow.msuma_persona || matchingRow.msuma_defensa || matchingRow.msuma_exceso || matchingRow.msuma_muerte || matchingRow.msuma_invalidez || matchingRow.msuma_gm || matchingRow.msuma_gf : '',
-		  };
-	  
+		let body = [];
+		if (this.coveragesList.length > 0){
+		  this.coveragesList.forEach(function(row) {
+			let dataRow = [];
+			dataRow.push({text: row.xcobertura, margin: [11, 0, 0, 0], alignment: 'left', bold: true, border: [false, false, false, false]});
+			dataRow.push({text: row.m1.toFixed(2), margin: [11, 0, 0, 0], alignment: 'left', border: [false, false, false, false]});
+			dataRow.push({text: row.m2.toFixed(2), margin: [11, 0, 0, 0], alignment: 'left', border: [false, false, false, false]});
+			dataRow.push({text: row.m3.toFixed(2), margin: [11, 0, 0, 0], alignment: 'left', border: [false, false, false, false]});
+			body.push(dataRow);
+		  })
+		} else {
+		  let dataRow = [];
+		  dataRow.push({text: ' ', border: [false, false, false, false]});
 		  body.push(dataRow);
-		});
-	  
-		return body;
-	}
-
-	buildCoveragesQuotesCABody(): any[] {
-		const body: any[] = [];
-	  
-		const specificCoverages: string[] = ['Cobertura Amplia', 'Riesgo Catastrofico', 'Indemnizacion Diaria por Robo', 'Daños a Cosas', 'Daños a Personas', 'Defensa Penal', 'Exceso de Limite', 'Muerte Accidental', 'Invalidez Permanente', 'Gastos Médicos', 'Gastos Funerarios'];
-	  
-		specificCoverages.forEach((specificCoverage: string) => {
-		  const matchingRow = this.coveragesList.find((row: any) => row.xcobertura === specificCoverage);
-	  
-		  const dataRow: any = {
-			coverageName: specificCoverage,
-			amount: matchingRow ? matchingRow.msuma_amplia ||matchingRow.msuma_catastrofico ||matchingRow.msuma_indem ||matchingRow.msuma_dc || matchingRow.msuma_persona || matchingRow.msuma_defensa || matchingRow.msuma_exceso || matchingRow.msuma_muerte || matchingRow.msuma_invalidez || matchingRow.msuma_gm || matchingRow.msuma_gf : '',
-		  };
-	  
-		  body.push(dataRow);
-		});
-	  
-		return body;
-	}
-
-	buildCoveragesQuotesPTBody(): any[] {
-		const body: any[] = [];
-	  
-		const specificCoverages: string[] = ['Perdida Total', 'Riesgo Catastrofico', 'Indemnizacion Diaria por Perdida Total', 'Daños a Cosas', 'Daños a Personas', 'Defensa Penal', 'Exceso de Limite', 'Muerte Accidental', 'Invalidez Permanente', 'Gastos Médicos', 'Gastos Funerarios'];
-	  
-		specificCoverages.forEach((specificCoverage: string) => {
-		  const matchingRow = this.coveragesList.find((row: any) => row.xcobertura === specificCoverage);
-	  
-		  const dataRow: any = {
-			coverageName: specificCoverage,
-			amount: matchingRow ? matchingRow.msuma_total || matchingRow.msuma_catastrofico || matchingRow.msuma_indem || matchingRow.msuma_dc || matchingRow.msuma_persona || matchingRow.msuma_defensa || matchingRow.msuma_exceso || matchingRow.msuma_muerte || matchingRow.msuma_invalidez || matchingRow.msuma_gm || matchingRow.msuma_gf : '',
-		  };
-	  
-		  body.push(dataRow);
-		});
-	  
-		return body;
-	}
-
-	combineCoveragesAndAmounts(): any[] {
-		const combinedData: any[] = [];
-	  
-		const body1 = this.buildCoveragesQuotesBody();
-		const body2 = this.buildCoveragesQuotesRcvBody();
-		const body3 = this.buildCoveragesQuotesCABody();
-		const body4 = this.buildCoveragesQuotesPTBody();
-	  
-		const maxLength = Math.max(body1.length, body2.length, body3.length, body4.length);
-	  
-		for (let i = 0; i < maxLength; i++) {
-		  const rowData: any = {};
-	  
-		  // Asegúrate de que body1[i] y body2[i] sean objetos válidos
-		  const row1 = body1[i] || {};
-		  const row2 = body2[i] || {};
-		  const row3 = body3[i] || {};
-		  const row4 = body4[i] || {};
-	  
-		  // Agrega las columnas correspondientes a rowData
-		  rowData.coverageName1 = row1.coverageName || '';
-		  rowData.amount1 = row1.amount || '';
-		  rowData.coverageName2 = row2.coverageName || '';
-		  rowData.amount2 = typeof row2.amount === 'number' ? row2.amount.toFixed(2) : '';
-		  rowData.coverageName3 = row3.coverageName || '';
-		  rowData.amount3 = typeof row3.amount === 'number' ? row3.amount.toFixed(2) : '';
-		  rowData.coverageName4 = row4.coverageName || '';
-		  rowData.amount4 = typeof row4.amount === 'number' ? row4.amount.toFixed(2) : '';
-
-
-	  
-		  combinedData.push(rowData);
 		}
-	  
-		return combinedData;
-	  }
-	
-	  buildAccesoriesBody() {
+		return body;
+	}
+
+	buildAccesoriesBody() {
 		let body = [];
 		if (this.accesoriesList.length > 0){
 		  this.accesoriesList.forEach(function(row) {
@@ -2268,70 +2198,18 @@ export class PdfGenerationService {
 				{
 					style: 'data',
 					table: {
-					widths: ['*'],
+					widths: [160, 100, 100, '*'],
 					body: [
-						[{text: 'COBERTURAS RCV', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
+						[{text: 'COBERTURAS', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}, {text: 'RCV', alignment: 'center', bold: true, fillColor: '#D7D7D7', border: [false, false, false, false]}, {text: 'COBERTURA AMPLIA', alignment: 'center', bold: true, fillColor: '#D7D7D7', border: [false, false, false, false]}, {text: 'PÉRDIDA TOTAL', alignment: 'center', bold: true, fillColor: '#D7D7D7', border: [false, false, false, false]}]
 					]
 					}
 				},
 				{
 					style: 'data',
-					margin: [0, 0, 0, 3],
+					margin: [0, 0, 0, 2],
 					table: {
-					  widths: [280, '*'],
-					  body: [
-						[{text: 'COBERTURAS', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'SUMA ASEGURADA', alignment: 'left', bold: true, border: [false, false, false, false]}],
-						...this.combineCoveragesAndAmounts().map(row => [
-						  {text: row.coverageName2, alignment: 'center', border: [false, false, false, false]},
-						  {text: row.amount2, alignment: 'left', border: [false, false, false, false]}
-						]),
-					  ]
-					}
-				},
-				{
-					style: 'data',
-					table: {
-					widths: ['*'],
-					body: [
-						[{text: 'COBERTURAS DE COBERTURA AMPLIA', fillColor: '#D7D7D7', alignment: 'center', bold: true, border: [false, false, false, false]}]
-					]
-					}
-				},
-				{
-					style: 'data',
-					margin: [0, 0, 0, 3],
-					table: {
-					  widths: [280, '*'],
-					  body: [
-						[{text: 'COBERTURAS', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'SUMA ASEGURADA', alignment: 'left', bold: true, border: [false, false, false, false]}],
-						...this.combineCoveragesAndAmounts().map(row => [
-						  {text: row.coverageName3, alignment: 'center', border: [false, false, false, false]},
-						  {text: row.amount3, alignment: 'left', border: [false, false, false, false]}
-						]),
-					  ]
-					}
-				},
-				{
-					style: 'data',
-					table: {
-					widths: ['*'],
-					body: [
-						[{text: 'COBERTURAS DE PÉRDIDA TOTAL', fillColor: '#D7D7D7', alignment: 'center', bold: true, border: [false, false, false, false]}]
-					]
-					}
-				},
-				{
-					style: 'data',
-					margin: [0, 0, 0, 3],
-					table: {
-					  widths: [280, '*'],
-					  body: [
-						[{text: 'COBERTURAS', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'SUMA ASEGURADA', alignment: 'left', bold: true, border: [false, false, false, false]}],
-						...this.combineCoveragesAndAmounts().map(row => [
-						  {text: row.coverageName4, alignment: 'center', border: [false, false, false, false]},
-						  {text: row.amount4, alignment: 'left', border: [false, false, false, false]}
-						]),
-					  ]
+					  widths: [500],
+					  body: this.buildCoveragesQuotesBody()
 					}
 				},
 			  ], 

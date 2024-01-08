@@ -103,7 +103,7 @@ export class AutomobileInquiriesComponent {
         this.modelo = response.data.xmodelo
         this.version = response.data.xversion
         this.npasajeros = response.data.npasajero
-        this.fano = response.data.qano
+        this.fano = response.data.fano
         this.correo = response.data.xcorreo
         this.cotizacion = ccotizacion;
       }

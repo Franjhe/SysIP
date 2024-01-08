@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { AutomobileQuotesComponent } from './automobile-quotes/automobile-quotes.component';
 import { InquiriesComponent } from './inquiries/inquiries.component';
 import { AutomobileInquiriesComponent } from './inquiries/automobile-inquiries/automobile-inquiries.component';
-import { DetailAutomobileComponent } from './inquiries/automobile-inquiries/detail-automobile/detail-automobile.component';
 
 const routes: Routes = [{
   path: '',
@@ -35,13 +34,6 @@ const routes: Routes = [{
       component: AutomobileInquiriesComponent,
       data: {
         title: 'Automovil',
-      },
-    },
-    {
-      path: 'inquiries/automobile/detail',
-      component: DetailAutomobileComponent,
-      data: {
-        title: 'Detalle',
       },
     },
   ]

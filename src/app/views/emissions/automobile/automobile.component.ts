@@ -776,7 +776,6 @@ export class AutomobileComponent {
         );
       }
     });
-    console.log(this.vehicleFormGroup.get('xtipovehiculo')?.value)
   }
 
   private _filterVersion(value: string): string[] {
