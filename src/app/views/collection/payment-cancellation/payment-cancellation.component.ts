@@ -44,8 +44,11 @@ export class PaymentCancellationComponent {
   listCollected : any = []
   listReceipt: any = []
 
-  dataReport: any = [] //recibos notificados
   dataSoport: any = [] //recibos notificados
+
+  dataReport: any = [] //recibos notificados
+
+  dataReportB: any = [] //recibos notificados
 
   tradesList : any = []
   coinList : any = []
@@ -82,7 +85,8 @@ export class PaymentCancellationComponent {
   listPending: any = []
   listVencido : any = []
 
-  listGroupReceipts  : any = []
+  listReceipts  : any = []
+  boollistReceipts: boolean = false
   GroupReceiptsBool : boolean = false
 
 
@@ -96,6 +100,9 @@ export class PaymentCancellationComponent {
 
   updateReceipt = this._formBuilder.group({
     iestadorec: [{ value: '', disabled: false }],
+    mdiferencia :[{ value: '', disabled: false }],
+    iestado_tra : [{ value: '', disabled: false }],
+    crecibo: [{ value: '', disabled: false }],
     itransaccion: [{ value: '', disabled: false }],
   });
 
@@ -332,6 +339,7 @@ export class PaymentCancellationComponent {
     .then(data => {
        this.dataReport = []
        this.dataSoport = []
+       this.listReceipts = []
 
       for(let i = 0; i < data.searchPaymentReport.recibo.length; i++){
         const client = {
@@ -345,6 +353,7 @@ export class PaymentCancellationComponent {
           let filterdata = treatments.filter((data: { id: any; }) => data.id == id)
           const xramo = filterdata[0].value
 
+          this.listReceipts.push(data.searchPaymentReport.recibo[i].crecibo)
 
           this.dataReport.push({
             cpoliza : data.searchPaymentReport.recibo[i].cpoliza,
@@ -354,6 +363,21 @@ export class PaymentCancellationComponent {
             mprimabrutaext : data.searchPaymentReport.recibo[i].mprimabrutaext,
             mprimabruta : data.searchPaymentReport.recibo[i].mprimabruta
           })
+
+          this.dataReportB.push({
+            cpoliza : data.searchPaymentReport.recibo[i].cpoliza,
+            crecibo : data.searchPaymentReport.recibo[i].crecibo,
+            casegurado : data.searchPaymentReport.recibo[i].casegurado,
+            cramo : data.searchPaymentReport.recibo[i].cramo,
+            mprimabrutaext : data.searchPaymentReport.recibo[i].mprimabrutaext,
+            mprimabruta : data.searchPaymentReport.recibo[i].mprimabruta
+          })
+
+          if(this.listReceipts.length > 1){
+            this.boollistReceipts = true
+          }else {
+            this.boollistReceipts = false
+          }
         });
 
 
@@ -387,6 +411,8 @@ export class PaymentCancellationComponent {
 
       }
 
+
+
     })
 
 
@@ -416,7 +442,6 @@ export class PaymentCancellationComponent {
         //fecha hasta recibo
           let dateHReceip = new Date(data.searchReceiptClientData.recibo[i].fhasta );
           let fechaISOHasta = dateHReceip.toISOString().substring(0, 10);
-
 
         this.dataReceiptPending.push({
           cmoneda : data.searchReceiptClientData.recibo[i].cmoneda ,
@@ -480,19 +505,40 @@ export class PaymentCancellationComponent {
   }
 
   updateReceiptNotificated(){
-    const data = {
-      receipt : this.dataReport,
-      transacccion : this.ntransaccion,
-      iestadorec: this.updateReceipt.get('iestadorec')?.value ,
-      itransaccion: this.updateReceipt.get('itransaccion')?.value,
-    }
-    this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt/', data ).subscribe((response: any) => {
-      
-      if(response.status){
-        location.reload()
-      }
 
-    })
+    if(this.updateReceipt.get('iestadorec')?.value == 'ER' ){
+      const data = {
+        receipt : this.dataReportB,
+        transacccion : this.ntransaccion,
+        crecibo: this.updateReceipt.get('crecibo')?.value ,
+        mdiferencia: this.updateReceipt.get('mdiferencia')?.value ,
+        iestadorec: this.updateReceipt.get('iestadorec')?.value ,
+        itransaccion: this.updateReceipt.get('itransaccion')?.value,
+      }
+      this.http.post(environment.apiUrl + '/api/v1/collection/receipt-under-review/', data ).subscribe((response: any) => {
+        
+        if(response.status){
+          location.reload()
+        }
+  
+      })
+
+    }else{
+      const data = {
+        receipt : this.dataReport,
+        transacccion : this.ntransaccion,
+        iestadorec: this.updateReceipt.get('iestadorec')?.value ,
+        itransaccion: this.updateReceipt.get('itransaccion')?.value,
+      }
+      this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt/', data ).subscribe((response: any) => {
+        
+        if(response.status){
+          location.reload()
+        }
+  
+      })
+    }
+
 
   }
 
