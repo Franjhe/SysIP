@@ -2339,7 +2339,7 @@ export class PdfGenerationService {
 				text: 'Pruebaaaaaa',
 				pdfDefinition,
 			};
-			this.http.post( environment.apiUrl + '/api/v1/quotes/automobile/send-email', pdfDefinition)
+			this.http.post( environment.apiUrl + '/api/v1/quotes/automobile/send-email', emailData)
 			.subscribe(response => {
 			  console.log(response);
 			  // Puedes manejar la respuesta del servidor aquí
