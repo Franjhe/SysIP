@@ -2332,7 +2332,21 @@ export class PdfGenerationService {
 			let pdf = pdfMake.createPdf(pdfDefinition);
 			pdf.download(`Cotización`);
 			pdf.open();
-	
+
+			const emailData = {
+				to: 'alenjhon9@gmail.com',
+				subject: 'Cuadro Póliza - La Mundial de Seguros',
+				text: 'Pruebaaaaaa',
+				pdfDefinition,
+			};
+			this.http.post( environment.apiUrl + '/api/v1/quotes/automobile/send-email', pdfDefinition)
+			.subscribe(response => {
+			  console.log(response);
+			  // Puedes manejar la respuesta del servidor aquí
+			}, error => {
+			  console.error(error);
+			  // Puedes manejar el error aquí
+			});
 		  }
 			catch(err){console.log()}
 	  }
