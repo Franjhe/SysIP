@@ -29,7 +29,7 @@ export class PaymentCancellationComponent {
   @ViewChild('table2Paginator') paginator2!: MatPaginator;
   @ViewChild('table2Sort') sort2!: MatSort;
 
-  displayedColumns1: string[] = ['cedula', 'fecha', 'tasa', 'mount' , 'mountBs'];
+  displayedColumns1: string[] = ['cedula', 'fecha', 'tasa', 'mount' , 'mountBs','validator'];
   displayedColumns2: string[] = ['poliza','recibo','cuota','ramo','asegurado', 'mount' , 'mountBs'];
 
   @ViewChild('Alerta') InfoReceipt!: TemplateRef<any>;
@@ -82,6 +82,17 @@ export class PaymentCancellationComponent {
   listPending: any = []
   listVencido : any = []
 
+  listGroupReceipts  : any = []
+  GroupReceiptsBool : boolean = false
+
+
+  groupReceiptsForm = this._formBuilder.group({
+    agrupado : this._formBuilder.array([])
+  });
+
+  get agrupado() : FormArray {
+    return this.groupReceiptsForm.get("agrupado") as FormArray
+  }
 
   updateReceipt = this._formBuilder.group({
     iestadorec: [{ value: '', disabled: false }],
@@ -130,7 +141,26 @@ export class PaymentCancellationComponent {
     fetch(environment.apiUrl + '/api/v1/collection/search-notification' )
     .then((response) => response.json())
     .then(data => {
-      this.dataSource1 = new MatTableDataSource(data.searchPaymentReport.recibo);
+
+      for(let i = 0; i < data.searchPaymentReport.recibo.length; i++){
+
+        this.agrupado.push(
+          this._formBuilder.group({
+          ctransaccion :data.searchPaymentReport.recibo[i].ctransaccion,
+          casegurado :data.searchPaymentReport.recibo[i].casegurado,
+          freporte :data.searchPaymentReport.recibo[i].freporte,
+          mpago :data.searchPaymentReport.recibo[i].mpago,
+          mpagoext :data.searchPaymentReport.recibo[i].mpagoext,
+          ptasamon :data.searchPaymentReport.recibo[i].ptasamon,
+          iestado_tran :data.searchPaymentReport.recibo[i].iestado_tran,
+          qagrupado : data.searchPaymentReport.recibo[i].qagrupado,
+          agrupador:false
+          })
+        )
+      }
+
+
+      this.dataSource1 = new MatTableDataSource(this.agrupado.value);
 
       const listNotificate = data.searchPaymentReport.recibo
 
@@ -142,6 +172,7 @@ export class PaymentCancellationComponent {
       }, 0);
 
       this.totalNotificated = sumaTotal.toFixed(2)
+
     })
 
     fetch(environment.apiUrl + '/api/v1/collection/search-pending' )
@@ -262,14 +293,14 @@ export class PaymentCancellationComponent {
 
   }
 
-  async ngAfterViewInit(){
+  async ngAfterViewInitP(){
     this.dataSource1.paginator = this.paginator1;
     this.dataSource1.sort = this.sort1;
 
     this.ngAfterViewInitP();
   }
 
-  async ngAfterViewInitP(){
+  async ngAfterViewInit(){
     this.dataSource2.paginator = this.paginator2;
     this.dataSource2.sort = this.sort2;
   }
@@ -653,6 +684,26 @@ export class PaymentCancellationComponent {
     const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
   
     saveAs(excelData, `Reporte de recibos vencidos solicitados.xlsx`);
+  }
+
+  GroupReceipt(){
+    const creds = this.groupReceiptsForm.controls.agrupado as FormArray;
+
+    for(let i = 0; i < creds.length; i++){
+
+      const controlesConAgrupadorTrue = creds.controls.filter(control => control.get('agrupador')?.value === true);
+
+      const cantidadConAgrupadorTrue = controlesConAgrupadorTrue.length;
+
+      if(cantidadConAgrupadorTrue >= 2){
+        this.GroupReceiptsBool = true
+      }else{
+        this.GroupReceiptsBool = false
+
+      }
+      
+    }
+
   }
 
 }

@@ -1,5 +1,5 @@
 <div class="card container-fluid">
-    <form >
+    <form [formGroup]="groupReceiptsForm" >
         <div class="text-center">
             <h1>Normalización de Pagos</h1>
         </div>
@@ -10,55 +10,40 @@
             <div class="p-4">
               <h2>Total Notificado {{totalNotificated}} $</h2>
             </div>
-            <mat-form-field>
-              <mat-label>Datos</mat-label>
-              <input matInput (keyup)="applyFilter1($event)" placeholder="Datos de busqueda" #input>
-            </mat-form-field>
-            
-            <div class="mat-elevation-z8">
-              <table mat-table [dataSource]="dataSource1" #table1Sort matSort >
-            
-                <!-- ID Column -->
-                <ng-container matColumnDef="cedula">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Cedula de Identidad </th>
-                  <td mat-cell *matCellDef="let row" (click)="dataNotification(row.ctransaccion)"> {{row.casegurado}} </td>
-                </ng-container>
-       
-            
-                <!-- Name Column -->
-                <ng-container matColumnDef="fecha">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha de notificacion de pago </th>
-                  <td mat-cell *matCellDef="let row" (click)="dataNotification(row.ctransaccion)"> {{row.freporte}} </td>
-                </ng-container>
-            
-                <!-- Fruit Column -->
-                <ng-container matColumnDef="tasa">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Tasa BCV </th>
-                  <td mat-cell *matCellDef="let row" (click)="dataNotification(row.ctransaccion)"> {{row.ptasamon}} </td>
-                </ng-container>
 
-                <!-- Fruit Column -->
-                <ng-container matColumnDef="mount">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Pago declarado Bs</th>
-                  <td mat-cell *matCellDef="let row" (click)="dataNotification(row.ctransaccion)"> {{row.mpago}} </td>
-                </ng-container>
+            <div>
+              <button class="btn btn-primary rounded-pill p-3" type="button" [disabled]="!GroupReceiptsBool" >Cobrar notificaciones agrupadas</button>
+            </div>
 
-                <!-- Fruit Column -->
-                <ng-container matColumnDef="mountBs">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Pago declarado $ </th>
-                  <td mat-cell *matCellDef="let row" (click)="dataNotification(row.ctransaccion)"> {{row.mpagoext}} </td>
-                </ng-container>
-            
-                <tr mat-header-row *matHeaderRowDef="displayedColumns1"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns1;"></tr>
-            
-                <!-- Row shown when there is no matching data. -->
-                <tr class="mat-row" *matNoDataRow>
-                  <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
-                </tr>
+            <div class="mat-elevation-z8 mt-5" formArrayName="agrupado" >
+
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Cedula de Identidad</th>
+                    <th scope="col">Fecha de notificacion de pago</th>
+                    <th scope="col">Tasa BCV</th>
+                    <th scope="col">Pago declarado Bs</th>
+                    <th scope="col">Pago declarado $</th>
+                    <th scope="col">Validar Recibos</th>
+
+                  </tr>
+                </thead>
+                <tbody *ngFor="let creds of agrupado.value; let i=index">
+                  <tr [formGroupName]="i">
+                    <th (click)="dataNotification(creds.ctransaccion)">{{creds.casegurado}}</th>
+                    <td (click)="dataNotification(creds.ctransaccion)">{{creds.freporte}}</td>
+                    <td (click)="dataNotification(creds.ctransaccion)">{{creds.ptasamon}}</td>
+                    <td (click)="dataNotification(creds.ctransaccion)">{{creds.mpago}}</td>
+                    <td (click)="dataNotification(creds.ctransaccion)">{{creds.mpagoext}}</td>
+                    <td>
+                      <mat-checkbox class="example-margin" formControlName="agrupador" (change)="GroupReceipt()"></mat-checkbox>
+                    </td>
+                  </tr>
+
+                </tbody>
               </table>
-            
-              <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users" #table1Paginator></mat-paginator>
+
             </div>
           </mat-tab>
 
@@ -122,7 +107,7 @@
                   <th mat-header-cell *matHeaderCellDef mat-sort-header> Prima Dolares </th>
                   <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.mprimabrutaext}} </td>
                 </ng-container>
-            
+
                 <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
             
@@ -246,7 +231,7 @@
                       <mat-label>Estado de recibo</mat-label>
                       <mat-select formControlName="iestadorec">
                         <mat-option value="C">Cobrado</mat-option>
-                        <mat-option value="">Por definir... </mat-option>
+                        <mat-option value="R">En revision</mat-option>
                       </mat-select>
                     </mat-form-field>
 
@@ -322,7 +307,7 @@
                     <mat-label>Estado de recibo</mat-label>
                     <mat-select formControlName="iestadorec">
                       <mat-option value="C">Cobrado</mat-option>
-                      <mat-option value="">Por definir... </mat-option>
+                      <mat-option value="R">En revision</mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>

@@ -33,6 +33,7 @@ export class PaymentReportComponent {
 
   usd : boolean = false
   pmovil : boolean = false
+  depositoUSD : boolean = false
 
   cliente : any
 
@@ -584,6 +585,9 @@ export class PaymentReportComponent {
     if(this.usd == true){
       this.usd = false
     }
+    if(this.depositoUSD == true){
+      this.depositoUSD = false
+    }
     
   }
 
@@ -594,6 +598,10 @@ export class PaymentReportComponent {
     if(this.usd == true){
       this.usd = false
     }
+    if(this.depositoUSD == false){
+      this.depositoUSD = true
+    }
+    
     
   }
 
@@ -606,6 +614,9 @@ export class PaymentReportComponent {
 
     if(this.pmovil == true){
       this.pmovil = false
+    }
+    if(this.depositoUSD == true){
+      this.depositoUSD = false
     }
   }
 
