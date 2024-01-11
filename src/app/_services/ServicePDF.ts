@@ -1089,19 +1089,19 @@ export class PdfGenerationService {
 				if (row.m1 !== undefined && row.m1 !== 0) {
 					dataRow.push({text: row.m1.toFixed(2), margin: [5, 0, 0, 0], alignment: 'right', border: [false, false, false, false]});
 				} else {
-					dataRow.push({image: imagen, fit: [11, 11], alignment: 'right', margin: [5, 0, 0, 0], border: [false, false, false, false]});
+					dataRow.push({image: imagen, fit: [4, 4], alignment: 'right', margin: [5, 0, 0, 0], border: [false, false, false, false]});
 				}
 				
 				if (row.m2 !== undefined && row.m2 !== 0) {
 					dataRow.push({text: row.m2.toFixed(2), margin: [11, 0, 0, 0], alignment: 'right', border: [false, false, false, false]});
 				} else {
-					dataRow.push({image: imagen, fit: [11, 11], alignment: 'right', margin: [7, 0, 0, 0], border: [false, false, false, false]});
+					dataRow.push({image: imagen, fit: [4, 4], alignment: 'right', margin: [7, 0, 0, 0], border: [false, false, false, false]});
 				}
 	
 				if (row.m3 !== undefined && row.m3 !== 0) {
 					dataRow.push({text: row.m3.toFixed(2), margin: [-10, 0, 0, 0], alignment: 'right', border: [false, false, false, false]});
 				} else {
-					dataRow.push({image: imagen, fit: [11, 11], alignment: 'right', margin: [10, 0, 0, 0], border: [false, false, false, false]});
+					dataRow.push({image: imagen, fit: [4, 4], alignment: 'right', margin: [10, 0, 0, 0], border: [false, false, false, false]});
 				}
 				
 				body.push(dataRow);
@@ -1125,19 +1125,19 @@ export class PdfGenerationService {
 				if (row.m1 !== undefined && row.m1 !== 0) {
 					dataRow.push({text: row.m1.toFixed(2), margin: [5, 0, 0, 0], alignment: 'right', border: [false, false, false, false]});
 				} else {
-					dataRow.push({image: imagen, fit: [11, 11], alignment: 'right', margin: [5, 0, 0, 0], border: [false, false, false, false]});
+					dataRow.push({image: imagen, fit: [4, 4], alignment: 'right', margin: [5, 0, 0, 0], border: [false, false, false, false]});
 				}
 				
 				if (row.m2 !== undefined && row.m2 !== 0) {
 					dataRow.push({text: row.m2.toFixed(2), margin: [11, 0, 0, 0], alignment: 'right', border: [false, false, false, false]});
 				} else {
-					dataRow.push({image: imagen, fit: [11, 11], alignment: 'right', margin: [7, 0, 0, 0], border: [false, false, false, false]});
+					dataRow.push({image: imagen, fit: [4, 4], alignment: 'right', margin: [7, 0, 0, 0], border: [false, false, false, false]});
 				}
 	
 				if (row.m3 !== undefined && row.m3 !== 0) {
 					dataRow.push({text: row.m3.toFixed(2), margin: [-10, 0, 0, 0], alignment: 'right', border: [false, false, false, false]});
 				} else {
-					dataRow.push({image: imagen, fit: [11, 11], alignment: 'right', margin: [10, 0, 0, 0], border: [false, false, false, false]});
+					dataRow.push({image: imagen, fit: [4, 4], alignment: 'right', margin: [10, 0, 0, 0], border: [false, false, false, false]});
 				}
 				
 				body.push(dataRow);
@@ -2275,7 +2275,7 @@ export class PdfGenerationService {
 					table: {
 					widths: [150, 110, 110, 90],
 					body: [
-						[{text: 'COBERTURAS', margin: [5, 0, 0, 0], alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'RCV', margin: [22, 0, 0, 0], alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'COBERTURA AMPLIA', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'PÉRDIDA TOTAL', alignment: 'center', bold: true, border: [false, false, false, false]}]
+						[{text: 'DETALLE DE COBERTURAS', margin: [5, 0, 0, 0], alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'RCV', margin: [22, 0, 0, 0], alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'COBERTURA AMPLIA', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'PÉRDIDA TOTAL', alignment: 'center', bold: true, border: [false, false, false, false]}]
 					]
 					}
 				},
@@ -2313,6 +2313,87 @@ export class PdfGenerationService {
 					  body: this.buildMetodologyQuotesBody()
 					}
 				},
+				{
+					style: 'data',
+					table: {
+					widths: ['*'],
+					body: [
+						[{text: 'NOTAS', margin: [5, 0, 0, 0], alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
+						]
+					}
+				},
+				{
+					style: 'data',
+					table: {
+					widths: ['*'],
+					body: [
+						[{text: 'Cotización', alignment: 'left', bold: true, border: [false, false, false, false]}]
+						]
+					}
+				},
+				{
+					style: 'data',
+					table: {
+					widths: ['*'],
+					body: [
+						[{text: 'La presente cotización de seguro se mantendrá en vigencia durante un plazo máximo de quince (15) días continuos contados a partir de la fecha de recepción por parte del solicitante o del productor de seguros, lo que ocurra primero, siempre y no se hayan modificado las condiciones del riesgo o no se haya evidenciado reticencia o declaraciones falsas del solicitante. Esta Cotización no implica la aceptación del riesgo por parte de la compañía.', alignment: 'justify', border: [false, false, false, false]}]
+						]
+					}
+				},
+				{
+					style: 'data',
+					table: {
+					widths: ['*'],
+					body: [
+						[{text: 'Inspección', alignment: 'left', bold: true, border: [false, false, false, false]}]
+						]
+					}
+				},
+				{
+					style: 'data',
+					table: {
+					widths: ['*'],
+					body: [
+						[{text: 'Para las inspecciones debe de solicitarla a la siguiente dirección de correo suscricionarys@arysuto.com con la siguiente información: Nombre, Apellido, C.I y N° de teléfono del asegurado o de la persona contacto, indicar Marca-Modelo-Placa del vehículo a inspeccionar, Lugar donde se encuentra el vehículo asegurar.', alignment: 'justify', border: [false, false, false, false]}]
+						]
+					}
+				},
+				{
+					style: 'data',
+					table: {
+					widths: ['*'],
+					body: [
+						[{text: 'IGFT', alignment: 'left', bold: true, border: [false, false, false, false]}]
+						]
+					}
+				},
+				{
+					style: 'data',
+					table: {
+					widths: ['*'],
+					body: [
+						[{text: 'La prima de la presente cotización no incluye el impuesto del 3% de IGFT.', alignment: 'justify', border: [false, false, false, false]}]
+						]
+					}
+				},
+				{
+					style: 'data',
+					table: {
+					widths: ['*'],
+					body: [
+						[{text: 'Aprobación', alignment: 'left', bold: true, border: [false, false, false, false]}]
+						]
+					}
+				},
+				{
+					style: 'data',
+					table: {
+					widths: ['*'],
+					body: [
+						[{text: 'Aprobado por la Superintendencia de la Actividad Aseguradora FSAA-1-1-0363-2022 mediante Oficio N° de fecha 05-08-2022.', alignment: 'justify', border: [false, false, false, false]}]
+						]
+					}
+				},
 			  ], 
 			  styles: {
 				title: {
@@ -2335,7 +2416,7 @@ export class PdfGenerationService {
 
 			const emailData = {
 				to: 'alenjhon9@gmail.com',
-				subject: 'Cuadro Póliza - La Mundial de Seguros',
+				subject: 'Cotización - La Mundial de Seguros',
 				text: 'Pruebaaaaaa',
 				pdfDefinition,
 			};

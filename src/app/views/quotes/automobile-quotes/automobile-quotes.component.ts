@@ -19,6 +19,7 @@ export class AutomobileQuotesComponent {
   @ViewChild("coverageModal") private coverageModal!: TemplateRef<any>;
 
   isActive: boolean = false;
+  public isYearValid: boolean = false;
 
   brandList: any[] = [];
   modelList: any[] = [];
@@ -325,6 +326,9 @@ export class AutomobileQuotesComponent {
         this.vehiculo = this.quotesForm.get('xmarca')?.value + ' ' + this.quotesForm.get('xmodelo')?.value;
         this.cotizacion = response.data.list.result[0].ccotizacion;
         this.version = this.quotesForm.get('xversion')?.value
+
+        const fanoValue = this.quotesForm.get('fano')?.value;
+        this.isYearValid = fanoValue !== null && fanoValue !== undefined && parseInt(fanoValue, 10) >= 2007;
       }
     })
   }
