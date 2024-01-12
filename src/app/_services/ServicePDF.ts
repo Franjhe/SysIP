@@ -210,6 +210,8 @@ export class PdfGenerationService {
 	metodologyList:  any[] = [];
 	ncotizacion:  any;
 	xusuario:  any;
+	xtelefonocorredor!: any ;
+	xcorreocorredor!: any ;
 
 
   constructor(
@@ -756,7 +758,7 @@ export class PdfGenerationService {
 		}
 	}
 
-	async LoadDataQuotes(cotizacion : any, rcv : any, amplia : any, ptotal : any, allCoverages: any, cplan: any, dataVehicle: any) {
+	async LoadDataQuotes(cotizacion : any, rcv : any, amplia : any, ptotal : any, allCoverages: any, cplan: any, dataVehicle: any, fano: any, xcorredor: any, xcorreocorredor: any, xtelefonocorredor: any) {
 		this.rcv = rcv.toFixed(2);
 		this.camplia = amplia.toFixed(2);
 		this.ptotal = ptotal.toFixed(2);
@@ -765,6 +767,7 @@ export class PdfGenerationService {
 		let data = {
 			ccotizacion: cotizacion,
 			cplan: cplan,
+			fano: fano,
 			coverage: this.allCoverages
 		}
 
@@ -798,6 +801,9 @@ export class PdfGenerationService {
 				this.ncotizacion = cotizacion;
 				this.xusuario = dataVehicle.xusuario.toUpperCase();
 				this.xcorreo = dataVehicle.xcorreo.toUpperCase();
+				this.xcorredor = xcorredor;
+        		this.xcorreocorredor = xcorreocorredor;
+        		this.xtelefonocorredor = xtelefonocorredor;
 				this.quotesPdf();
 			}
 		})
@@ -2227,9 +2233,9 @@ export class PdfGenerationService {
 					style: 'data',
 					margin: [0, 0, 0, 3],
 					table: {
-					  widths: [120, 30, 100, 70, '*'],
+					  widths: [30, 110, 50, 5],
 					  body: [
-						[{text: ' ', bold: true, border: [false, false, false, false]}, {text: 'AÑO:', bold: true, border: [false, false, false, false]}, {text: this.fano, border: [false, false, false, false]}, {text: 'PASAJEROS', bold: true, border: [false, false, false, false]}, {text: this.ncapacidadpasajerosvehiculo, border: [false, false, false, false]}]
+						[{text: 'AÑO:', bold: true, border: [false, false, false, false]}, {text: this.fano, border: [false, false, false, false]}, {text: 'PASAJEROS:', bold: true, alignment: 'left', border: [false, false, false, false]}, {text: this.ncapacidadpasajerosvehiculo, border: [false, false, false, false]}]
 					  ]
 					}
 				}, 
@@ -2238,35 +2244,25 @@ export class PdfGenerationService {
 					table: {
 					widths: ['*'],
 					body: [
-						[{text: 'PRIMAS TOTALES', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
+						[{text: 'INTERMEDIRARIO', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
 					]
 					}
 				},
 				{
 					style: 'data',
 					table: {
-					widths: [190, 100, '*'],
+					widths: [40, 150, 40, 90, 50, '*'],
 					body: [
-						[{text: 'RCV', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'COBERTURA AMPLIA', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: 'PÉRDIDA TOTAL', alignment: 'center', bold: true, border: [false, false, false, false]}]
+						[{text: 'Corredor', alignment: 'left', bold: true, border: [false, false, false, false]}, {text: this.xcorredor, alignment: 'left', border: [false, false, false, false]}, {text: 'Correo', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: this.xcorreocorredor, alignment: 'center', border: [false, false, false, false]}, {text: 'Telefono', alignment: 'center', bold: true, border: [false, false, false, false]}, {text: this.xtelefonocorredor, alignment: 'center', border: [false, false, false, false]}]
 					]
 					}
 				},
 				{
 					style: 'data',
-					margin: [0, 0, 0, 3],
 					table: {
-					  widths: [190, 100, '*'],
-					  body: [
-						[{text: this.rcv, alignment: 'center', bold: true, border: [false, false, false, false]}, {text: this.camplia, alignment: 'center', border: [false, false, false, false]}, {text: this.ptotal, alignment: 'center', bold: true, border: [false, false, false, false]}]
-					  ]
-					}
-				},
-				{
-					style: 'data',
-					table: {
-					widths: ['*'],
+					widths: [500, '*'],
 					body: [
-						[{text: 'SUMAS ASEGURADAS', margin: [5, 0, 0, 0], alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
+						[{text: 'SUMAS ASEGURADAS', margin: [5, 0, 0, 0], alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}, {text: 'MONEDA: DÓLARES', margin: [-100, 0, 0, 0], alignment: 'left', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
 					]
 					}
 				},
@@ -2290,9 +2286,9 @@ export class PdfGenerationService {
 				{
 					style: 'data',
 					table: {
-					widths: ['*'],
+					widths: [500, '*'],
 					body: [
-						[{text: 'FRECUENCIA DE PAGOS', margin: [5, 0, 0, 0], alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
+						[{text: 'FRECUENCIA DE PAGOS', margin: [5, 0, 0, 0], alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}, {text: 'MONEDA: DÓLARES', margin: [-100, 0, 0, 0], alignment: 'left', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false]}]
 						]
 					}
 				},

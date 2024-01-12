@@ -54,6 +54,10 @@ export class AutomobileInquiriesComponent {
   loading: boolean = false;
   isActive: boolean = false;
   check: boolean = false;
+  public isYearValid: boolean = false;
+  xtelefonocorredor!: any ;
+	xcorreocorredor!: any ;
+  xcorredor!: any ;
 
   constructor(private router: Router,
               private http: HttpClient,
@@ -106,6 +110,12 @@ export class AutomobileInquiriesComponent {
         this.fano = response.data.fano
         this.correo = response.data.xcorreo
         this.cotizacion = ccotizacion;
+        this.xcorredor = response.data.xcorredor;
+        this.xcorreocorredor = response.data.xcorreocorredor;
+        this.xtelefonocorredor = response.data.xtelefonocorredor;
+
+        const fanoValue = this.fano;
+        this.isYearValid = fanoValue !== null && fanoValue !== undefined && parseInt(fanoValue, 10) >= 2007;
       }
 
     })
@@ -148,7 +158,7 @@ export class AutomobileInquiriesComponent {
   }
 
   onQuotePdf(){
-    const observable = from(this.pdfGenerationService.LoadDataQuotes(this.cotizacion, this.montoRCV, this.montoAmplia, this.montoPerdida, this.allCoverages, this.planPdf, this.dataVehicle));
+    const observable = from(this.pdfGenerationService.LoadDataQuotes(this.cotizacion, this.montoRCV, this.montoAmplia, this.montoPerdida, this.allCoverages, this.planPdf, this.dataVehicle, this.fano, this.xcorredor, this.xcorreocorredor, this.xtelefonocorredor));
 
     observable.subscribe(
       (data) => {

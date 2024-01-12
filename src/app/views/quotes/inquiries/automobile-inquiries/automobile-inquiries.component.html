@@ -90,21 +90,23 @@
                   </div>
                 </div>
                 <br>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <div>
-                    <strong>C. Amplia: </strong>{{quotes.mtotal_amplia}}$ / Anual
+                <div *ngIf="isYearValid">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      <strong>C. Amplia: </strong>{{quotes.mtotal_amplia}}$ / Anual
+                    </div>
+                    <div>
+                      <mat-slide-toggle color="primary" (change)="onToggle('Cobertura Amplia', quotes.cplan_rc)"></mat-slide-toggle>
+                    </div>
                   </div>
-                  <div>
-                    <mat-slide-toggle color="primary" (change)="onToggle('Cobertura Amplia', quotes.cplan_rc)"></mat-slide-toggle>
-                  </div>
-                </div>
-                <br>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <div>
-                    <strong>P. Total: </strong>{{quotes.mtotal_perdida}}$ / Anual
-                  </div>
-                  <div>
-                    <mat-slide-toggle color="primary" (change)="onToggle('Perdida Total', quotes.cplan_rc)"></mat-slide-toggle>
+                  <br>
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      <strong>P. Total: </strong>{{quotes.mtotal_perdida}}$ / Anual
+                    </div>
+                    <div>
+                      <mat-slide-toggle color="primary" (change)="onToggle('Perdida Total', quotes.cplan_rc)"></mat-slide-toggle>
+                    </div>
                   </div>
                 </div>
 
@@ -173,7 +175,7 @@
           </div>
         </div>
       </mat-tab>
-      <mat-tab label="Cobertura Amplia">
+      <mat-tab label="Cobertura Amplia" *ngIf="isYearValid">
         <div class="col-6 py-4 mx-auto">
           <div class="container-coverage">
             <p class="title-coverage">Cobertura Amplia</p>
@@ -191,7 +193,7 @@
           </div>
         </div>
       </mat-tab>
-      <mat-tab label="Pérdida Total"> 
+      <mat-tab label="Pérdida Total" *ngIf="isYearValid"> 
         <div class="col-6 py-4 mx-auto">
           <div class="container-coverage">
             <p class="title-coverage">Pérdida Total</p>

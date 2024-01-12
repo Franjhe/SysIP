@@ -30,17 +30,20 @@ export class AutomobileQuotesComponent {
   coverageListAmplia: any[] = [];
   coverageListPerdida: any[] = [];
   allCoverages: any[] = [];
+  brokerList:  any[] = [];
   dataVehicle!: {}
 
   brandControl = new FormControl('');
   modelControl = new FormControl('');
   versionControl = new FormControl('');
   ratesControl = new FormControl('');
+  brokerControl = new FormControl('');
 
   filteredBrand!: Observable<string[]>;
   filteredModel!: Observable<string[]>;
   filteredVersion!: Observable<string[]>;
   filteredRates!: Observable<string[]>;
+  filteredBroker!: Observable<string[]>;
 
   vector: boolean = true;
   loading: boolean = false;
@@ -63,6 +66,9 @@ export class AutomobileQuotesComponent {
   montoAmplia!: any ;
   montoPerdida!: any ;
   planPdf!: any ;
+  xcorredor!: any ;
+  xtelefonocorredor!: any ;
+  xcorreocorredor!: any ;
 
   quotesForm = this._formBuilder.group({
     xmarca: ['', Validators.required],
@@ -77,6 +83,7 @@ export class AutomobileQuotesComponent {
     xclasificacion: [''],
     npasajeros: [''],
     id_inma: [''],
+    ccorredor: ['']
   });
 
   constructor( private _formBuilder: FormBuilder,
@@ -93,6 +100,7 @@ export class AutomobileQuotesComponent {
     .then(data => {
       this.bcv = data.monitors.usd.price
     })
+    this.getBroker();
   }
 
 
@@ -255,6 +263,39 @@ export class AutomobileQuotesComponent {
     }
   }
 
+  getBroker(){
+    this.http.post(environment.apiUrl + '/api/v1/valrep/brokers', null).subscribe((response: any) => {
+      if (response.data.broker) {
+        for (let i = 0; i < response.data.broker.length; i++) {
+          this.brokerList.push({
+            id: response.data.broker[i].cproductor,
+            value: response.data.broker[i].xintermediario,
+          });
+        }
+        console.log(this.brokerList)
+        this.filteredBroker = this.brokerControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filterBroker(value || ''))
+        );
+      }
+    });
+  }
+
+  private _filterBroker(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.brokerList
+      .map(broker => broker.value)
+      .filter(broker => broker.toLowerCase().includes(filterValue));
+  }
+
+  onBrokerSelection(event: any) {
+    const selectedValue = event.option.value;
+    const selectedBroker = this.brokerList.find(broker => broker.value === selectedValue);
+    if (selectedBroker) {
+      this.quotesForm.get('ccorredor')?.setValue(selectedBroker.id);
+    }
+  }
+
   getRates(){
     this.http.post(environment.apiUrl + '/api/v1/valrep/rates', null).subscribe((response: any) => {
       if (response.data.rates) {
@@ -311,6 +352,7 @@ export class AutomobileQuotesComponent {
       msum: this.quotesForm.get('msuma_aseg')?.value,
       xclasificacion: this.quotesForm.get('xclasificacion')?.value,
       ncapacidad_p: this.quotesForm.get('npasajeros')?.value,
+      ccorredor: this.quotesForm.get('ccorredor')?.value,
     }
 
     this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/create', data).subscribe((response: any) => {
@@ -329,6 +371,10 @@ export class AutomobileQuotesComponent {
 
         const fanoValue = this.quotesForm.get('fano')?.value;
         this.isYearValid = fanoValue !== null && fanoValue !== undefined && parseInt(fanoValue, 10) >= 2007;
+
+        this.xcorredor = response.data.list.result[0].xcorredor
+        this.xcorreocorredor = response.data.list.result[0].xcorreocorredor
+        this.xtelefonocorredor = response.data.list.result[0].xtelefonocorredor
       }
     })
   }
@@ -369,7 +415,7 @@ export class AutomobileQuotesComponent {
   }
 
   onQuotePdf(){
-    const observable = from(this.pdfGenerationService.LoadDataQuotes(this.cotizacion, this.montoRCV, this.montoAmplia, this.montoPerdida, this.allCoverages, this.planPdf, this.dataVehicle));
+    const observable = from(this.pdfGenerationService.LoadDataQuotes(this.cotizacion, this.montoRCV, this.montoAmplia, this.montoPerdida, this.allCoverages, this.planPdf, this.dataVehicle, this.quotesForm.get('fano')?.value, this.xcorredor, this.xcorreocorredor, this.xtelefonocorredor));
 
     observable.subscribe(
       (data) => {
