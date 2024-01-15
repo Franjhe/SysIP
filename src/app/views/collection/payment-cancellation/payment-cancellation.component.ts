@@ -85,6 +85,9 @@ export class PaymentCancellationComponent {
   listPending: any = []
   listVencido : any = []
 
+  listDiference : any = []
+  diference : boolean = false
+
   listReceipts  : any = []
   boollistReceipts: boolean = false
   GroupReceiptsBool : boolean = false
@@ -149,27 +152,47 @@ export class PaymentCancellationComponent {
     .then((response) => response.json())
     .then(data => {
 
-      for(let i = 0; i < data.searchPaymentReport.recibo.length; i++){
+      for(let i = 0; i < data.searchPaymentReport.searchPaymentReportN.recibo.length; i++){
+
+                //fecha hasta recibo
+        let dateNotification = new Date(data.searchPaymentReport.searchPaymentReportN.recibo[i].freporte );
+        let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
+
 
         this.agrupado.push(
           this._formBuilder.group({
-          ctransaccion :data.searchPaymentReport.recibo[i].ctransaccion,
-          casegurado :data.searchPaymentReport.recibo[i].casegurado,
-          freporte :data.searchPaymentReport.recibo[i].freporte,
-          mpago :data.searchPaymentReport.recibo[i].mpago,
-          mpagoext :data.searchPaymentReport.recibo[i].mpagoext,
-          ptasamon :data.searchPaymentReport.recibo[i].ptasamon,
-          iestado_tran :data.searchPaymentReport.recibo[i].iestado_tran,
-          qagrupado : data.searchPaymentReport.recibo[i].qagrupado,
+          ctransaccion :data.searchPaymentReport.searchPaymentReportN.recibo[i].ctransaccion,
+          casegurado :data.searchPaymentReport.searchPaymentReportN.recibo[i].casegurado,
+          freporte :fechaISOHasta,
+          mpago :data.searchPaymentReport.searchPaymentReportN.recibo[i].mpago,
+          mpagoext :data.searchPaymentReport.searchPaymentReportN.recibo[i].mpagoext,
+          ptasamon :data.searchPaymentReport.searchPaymentReportN.recibo[i].ptasamon,
+          iestado_tran :data.searchPaymentReport.searchPaymentReportN.recibo[i].iestado_tran,
+          qagrupado : data.searchPaymentReport.searchPaymentReportN.recibo[i].qagrupado,
           agrupador:false
           })
         )
+
+      }
+
+      
+      for(let i = 0; i < data.searchPaymentReport.receipt.length; i++){
+
+        for(let j = 0; j < data.searchPaymentReport.receipt[i].differenceOfNotification.length; i++){
+
+          this.listDiference.push({
+            crecibo : data.searchPaymentReport.receipt[i].differenceOfNotification[j].crecibo,
+            mdiferencia : data.searchPaymentReport.receipt[i].differenceOfNotification[j].mdiferencia
+          })      
+
+        }
+
       }
 
 
       this.dataSource1 = new MatTableDataSource(this.agrupado.value);
 
-      const listNotificate = data.searchPaymentReport.recibo
+      const listNotificate = data.searchPaymentReport.searchPaymentReportN.recibo
 
       const sumaTotal = listNotificate.reduce((acumulador: any, recibo: { mpagoext: any; }) => {
  
@@ -201,12 +224,6 @@ export class PaymentCancellationComponent {
 
     })
 
-    fetch(environment.apiUrl + '/api/v1/collection/search-payments-collected' )
-    .then((response) => response.json())
-    .then(data => {
-      this.listCollected = new MatTableDataSource(data.searchPaymentsCollected.recibo);
-      
-    })
 
     fetch(environment.apiUrl + '/api/v1/valrep/trade')
     .then((response) => response.json())
@@ -355,6 +372,17 @@ export class PaymentCancellationComponent {
 
           this.listReceipts.push(data.searchPaymentReport.recibo[i].crecibo)
 
+          let receipt = data.searchPaymentReport.recibo[i].crecibo
+          let listReceipt = this.listDiference
+          let receiptOfDiference = listReceipt.filter((data: { crecibo: any; }) => data.crecibo == receipt)
+
+          if(receiptOfDiference.length > 0) {
+            this.diference = true
+          }else{
+            this.diference = false
+
+          }
+
           this.dataReport.push({
             cpoliza : data.searchPaymentReport.recibo[i].cpoliza,
             crecibo : data.searchPaymentReport.recibo[i].crecibo,
@@ -379,7 +407,6 @@ export class PaymentCancellationComponent {
             this.boollistReceipts = false
           }
         });
-
 
       }
  
@@ -410,8 +437,6 @@ export class PaymentCancellationComponent {
         })
 
       }
-
-
 
     })
 
@@ -569,7 +594,6 @@ export class PaymentCancellationComponent {
   
               const formData = new FormData();
               formData.append('file', this.updateReceiptPending.get('ximagen')?.value!);
-              console.log(formData)
           
               //cargamos las imagenes con el codigo de transaccion
               this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((response: any) => {
@@ -751,5 +775,40 @@ export class PaymentCancellationComponent {
     }
 
   }
+
+  updateDifferenceNotification(){
+
+    const creds = this.groupReceiptsForm.controls.agrupado as FormArray;
+
+    const listUpdateDiferenceReceipt: any[] = []
+
+    for(let i = 0; i < creds.length; i++){
+
+      const controlesConAgrupadorTrue = creds.controls.filter(control => control.get('agrupador')?.value === true);
+
+      controlesConAgrupadorTrue.forEach(control => {
+        const ctransaccionValue = control.get('ctransaccion')?.value;
+        // const caseguradoValue = control.get('casegurado')?.value;
+        // const agrupadorValue = control.get('agrupador')?.value;
+    
+        listUpdateDiferenceReceipt.push(ctransaccionValue)
+
+    });
+
+    }
+
+    this.http.patch(environment.apiUrl + '/api/v1/collection/update-difference-of-notification', listUpdateDiferenceReceipt).subscribe((response: any) => {
+    
+      this.toast.open(response.message, '', {
+        duration: 5000,
+        verticalPosition: 'top',
+        panelClass: ['success-toast']
+      });  
+      location.reload()
+
+    })
+
+  }
+
 
 }

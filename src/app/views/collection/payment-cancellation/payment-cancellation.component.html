@@ -12,7 +12,7 @@
             </div>
 
             <div>
-              <button class="btn btn-primary rounded-pill p-3" type="button" [disabled]="!GroupReceiptsBool" >Cobrar notificaciones agrupadas</button>
+              <button class="btn btn-primary rounded-pill p-3" type="button" [disabled]="!GroupReceiptsBool" (click)="updateDifferenceNotification()">Cobrar notificaciones agrupadas</button>
             </div>
 
             <div class="mat-elevation-z8 mt-5" formArrayName="agrupado" >
@@ -291,24 +291,30 @@
                       </mat-select>
                     </mat-form-field>
 
-                    <mat-form-field >
-                      <mat-label>Recibo en revisión</mat-label>
-                      <mat-select [disabled]="!boollistReceipts" formControlName="crecibo">
-                        <mat-option value="">Ninguno</mat-option>
-                        <mat-option  *ngFor="let receipt of listReceipts; let i=index" value="{{receipt}}">{{receipt}}</mat-option>
-                      </mat-select>
-                    </mat-form-field>
-
                     <mat-form-field>
                       <mat-label>Diferencia</mat-label>
                       <input matInput formControlName="mdiferencia"  type="number" placeholder="Ingrese la diferencia del recibo" #input>
                     </mat-form-field>
 
+                    <mat-form-field >
+                      <mat-label>Observacion</mat-label>
+                      <textarea matInput placeholder="Observacion" formControlName="crecibo"></textarea>
+                    </mat-form-field>
+
+                  </div>
+
+                  <div class="col-2 bg-danger card text-ligth" *ngIf="diference">
+                    <div *ngFor="let data of listDiference let i=index">
+                      <p><strong>Recibo con diferencia {{data.crecibo}}</strong></p>
+                      <p><strong>Monto {{data.mdiferencia}}</strong></p>
+                    </div>
                   </div>
 
                   <div class="col-4">
                     <img [src]="urlImg" alt="" class="img-fluid">
                   </div>
+
+
   
                 </div>
 
