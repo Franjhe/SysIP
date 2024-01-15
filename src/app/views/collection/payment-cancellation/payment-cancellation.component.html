@@ -12,7 +12,7 @@
             </div>
 
             <div>
-              <button class="btn btn-primary rounded-pill p-3" type="button" [disabled]="!GroupReceiptsBool" >Cobrar notificaciones agrupadas</button>
+              <button class="btn btn-primary rounded-pill p-3" type="button" [disabled]="!GroupReceiptsBool" (click)="updateDifferenceNotification()">Cobrar notificaciones agrupadas</button>
             </div>
 
             <div class="mat-elevation-z8 mt-5" formArrayName="agrupado" >
@@ -30,7 +30,7 @@
                   </tr>
                 </thead>
                 <tbody *ngFor="let creds of agrupado.value; let i=index">
-                  <tr [formGroupName]="i">
+                  <tr [formGroupName]="i" [class.bg-danger]="creds.iestado_tran == 'ER' ">
                     <th (click)="dataNotification(creds.ctransaccion)">{{creds.casegurado}}</th>
                     <td (click)="dataNotification(creds.ctransaccion)">{{creds.freporte}}</td>
                     <td (click)="dataNotification(creds.ctransaccion)">{{creds.ptasamon}}</td>
@@ -231,7 +231,7 @@
                       <mat-label>Estado de recibo</mat-label>
                       <mat-select formControlName="iestadorec">
                         <mat-option value="C">Cobrado</mat-option>
-                        <mat-option value="R">En revision</mat-option>
+                        <mat-option value="ER">En revision</mat-option>
                       </mat-select>
                     </mat-form-field>
 
@@ -274,46 +274,58 @@
                     <p><strong>Pago Bs: </strong> {{data.mpago}}</p>
                     <p><strong>Pago $: </strong> {{data.mpagoext}}</p>
                   </div>
-                  <div class="col-4" >
+
+                  <div class="col-3" >
                     <p><strong>IGTF Bs: </strong> {{data.mpagoigtf}}</p>
                     <p><strong>IGTF: </strong> {{data.mpagoigtfext}}</p>
                     <p><strong>Tasa: </strong> {{data.ptasamon}}</p>
-                    <p><strong>Tasa referencial: </strong> {{data.ptasaref}}</p>
                     <p><strong>Referencia : </strong> {{data.xreferencia}}</p>
                   </div>
+
+                  <div class="col-2">
+                    <mat-form-field>
+                      <mat-label>Estado de recibo</mat-label>
+                      <mat-select formControlName="iestadorec">
+                        <mat-option value="C">Cobrado</mat-option>
+                        <mat-option value="ER">En revision</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                      <mat-label>Diferencia</mat-label>
+                      <input matInput formControlName="mdiferencia"  type="number" placeholder="Ingrese la diferencia del recibo" #input>
+                    </mat-form-field>
+
+                    <mat-form-field >
+                      <mat-label>Observacion</mat-label>
+                      <textarea matInput placeholder="Observacion" formControlName="crecibo"></textarea>
+                    </mat-form-field>
+
+                  </div>
+
+                  <div class="col-2 bg-danger card text-ligth" *ngIf="diference">
+                    <div *ngFor="let data of listDiference let i=index">
+                      <p><strong>Recibo con diferencia {{data.crecibo}}</strong></p>
+                      <p><strong>Monto {{data.mdiferencia}}</strong></p>
+                    </div>
+                  </div>
+
                   <div class="col-4">
                     <img [src]="urlImg" alt="" class="img-fluid">
                   </div>
+
+
   
                 </div>
+
   
               </div> 
-  
-              <div class="row">
-                <h2>Seleccione la forma en la que el pago fue registrado</h2>
-                <div class="col-4">
-                  <mat-radio-group aria-label="Select an option" formControlName="itransaccion">
-                    <mat-radio-button value="PM">Pago Movil</mat-radio-button>
-                    <mat-radio-button value="EF">Efectivo</mat-radio-button>
-                    <mat-radio-button value="TR">Tranferencia</mat-radio-button>
-                    <mat-radio-button value="PS">Pasarela</mat-radio-button>
-                    <mat-radio-button value="DP">Deposito</mat-radio-button>
-                  </mat-radio-group>
-                </div>
-  
-  
-                <div class="col-4">
-                  <mat-form-field>
-                    <mat-label>Estado de recibo</mat-label>
-                    <mat-select formControlName="iestadorec">
-                      <mat-option value="C">Cobrado</mat-option>
-                      <mat-option value="R">En revision</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-  
-                <button mat-button (click)="updateReceiptNotificated()">Actualizar recibo</button>
+
+              <div class="text-center">
+                <button class="btn-primary" mat-button (click)="updateReceiptNotificated()">Actualizar recibo</button>
               </div>
+  
+
             </form>
 
           </mat-dialog-content>

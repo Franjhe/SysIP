@@ -62,7 +62,7 @@
                     <th>N° Poliza</th>
                     <th>Ramo</th>
                     <th>Fecha Desde</th>
-                    <th>Fecha Hasta</th>
+                    <th style="color:red">Fecha tope de pago</th>
                     <th>Total del recibo</th>
                     <th>Seleccione los recibos a pagar </th>
                   </tr>
@@ -223,7 +223,7 @@
   
                       </div>
   
-                      <div class="mt-3" *ngIf="usd">
+                      <div class="mt-3" >
                         <button mat-button  (click)="addPayment()">Anadir movimiento</button>
   
                         <button mat-button  (click)="removePayment(i)">Eliminar movimiento</button>
