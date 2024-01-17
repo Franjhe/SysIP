@@ -181,7 +181,6 @@ export class PaymentCancellationComponent {
         for(let j = 0; j < data.searchPaymentReport.receipt[i].differenceOfNotification.length; i++){
 
           this.listDiference.push({
-            crecibo : data.searchPaymentReport.receipt[i].differenceOfNotification[j].crecibo,
             mdiferencia : data.searchPaymentReport.receipt[i].differenceOfNotification[j].mdiferencia
           })      
 
@@ -372,11 +371,7 @@ export class PaymentCancellationComponent {
 
           this.listReceipts.push(data.searchPaymentReport.recibo[i].crecibo)
 
-          let receipt = data.searchPaymentReport.recibo[i].crecibo
-          let listReceipt = this.listDiference
-          let receiptOfDiference = listReceipt.filter((data: { crecibo: any; }) => data.crecibo == receipt)
-
-          if(receiptOfDiference.length > 0) {
+          if(this.listDiference.length > 0) {
             this.diference = true
           }else{
             this.diference = false
@@ -548,7 +543,7 @@ export class PaymentCancellationComponent {
   
       })
 
-    }else{
+    }else if(this.updateReceipt.get('iestadorec')?.value !== 'ER' ){
       const data = {
         receipt : this.dataReport,
         transacccion : this.ntransaccion,
