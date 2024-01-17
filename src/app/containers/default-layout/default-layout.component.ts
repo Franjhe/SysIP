@@ -72,7 +72,9 @@ export class DefaultLayoutComponent {
     }
   }
 
-
+pn(){
+  
+}
 
   onNavItemSelect(event: any) {
     const urlString = event.toString();
