@@ -105,7 +105,7 @@ export class PaymentCancellationComponent {
     iestadorec: [{ value: '', disabled: false }],
     mdiferencia :[{ value: '', disabled: false }],
     iestado_tra : [{ value: '', disabled: false }],
-    crecibo: [{ value: '', disabled: false }],
+    xobservacion: [{ value: '', disabled: false }],
     itransaccion: [{ value: '', disabled: false }],
   });
 
@@ -535,7 +535,7 @@ export class PaymentCancellationComponent {
       const data = {
         receipt : this.dataReportB,
         transacccion : this.ntransaccion,
-        crecibo: this.updateReceipt.get('crecibo')?.value ,
+        xobservacion: this.updateReceipt.get('xobservacion')?.value ,
         mdiferencia: this.updateReceipt.get('mdiferencia')?.value ,
         iestadorec: this.updateReceipt.get('iestadorec')?.value ,
         itransaccion: this.updateReceipt.get('itransaccion')?.value,
