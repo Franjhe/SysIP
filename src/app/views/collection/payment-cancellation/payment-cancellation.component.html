@@ -56,68 +56,52 @@
 
             </div>
 
-            
-
-            <mat-form-field>
-              <mat-label>Datos</mat-label>
-              <input matInput (keyup)="applyFilter2($event)" placeholder="Datos de busqueda" #input>
-            </mat-form-field>
-            
             <div class="mat-elevation-z8">
-              <table mat-table [dataSource]="dataSource2" #table2Sort matSort >
-            
-                <!-- ID Column -->
-                <ng-container matColumnDef="poliza">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Poliza</th>
-                  <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.cpoliza}} </td>
-                </ng-container>
-            
-                <!-- Progress Column -->
-                <ng-container matColumnDef="recibo">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Recibo</th>
-                  <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.crecibo}} </td>
-                </ng-container>
 
-                <!-- Progress Column -->
-                <ng-container matColumnDef="cuota">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Cuota </th>
-                  <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.qcuotas}} </td>
-                </ng-container>
-            
-                <!-- Name Column -->
-                <ng-container matColumnDef="ramo">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Ramo </th>
-                  <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.cramo}} </td>
-                </ng-container>
-            
-                <!-- Fruit Column -->
-                <ng-container matColumnDef="asegurado">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Asegurado </th>
-                  <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.casegurado}} </td>
-                </ng-container>
+              <mat-form-field>
+                <mat-label>Buscar</mat-label>
+                <input matInput (keyup)="applyFilter($event)" #input>
+              </mat-form-field>
+              
+              <div class="mat-elevation-z8">
+                <table mat-table [dataSource]="dataSource" matSort>
+              
+                  <!-- ID Column -->
+                  <ng-container matColumnDef="id">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Poliza </th>
+                    <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.cpoliza}} </td>
+                  </ng-container>
+              
+                  <!-- Progress Column -->
+                  <ng-container matColumnDef="progress">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Ramo </th>
+                    <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.cramo}}% </td>
+                  </ng-container>
+              
+                  <!-- Name Column -->
+                  <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Recibo </th>
+                    <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.crecibo}} </td>
+                  </ng-container>
+              
+                  <!-- Fruit Column -->
+                  <ng-container matColumnDef="fruit">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Asegurado </th>
+                    <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.casegurado}} </td>
+                  </ng-container>
+              
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              
+                  <!-- Row shown when there is no matching data. -->
+                  <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+                  </tr>
+                </table>
+              
+                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+              </div>
 
-                <!-- Fruit Column -->
-                <ng-container matColumnDef="mount">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Prima BS </th>
-                  <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.mprimabruta}} </td>
-                </ng-container>
-
-                <!-- Fruit Column -->
-                <ng-container matColumnDef="mountBs">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Prima Dolares </th>
-                  <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.mprimabrutaext}} </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
-            
-                <!-- Row shown when there is no matching data. -->
-                <tr class="mat-row" *matNoDataRow>
-                  <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
-                </tr>
-              </table>
-            
-              <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="5"  aria-label="Select page of users" #table2Paginator></mat-paginator>
             </div>
           </mat-tab>
 

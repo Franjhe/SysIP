@@ -20,17 +20,14 @@ import { saveAs } from 'file-saver';
 })
 export class PaymentCancellationComponent {
 
-  dataSource1 = new MatTableDataSource<any>;
-  dataSource2 = new MatTableDataSource<any>;
 
-  @ViewChild('table1Paginator') paginator1!: MatPaginator;
-  @ViewChild('table1Sort') sort1!: MatSort;
+  displayedColumns: string[] = ['id', 'name', 'progress', 'fruit'];
+  dataSource = new MatTableDataSource<any> ;
 
-  @ViewChild('table2Paginator') paginator2!: MatPaginator;
-  @ViewChild('table2Sort') sort2!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
-  displayedColumns1: string[] = ['cedula', 'fecha', 'tasa', 'mount' , 'mountBs','validator'];
-  displayedColumns2: string[] = ['poliza','recibo','cuota','ramo','asegurado', 'mount' , 'mountBs'];
+
 
   @ViewChild('Alerta') InfoReceipt!: TemplateRef<any>;
   @ViewChild('Pending') Pending!: TemplateRef<any>;
@@ -134,12 +131,6 @@ export class PaymentCancellationComponent {
     ) {
    }
 
-
-  sanitizeImageUrl(imageUrl: string): SafeUrl {
-    return this.sanitizer.bypassSecurityTrustUrl( imageUrl);
-}
-
-
   ngOnInit(){
 
     fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
@@ -154,10 +145,8 @@ export class PaymentCancellationComponent {
 
       for(let i = 0; i < data.searchPaymentReport.searchPaymentReportN.recibo.length; i++){
 
-                //fecha hasta recibo
         let dateNotification = new Date(data.searchPaymentReport.searchPaymentReportN.recibo[i].freporte );
         let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
-
 
         this.agrupado.push(
           this._formBuilder.group({
@@ -175,22 +164,6 @@ export class PaymentCancellationComponent {
 
       }
 
-      
-      for(let i = 0; i < data.searchPaymentReport.receipt.length; i++){
-
-        for(let j = 0; j < data.searchPaymentReport.receipt[i].differenceOfNotification.length; i++){
-
-          this.listDiference.push({
-            mdiferencia : data.searchPaymentReport.receipt[i].differenceOfNotification[j].mdiferencia
-          })      
-
-        }
-
-      }
-
-
-      this.dataSource1 = new MatTableDataSource(this.agrupado.value);
-
       const listNotificate = data.searchPaymentReport.searchPaymentReportN.recibo
 
       const sumaTotal = listNotificate.reduce((acumulador: any, recibo: { mpagoext: any; }) => {
@@ -202,13 +175,34 @@ export class PaymentCancellationComponent {
 
       this.totalNotificated = sumaTotal.toFixed(2)
 
+      console.log(data.searchPaymentReport.receipt)
+      console.log(data.searchPaymentReport.receipt.length)
+
+      
+      for(let i = 0; i < data.searchPaymentReport.receipt.length; i++){
+
+        console.log(data.searchPaymentReport.receipt[i].differenceOfNotification.length)
+        console.log(data.searchPaymentReport.receipt[i].differenceOfNotification)
+        for(let j = 0; j < data.searchPaymentReport.receipt[i].differenceOfNotification.length; i++){
+
+          this.listDiference.push({
+            mdiferencia : data.searchPaymentReport.receipt[i].differenceOfNotification[j].mdiferencia
+          })      
+
+        }
+
+      }
+
+      console.log(this.listDiference)
+
+
     })
 
     fetch(environment.apiUrl + '/api/v1/collection/search-pending' )
     .then((response) => response.json())
     .then(data => {
       this.listPending = data.searchPaymentPendingData.recibo
-      this.dataSource2 = new MatTableDataSource(data.searchPaymentPendingData.recibo);
+      this.dataSource = new MatTableDataSource(data.searchPaymentPendingData.recibo);
 
       const listPending = data.searchPaymentPendingData.recibo
 
@@ -220,6 +214,10 @@ export class PaymentCancellationComponent {
       }, 0);
 
       this.totalPending = sumaTotal.toFixed(2)
+
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+
 
     })
 
@@ -316,30 +314,9 @@ export class PaymentCancellationComponent {
 
   }
 
-  async ngAfterViewInitP(){
-    this.dataSource1.paginator = this.paginator1;
-    this.dataSource1.sort = this.sort1;
-
-    this.ngAfterViewInitP();
-  }
-
-  async ngAfterViewInit(){
-    this.dataSource2.paginator = this.paginator2;
-    this.dataSource2.sort = this.sort2;
-  }
-
-  ngAfterViewInitC(){
-
-  }
-
-  applyFilter1(event: Event) {
+  applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource1.filter = filterValue.trim().toLowerCase();
-  }
-
-  applyFilter2(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource2.filter = filterValue.trim().toLowerCase();
+    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
   Alert(config?: MatDialogConfig) {
