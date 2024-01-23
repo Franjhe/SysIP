@@ -288,8 +288,8 @@
                   </div>
 
                   <div class="col-2 bg-danger card text-ligth" *ngIf="diference">
-                    <div *ngFor="let data of listDiference let i=index">
-                      <p><strong>Recibo con diferencia {{data.crecibo}}</strong></p>
+                    <div *ngFor="let data of lisDiferenceClient let i=index">
+                      <p><strong>Transaccion con diferencia {{data.id}}</strong></p>
                       <p><strong>Monto {{data.mdiferencia}}</strong></p>
                     </div>
                   </div>

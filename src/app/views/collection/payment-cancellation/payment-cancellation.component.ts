@@ -83,6 +83,7 @@ export class PaymentCancellationComponent {
   listVencido : any = []
 
   listDiference : any = []
+  lisDiferenceClient  : any = []
   diference : boolean = false
 
   listReceipts  : any = []
@@ -175,26 +176,18 @@ export class PaymentCancellationComponent {
 
       this.totalNotificated = sumaTotal.toFixed(2)
 
-      console.log(data.searchPaymentReport.receipt)
-      console.log(data.searchPaymentReport.receipt.length)
-
       
       for(let i = 0; i < data.searchPaymentReport.receipt.length; i++){
 
-        console.log(data.searchPaymentReport.receipt[i].differenceOfNotification.length)
-        console.log(data.searchPaymentReport.receipt[i].differenceOfNotification)
         for(let j = 0; j < data.searchPaymentReport.receipt[i].differenceOfNotification.length; i++){
 
           this.listDiference.push({
+            id: data.searchPaymentReport.receipt[i].differenceOfNotification[j].ctransaccion,
             mdiferencia : data.searchPaymentReport.receipt[i].differenceOfNotification[j].mdiferencia
           })      
-
         }
 
       }
-
-      console.log(this.listDiference)
-
 
     })
 
@@ -327,6 +320,7 @@ export class PaymentCancellationComponent {
 
   async dataNotification(transaccion : any){
     this.ntransaccion = transaccion
+
     fetch(environment.apiUrl + '/api/v1/collection/search-notification-data/' + transaccion)
     .then((response) => response.json())
     .then(data => {
@@ -348,13 +342,6 @@ export class PaymentCancellationComponent {
 
           this.listReceipts.push(data.searchPaymentReport.recibo[i].crecibo)
 
-          if(this.listDiference.length > 0) {
-            this.diference = true
-          }else{
-            this.diference = false
-
-          }
-
           this.dataReport.push({
             cpoliza : data.searchPaymentReport.recibo[i].cpoliza,
             crecibo : data.searchPaymentReport.recibo[i].crecibo,
@@ -374,9 +361,27 @@ export class PaymentCancellationComponent {
           })
 
           if(this.listReceipts.length > 1){
+
             this.boollistReceipts = true
           }else {
             this.boollistReceipts = false
+          }
+
+          if(this.listDiference.length > 0) {
+
+            this.lisDiferenceClient = []
+            let id = transaccion
+            let idTransaccion = this.listDiference
+            let filterdata = idTransaccion.filter((data: { id: any; }) => data.id == id)
+            this.lisDiferenceClient.push(filterdata[0])
+
+            if(this.lisDiferenceClient.length > 0){
+              this.diference = true
+            }
+
+          }
+          else if(this.lisDiferenceClient.length < 0){
+            this.diference = false
           }
         });
 
