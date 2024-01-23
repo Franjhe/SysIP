@@ -20,6 +20,8 @@ export class AutomobileQuotesComponent {
 
   isActive: boolean = false;
   public isYearValid: boolean = false;
+  currentUser!: any
+  token!: any
 
   brandList: any[] = [];
   modelList: any[] = [];
@@ -55,6 +57,7 @@ export class AutomobileQuotesComponent {
   brcv: boolean = false;
   bamplia: boolean = false;
   bperdida: boolean = false;
+  tasas: boolean = false;
 
   cotizacion!: any;
   nombreCompleto!: any;
@@ -69,6 +72,8 @@ export class AutomobileQuotesComponent {
   xcorredor!: any ;
   xtelefonocorredor!: any ;
   xcorreocorredor!: any ;
+  pcasco!: any
+  pperdida!: any
 
   quotesForm = this._formBuilder.group({
     xmarca: ['', Validators.required],
@@ -83,7 +88,9 @@ export class AutomobileQuotesComponent {
     xclasificacion: [''],
     npasajeros: [''],
     id_inma: [''],
-    ccorredor: ['']
+    ccorredor: [''],
+    pcasco: [''],
+    pperdida: [''],
   });
 
   constructor( private _formBuilder: FormBuilder,
@@ -100,7 +107,12 @@ export class AutomobileQuotesComponent {
     .then(data => {
       this.bcv = data.monitors.usd.price
     })
-    this.getBroker();
+    this.token = localStorage.getItem('user');
+    this.currentUser = JSON.parse(this.token);
+
+    if (this.currentUser) {
+      this.getBroker();
+    }
   }
 
 
@@ -252,6 +264,7 @@ export class AutomobileQuotesComponent {
       this.quotesForm.get('id_inma')?.setValue(selectedVersion.id_inma);
       this.quotesForm.get('msuma_aseg')?.setValue(selectedVersion.msum);
       this.quotesForm.get('xclasificacion')?.setValue(selectedVersion.cclasificacion);
+      this.getHullPrice()
       this.quotesForm.get('npasajeros')?.setValue(selectedVersion.npasajero);
 
       if(!this.quotesForm.get('ctarifa_exceso')?.value){
@@ -336,6 +349,25 @@ export class AutomobileQuotesComponent {
     }else{
       this.buttonQuotes = true;
     }
+  }
+
+  getHullPrice(){
+    if(this.currentUser.data.crol == 5){
+      this.tasas = true;
+      let data =  {
+        cano: this.quotesForm.get('fano')?.value,
+        xclase: this.quotesForm.get('xclasificacion')?.value,
+      };
+      this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/hull-price', data).subscribe((response: any) => {
+        if(response.status){
+          this.pcasco   = response.data.ptasa_casco;
+          this.pperdida = response.data.pperdida_total;
+        }
+      })
+    }else{
+      this.tasas = false;
+    }
+
   }
 
   onSubmit(){
