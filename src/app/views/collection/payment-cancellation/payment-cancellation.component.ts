@@ -11,15 +11,22 @@ import { Observable } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import {animate, state, style, transition, trigger} from '@angular/animations';
 
 
 @Component({
   selector: 'app-payment-cancellation',
   templateUrl: './payment-cancellation.component.html',
-  styleUrls: ['./payment-cancellation.component.scss']
+  styleUrls: ['./payment-cancellation.component.scss'],
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({ height: '0px', minHeight: '0', display: 'none' })),
+      state('expanded', style({ height: '*', display: 'table-row-group' })),
+      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ],
 })
 export class PaymentCancellationComponent {
-
 
   displayedColumns: string[] = ['id', 'name', 'progress', 'fruit'];
   dataSource = new MatTableDataSource<any> ;
@@ -28,10 +35,10 @@ export class PaymentCancellationComponent {
   @ViewChild(MatSort) sort!: MatSort;
 
 
-
   @ViewChild('Alerta') InfoReceipt!: TemplateRef<any>;
   @ViewChild('Pending') Pending!: TemplateRef<any>;
-  
+
+
   bcv : any
   viewData : boolean = false
   clienteData : any
@@ -144,30 +151,34 @@ export class PaymentCancellationComponent {
     .then((response) => response.json())
     .then(data => {
 
-      for(let i = 0; i < data.searchPaymentReport.searchPaymentReportN.recibo.length; i++){
+      for(let i = 0; i < data.searchPaymentReport.searchDataNotifiqued.dataTransaction.length; i++){
 
-        let dateNotification = new Date(data.searchPaymentReport.searchPaymentReportN.recibo[i].freporte );
+        let dateNotification = new Date(data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].transaccion.freporte);
         let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
 
         this.agrupado.push(
           this._formBuilder.group({
-          ctransaccion :data.searchPaymentReport.searchPaymentReportN.recibo[i].ctransaccion,
-          casegurado :data.searchPaymentReport.searchPaymentReportN.recibo[i].casegurado,
-          freporte :fechaISOHasta,
-          mpago :data.searchPaymentReport.searchPaymentReportN.recibo[i].mpago,
-          mpagoext :data.searchPaymentReport.searchPaymentReportN.recibo[i].mpagoext,
-          ptasamon :data.searchPaymentReport.searchPaymentReportN.recibo[i].ptasamon,
-          iestado_tran :data.searchPaymentReport.searchPaymentReportN.recibo[i].iestado_tran,
-          qagrupado : data.searchPaymentReport.searchPaymentReportN.recibo[i].qagrupado,
-          agrupador:false
+            id :data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].transaccion.id,
+            casegurado :data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].transaccion.casegurado,
+            freporte :fechaISOHasta,
+            iestado_tran :data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].transaccion.iestado_tran,
+            mpagoext :data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].transaccion.mpagoext,
+            mpago :data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].transaccion.mpago,
+            ptasamon :data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].transaccion.ptasamon,
+            detalle :data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].detalle,
+            soporte : data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte,
+            diference : data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].diference,
+            agrupador:false
           })
         )
 
       }
 
-      const listNotificate = data.searchPaymentReport.searchPaymentReportN.recibo
+      console.log(this.groupReceiptsForm.value)
 
-      const sumaTotal = listNotificate.reduce((acumulador: any, recibo: { mpagoext: any; }) => {
+      const listNotificate = data.searchPaymentReport.searchDataNotifiqued.dataTransaction
+
+      const sumaTotal = listNotificate.transaccion.reduce((acumulador: any, recibo: { mpagoext: any; }) => {
  
         acumulador += recibo.mpagoext;
         
@@ -176,18 +187,6 @@ export class PaymentCancellationComponent {
 
       this.totalNotificated = sumaTotal.toFixed(2)
 
-      
-      for(let i = 0; i < data.searchPaymentReport.receipt.length; i++){
-
-        for(let j = 0; j < data.searchPaymentReport.receipt[i].differenceOfNotification.length; i++){
-
-          this.listDiference.push({
-            id: data.searchPaymentReport.receipt[i].differenceOfNotification[j].ctransaccion,
-            mdiferencia : data.searchPaymentReport.receipt[i].differenceOfNotification[j].mdiferencia
-          })      
-        }
-
-      }
 
     })
 
@@ -313,9 +312,7 @@ export class PaymentCancellationComponent {
   }
 
   Alert(config?: MatDialogConfig) {
-
     return this.dialog.open(this.InfoReceipt, config);
-
   }
 
   async dataNotification(transaccion : any){

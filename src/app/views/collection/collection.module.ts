@@ -4,6 +4,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialExampleModule } from './../../material.module'
+import { NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { CollectionRoutingModule } from './collection-routing.module';
 import { PaymentReportComponent } from './payment-report/payment-report.component';
@@ -23,6 +24,7 @@ import { ClipboardModule } from 'ngx-clipboard';
     ReactiveFormsModule,
     NgbModule,
     FormsModule,
+    NgbAccordionModule,
     ClipboardModule
   ]
 })
