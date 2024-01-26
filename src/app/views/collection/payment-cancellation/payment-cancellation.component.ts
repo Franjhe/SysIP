@@ -18,13 +18,7 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
   selector: 'app-payment-cancellation',
   templateUrl: './payment-cancellation.component.html',
   styleUrls: ['./payment-cancellation.component.scss'],
-  animations: [
-    trigger('detailExpand', [
-      state('collapsed', style({ height: '0px', minHeight: '0', display: 'none' })),
-      state('expanded', style({ height: '*', display: 'table-row-group' })),
-      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
-    ]),
-  ],
+
 })
 export class PaymentCancellationComponent {
 
@@ -88,9 +82,13 @@ export class PaymentCancellationComponent {
 
   listPending: any = []
   listVencido : any = []
-
   listDiference : any = []
-  lisDiferenceClient  : any = []
+
+  lisDiferenceClient: any 
+  listDetalle: any
+  listSoport : any 
+
+
   diference : boolean = false
 
   listReceipts  : any = []
@@ -156,6 +154,46 @@ export class PaymentCancellationComponent {
         let dateNotification = new Date(data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].transaccion.freporte);
         let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
 
+        this.listDetalle = []
+        this.lisDiferenceClient= []
+        this.listSoport = []
+
+
+        // this.listDetalle = data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].detalle
+        
+        // this.lisDiferenceClient = data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].diference
+
+
+        const listSoport: { cbanco: any; cbanco_destino: any; cmoneda: any; mpago: any; mpagoext: any; mpagoigtf: any; mpagoigtfext: any; ptasamon: any; ptasaref: any; xreferencia: any; ximagen: string; }[] = []
+
+        for(let j = 0; j < data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte.length; j++){
+
+          this.http.get(environment.apiUrl + '/api/get-document/' + data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].xruta , { responseType: 'blob' }).subscribe((response : Blob) => {
+            var url = URL.createObjectURL(response)
+            var img = new Image();
+            img.src = url;
+
+            listSoport.push({
+              cbanco: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].cbanco,
+              cbanco_destino: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].cbanco_destino ,
+              cmoneda: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].cmoneda ,
+              mpago: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].mpago ,
+              mpagoext: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].mpagoext ,
+              mpagoigtf: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].mpagoigtf ,
+              mpagoigtfext: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].mpagoigtfext ,
+              ptasamon: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].ptasamon ,
+              ptasaref: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].ptasaref ,
+              xreferencia: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].xreferencia ,
+              ximagen: url  || '',
+            })
+
+          })
+
+        }
+
+        console.log(listSoport)
+
+
         this.agrupado.push(
           this._formBuilder.group({
             id :data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].transaccion.id,
@@ -165,22 +203,22 @@ export class PaymentCancellationComponent {
             mpagoext :data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].transaccion.mpagoext,
             mpago :data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].transaccion.mpago,
             ptasamon :data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].transaccion.ptasamon,
-            detalle :data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].detalle,
-            soporte : data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte,
-            diference : data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].diference,
+            // detalle : this.listDetalle,
+            soporte : listSoport,
+            // diference : this.lisDiferenceClient,
             agrupador:false
           })
         )
 
-      }
+        console.log(this.groupReceiptsForm.value)
 
-      console.log(this.groupReceiptsForm.value)
+      }
 
       const listNotificate = data.searchPaymentReport.searchDataNotifiqued.dataTransaction
 
-      const sumaTotal = listNotificate.transaccion.reduce((acumulador: any, recibo: { mpagoext: any; }) => {
+      const sumaTotal = listNotificate.reduce((acumulador: any, transaccion: { mpagoext: any; }) => {
  
-        acumulador += recibo.mpagoext;
+        acumulador += transaccion.mpagoext;
         
         return acumulador;
       }, 0);
@@ -384,33 +422,7 @@ export class PaymentCancellationComponent {
 
       }
  
-      for(let i = 0; i < data.searchPaymentReport.soporte.length; i++){
 
-        fetch(environment.apiUrl + '/api/get-document/' + data.searchPaymentReport.soporte[i].xruta)
-        .then((response) => response.blob())
-        .then(image => {
-          var url = URL.createObjectURL(image)
-          var img = new Image();
-          img.src = url;
-          this.urlImg = url
-         })
-
-        this.dataSoport.push({
-          cbanco:data.searchPaymentReport.soporte[i].cbanco,
-          cbanco_destino:data.searchPaymentReport.soporte[i].cbanco_destino,
-          cmoneda:data.searchPaymentReport.soporte[i].cmoneda,
-          mpago:data.searchPaymentReport.soporte[i].mpago,
-          mpagoext:data.searchPaymentReport.soporte[i].mpagoext,
-          mpagoigtf:data.searchPaymentReport.soporte[i].mpagoigtf,
-          mpagoigtfext:data.searchPaymentReport.soporte[i].mpagoigtfext,
-          ptasamon:data.searchPaymentReport.soporte[i].ptasamon,
-          ptasaref:data.searchPaymentReport.soporte[i].ptasaref,
-          xreferencia:data.searchPaymentReport.soporte[i].xreferencia,
-          ximagen: this.urlImg,
-
-        })
-
-      }
 
     })
 
