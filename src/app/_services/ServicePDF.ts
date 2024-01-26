@@ -56,6 +56,7 @@ export class PdfGenerationService {
 	mtotal: number| undefined ;
 	beneficiarios : any = [] 
 	coberturas : any = [] 
+	fcotizacion: any;
 
 
 	checked = false;
@@ -792,7 +793,20 @@ export class PdfGenerationService {
 						m3: response.data.payment[i].m3,
 					})
 				}
+				const fechaCotizacion = response.data.list[0].fcotizacion;
 
+				// Crear un objeto Date con la fecha de cotización
+				const fechaObj = new Date(fechaCotizacion);
+				
+				// Obtener los componentes de la fecha (día, mes, año)
+				const dia = fechaObj.getDate();
+				const mes = fechaObj.getMonth() + 1; // Nota: JavaScript cuenta los meses desde 0
+				const anio = fechaObj.getFullYear();
+				
+				// Formatear la fecha en el formato "día mes año"
+				const fechaFormateada = `${dia < 10 ? '0' : ''}${dia}-${mes < 10 ? '0' : ''}${mes}-${anio}`;
+				
+				this.fcotizacion = fechaFormateada,
 				this.xmarca = dataVehicle.xmarca;
 				this.xmodelo = dataVehicle.xmodelo;
 				this.xversion = dataVehicle.xversion;
@@ -2320,6 +2334,16 @@ export class PdfGenerationService {
 				},
 				{
 					style: 'data',
+					margin: [0, 0, 0, 2],
+					table: {
+					widths: ['*'],
+					body: [
+						[{text: 'La prima de la presente cotización no incluye el impuesto del 3% de IGFT.', alignment: 'center', bold: true, fontSize: 9.5, border: [false, false, false, false]}]
+						]
+					}
+				},
+				{
+					style: 'data',
 					table: {
 					widths: ['*'],
 					body: [
@@ -2332,7 +2356,7 @@ export class PdfGenerationService {
 					table: {
 					widths: ['*'],
 					body: [
-						[{text: 'La presente cotización de seguro se mantendrá en vigencia durante un plazo máximo de quince (15) días continuos contados a partir de la fecha de recepción por parte del solicitante o del productor de seguros, lo que ocurra primero, siempre y no se hayan modificado las condiciones del riesgo o no se haya evidenciado reticencia o declaraciones falsas del solicitante. Esta Cotización no implica la aceptación del riesgo por parte de la compañía.', alignment: 'justify', border: [false, false, false, false]}]
+						[{text: `La presente cotización de seguro se mantendrá en vigencia durante un plazo máximo de quince (15) días continuos contados a partir del ${this.fcotizacion}, lo que ocurra primero, siempre y no se hayan modificado las condiciones del riesgo o no se haya evidenciado reticencia o declaraciones falsas del solicitante. Esta Cotización no implica la aceptación del riesgo por parte de la compañía.`, alignment: 'justify', border: [false, false, false, false]}]
 						]
 					}
 				},
@@ -2351,33 +2375,6 @@ export class PdfGenerationService {
 					widths: ['*'],
 					body: [
 						[{text: 'Para las inspecciones debe de solicitarla a la siguiente dirección de correo suscricionarys@arysuto.com con la siguiente información: Nombre, Apellido, C.I y N° de teléfono del asegurado o de la persona contacto, indicar Marca-Modelo-Placa del vehículo a inspeccionar, Lugar donde se encuentra el vehículo asegurar.', alignment: 'justify', border: [false, false, false, false]}]
-						]
-					}
-				},
-				{
-					style: 'data',
-					table: {
-					widths: ['*'],
-					body: [
-						[{text: 'IGFT', alignment: 'left', bold: true, border: [false, false, false, false]}]
-						]
-					}
-				},
-				{
-					style: 'data',
-					table: {
-					widths: ['*'],
-					body: [
-						[{text: 'La prima de la presente cotización no incluye el impuesto del 3% de IGFT.', alignment: 'justify', border: [false, false, false, false]}]
-						]
-					}
-				},
-				{
-					style: 'data',
-					table: {
-					widths: ['*'],
-					body: [
-						[{text: 'Aprobación', alignment: 'left', bold: true, border: [false, false, false, false]}]
 						]
 					}
 				},
@@ -2414,6 +2411,7 @@ export class PdfGenerationService {
 				to: 'alenjhon9@gmail.com',
 				subject: 'Cotización - La Mundial de Seguros',
 				text: 'Pruebaaaaaa',
+				user: this.xusuario,
 				pdfDefinition,
 			};
 			this.http.post( environment.apiUrl + '/api/v1/quotes/automobile/send-email', emailData)

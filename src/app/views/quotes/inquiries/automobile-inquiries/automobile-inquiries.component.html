@@ -86,7 +86,7 @@
                     <strong>Rcv: </strong>{{quotes.mtotal_rcv}}$ / Anual
                   </div>
                   <div>
-                    <mat-slide-toggle color="primary" (change)="onToggle('Rcv', quotes.cplan_rc)"></mat-slide-toggle>
+                    <mat-slide-toggle color="primary" matTooltip="Aceptar Rcv" (change)="onToggle('Rcv', quotes.cplan_rc)"></mat-slide-toggle>
                   </div>
                 </div>
                 <br>
@@ -96,7 +96,7 @@
                       <strong>C. Amplia: </strong>{{quotes.mtotal_amplia}}$ / Anual
                     </div>
                     <div>
-                      <mat-slide-toggle color="primary" (change)="onToggle('Cobertura Amplia', quotes.cplan_rc)"></mat-slide-toggle>
+                      <mat-slide-toggle color="primary" matTooltip="Aceptar Cobertura Amplia" (change)="onToggle('Cobertura Amplia', quotes.cplan_rc)"></mat-slide-toggle>
                     </div>
                   </div>
                   <br>
@@ -105,14 +105,14 @@
                       <strong>P. Total: </strong>{{quotes.mtotal_perdida}}$ / Anual
                     </div>
                     <div>
-                      <mat-slide-toggle color="primary" (change)="onToggle('Perdida Total', quotes.cplan_rc)"></mat-slide-toggle>
+                      <mat-slide-toggle matTooltip="Aceptar Pérdida Total" color="primary" (change)="onToggle('Perdida Total', quotes.cplan_rc)"></mat-slide-toggle>
                     </div>
                   </div>
                 </div>
 
                 <div class="col-10 offset-md-6" style="margin-top: 20px;">
                     <div class="example-button-container">
-                      <button mat-mini-fab color="primary" (click)="openCoverages(quotes, $event)">
+                      <button mat-mini-fab color="primary" matTooltip="Información Adicional" (click)="openCoverages(quotes, $event)">
                         <mat-icon>info</mat-icon>
                       </button>
                     </div> 
