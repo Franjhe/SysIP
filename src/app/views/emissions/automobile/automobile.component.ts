@@ -1502,6 +1502,8 @@ export class AutomobileComponent {
         this.sumaAseguradaMax = MaxSum.toFixed(2)
         this.sumaAseguradaMin = MinSum.toFixed(2)
 
+        console.log(this.sumaAseguradaMax)
+
         if(msumaAseg > this.sumaAseguradaMax){
           this.snackBar.open('La Suma Asegurada excedió el 30%.', '', {
             duration: 5000,
