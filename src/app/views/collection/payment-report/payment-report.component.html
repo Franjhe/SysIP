@@ -55,6 +55,10 @@
             <h1><strong>{{cliente}}</strong></h1>
             <h1> Sus recibos pendientes </h1>
 
+            <div *ngIf="diferenceBool">
+              <h1 class="text-danger">{{messageDiference}}</h1>
+            </div>
+
             <div formArrayName="receipt" >
               <table class="table border">
                 <thead>
@@ -140,72 +144,72 @@
                     <div [formGroupName]="i" class="row justify-content-center">
   
                       <div class="col-lg-4">
-                          <div class="form-outline" >
-                            <select formControlName="cmoneda" class="form-control rounded-input form-control-lg colorgris" (change)="validateCoin(i)">
-                              <option *ngFor="let coin of coinList" value="{{ coin.id }}">{{ coin.id }}</option>
+
+                        <!-- Moneda -->
+                          <div class="form-outline" *ngIf="usd"><!-- pagos en dolares  -->
+                            <label class="form-label required">Moneda</label>
+                            <select formControlName="cmoneda" class="form-control rounded-input form-control-lg colorgris" >
+                              <option  value="BS">BS</option>
+                              <option  value="USD">USD</option>
                             </select>                     
                           </div>
 
-                          <div class="form-outline mt-3" *ngIf="!usd && !pmovil && !depositoUSD">
-                            <select formControlName="cbanco" class="form-control rounded-input form-control-lg colorgris">
+                          <div class="form-outline"  *ngIf="!usd"><!-- pagos en bolivares -->
+                            <label class="form-label required">Moneda</label>
+                            <select formControlName="cmoneda" class="form-control rounded-input form-control-lg colorgris">
+                              <option  value="Bs">Bs</option>
+                            </select>                     
+                          </div>
+
+                          <!-- Bancos de emision -->
+                          <div class="form-outline mt-3" *ngIf="!usd"><!-- lista de bancos emisores nacionales -->
+                            <label class="form-label ">Banco de emision</label>
+                            <select formControlName="cbanco" class="form-control rounded-input form-control-lg colorgris" >
                               <option disabled>Seleccione el banco de emision</option>
-                              <option *ngFor="let backE of backEmitter" value="{{ backE.id }}">{{ backE.value }}</option>
+                              <option *ngFor="let backE of bankNational" value="{{ backE.id }}">{{ backE.value }}</option>
                             </select>
                           </div>
 
-                          <div class="form-outline mt-3" *ngIf="!usd && !pmovil && !depositoUSD">
-                            <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris">
-                              <option disabled>Seleccione el banco receptor</option>
-                              <option value="15">Banesco</option>
-                              <option value="2">Bancamiga</option>
-                              <option value="21">BCN </option>
-                              <option value="18">BANPLUS </option>
-                              <option value="7">BANCO DE VENEZUELA</option>
-                              <option value="11">BANCO PLAZA</option> 
-
-                            </select>                     
-                          </div>
-
-                          <!-- pagp movil -->
-
-                          <div class="form-outline mt-3" *ngIf="pmovil && !usd ">
-                            <select formControlName="cbanco" class="form-control rounded-input form-control-lg colorgris">
+                          <div class="form-outline mt-3" *ngIf="usd"><!-- lista de bancos emisores internacionales  -->
+                            <label class="form-label ">Banco de emision</label>
+                            <select formControlName="cbanco" class="form-control rounded-input form-control-lg colorgris" >
                               <option disabled>Seleccione el banco de emision</option>
-                              <option *ngFor="let backE of backEmitter" value="{{ backE.id }}">{{ backE.value }}</option>
+                              <option *ngFor="let backE of bankInternational" value="{{ backE.id }}">{{ backE.value }}</option>
                             </select>
                           </div>
 
-                          <div class="form-outline mt-3" *ngIf="pmovil && !usd ">
-                            <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris">
+                          <!-- Bancos destino -->
+
+                          <div class="form-outline mt-3" *ngIf="usd"><!-- lista de bancos receptores internacionales -->
+                            <label class="form-label ">Banco receptor</label>
+                            <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris" >
                               <option disabled>Seleccione el banco receptor</option>
-                              <option value="15">Banesco</option>
-                              <option value="2">Bancamiga</option>
-                            </select>                     
-                          </div>
-  
-                          <!-- pago usd  -->
-                          <div class="form-outline mt-3" *ngIf="usd && !pmovil">
-                            <select formControlName="cbanco" class="form-control rounded-input form-control-lg colorgris">
-                              <option disabled>Seleccione el banco de emision</option>
-                              <option value="25">Zelle</option>
-                              <option value="25">Well Fargo</option>
+                              <option *ngFor="let backE of bankReceptorInternational" value="{{ backE.id }}">{{ backE.value }}</option>
                             </select>                     
                           </div>
 
 
-                          <div class="form-outline mt-3" *ngIf="usd && !pmovil">
-                            <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris">
+                          <div class="form-outline mt-3" *ngIf="!usd && !pmovil && !depositoUSD && trans"><!-- lista de bancos receptores nacionales transferencia-->
+                            <label class="form-label ">Banco receptor</label>
+                            <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris" >
                               <option disabled>Seleccione el banco receptor</option>
-                              <option value="25">Well Fargo</option>
+                              <option *ngFor="let backE of bankReceptorNational" value="{{ backE.id }}">{{ backE.value }}</option>
                             </select>                     
                           </div>
 
-                          <div class="form-outline mt-3" *ngIf="depositoUSD && !usd && !pmovil ">
-                            <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris">
+                          <div class="form-outline mt-3" *ngIf="!usd && pmovil && !depositoUSD && !trans"><!--  lista de bancos receptores nacionales pago movil -->
+                            <label class="form-label ">Banco receptor</label>
+                            <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris" >
                               <option disabled>Seleccione el banco receptor</option>
-                              <option value="1">BANPLUS CUENTA CUSTODIA </option>
-                              <option value="2">BANCAMIGA CASH USD</option>
-                              <option value="3">BANESCO USD</option>
+                              <option *ngFor="let backE of bankReceptorPM" value="{{ backE.id }}">{{ backE.value }}</option>
+                            </select>                     
+                          </div>
+
+                          <div class="form-outline mt-3" *ngIf="!usd && !pmovil && depositoUSD && !trans"><!--  lista de bancos receptores nacionales cuenta custodia -->
+                            <label class="form-label ">Banco receptor</label>
+                            <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris" >
+                              <option disabled>Seleccione el banco receptor</option>
+                              <option *ngFor="let backE of bankReceptorCustodia" value="{{ backE.id }}">{{ backE.value }}</option>
                             </select>                     
                           </div>
   
@@ -214,29 +218,34 @@
                       </div>
   
                       <div class="col-lg-4">
-  
-                        <input  type="text"  class="form-control rounded-input " placeholder="Ingresar monto depositado" formControlName="mpago" (change)="validateMount(i)">
-  
-                        <input  type="text"  class="form-control rounded-input mt-3" placeholder="Ingrese la referencia" formControlName="xreferencia">
-  
-                        <input type="file"  accept="image/png, image/jpeg, image/jpg" class="form-control rounded-input mt-3" name="ximagen" formControlName="ximagen" (change)="onFileSelect($event ,i)" #Ximagen>
+
+                          <div class="form-outline" >
+                            <label class="form-label required">Monto</label>
+                            <input  type="text"  class="form-control rounded-input " placeholder="Ingresar monto depositado" formControlName="mpago" (change)="validateMount(i)">
+                          </div>
+
+                          <div class="form-outline" >
+                            <label class="form-label required">Referencia</label>
+                            <input  type="text"  class="form-control rounded-input " placeholder="Ingrese la referencia" formControlName="xreferencia">
+                          </div>
+
+                          <div class="form-outline" >
+                            <label class="form-label required">Comprobante</label>
+                            <input type="file"  accept="image/png, image/jpeg, image/jpg" class="form-control rounded-input" name="ximagen" formControlName="ximagen" (change)="onFileSelect($event ,i)" #Ximagen>
+                          </div>
   
                       </div>
   
                       <div class="mt-3" >
-                        <button mat-button  (click)="addPayment()">Anadir movimiento</button>
-  
-                        <button mat-button  (click)="removePayment(i)">Eliminar movimiento</button>
+                        <button mat-button  class="bg-warning text-light m-2" (click)="addPayment()">Anadir movimiento</button>
+                        <button mat-button  class="bg-danger text-light m-2" (click)="removePayment(i)">Eliminar movimiento</button>
                       </div> 
 
-                      <div class="mt-5">
-                        <button mat-button matStepperPrevious>Atras</button>
-                        <button mat-button (click)="stepper.reset()">Reset</button>
-                        <button mat-button  (click)="onSubmit()">Registrar Pago</button>
-                      </div>
     
                     </div>
-  
+                    <div class="mt-5">
+                      <button mat-button  class="bg-success text-light" (click)="onSubmit()">Registrar Pago</button>
+                    </div>
                   </div>
                 </div>
 

@@ -49,7 +49,7 @@
             <div class="mt-5 p-2">
               <ngb-accordion
               #accordion formArrayName="agrupado" 
-                [closeOthers]="false" activeIds="pannel0">
+                [closeOthers]="false" >
                 <ngb-panel
                     *ngFor="let group of agrupado.controls;let i=index" 
                     [formGroupName]="i" 
@@ -68,7 +68,7 @@
                           Pago declarado $  {{group.value.mpagoext}}<br>
                         </div>
 
-                        <div class="col-2  text-light" style="font-size: medium;">
+                        <div class="col-2 text-light" style="font-size: medium;">
                           <mat-checkbox class="example-margin" formControlName="agrupador" matTooltip="Este campo servira SOLO para agrupar transacciones,aplicara en casos en el que el cliente reporte varios pagos para un mismo recibo" (change)="GroupReceipt()"> Validar transacción</mat-checkbox>
                         </div>
 
@@ -84,40 +84,76 @@
                     <ng-template ngbPanelContent>
 
                       <div class="row p-3">
-                        <div class="row col">
+
+                        <div class="col">
                           <h2>Detalles del recibo Pagado</h2>
-                          <div class="col-4">
                             <strong>Poliza</strong>  {{group.value.detalle.cpoliza}}<br>
                             <strong>Reciboo</strong> {{group.value.detalle.crecibo}}<br>
-                            <strong>Ramo</strong>  {{group.value.detalle.cramo}}
-                            <strong> Bs</strong> {{group.value.mprimabrutaext}}<br>
-                            <strong> $</strong>  {{group.value.mprimabruta}}<br>
-                          </div>
+                            <strong>Ramo</strong>  {{group.value.detalle.cramo}}<br>
+                            <strong> Bs</strong> {{group.value.detalle.mprimabruta}}<br>
+                            <strong> $</strong>  {{group.value.detalle.mprimabrutaext}}<br>
+                          
                          
                         </div>
 
-                        <div class="row col">
+                        <div class="col">
                           <h2>Detalles del Soporte de pago</h2>
-                          <div class="col-4">
                             <strong>Banco remitente</strong>  {{group.value.soporte.cbanco}}<br>
                             <strong>Banco Receptor</strong> {{group.value.soporte.cbanco_destino}}<br>
-                            <strong> Moneda</strong>  {{group.value.soporte.cmoneda}}
+                            <strong> Moneda</strong>  {{group.value.soporte.cmoneda}}<br>
+
+                            <div *ngIf="group.value.soporte.cmoneda == 'Bs  ' ">
+                              <strong> Monto Pagado</strong>  {{group.value.soporte.mpago}}<br>
+                            </div>
+
+                            <div *ngIf="group.value.soporte.cmoneda == 'USD ' ">
+                              <strong> Monto Pagado</strong>  {{group.value.soporte.mpagoext}}<br>
+                            </div>
+
+
                             <strong> Referencia</strong> {{group.value.soporte.xreferencia}}<br>
-                            <strong> Tasa</strong>  {{group.value.soporte.ptasamon}}<br>
-                            <strong> Monto Pagado</strong>  {{group.value.soporte.mpago}}<br>
-                          </div>            
+                            
                         </div>
 
                         <div class="col-3">
-                          <img [src]="urlImg" alt="" class="img-fluid">
+                          <img  [src]="group.value.soporte.ximagen"  alt="" class="img-fluid">
                         </div>
 
-                        <div class="row bg-danger col-md-3">
-                          <h2>Diferencia</h2>
-
-                            <strong>Diferencia</strong>  {{group.value.diference.mdiferencia}}<br>
-                      
+                        <div class="col">
+                          <div class="row p-3 bg-danger " *ngIf="group.value.diferenceBool">
+                            <h2>Transaccion con diferencia</h2>
+  
+                              <strong>Diferencia de {{group.value.diference.mdiferencia}}  {{group.value.soporte.cmoneda}}  por 
+                                observacion  "{{group.value.diference.xobservacion}}" </strong> 
+                        
+                          </div> 
+  
+                          <div>
+                            <mat-form-field>
+                              <mat-label>Estado de recibo</mat-label>
+                              <mat-select formControlName="iestadorec">
+                                <mat-option value="C">Cobrado</mat-option>
+                                <mat-option value="ER">En revision</mat-option>
+                              </mat-select>
+                            </mat-form-field>
+        
+                            <mat-form-field *ngIf="!group.value.diferenceBool">
+                              <mat-label>Diferencia</mat-label>
+                              <input matInput formControlName="mdiferencia"  matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input>
+                            </mat-form-field>
+        
+                            <mat-form-field *ngIf="!group.value.diferenceBool">
+                              <mat-label>Observacion</mat-label>
+                              <textarea matInput placeholder="Observacion" formControlName="xobservacion"></textarea>
+                            </mat-form-field>
+        
+                          </div>
                         </div>
+
+                        <div class="text-center">
+                          <button class="btn-primary" mat-button (click)="updateReceiptNotificated(i)">Actualizar recibo</button>
+                        </div>
+
                       </div>
 
                     </ng-template>
@@ -130,12 +166,13 @@
             
           </mat-tab>
 
-          <mat-tab label="Recibos Pendientes"> 
+          <mat-tab label="Recibos Pendientes y reportes "> 
 
             <div class="p-4">
               <h2>Total Pendiente {{totalPending}} $</h2>
               <button class="btn btn-primary rounded-pill p-3" type="button" (click)="downloadExcel()"><strong>Descargar recibos pendientes</strong></button>
               <button class="btn btn-primary rounded-pill p-3" type="button" (click)="downloadExcelVencido()"><strong>Descargar recibos vencidos</strong></button>
+              <button class="btn btn-primary rounded-pill p-3" type="button" (click)="downloadExcelCollected()"><strong>Descargar recibos cobrados</strong></button>
 
             </div>
 
@@ -158,7 +195,7 @@
                   <!-- Progress Column -->
                   <ng-container matColumnDef="progress">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Ramo </th>
-                    <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.cramo}}% </td>
+                    <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.cramo}}</td>
                   </ng-container>
               
                   <!-- Name Column -->
@@ -170,7 +207,7 @@
                   <!-- Fruit Column -->
                   <ng-container matColumnDef="fruit">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Asegurado </th>
-                    <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.casegurado}} </td>
+                    <td mat-cell *matCellDef="let row" > {{row.casegurado}} </td>
                   </ng-container>
               
                   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -233,52 +270,87 @@
                 </div>    
                 <div class="row mt-3">
                   <div class="col-2">
-                    <mat-radio-group aria-label="Select an option" formControlName="itransaccion" (change)="validationOperation()">
-                      <mat-radio-button value="PM">Pago Movil</mat-radio-button>
-                      <mat-radio-button value="EF">Efectivo</mat-radio-button>
-                      <mat-radio-button value="TR">Tranferencia</mat-radio-button>
-                      <mat-radio-button value="PS">Pasarela</mat-radio-button>
-                      <mat-radio-button value="DP">Deposito</mat-radio-button>
+                    <mat-radio-group aria-label="Select an option" formControlName="itransaccion">
+                      <mat-radio-button value="PM" (change)="changeStatusPm()" >Pago Movil</mat-radio-button>
+                      <mat-radio-button value="EF" (change)="validationOperation()">Efectivo</mat-radio-button>
+                      <mat-radio-button value="TR" (change)="changeStatusTrans()">Tranferencia</mat-radio-button>
+                      <mat-radio-button value="PS" (change)="changeStatusTransCustodia()">Cuenta Custodia</mat-radio-button>
+                      <mat-radio-button value="DP" (change)="changeStatusUSD()">Tranferencia Moneda extranjera</mat-radio-button>
                     </mat-radio-group>
                   </div>
 
-                  <div class="col-4 row ">
+                  <div class="col-lg-4">
 
-                    <mat-form-field>
-                      <mat-label>Moneda</mat-label>
-                      <mat-select formControlName="cmoneda">
-                        <mat-option  *ngFor="let data of coinList let i=index" value="{{data.id}}">{{data.value}}</mat-option>
-                      </mat-select>
-                    </mat-form-field>
+                    <!-- Moneda -->
+                      <div class="form-outline" *ngIf="usd"><!-- pagos en dolares  -->
+                        <label class="form-label required">Moneda</label>
+                        <select formControlName="cmoneda" class="form-control rounded-input form-control-lg colorgris" >
+                          <option  value="BS">BS</option>
+                          <option  value="USD">USD</option>
+                        </select>                     
+                      </div>
 
-                    <mat-form-field>
-                      <mat-label>Banco Destino</mat-label>
-                      <mat-select formControlName="cbanco_destino" >
-                        <mat-option *ngFor="let data of bankReceptorInternational let i=index" value="{{data.id}}">{{data.value}}</mat-option>
-                      </mat-select>
-                    </mat-form-field>
+                      <div class="form-outline"  *ngIf="!usd"><!-- pagos en bolivares -->
+                        <label class="form-label required">Moneda</label>
+                        <select formControlName="cmoneda" class="form-control rounded-input form-control-lg colorgris">
+                          <option  value="Bs">Bs</option>
+                        </select>                     
+                      </div>
 
-                    <mat-form-field>
-                      <mat-label>Banco Remitente</mat-label>
-                      <mat-select formControlName="cbanco">
-                        <mat-option  *ngFor="let data of bankInternational let i=index" value="{{data.id}}">{{data.value}}</mat-option>
-                      </mat-select>
-                    </mat-form-field>
+                      <!-- Bancos de emision -->
+                      <div class="form-outline mt-3" *ngIf="!usd"><!-- lista de bancos emisores nacionales -->
+                        <label class="form-label ">Banco de emision</label>
+                        <select formControlName="cbanco" class="form-control rounded-input form-control-lg colorgris" >
+                          <option disabled>Seleccione el banco de emision</option>
+                          <option *ngFor="let backE of bankNational" value="{{ backE.id }}">{{ backE.value }}</option>
+                        </select>
+                      </div>
+
+                      <div class="form-outline mt-3" *ngIf="usd"><!-- lista de bancos emisores internacionales  -->
+                        <label class="form-label ">Banco de emision</label>
+                        <select formControlName="cbanco" class="form-control rounded-input form-control-lg colorgris" >
+                          <option disabled>Seleccione el banco de emision</option>
+                          <option *ngFor="let backE of bankInternational" value="{{ backE.id }}">{{ backE.value }}</option>
+                        </select>
+                      </div>
+
+                      <!-- Bancos destino -->
+
+                      <div class="form-outline mt-3" *ngIf="usd"><!-- lista de bancos receptores internacionales -->
+                        <label class="form-label ">Banco receptor</label>
+                        <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris" >
+                          <option disabled>Seleccione el banco receptor</option>
+                          <option *ngFor="let backE of bankReceptorInternational" value="{{ backE.id }}">{{ backE.value }}</option>
+                        </select>                     
+                      </div>
 
 
-                    <!-- <mat-form-field>
-                      <mat-label>Banco Destino</mat-label>
-                      <mat-select formControlName="cbanco_destino" >
-                        <mat-option *ngFor="let data of bankReceptorNational let i=index" value="{{data.id}}">{{data.value}}</mat-option>
-                      </mat-select>
-                    </mat-form-field> -->
+                      <div class="form-outline mt-3" *ngIf="!usd && !pmovil && !depositoUSD && trans"><!-- lista de bancos receptores nacionales transferencia-->
+                        <label class="form-label ">Banco receptor</label>
+                        <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris" >
+                          <option disabled>Seleccione el banco receptor</option>
+                          <option *ngFor="let backE of bankReceptorNational" value="{{ backE.id }}">{{ backE.value }}</option>
+                        </select>                     
+                      </div>
 
-                    <!-- <mat-form-field>
-                      <mat-label>Banco Remitente</mat-label>
-                      <mat-select formControlName="cbanco" >
-                        <mat-option  *ngFor="let data of bankNational let i=index" value="{{data.id}}">{{data.value}}</mat-option>
-                      </mat-select>
-                    </mat-form-field> -->
+                      <div class="form-outline mt-3" *ngIf="!usd && pmovil && !depositoUSD && !trans"><!--  lista de bancos receptores nacionales pago movil -->
+                        <label class="form-label ">Banco receptor</label>
+                        <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris" >
+                          <option disabled>Seleccione el banco receptor</option>
+                          <option *ngFor="let backE of bankReceptorPM" value="{{ backE.id }}">{{ backE.value }}</option>
+                        </select>                     
+                      </div>
+
+                      <div class="form-outline mt-3" *ngIf="!usd && !pmovil && depositoUSD && !trans"><!--  lista de bancos receptores nacionales cuenta custodia -->
+                        <label class="form-label ">Banco receptor</label>
+                        <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris" >
+                          <option disabled>Seleccione el banco receptor</option>
+                          <option *ngFor="let backE of bankReceptorCustodia" value="{{ backE.id }}">{{ backE.value }}</option>
+                        </select>                     
+                      </div>
+
+
+
                   </div>
 
                   <div class="col-4 row ">
@@ -302,96 +374,14 @@
                       </mat-select>
                     </mat-form-field>
 
-                  </div>
-                  <div class="form-outline" >
-                    <label for="">Carga de referencia </label>
-                    <input type="file"  accept="image/png, image/jpeg, image/jpg" class="form-control rounded-input mt-3" name="ximagen" formControlName="ximagen" (change)="onFileSelect($event)" #Ximagen>
+                    <div class="form-outline" >
+                      <label for="">Carga de referencia </label>
+                      <input type="file"  accept="image/png, image/jpeg, image/jpg" class="form-control rounded-input mt-3" name="ximagen" formControlName="ximagen" (change)="onFileSelect($event)" #Ximagen>
+                    </div>
                   </div>
                 </div>
                 <button mat-button (click)="saveUpdateReceiptPending()">Cobrar recibo</button>
               </div>
-
-            </form>
-
-          </mat-dialog-content>
-        </ng-template>
-
-        <ng-template #Pending >
-          <mat-dialog-content  >
-
-            <form action="" [formGroup]="updateReceipt">
-              <div class="container-fluid row" >
-
-                <div  class="col-4" *ngFor="let data of dataReport let i=index">
-                  <h2>Datos del recibo notificado</h2>
-                  <p><strong>Poliza: </strong> {{data.cpoliza}}</p>
-                  <p><strong>Recibo: </strong> {{data.crecibo}}</p>
-                  <p><strong>Asegurado: </strong> {{data.casegurado}}</p>
-                  <p><strong>Ramo: </strong> {{data.cramo}}</p>
-                  <p><strong>Prima $: </strong> {{data.mprimabrutaext}}</p>
-                  <p><strong>Prima Bs: </strong> {{data.mprimabruta}}</p>
-                </div>
-  
-                <div *ngFor="let data of dataSoport let i=index" class="row">
-                  <h2 class="text-center"><strong>Soporte de pago</strong></h2>
-                  <div class="col-4" >
-                    <p><strong>Banco remitente: </strong> {{data.cbanco}}</p>
-                    <p><strong>Banco destino: </strong> {{data.cbanco_destino}}</p>
-                    <p><strong>Moneda: </strong> {{data.cmoneda}}</p>
-                    <p><strong>Pago Bs: </strong> {{data.mpago}}</p>
-                    <p><strong>Pago $: </strong> {{data.mpagoext}}</p>
-                  </div>
-
-                  <div class="col-3" >
-                    <p><strong>IGTF Bs: </strong> {{data.mpagoigtf}}</p>
-                    <p><strong>IGTF: </strong> {{data.mpagoigtfext}}</p>
-                    <p><strong>Tasa: </strong> {{data.ptasamon}}</p>
-                    <p><strong>Referencia : </strong> {{data.xreferencia}}</p>
-                  </div>
-
-                  <div class="col-2">
-                    <mat-form-field>
-                      <mat-label>Estado de recibo</mat-label>
-                      <mat-select formControlName="iestadorec">
-                        <mat-option value="C">Cobrado</mat-option>
-                        <mat-option value="ER">En revision</mat-option>
-                      </mat-select>
-                    </mat-form-field>
-
-                    <mat-form-field>
-                      <mat-label>Diferencia</mat-label>
-                      <input matInput formControlName="mdiferencia"  type="number" placeholder="Ingrese la diferencia del recibo" #input>
-                    </mat-form-field>
-
-                    <mat-form-field >
-                      <mat-label>Observacion</mat-label>
-                      <textarea matInput placeholder="Observacion" formControlName="xobservacion"></textarea>
-                    </mat-form-field>
-
-                  </div>
-
-                  <div class="col-2 bg-danger card text-light" *ngIf="diference">
-                    <div *ngFor="let data of lisDiferenceClient let i=index">
-                      <p><strong>Transaccion con diferencia {{data.id}}</strong></p>
-                      <p><strong>Monto {{data.mdiferencia}}</strong></p>
-                    </div>
-                  </div>
-
-                  <div class="col-4">
-                    <img [src]="urlImg" alt="" class="img-fluid">
-                  </div>
-
-
-  
-                </div>
-
-  
-              </div> 
-
-              <div class="text-center">
-                <button class="btn-primary" mat-button (click)="updateReceiptNotificated()">Actualizar recibo</button>
-              </div>
-  
 
             </form>
 
