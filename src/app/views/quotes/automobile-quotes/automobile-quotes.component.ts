@@ -74,6 +74,7 @@ export class AutomobileQuotesComponent {
   xcorreocorredor!: any ;
   pcasco!: any
   pperdida!: any
+  ccorredor!: any
 
   quotesForm = this._formBuilder.group({
     xmarca: ['', Validators.required],
@@ -89,6 +90,7 @@ export class AutomobileQuotesComponent {
     npasajeros: [''],
     id_inma: [''],
     ccorredor: [''],
+    xcorredor: [''],
     pcasco: [''],
     pperdida: [''],
   });
@@ -285,7 +287,11 @@ export class AutomobileQuotesComponent {
             value: response.data.broker[i].xintermediario,
           });
         }
-        console.log(this.brokerList)
+        if(this.currentUser.data.xcorredor){
+          this.quotesForm.get('ccorredor')?.setValue(this.currentUser.data.ccorredor);
+          this.quotesForm.get('xcorredor')?.setValue(this.currentUser.data.xcorredor);
+          this.quotesForm.get('xcorredor')?.disable();
+        }
         this.filteredBroker = this.brokerControl.valueChanges.pipe(
           startWith(''),
           map(value => this._filterBroker(value || ''))
@@ -306,6 +312,7 @@ export class AutomobileQuotesComponent {
     const selectedBroker = this.brokerList.find(broker => broker.value === selectedValue);
     if (selectedBroker) {
       this.quotesForm.get('ccorredor')?.setValue(selectedBroker.id);
+      this.quotesForm.get('xcorredor')?.setValue(selectedBroker.value);
     }
   }
 

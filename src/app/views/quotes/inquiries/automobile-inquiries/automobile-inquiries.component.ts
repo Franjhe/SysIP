@@ -58,6 +58,8 @@ export class AutomobileInquiriesComponent {
   xtelefonocorredor!: any ;
 	xcorreocorredor!: any ;
   xcorredor!: any ;
+  currentUser!: any
+  token!: any
 
   constructor(private router: Router,
               private http: HttpClient,
@@ -70,9 +72,15 @@ export class AutomobileInquiriesComponent {
     .then(data => {
       this.bcv = data.monitors.usd.price
     })
-    const isLoggedIn = localStorage.getItem('user');
-    if (isLoggedIn) {
-      this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/detail-automobile', null).subscribe((response: any) => {
+
+    this.token = localStorage.getItem('user');
+    this.currentUser = JSON.parse(this.token);
+
+    if (this.currentUser) {
+      let data = {
+        ccorredor: this.currentUser.data.ccorredor
+      }
+      this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/detail-automobile', data).subscribe((response: any) => {
         if (response.data.auto) {
           this.dataSource.data = response.data.auto;
           this.dataSource.sort = this.sort;
