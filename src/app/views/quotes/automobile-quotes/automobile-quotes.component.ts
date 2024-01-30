@@ -1,8 +1,8 @@
-import {Component, ViewChild, TemplateRef  } from '@angular/core';
+import { Component, ViewChild, TemplateRef, AfterViewInit } from '@angular/core';
 import { Router, NavigationExtras, ActivatedRoute } from '@angular/router';
-import {FormBuilder, Validators, FormGroup, FormControl} from '@angular/forms';
-import {from, Observable} from 'rxjs';
-import {map, startWith} from 'rxjs/operators';
+import { FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
+import { from, Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -21,18 +21,20 @@ export class AutomobileQuotesComponent {
   isActive: boolean = false;
   public isYearValid: boolean = false;
   currentUser!: any
-  token!: any
+  token!: any;
+  tokenphp!: any;
+  cusuario!: string;
 
   brandList: any[] = [];
   modelList: any[] = [];
   versionList: any[] = [];
   ratesList: any[] = [];
-  quotesList:  any[] = [];
+  quotesList: any[] = [];
   coverageListRcv: any[] = [];
   coverageListAmplia: any[] = [];
   coverageListPerdida: any[] = [];
   allCoverages: any[] = [];
-  brokerList:  any[] = [];
+  brokerList: any[] = [];
   dataVehicle!: {}
 
   brandControl = new FormControl('');
@@ -63,15 +65,15 @@ export class AutomobileQuotesComponent {
   nombreCompleto!: any;
   vehiculo!: any;
   version!: any;
-  bcv!: any ;
-  plan!: any ;
-  montoRCV!: any ;
-  montoAmplia!: any ;
-  montoPerdida!: any ;
-  planPdf!: any ;
-  xcorredor!: any ;
-  xtelefonocorredor!: any ;
-  xcorreocorredor!: any ;
+  bcv!: any;
+  plan!: any;
+  montoRCV!: any;
+  montoAmplia!: any;
+  montoPerdida!: any;
+  planPdf!: any;
+  xcorredor!: any;
+  xtelefonocorredor!: any;
+  xcorreocorredor!: any;
   pcasco!: any
   pperdida!: any
   ccorredor!: any
@@ -95,52 +97,95 @@ export class AutomobileQuotesComponent {
     pperdida: [''],
   });
 
-  constructor( private _formBuilder: FormBuilder,
-               private http: HttpClient,
-               private snackBar: MatSnackBar,
-               private modalService: NgbModal,
-               private pdfGenerationService: PdfGenerationService,
-               private router: Router,
-             ) {}
+  constructor(private _formBuilder: FormBuilder,
+              private http: HttpClient,
+              private snackBar: MatSnackBar,
+              private modalService: NgbModal,
+              private pdfGenerationService: PdfGenerationService,
+              private router: Router,
+              private route: ActivatedRoute,
+            ) { }
 
-  ngOnInit(){
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      this.cusuario = params['cusuario'];
+      this.tokenphp = params['token'];
+      this.ccorredor = params['ccorredor'];
+      this.xcorredor = params['xcorredor'];
+    });
+
+    const storedSession = localStorage.getItem('userSession');
+
     fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
-    .then((response) => response.json())
-    .then(data => {
-      this.bcv = data.monitors.usd.price
-    })
-    this.token = localStorage.getItem('user');
-    this.currentUser = JSON.parse(this.token);
+      .then((response) => response.json())
+      .then(data => {
+        this.bcv = data.monitors.usd.price;
 
-    if (this.currentUser) {
-      this.getBroker();
-    }
+        if (this.cusuario) {
+          console.log('pasa por usuario php')
+          let token = {
+            status: true,
+            message: "Usuario Autenticado",
+            data: {
+              bconsultar: false,
+              bcrear: true,
+              beliminar: false,
+              bmodificar: false,
+              ccorredor: parseInt(this.ccorredor),
+              cdepartamento: 4,
+              crol: 6,
+              cusuario: parseInt(this.cusuario),
+              token: this.tokenphp,
+              xcorredor: this.xcorredor
+            }
+          }
+          let tokenString = JSON.stringify(token);
+          localStorage.setItem('userSession', tokenString);
+        
+          if(storedSession){
+            this.currentUser = JSON.parse(storedSession);
+          }else{
+            this.currentUser = JSON.parse(tokenString);
+          }
+        } else {
+          if(storedSession){
+            this.currentUser = JSON.parse(storedSession);
+          }else{
+            this.token = localStorage.getItem('user');
+            this.currentUser = JSON.parse(this.token);
+          }
+        }
+        console.log(this.currentUser)
+        if (this.currentUser) {
+          this.getBroker();
+        }
+      });
   }
 
 
   changeYears() {
     const fanoControl = this.quotesForm.get('fano');
-    
+
     if (fanoControl && fanoControl.value) {
       const fanoValue = parseInt(fanoControl.value, 10);
-      
+
       if (fanoValue > 2021) {
         this.snackBar.open(`No puedes colocar un año mayor al 2021. Por favor, vuelve a intentarlo`, '', {
           duration: 5000,
         });
         this.quotesForm.get('fano')?.setValue('')
-      }else if(fanoValue < 1980){
+      } else if (fanoValue < 1980) {
         this.snackBar.open(`No puedes colocar un año menor a 1980. Por favor, vuelve a intentarlo`, '', {
           duration: 5000,
         });
         this.quotesForm.get('fano')?.setValue('')
-      }else{
+      } else {
         this.getBrand()
       }
     }
   }
 
-  getBrand(){
+  getBrand() {
     let data = {
       qano: this.quotesForm.get('fano')?.value
     };
@@ -179,7 +224,7 @@ export class AutomobileQuotesComponent {
     }
   }
 
-  getModel(){
+  getModel() {
     let data = {
       qano: this.quotesForm.get('fano')?.value,
       xmarca: this.quotesForm.get('xmarca')?.value,
@@ -219,7 +264,7 @@ export class AutomobileQuotesComponent {
     }
   }
 
-  getVersion(){
+  getVersion() {
     let data = {
       qano: this.quotesForm.get('fano')?.value,
       xmarca: this.quotesForm.get('xmarca')?.value,
@@ -269,16 +314,16 @@ export class AutomobileQuotesComponent {
       this.getHullPrice()
       this.quotesForm.get('npasajeros')?.setValue(selectedVersion.npasajero);
 
-      if(!this.quotesForm.get('ctarifa_exceso')?.value){
+      if (!this.quotesForm.get('ctarifa_exceso')?.value) {
         this.activateRate = true;
         this.getRates();
-      }else{
+      } else {
         this.activateRate = false;
       }
     }
   }
 
-  getBroker(){
+  getBroker() {
     this.http.post(environment.apiUrl + '/api/v1/valrep/brokers', null).subscribe((response: any) => {
       if (response.data.broker) {
         for (let i = 0; i < response.data.broker.length; i++) {
@@ -287,7 +332,7 @@ export class AutomobileQuotesComponent {
             value: response.data.broker[i].xintermediario,
           });
         }
-        if(this.currentUser.data.xcorredor){
+        if (this.currentUser.data.xcorredor) {
           this.quotesForm.get('ccorredor')?.setValue(this.currentUser.data.ccorredor);
           this.quotesForm.get('xcorredor')?.setValue(this.currentUser.data.xcorredor);
           this.quotesForm.get('xcorredor')?.disable();
@@ -316,7 +361,7 @@ export class AutomobileQuotesComponent {
     }
   }
 
-  getRates(){
+  getRates() {
     this.http.post(environment.apiUrl + '/api/v1/valrep/rates', null).subscribe((response: any) => {
       if (response.data.rates) {
         for (let i = 0; i < response.data.rates.length; i++) {
@@ -351,33 +396,33 @@ export class AutomobileQuotesComponent {
 
 
   validateForm() {
-    if (this.quotesForm.invalid){
+    if (this.quotesForm.invalid) {
       this.buttonQuotes = false;
-    }else{
+    } else {
       this.buttonQuotes = true;
     }
   }
 
-  getHullPrice(){
-    if(this.currentUser.data.crol == 5){
+  getHullPrice() {
+    if (this.currentUser.data.crol == 5) {
       this.tasas = true;
-      let data =  {
+      let data = {
         cano: this.quotesForm.get('fano')?.value,
         xclase: this.quotesForm.get('xclasificacion')?.value,
       };
       this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/hull-price', data).subscribe((response: any) => {
-        if(response.status){
-          this.pcasco   = response.data.ptasa_casco;
+        if (response.status) {
+          this.pcasco = response.data.ptasa_casco;
           this.pperdida = response.data.pperdida_total;
         }
       })
-    }else{
+    } else {
       this.tasas = false;
     }
 
   }
 
-  onSubmit(){
+  onSubmit() {
     this.loading = true;
     this.buttonQuotes = false;
 
@@ -418,9 +463,9 @@ export class AutomobileQuotesComponent {
     })
   }
 
-  openCoverages(quotes: any){
+  openCoverages(quotes: any) {
     const modalRef = this.modalService.open(this.coverageModal, { centered: true, size: 'lg' });
-    
+
     this.montoRCV = quotes.mtotal_rcv;
     this.montoAmplia = quotes.mtotal_amplia;
     this.montoPerdida = quotes.mtotal_perdida;
@@ -438,7 +483,7 @@ export class AutomobileQuotesComponent {
     this.searchCoverages();
   }
 
-  searchCoverages(){
+  searchCoverages() {
     this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/search-coverages', null).subscribe((response: any) => {
       if (response.status) {
         this.coverageListRcv = response.data.rcv
@@ -453,7 +498,7 @@ export class AutomobileQuotesComponent {
     })
   }
 
-  onQuotePdf(){
+  onQuotePdf() {
     const observable = from(this.pdfGenerationService.LoadDataQuotes(this.cotizacion, this.montoRCV, this.montoAmplia, this.montoPerdida, this.allCoverages, this.planPdf, this.dataVehicle, this.quotesForm.get('fano')?.value, this.xcorredor, this.xcorreocorredor, this.xtelefonocorredor));
 
     observable.subscribe(
@@ -466,15 +511,15 @@ export class AutomobileQuotesComponent {
   }
 
   onToggle(cobertura: string, plan: number) {
-    if(cobertura == 'Rcv'){
+    if (cobertura == 'Rcv') {
       this.brcv = true;
       this.bamplia = false;
       this.bperdida = false;
-    }else if(cobertura == 'Cobertura Amplia'){
+    } else if (cobertura == 'Cobertura Amplia') {
       this.brcv = false;
       this.bamplia = true;
       this.bperdida = false;
-    }else if(cobertura == 'Perdida Total'){
+    } else if (cobertura == 'Perdida Total') {
       this.brcv = false;
       this.bamplia = false;
       this.bperdida = true;
@@ -504,10 +549,12 @@ export class AutomobileQuotesComponent {
         this.check = true;
 
         const navigationExtras: NavigationExtras = {
-          queryParams: { cotizacion: this.cotizacion, 
-                         fano: this.quotesForm.get('fano')?.value,
-                         cplan: this.plan,
-                         ctarifa_exceso: this.quotesForm.get('ctarifa_exceso')?.value }
+          queryParams: {
+            cotizacion: this.cotizacion,
+            fano: this.quotesForm.get('fano')?.value,
+            cplan: this.plan,
+            ctarifa_exceso: this.quotesForm.get('ctarifa_exceso')?.value
+          }
         };
 
         if (window.confirm("¡Se ha cotizado exitosamente!... ¿Desea Emitir la Cotización?")) {

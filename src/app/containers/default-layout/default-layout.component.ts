@@ -1,4 +1,5 @@
-import { Component, ViewChild, ElementRef, TemplateRef } from '@angular/core';import { Router } from '@angular/router';
+import { Component, ViewChild, ElementRef, TemplateRef } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
@@ -24,23 +25,69 @@ export class DefaultLayoutComponent {
   listmenus : any = []
   listshare : any = []
 
+  currentUser!: any
+  token!: any;
+  tokenphp!: any;
+  cusuario!: string;
+  ccorredor!: any;
+  xcorredor!: any;
+
   constructor(
-    private router: Router, private http: HttpClient,
-    private dataSharingService: DataSharingService
-    ) {
-    const isLoggedIn = localStorage.getItem('user');
-    if (isLoggedIn) {
-      const userObject = JSON.parse(isLoggedIn);
+              private router: Router, 
+              private http: HttpClient,
+              private dataSharingService: DataSharingService,
+              private route: ActivatedRoute,
+            ) {
+
+    this.route.queryParams.subscribe(params => {
+      this.cusuario = params['cusuario'];
+      this.tokenphp = params['token'];
+      this.ccorredor = params['ccorredor'];
+      this.xcorredor = params['xcorredor'];
+    });
+
+    if (this.cusuario) {
+      let token = {
+        status: true,
+        message: "Usuario Autenticado",
+        data: {
+          bconsultar: false,
+          bcrear: true,
+          beliminar: false,
+          bmodificar: false,
+          ccorredor: parseInt(this.ccorredor),
+          cdepartamento: 4,
+          crol: 6,
+          cusuario: parseInt(this.cusuario),
+          token: this.tokenphp,
+          xcorredor: this.xcorredor
+        }
+      }
+      let tokenString = JSON.stringify(token);
+
+      console.log('pasa por usuario php')
+      this.currentUser = JSON.parse(tokenString);
+    }else{
+      console.log('pasa por usuario normal')
+      this.token = localStorage.getItem('user');
+      this.currentUser = JSON.parse(this.token);
+    }
+
+      
+    if (this.currentUser) {
 
       let params = {
-        cusuario: userObject.data.cusuario,
-        crol: userObject.data.crol,
-        cdepartamento: userObject.data.cdepartamento,
+        cusuario: this.currentUser.data.cusuario,
+        crol: this.currentUser.data.crol,
+        cdepartamento: this.currentUser.data.cdepartamento,
       };
+
+      console.log(params)
 
       this.http
       .post(environment.apiUrl + '/api/v1/menu/get-menu', params)
       .subscribe((response: any) => {
+        console.log(response)
         this.listmenus = response.data.menuPrincipal;
         const menuPrincipal = response.data.menuPrincipal;
         this.navItems = [];
