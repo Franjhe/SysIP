@@ -52,7 +52,7 @@ export class PaymentReportComponent {
   receiptList : any = []
   transferList : any = []
   tradesList : any = []
-
+  transaccion : any
 
   bankInternational : any = []
   bankNational: any = []
@@ -332,6 +332,7 @@ export class PaymentReportComponent {
               mprimabrutaext: response.searchReceipt.receipt[i].mprimabrutaext,
               ptasamon: response.searchReceipt.receipt[i].ptasamon,
               seleccionado : false,
+              mpendiente: response.searchReceipt.receipt[i].mpendiente,
 
             })
           )
@@ -346,7 +347,7 @@ export class PaymentReportComponent {
           this.diferenceBool = true
           for(let i = 0; i < response.searchReceipt.diferenceList.length; i++){
 
-            this.messageDiference = 'El cliente posee ' + response.searchReceipt.diferenceList[i].mdiferencia + ' ' + response.searchReceipt.diferenceList[i].cmoneda + ' de diferencia ,por concepto de : '  +response.searchReceipt.diferenceList[i].xobservacion
+            this.messageDiference = 'El cliente posee ' + response.searchReceipt.diferenceList[i].mdiferencia +  ' de diferencia ,por concepto de : '  + response.searchReceipt.diferenceList[i].xobservacion
           } 
         }else{
           this.diferenceBool = false
@@ -521,8 +522,6 @@ export class PaymentReportComponent {
 
     this.receiptList = []
 
-    console.log(this.receiptList)
-
     for(let i = 0; i < receipt.length; i++){
       if(receipt.value[i].seleccionado == true){
         this.receiptList.push({
@@ -571,12 +570,13 @@ export class PaymentReportComponent {
       ccategoria : this.searchReceipt.get('ccategoria')?.value,
     }
     //primero llenamos el recipo y la tabla de transacciones 
-    this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe(async (response: any) => {
+    this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
 
       const transaccion = response.ctransaccion.result
+      this.transaccion = transaccion
 
       //obtenemos el codigo de transaccion 
-      if(transaccion){
+      if(transaccion > 0){
 
         for(let i = 0; i < transfer.length; i++){
 
@@ -584,8 +584,8 @@ export class PaymentReportComponent {
           formData.append('file', transfer.at(i).get('ximagen')?.value!);
       
           //cargamos las imagenes con el codigo de transaccion
-          this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((response: any) => {
-              const rutaimage  =  response.uploadedFile.filename //ruta de imagen por registro 
+          this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {
+              const rutaimage  =  image.uploadedFile.filename //ruta de imagen por registro 
 
               if(transfer.at(i).get('cmoneda')?.value == "USD" ){
                 this.transferList.push({
@@ -604,7 +604,7 @@ export class PaymentReportComponent {
                   ximagen: rutaimage,
                 });
               }
-              if(transfer.at(i).get('cmoneda')?.value == "Bs"){
+              else if(transfer.at(i).get('cmoneda')?.value == "Bs"){
                 this.transferList.push({
                   cmoneda: transfer.value[i].cmoneda,
                   cbanco: transfer.value[i].cbanco,
@@ -624,35 +624,31 @@ export class PaymentReportComponent {
 
               const reporData = {
                 report : this.transferList,
-                ctransaccion : transaccion,
+                ctransaccion : this.transaccion,
                 casegurado: this.searchReceipt.get('xcedula')?.value,
-
-              }
-              if(response.status){
-                this.http.post(environment.apiUrl + '/api/v1/collection/create-report', reporData).subscribe((response: any) => {
-
-                  this.toast.open(response.message, '', {
-                    duration: 5000,
-                    verticalPosition: 'top',
-                    panelClass: ['success-toast']
-                  });  
-                  location.reload()
-
-                })
-
+          
               }
           
-            })
+
+              this.http.post(environment.apiUrl + '/api/v1/collection/create-report', reporData).subscribe( (response: any) => {
+  
+
+              })
+          })
 
         }
 
-
-
-        await this.toast 
+        this.toast.open(response.message, '', {
+          duration: 5000,
+          verticalPosition: 'top',
+          panelClass: ['success-toast']
+        });  
+        location.reload()
+          
       }
 
 
-
+ 
     })          
         
 

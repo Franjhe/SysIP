@@ -64,8 +64,8 @@
                         </div>
 
                         <div class="col-4 text-light" style="font-size: medium;">
-                          Pago declarado Bs {{group.value.mpago}}<br>
-                          Pago declarado $  {{group.value.mpagoext}}<br>
+                          Pago Bs {{group.value.mpago}}<br>
+                          Pago $  {{group.value.mpagoext}}<br>
                         </div>
 
                         <div class="col-2 text-light" style="font-size: medium;">
@@ -85,50 +85,66 @@
 
                       <div class="row p-3">
 
-                        <div class="col">
+                        <div class="col"  *ngFor="let group of group.value.detalle;let i=index" >
                           <h2>Detalles del recibo Pagado</h2>
-                            <strong>Poliza</strong>  {{group.value.detalle.cpoliza}}<br>
-                            <strong>Reciboo</strong> {{group.value.detalle.crecibo}}<br>
-                            <strong>Ramo</strong>  {{group.value.detalle.cramo}}<br>
-                            <strong> Bs</strong> {{group.value.detalle.mprimabruta}}<br>
-                            <strong> $</strong>  {{group.value.detalle.mprimabrutaext}}<br>
+                            <strong>Poliza</strong>  {{group.cpoliza}}<br>
+                            <strong>Reciboo</strong> {{group.crecibo}}<br>
+                            <strong>Ramo</strong>  {{group.cramo}}<br>
+                            <strong>Monto Bs</strong> {{group.mprimabruta}}<br>
+                            <strong>Monto $</strong>  {{group.mprimabrutaext}}<br>
+
+
                           
                          
                         </div>
 
-                        <div class="col">
+                        <div class="col" *ngFor="let group of group.value.soporte;let i=index" >
                           <h2>Detalles del Soporte de pago</h2>
-                            <strong>Banco remitente</strong>  {{group.value.soporte.cbanco}}<br>
-                            <strong>Banco Receptor</strong> {{group.value.soporte.cbanco_destino}}<br>
-                            <strong> Moneda</strong>  {{group.value.soporte.cmoneda}}<br>
+                            <strong>Banco remitente</strong>  {{group.cbanco}}<br>
+                            <strong>Banco Receptor</strong> {{group.cbanco_destino}}<br>
+                            <strong> Moneda</strong>  {{group.cmoneda}}<br>
 
-                            <div *ngIf="group.value.soporte.cmoneda == 'Bs  ' ">
-                              <strong> Monto Pagado</strong>  {{group.value.soporte.mpago}}<br>
+                            <div *ngIf="group.cmoneda == 'Bs  ' ">
+                              <strong> Monto Pagado</strong>  {{group.mpago}}<br>
                             </div>
 
-                            <div *ngIf="group.value.soporte.cmoneda == 'USD ' ">
-                              <strong> Monto Pagado</strong>  {{group.value.soporte.mpagoext}}<br>
+                            <div *ngIf="group.cmoneda == 'USD ' ">
+                              <strong> Monto Pagado</strong>  {{group.mpagoext}}<br>
                             </div>
 
 
-                            <strong> Referencia</strong> {{group.value.soporte.xreferencia}}<br>
+                            <strong> Referencia</strong> {{group.xreferencia}}<br>
                             
+                            <div class="col-3">
+                              <img  [src]="group.ximagen"  alt="" class="img-fluid">
+                            </div>
                         </div>
 
-                        <div class="col-3">
-                          <img  [src]="group.value.soporte.ximagen"  alt="" class="img-fluid">
-                        </div>
-
-                        <div class="col">
-                          <div class="row p-3 bg-danger " *ngIf="group.value.diferenceBool">
+                        <div class="col" *ngFor="let group of group.value.diference;let i=index">
+                          <div class="row p-3 bg-danger " *ngIf="group.mdiferencia > 1">
                             <h2>Transaccion con diferencia</h2>
   
-                              <strong>Diferencia de {{group.value.diference.mdiferencia}}  {{group.value.soporte.cmoneda}}  por 
-                                observacion  "{{group.value.diference.xobservacion}}" </strong> 
+                              <strong>Diferencia de {{group.mdiferencia}} <br/>
+                                observacion  "{{group.xobservacion}}" </strong> 
                         
                           </div> 
   
                           <div>
+
+                            <mat-form-field>
+                              <mat-label>Estado de recibo</mat-label>
+                              <mat-select formControlName="iestadorec">
+                                <mat-option value="C">Cobrado</mat-option>
+                              </mat-select>
+                            </mat-form-field>
+        
+                          </div>
+                        </div>
+
+                        <div *ngIf="group.value.diference.length == 0">
+                          <div>
+
+
                             <mat-form-field>
                               <mat-label>Estado de recibo</mat-label>
                               <mat-select formControlName="iestadorec">
@@ -137,12 +153,20 @@
                               </mat-select>
                             </mat-form-field>
         
-                            <mat-form-field *ngIf="!group.value.diferenceBool">
+                            <mat-form-field >
                               <mat-label>Diferencia</mat-label>
                               <input matInput formControlName="mdiferencia"  matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input>
                             </mat-form-field>
+
+
+                            <mat-form-field>
+                              <mat-label>Seleccione el recibo con la diferencia</mat-label>
+                              <mat-select formControlName="recibo">
+                                <mat-option *ngFor="let recibo of group.value.detalle"  value="{{ recibo.crecibo }}">{{ recibo.crecibo }}</mat-option>
+                              </mat-select>
+                            </mat-form-field>
         
-                            <mat-form-field *ngIf="!group.value.diferenceBool">
+                            <mat-form-field >
                               <mat-label>Observacion</mat-label>
                               <textarea matInput placeholder="Observacion" formControlName="xobservacion"></textarea>
                             </mat-form-field>
@@ -170,7 +194,7 @@
 
             <div class="p-4">
               <h2>Total Pendiente {{totalPending}} $</h2>
-              <button class="btn btn-primary rounded-pill p-3" type="button" (click)="downloadExcel()"><strong>Descargar recibos pendientes</strong></button>
+              <!-- <button class="btn btn-primary rounded-pill p-3" type="button" (click)="downloadExcel()"><strong>Descargar recibos pendientes</strong></button> -->
               <button class="btn btn-primary rounded-pill p-3" type="button" (click)="downloadExcelVencido()"><strong>Descargar recibos vencidos</strong></button>
               <button class="btn btn-primary rounded-pill p-3" type="button" (click)="downloadExcelCollected()"><strong>Descargar recibos cobrados</strong></button>
 
@@ -317,7 +341,7 @@
                       <!-- Bancos destino -->
 
                       <div class="form-outline mt-3" *ngIf="usd"><!-- lista de bancos receptores internacionales -->
-                        <label class="form-label ">Banco receptor</label>
+                        <label class="form-label ">Banco recptor</label>
                         <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris" >
                           <option disabled>Seleccione el banco receptor</option>
                           <option *ngFor="let backE of bankReceptorInternational" value="{{ backE.id }}">{{ backE.value }}</option>

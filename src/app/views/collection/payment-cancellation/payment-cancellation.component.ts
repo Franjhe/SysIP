@@ -92,7 +92,10 @@ export class PaymentCancellationComponent {
   listPending: any = []
   listVencido : any = []
   listCollectedReport: any = []
-  listDiference : any = []
+
+
+  listReceiptClient : any = []
+  lenghReceipt : boolean = false
 
   lisDiferenceClient: any 
   listDetalle: any
@@ -104,6 +107,8 @@ export class PaymentCancellationComponent {
   listReceipts  : any = []
   boollistReceipts: boolean = false
   GroupReceiptsBool : boolean = false
+
+  listpureba : any = []
 
 
   groupReceiptsForm = this._formBuilder.group({
@@ -305,6 +310,8 @@ export class PaymentCancellationComponent {
     .then((response) => response.json())
     .then(data => {
       this.listVencido = data.searchPaymentData.recibo
+
+      
     })
 
 
@@ -313,7 +320,6 @@ export class PaymentCancellationComponent {
     .then(data => {
 
       this.listCollectedReport = data.searchPaymentCollected.recibo
-      console.log(this.listCollectedReport.length)
 
     })
 
@@ -322,121 +328,111 @@ export class PaymentCancellationComponent {
     .then((response) => response.json())
     .then(data => {
 
-      for(let i = 0; i < data.searchPaymentReport.searchDataNotifiqued.dataTransaction.length; i++){
+      this.listpureba = data.searchPaymentReport.searchDataNotifiqued.dataTransaction
 
-        let dateNotification = new Date(data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].transaccion.freporte);
+      this.listpureba.forEach((item : any) => {
+
+        let dateNotification = new Date(item.transaccion.freporte);
         let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
 
-        this.listDetalle = []
-        this.lisDiferenceClient= []
-        this.listSoport = []
+        this.agrupado.push(this._formBuilder.group({
+            // Define tus controles aquí
+            id: [item.transaccion.id],
+            casegurado: [item.transaccion.casegurado],
+            freporte: [fechaISOHasta],
+            agrupador:false,
+            iestadorec : '',
+            xobservacion : '',
+            mdiferencia : '',
+            recibo: '',
+            ptasamon: [item.transaccion.ptasamon],
+            mpago: [item.transaccion.mpago],
+            mpagoext: [item.transaccion.mpagoext],
+            iestado_tran: [item.transaccion.iestado_tran],
 
+          detalle: this._formBuilder.array([]),
+          soporte: this._formBuilder.array([]),
+          diference: this._formBuilder.array([]),
+        }));
+  
+        // Obtén el FormArray de la transacción actual
+        const detalleArray = (this.agrupado.at(this.agrupado.length - 1) as FormGroup).get('detalle') as FormArray;
+        const soporteArray = (this.agrupado.at(this.agrupado.length - 1) as FormGroup).get('soporte') as FormArray;
+        const diferenceArray = (this.agrupado.at(this.agrupado.length - 1) as FormGroup).get('diference') as FormArray;
+  
+        // Itera sobre los detalles y agrega un FormGroup por cada elemento
+        item.detalle.forEach((detalleItem: any) => {
 
-        for(let j = 0; j < data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].detalle.length; j++){
-
-          let idTrades = data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].detalle[j].cramo 
+          let idTrades = detalleItem.cramo
           let trades = this.tradesList
           let filterTRades = trades.filter((data: { id: any; }) => data.id == idTrades)
           const tradesValue = filterTRades[0].value
 
-          this.listDetalle.push({
-              crecibo: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].detalle[j].crecibo ,
-              cpoliza: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].detalle[j].cpoliza ,
-              cramo: tradesValue ,
-              mprimabrutaext: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].detalle[j].mprimabrutaext ,
-              mprimabruta: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].detalle[j].mprimabruta ,
-              fhasta_rec: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].detalle[j].fhasta_rec ,
-          })
+          detalleArray.push(this._formBuilder.group({
+            crecibo: [detalleItem.crecibo] ,
+            cpoliza: [detalleItem.cpoliza] ,
+            cramo: [tradesValue],
+            mprimabrutaext: [detalleItem.mprimabrutaext],
+            mprimabruta: [detalleItem.mprimabruta] ,
+            fhasta_rec: [detalleItem.fhasta_rec] ,
+       
+          }));
+        });
+  
+        // Itera sobre los soportes y agrega un FormGroup por cada elemento
+        item.soporte.forEach((soporteItem: any) => {
 
-          this.dataReportB.push({
-            crecibo: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].detalle[j].crecibo ,
-            cpoliza: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].detalle[j].cpoliza ,
-            cramo: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].detalle[j].cramo,
-            casegurado: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].detalle[j].casegurado,
-            mprimabrutaext: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].detalle[j].mprimabrutaext ,
-            mprimabruta: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].detalle[j].mprimabruta ,
-            fhasta_rec: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].detalle[j].fhasta_rec ,
-          })
-
-        }
-        
-        for(let j = 0; j < data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte.length; j++){
 
           //banco destino
-          let idBank = data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].cbanco_destino
+          let idBank = soporteItem.cbanco
           let bank = this.bankNational
           let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
           const bankValue = filterBank[0].value
 
           //banco emisor
-          let idBankEmi = data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].cbanco
+          let idBankEmi = soporteItem.cbanco_destino
           let bankEmi = this.bankNational
           let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
           const bankValueEmi = filterBankEmi[0].value
 
-          const imageUrl = data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].xruta;
+          const imageUrl = soporteItem.xruta;
           const fullImageUrl = this.getImage(imageUrl);
 
           const safeImageUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullImageUrl);
 
-
-          this.listSoport.push({
-            cbanco: bankValueEmi,
-            cbanco_destino: bankValue ,
-            cmoneda: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].cmoneda ,
-            mpago: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].mpago ,
-            mpagoext: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].mpagoext ,
-            mpagoigtf: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].mpagoigtf ,
-            mpagoigtfext: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].mpagoigtfext ,
-            ptasamon: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].ptasamon ,
-            ptasaref: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].ptasaref ,
-            xreferencia: data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].soporte[j].xreferencia ,
+          soporteArray.push(this._formBuilder.group({
+            cbanco: [bankValue],
+            cbanco_destino: [bankValueEmi] ,
+            cmoneda:[soporteItem.cmoneda],
+            mpago: [soporteItem.mpago],
+            mpagoext: [soporteItem.mpagoext] ,
+            mpagoigtf: [soporteItem.mpagoigtf] ,
+            mpagoigtfext: [soporteItem.mpagoigtfext] ,
+            ptasamon: [soporteItem.ptasamon] ,
+            ptasaref: [soporteItem.ptasaref] ,
+            xreferencia: [soporteItem.xreferencia],
             ximagen: safeImageUrl,
-          })
+         
+          }));
+        });
+  
+        // Itera sobre las diferencias y agrega un FormGroup por cada elemento
+        item.diference.forEach((diferenceItem: any) => {
+          diferenceArray.push(this._formBuilder.group({
+            mdiferencia: [diferenceItem.mdiferencia],
+            xobservacion: [diferenceItem.xobservacion],
 
-        }
+          }));
+        });
+      });
 
-        if(data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].diference.length > 0){
-          this.diference = true
-          this.lisDiferenceClient = data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].diference
-          
-        }
-        else{
-          this.diference = false
-
-        }
-
-        this.agrupado.push(
-          this._formBuilder.group({
-            id :data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].transaccion.id,
-            casegurado :data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].transaccion.casegurado,
-            freporte :fechaISOHasta,
-            iestado_tran :data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].transaccion.iestado_tran,
-            mpagoext :data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].transaccion.mpagoext,
-            mpago :data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].transaccion.mpago,
-            ptasamon :data.searchPaymentReport.searchDataNotifiqued.dataTransaction[i].transaccion.ptasamon,
-            detalle : this.listDetalle,
-            soporte : this.listSoport,
-            diference : this.lisDiferenceClient,
-            agrupador:false,
-            iestadorec : '',
-            xobservacion : '',
-            mdiferencia : '',
-            diferenceBool : this.diference
-          })
-        )
-
-
-      }
+      console.log(this.groupReceiptsForm)
 
       const listNotificate = data.searchPaymentReport.searchDataNotifiqued.dataTransaction
 
-
       const sumaMpagoext = listNotificate.reduce((total: any, item: any ) => total + item.transaccion.mpagoext, 0);
 
-
       this.totalNotificated = sumaMpagoext.toFixed(2)
-
 
     })
 
@@ -452,8 +448,6 @@ export class PaymentCancellationComponent {
   getImage(imageUrl: string): string {
     return environment.apiUrl + '/api/get-document/' + imageUrl;
   }
-
-
 
   Alert(config?: MatDialogConfig) {
     return this.dialog.open(this.InfoReceipt, config);
@@ -549,6 +543,8 @@ export class PaymentCancellationComponent {
 
     const creds = this.groupReceiptsForm.controls.agrupado as FormArray;
 
+    console.log(creds.at(i).get('detalle')?.value)
+
     if(creds.at(i).get('iestadorec')?.value == 'ER' ){
       const data = {
         transacccion : creds.at(i).get('id')?.value,
@@ -556,6 +552,8 @@ export class PaymentCancellationComponent {
         mdiferencia: creds.at(i).get('mdiferencia')?.value,
         iestadorec: creds.at(i).get('iestadorec')?.value,
         casegurado : creds.at(i).get('casegurado')?.value,
+        recibo : creds.at(i).get('recibo')?.value,
+
       }
       this.http.post(environment.apiUrl + '/api/v1/collection/receipt-under-review/', data ).subscribe((response: any) => {
         if(response.status){
@@ -566,9 +564,9 @@ export class PaymentCancellationComponent {
 
     }else if(creds.at(i).get('iestadorec')?.value !== 'ER' ){
       const data = {
-        receipt : this.dataReportB,
         transacccion : creds.at(i).get('id')?.value,
         iestadorec: creds.at(i).get('iestadorec')?.value,
+        detalle : creds.at(i).get('detalle')?.value,
       }
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt/', data ).subscribe((response: any) => {
         if(response.status){
@@ -577,7 +575,6 @@ export class PaymentCancellationComponent {
   
       })
     }
-
 
   }
 
@@ -685,7 +682,6 @@ export class PaymentCancellationComponent {
       this.updateReceiptPending.get('mpago')?.enable()
       this.updateReceiptPending.get('ximagen')?.enable()
       this.updateReceiptPending.get('iestadorec ')?.enable()
-
   }
 
   onFileSelect(event : any ){
@@ -693,7 +689,6 @@ export class PaymentCancellationComponent {
     const file = event.target.files[0]
 
     this.updateReceiptPending.get('ximagen')?.setValue(file)
-
 
   }
 
@@ -744,17 +739,20 @@ export class PaymentCancellationComponent {
   }
 
   downloadExcelVencido() {
-
     // Filtra y renombra los campos que deseas exportar
-    const filteredData = this.listVencido.map((item: 
-      { cpoliza: any; crecibo: any; cramo: any; casegurado: any; mprimabruta: any; mprimabrutaext: any; fhasta: any}) => ({
+    const filteredData = this.listVencido.map((item : any) => ({
       'Poliza': item.cpoliza,
       'Recibo': item.crecibo,
       'Ramo': item.cramo,
-      'Asegurado': item.casegurado,
+      'Cedula': item.casegurado,
+      'Cliente' : item.xcliente,
       'Prima Bs': item.mprimabruta,
       'Prima USD': item.mprimabrutaext,
       'Fecha hasta recibo': item.fhasta,
+      'Correo' : item.xemail,
+      'Telefono' : item.xtelefono,
+      'Direccion' : item.xdireccionfiscal,
+      'Corredor' :item.ccorredor
     }));
   
     const worksheet = XLSX.utils.json_to_sheet(filteredData);
@@ -825,11 +823,11 @@ export class PaymentCancellationComponent {
       const controlesConAgrupadorTrue = creds.controls.filter(control => control.get('agrupador')?.value === true);
 
       controlesConAgrupadorTrue.forEach(control => {
-        const ctransaccionValue = control.get('ctransaccion')?.value;
-        // const caseguradoValue = control.get('casegurado')?.value;
-        // const agrupadorValue = control.get('agrupador')?.value;
-    
-        listUpdateDiferenceReceipt.push(ctransaccionValue)
+
+        listUpdateDiferenceReceipt.push({
+          transaccion : control.get('id')?.value,
+          recibo:control.get('detalle')?.value,
+      })
 
     });
 
@@ -847,7 +845,6 @@ export class PaymentCancellationComponent {
     })
 
   }
-
 
   changeStatusPm(){
     if(this.pmovil == false){

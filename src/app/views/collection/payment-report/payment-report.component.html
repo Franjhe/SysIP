@@ -64,19 +64,23 @@
                 <thead>
                   <tr>
                     <th>N° Poliza</th>
+                    <th>N° Recibo</th>
                     <th>Ramo</th>
                     <th>Fecha Desde</th>
                     <th style="color:red">Fecha tope de pago</th>
+                    <th style="color:red">Pendiente</th>
                     <th>Total del recibo</th>
                     <th>Seleccione los recibos a pagar </th>
                   </tr>
                 </thead>
                 <tbody *ngFor="let creds of receipt.value let i=index">
                   <tr [formGroupName]="i">
-                    <td >{{creds.cnpoliza}}</td>
+                    <td >{{creds.cpoliza}}</td>
+                    <td >{{creds.crecibo}}</td>
                     <td >{{creds.xramo}}</td>
                     <td>{{creds.fdesde_rec}}</td>
                     <td > {{creds.fhasta_rec}}</td>
+                    <td > {{creds.mpendiente}}</td>
                     <td >{{creds.mprimabrutaext}} {{creds.cmoneda}}</td>
                     <td>
                       <mat-checkbox formControlName="seleccionado" (change)="calculateMount(i)"> </mat-checkbox>
@@ -87,7 +91,7 @@
             </div>
             <div class="container text-center">
                 <h2>Tasa de cobro {{bcv}} Bs</h2> 
-                <h2>Total a Pagar {{mount}} $  -- {{mountBs}} Bs</h2>
+                <h2 *ngIf="!diferenceBool">Total a Pagar {{mount}} $  -- {{mountBs}} Bs</h2>
             </div>
 
             <div>
@@ -102,10 +106,15 @@
           <ng-template matStepLabel>Como vas a pagar</ng-template>
           <div class="row text-center">
 
-            <strong>Para reportar tu pago debes transferir un TOTAL de  
-              <h1 class="bold mt-4" style="font-size:2.5rem">{{mountIGTF}} $   --- {{mountBs}} Bs</h1> 
+            <strong *ngIf="!diferenceBool">Para reportar tu pago debes transferir un TOTAL de  
+              <h1 class="bold mt-4" style="font-size:2.5rem" >{{mountIGTF}} $   --- {{mountBs}} Bs</h1> 
               <h1 class="bold mt-4" >Tasa de calculo {{bcv}} Bs</h1>
               <h2 class="bold mt-4" >El total incluye IGTF</h2>
+            </strong>  
+
+            <strong *ngIf="diferenceBool">              
+              <h1 class="bold mt-4" style="font-size:1.5rem" >{{messageDiference}}</h1> 
+              <h1 class="bold mt-4" >Tasa de calculo {{bcv}} Bs</h1>
             </strong>  
 
             <div class="d-grid gap-2 col-6 mx-auto">
