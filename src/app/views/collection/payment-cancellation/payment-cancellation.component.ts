@@ -716,14 +716,19 @@ export class PaymentCancellationComponent {
   downloadExcel() {
 
     // Filtra y renombra los campos que deseas exportar
-    const filteredData = this.listPending.map((item: 
-      { cpoliza: any; crecibo: any; cramo: any; casegurado: any; mprimabruta: any; mprimabrutaext: any}) => ({
-      'Poliza': item.cpoliza,
-      'Recibo': item.crecibo,
-      'Ramo': item.cramo,
-      'Asegurado': item.casegurado,
-      'Prima Bs': item.mprimabruta,
-      'Prima USD': item.mprimabrutaext,
+    const filteredData = this.listPending.map((item :any) => ({
+        'Poliza': item.cpoliza,
+        'Recibo': item.crecibo,
+        'Ramo': item.cramo,
+        'Cedula': item.cedula,
+        'Cliente' : item.XCLIENTE,
+        'Prima Bs': item.mprimabruta,
+        'Prima USD': item.mprimabrutaext,
+        'Fecha hasta recibo': item.fhasta,
+        'Correo' : item.xemail,
+        'Telefono' : item.xtelefono,
+        'Direccion' : item.XDIRECCIONFISCAL,
+        'Corredor' :item.CCORREDOR
     }));
   
     const worksheet = XLSX.utils.json_to_sheet(filteredData);
@@ -744,15 +749,15 @@ export class PaymentCancellationComponent {
       'Poliza': item.cpoliza,
       'Recibo': item.crecibo,
       'Ramo': item.cramo,
-      'Cedula': item.casegurado,
-      'Cliente' : item.xcliente,
+      'Cedula': item.cedula,
+      'Cliente' : item.XCLIENTE,
       'Prima Bs': item.mprimabruta,
       'Prima USD': item.mprimabrutaext,
       'Fecha hasta recibo': item.fhasta,
       'Correo' : item.xemail,
       'Telefono' : item.xtelefono,
-      'Direccion' : item.xdireccionfiscal,
-      'Corredor' :item.ccorredor
+      'Direccion' : item.XDIRECCIONFISCAL,
+      'Corredor' :item.CCORREDOR
     }));
   
     const worksheet = XLSX.utils.json_to_sheet(filteredData);
@@ -769,15 +774,24 @@ export class PaymentCancellationComponent {
 
   downloadExcelCollected() {
     // Filtra y renombra los campos que deseas exportar
-    const filteredData = this.listCollectedReport.map((item: 
-      { cpoliza: any; crecibo: any; cramo: any; casegurado: any; mprimabruta: any; mprimabrutaext: any; fhasta: any}) => ({
+    const filteredData = this.listCollectedReport.map((item: any) => ({
       'Poliza': item.cpoliza,
       'Recibo': item.crecibo,
-      'Ramo': item.cramo,
-      'Asegurado': item.casegurado,
       'Prima Bs': item.mprimabruta,
       'Prima USD': item.mprimabrutaext,
       'Fecha hasta recibo': item.fhasta,
+      'Cedula': item.casegurado,
+      'Cliente': item.XCLIENTE,
+      'Telefono': item.XTELEFONO,
+      'Correo': item.XEMAIL,
+      'Direccion ': item.XDIRECCIONFISCAL,
+      'Banco emisor': item.cbanco,
+      'Banco destino': item.cbanco_destino,
+      'Ramo': item.cramo,
+      'Total Bs': item.mtotal,
+      'Total $': item.mtotalext,
+      'Tasa': item.ptasamon,
+      'Referencia': item.xreferencia,
     }));
   
     const worksheet = XLSX.utils.json_to_sheet(filteredData);

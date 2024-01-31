@@ -571,7 +571,7 @@ export class PaymentReportComponent {
     }
     //primero llenamos el recipo y la tabla de transacciones 
     this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
-
+      this.searchReceipt.disable()
       const transaccion = response.ctransaccion.result
       this.transaccion = transaccion
 
@@ -622,30 +622,31 @@ export class PaymentReportComponent {
                 });
               }
 
-              const reporData = {
-                report : this.transferList,
-                ctransaccion : this.transaccion,
-                casegurado: this.searchReceipt.get('xcedula')?.value,
-          
-              }
-          
+              if(image.status){
 
-              this.http.post(environment.apiUrl + '/api/v1/collection/create-report', reporData).subscribe( (response: any) => {
+                const reporData = {
+                  report : this.transferList,
+                  ctransaccion : this.transaccion,
+                  casegurado: this.searchReceipt.get('xcedula')?.value,
+            
+                }
+            
   
+                this.http.post(environment.apiUrl + '/api/v1/collection/create-report', reporData).subscribe( (response: any) => {
+    
+  
+                })
+              }
 
-              })
           })
 
         }
-
-        this.toast.open(response.message, '', {
-          duration: 5000,
-          verticalPosition: 'top',
-          panelClass: ['success-toast']
-        });  
-        location.reload()
           
+        setTimeout(() => {
+          location.reload();
+        }, 5000);
       }
+
 
 
  
