@@ -14,9 +14,59 @@ import { ChangeDetectorRef } from '@angular/core';
 import { format, addYears } from 'date-fns';
 import { initUbii } from '@ubiipagos/boton-ubii-dc';
 // import { initUbii } from '@ubiipagos/boton-ubii';
-import { Papa } from 'ngx-papaparse';
+import * as Papa from 'papaparse';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
+
+interface CsvItem {
+  IRIF: string;
+  XCLIENTE: string;
+  XRIF_CLIENTE: string;
+  XNOMBRE: string;
+  XAPELLIDO: string;
+  ICEDULA: string;
+  XCEDULA: string;
+  FNAC: string;
+  CMETODOLOGIAPAGO: string;
+  CPLAN_RC: string;
+  CTARIFA_EXCESO: string;
+  XSERIALCARROCERIA: string;
+  XSERIALMOTOR: string;
+  XPLACA: string;
+  XMARCA: string;
+  XMODELO: string;
+  XVERSION: string;
+  CANO: string;
+  XCOLOR: string;
+  XCOBERTURA: string;
+  MSUMA_ASEG: string;
+  PCASCO: number;
+  MPRIMA_BRUTA: string;
+  MPRIMA_CASCO: string;
+  PCATASTROFICO: string;
+  MCATASTROFICO: string;
+  PMOTIN: string;
+  MMOTIN: string;
+  MSUMA_BLINDAJE: string;
+  PBLINDAJE: string;
+  MPRIMA_BLINDAJE: string;
+  XDIRECCIONFISCAL: string;
+  XTELEFONO_EMP: string;
+  EMAIL: string;
+  FEMISION: string;
+  FDESDE_POL: string;
+  FHASTA_POL: string;
+  NCAPACIDAD_P: string;
+  MCAPACIDAD_C: string;
+  XUSO: string;
+  CCORREDOR: string;
+  CPAIS: string;
+  CESTADO: string;
+  CCIUDAD: string;
+  CESTATUSGENERAL: string;
+  CCLASIFICACION: string;
+  XZONA_POSTAL: string;
+}
 
 export const MY_FORMATS = {
   parse: {
@@ -45,7 +95,7 @@ export class AutomobileComponent {
   @ViewChild(MatPaginator) paginatorGroup!: MatPaginator;
   displayedColumnsGroup: string[] = ['xnombre', 'xapellido', 'xcedula', 'xmarca', 'xmodelo', 'xversion', 'xcobertura', 'fdesde', 'fhasta'];
   dataSource = new MatTableDataSource<any>([]);
-
+  dataList: any[] = []; 
   identList = ['V', 'P', 'E', 'J', 'C','G'];
   stateList: any[] = [];
   cityList: any[] = [];
@@ -262,7 +312,8 @@ export class AutomobileComponent {
     mprima_pagada: [''],
     mpagado: [''],
     xmoneda: [''],
-    mprima_accesorio: ['']
+    mprima_accesorio: [''],
+    irecibo: ['']
   });
 
   constructor( private _formBuilder: FormBuilder,
@@ -2467,73 +2518,84 @@ export class AutomobileComponent {
     });
   }
 
-  parseCSV(file: any) {
-
-    return new Promise <any[]>((resolve, reject) => {
-      let papa = new Papa();
-      papa.parse(file, {
-        header: true,
-        complete: function(results) {
-          return resolve(results.data);
-        }
+  onFileSelected(event: any): void {
+    console.log(this.receiptFormGroup.get('irecibo')?.value)
+    if(!this.receiptFormGroup.get('irecibo')?.value){
+      this.snackBar.open('Lo sentimos, para realizar la carga de archivo por favor seleccione el Tipo de Recibo', '', {
+        duration: 4000,
       });
-      
-    });
-  }
-
-  async onFileSelect(event: any){
-    
-    let fixedData: any[] = [];
-    let file = event.target.files[0];
-    this.groupList = [];
-    this.parsedData = [];
-    this.parsedData = await this.parseCSV(file);
-    for (let i = 0; i < (this.parsedData.length -1); i++){
-      fixedData.push({
-        xcedula: this.parsedData[i].XCEDULA,
-        xnombre: this.parsedData[i].XNOMBRE,
-        xapellido: this.parsedData[i].XAPELLIDO,
-        fnacimiento: this.parsedData[i].FNACIMIENTO,
-        cplan: this.parsedData[i].CPLAN,
-        ctarifa: this.parsedData[i].CTARIFA,
-        xserialcarroceria: this.parsedData[i].XSERIALCARROCERIA,
-        xserialmotor: this.parsedData[i].XSERIALMOTOR,
-        xplaca: this.parsedData[i].XPLACA,
-        xmarca: this.parsedData[i].XMARCA,
-        xmodelo: this.parsedData[i].XMODELO,
-        xversion: this.parsedData[i].XVERSION,
-        cano: this.parsedData[i].CANO,
-        xcolor: this.parsedData[i].XCOLOR,
-        xcobertura: this.parsedData[i].XCOBERTURA,
-        msuma_aseg: this.parsedData[i].MSUMA_ASEG,
-        pcasco: this.parsedData[i].PCASCO,
-        mprima_bruta: this.parsedData[i].MPRIMA_BRUTA,
-        mprima_casco: this.parsedData[i].MPRIMA_CASCO,
-        pcatastrofico: this.parsedData[i].PACATASTROFICO,
-        mcatastrofico: this.parsedData[i].MACATASTROFICO,
-        msuma_blindaje: this.parsedData[i].MSUMA_BLINDAJE,
-        pblindaje: this.parsedData[i].PBLINDAJE,
-        mprima_blindaje: this.parsedData[i].MPRIMA_BLINDAJE,
-        xdireccion: this.parsedData[i].XDIRECCION,
-        xtelefono: this.parsedData[i].XTELEFONO,
-        email: this.parsedData[i].EMAIL,
-        fdesde: this.parsedData[i].FDESDE,
-        fhasta: this.parsedData[i].FHASTA,
-        ncapacidad: this.parsedData[i].NCAPACIDAD,
-        ccorredor: this.parsedData[i].CCORREDOR,
-        ctomador: this.parsedData[i].CTOMADOR,
-        cclasificacion: this.parsedData[i].CCLASIFICACION,
-        isexo: this.parsedData[i].ISEXO,
-        iestado_civil: this.parsedData[i].IESTADO_CIVIL,
-        cestado: this.parsedData[i].CESTADO,
-        cciudad: this.parsedData[i].CCIUDAD
-      })
+    }else{
+      const file = event.target.files[0];
+  
+      if (file) {
+        Papa.parse(file, {
+          header: true,
+          delimiter: ';',
+          quoteChar: '"',
+          complete: (result: any) => {
+            this.dataList = result.data.slice(0, result.data.length - 1).map((item: CsvItem) => ({
+              irif: item.IRIF,
+              xcliente: item.XCLIENTE,
+              xrif_cliente: item.XRIF_CLIENTE,
+              xnombre: item.XNOMBRE,
+              xapellido: item.XAPELLIDO,
+              icedula: item.ICEDULA,
+              xcedula: item.XCEDULA,
+              fnac: item.FNAC,
+              cmetodologiapago: item.CMETODOLOGIAPAGO,
+              cplan_rc: item.CPLAN_RC,
+              ctarifa_exceso: item.CTARIFA_EXCESO,
+              xserialcarroceria: item.XSERIALCARROCERIA,
+              xserialmotor: item.XSERIALMOTOR,
+              xplaca: item.XPLACA,
+              xmarca: item.XMARCA,
+              xmodelo: item.XMODELO,
+              xversion: item.XVERSION,
+              cano: item.CANO,
+              xcolor: item.XCOLOR,
+              xcobertura: item.XCOBERTURA,
+              msuma_aseg: item.MSUMA_ASEG,
+              pcasco: item.PCASCO,
+              mprima_bruta: item.MPRIMA_BRUTA,
+              mprima_casco: item.MPRIMA_CASCO,
+              pcatastrofico: item.PCATASTROFICO,
+              mcatastrofico: item.MCATASTROFICO,
+              pmotin: item.PMOTIN,
+              mmotin: item.MMOTIN,
+              msuma_blindaje: item.MSUMA_BLINDAJE,
+              pblindaje: item.PBLINDAJE,
+              mprima_blindaje: item.MPRIMA_BLINDAJE,
+              xdireccionfiscal: item.XDIRECCIONFISCAL,
+              xtelefono_emp: item.XTELEFONO_EMP,
+              email: item.EMAIL,
+              femision: item.FEMISION,
+              fdesde_pol: item.FDESDE_POL,
+              fhasta_pol: item.FHASTA_POL,
+              ncapacidad_p: item.NCAPACIDAD_P,
+              mcapacidad_c: item.MCAPACIDAD_C,
+              xuso: item.XUSO,
+              ccorredor: item.CCORREDOR,
+              cpais: item.CPAIS,
+              cestado: item.CESTADO,
+              cciudad: item.CCIUDAD,
+              cestatusgeneral: item.CESTATUSGENERAL,
+              cclasificacion: item.CCLASIFICACION,
+              xzona_postal: item.XZONA_POSTAL,
+            }));
+            
+            this.groupList = this.dataList;
+            this.dataSource = new MatTableDataSource<any>(this.groupList);
+            this.dataSource.paginator = this.paginatorGroup;
+            this.activateGroup = true;
+          },
+          error: (error: any) => {
+            console.error('Error al analizar el archivo CSV:', error);
+          }
+        });
+      }
     }
-    this.groupList = fixedData;
-    this.dataSource = new MatTableDataSource<any>(this.groupList);
-    this.dataSource.paginator = this.paginatorGroup;
-    this.activateGroup = true;
   }
+  
 
   onSubmitGroup(){
     let data = {
