@@ -382,18 +382,39 @@ export class PaymentCancellationComponent {
         // Itera sobre los soportes y agrega un FormGroup por cada elemento
         item.soporte.forEach((soporteItem: any) => {
 
+          let bankValue : any
+          let bankValueEmi : any
 
-          //banco destino
-          let idBank = soporteItem.cbanco
-          let bank = this.bankNational
-          let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
-          const bankValue = filterBank[0].value
+          if(soporteItem.cmoneda == 'USD ' ){
 
-          //banco emisor
-          let idBankEmi = soporteItem.cbanco_destino
-          let bankEmi = this.bankNational
-          let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
-          const bankValueEmi = filterBankEmi[0].value
+            //banco destino
+            let idBank = soporteItem.cbanco
+            let bank = this.bankInternational
+            let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
+            bankValue = filterBank[0].value
+
+            //banco emisor
+            let idBankEmi = soporteItem.cbanco_destino
+            let bankEmi = this.bankInternational
+            let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
+            bankValueEmi = filterBankEmi[0].value
+
+          }else
+          {
+            //banco destino
+            let idBank = soporteItem.cbanco
+            let bank = this.bankNational
+            let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
+            bankValue = filterBank[0].value
+
+            //banco emisor
+            let idBankEmi = soporteItem.cbanco_destino
+            let bankEmi = this.bankNational
+            let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
+            bankValueEmi = filterBankEmi[0].value
+          }
+
+
 
           const imageUrl = soporteItem.xruta;
           const fullImageUrl = this.getImage(imageUrl);
@@ -904,9 +925,7 @@ export class PaymentCancellationComponent {
     if(this.pmovil == true){
       this.pmovil = false
     }
-    if(this.usd == true){
-      this.usd = false
-    }
+
     if(this.depositoUSD == false){
       this.depositoUSD = true
     }
