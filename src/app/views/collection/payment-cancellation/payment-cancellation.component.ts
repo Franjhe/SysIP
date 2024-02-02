@@ -587,6 +587,7 @@ export class PaymentCancellationComponent {
       const data = {
         transacccion : creds.at(i).get('id')?.value,
         iestadorec: creds.at(i).get('iestadorec')?.value,
+        casegurado : creds.at(i).get('casegurado')?.value,
         detalle : creds.at(i).get('detalle')?.value,
       }
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt/', data ).subscribe((response: any) => {
