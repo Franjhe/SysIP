@@ -2146,10 +2146,21 @@ export class AutomobileComponent {
           this.buttonEmissions = true;
         }
       } else {
-        this.buttonEmissions = false;
-        this.snackBar.open(`Lo sentimos, debe formalizar una modalidad de pago para emitir la póliza`, '', {
-          duration: 3000,
-        });
+        if (this.xmetodologia !== 'ANUAL') {
+          this.snackBar.open(`Lo sentimos, solo se puede colocar ${this.xmetodologia} cuando no sea RCV.`, '', {
+            duration: 3000,
+          });
+          this.receiptFormGroup.get('cmetodologiapago')?.setValue('');
+          this.methodOfPaymentControl.setValue('');
+          this.buttonEmissions = false;
+        } else {
+          this.buttonEmissions = true;
+        }
+
+        // this.buttonEmissions = false;
+        // this.snackBar.open(`Lo sentimos, debe formalizar una modalidad de pago para emitir la póliza`, '', {
+        //   duration: 3000,
+        // });
       }
     }else{
       this.buttonEmissions = true;
