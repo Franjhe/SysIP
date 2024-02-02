@@ -268,6 +268,7 @@ export class AutomobileComponent {
     cplan: ['', Validators.required],
     xplan: [{ value: '', disabled: true }],
     ccorredor: [''],
+    xcorredor: [''],
     ctomador: [{ value: '', disabled: false }],
     xtomador: [{ value: '', disabled: false }],
     xrif_tomador: [''],
@@ -2212,6 +2213,8 @@ export class AutomobileComponent {
         this.vehicleFormGroup.get('fano')?.setValue(response.data.fano);
         this.vehicleFormGroup.get('fano')?.disable();
         this.planFormGroup.get('cplan')?.setValue(response.data.cplan);
+        this.planFormGroup.get('xcorredor')?.setValue(response.data.ccorredor);
+        this.planFormGroup.get('xcorredor')?.setValue(response.data.xcorredor);
         let event = {
           option: {
             id: this.planFormGroup.get('cplan')?.value
