@@ -336,8 +336,8 @@ export class AutomobileComponent {
                   const ctarifa = params['ctarifa_exceso'];
                   const ccorredor = params['ccorredor'];
                   if(ccorredor){
-                    console.log('askdjhaskjdhakjs')
                     this.paymentButtons = true;
+                    this.buttonEmissions = true;
                   }
                   this.ccotizacion = cotizacion
                   this.fano = fano
