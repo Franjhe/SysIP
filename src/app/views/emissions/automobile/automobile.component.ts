@@ -385,33 +385,33 @@ export class AutomobileComponent {
     
     this.currentUser = JSON.parse(this.token);
 
-      if (this.currentUser) {
-        this.filteredIdent = this.identControl.valueChanges.pipe(
-          startWith(''),
-          map(value => this._filter(value || ''))
-        );
+    this.filteredIdent = this.identControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value || ''))
+    );
 
-        if(this.currentUser.data.crol == 6){
-          this.userBroker = false;
-        }else{
-          this.userBroker = true;
-        }
-
-        this.getState();
-        this.getColor();
-        this.getRates();
-        this.getTypeVehicles();
-        this.getUtilityVehicle();
-        this.getClass();
-        this.getPlan();
-        this.getBroker();
-        this.getAccesories();
-        this.getMethodOfPayment();
-        this.getTakers();
-        this.setDefaultDates();
-        this.getTypeOfPay();
-        this.getUtility();
+    if(this.currentUser.data.crol == 6){
+      this.userBroker = false;
+    }else{
+      this.userBroker = true;
     }
+
+    this.getState();
+    this.getColor();
+    this.getRates();
+    this.getTypeVehicles();
+    this.getUtilityVehicle();
+    this.getClass();
+    this.getPlan();
+    this.getBroker();
+    this.getAccesories();
+    this.getMethodOfPayment();
+    this.getTakers();
+    this.setDefaultDates();
+    this.getTypeOfPay();
+    this.getUtility();
+
+
   }
 
   formatCurrency(value: any): string {
