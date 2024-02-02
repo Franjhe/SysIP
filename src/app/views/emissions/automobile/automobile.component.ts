@@ -2213,8 +2213,9 @@ export class AutomobileComponent {
         this.vehicleFormGroup.get('fano')?.setValue(response.data.fano);
         this.vehicleFormGroup.get('fano')?.disable();
         this.planFormGroup.get('cplan')?.setValue(response.data.cplan);
-        this.planFormGroup.get('xcorredor')?.setValue(response.data.ccorredor);
+        this.planFormGroup.get('ccorredor')?.setValue(response.data.ccorredor);
         this.planFormGroup.get('xcorredor')?.setValue(response.data.xcorredor);
+        this.planFormGroup.get('xcorredor')?.disable()
         let event = {
           option: {
             id: this.planFormGroup.get('cplan')?.value
