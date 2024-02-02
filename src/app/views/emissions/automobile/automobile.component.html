@@ -305,8 +305,8 @@
                     <mat-label>Coberturas</mat-label>
                     <mat-select formControlName="xcobertura" (selectionChange)="onCoverageChange()">
                       <mat-option value="Rcv">RCV</mat-option>
-                      <mat-option value="Cobertura Amplia">COBERTURA AMPLIA</mat-option>
-                      <mat-option value="Perdida Total">PERDIDA TOTAL</mat-option>
+                      <mat-option value="Cobertura Amplia" *ngIf="userBroker">COBERTURA AMPLIA</mat-option>
+                      <mat-option value="Perdida Total" *ngIf="userBroker">PERDIDA TOTAL</mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>
@@ -737,7 +737,7 @@
               </div>
 
               <div class="ms-4 ps-5 text-center container row" *ngIf="paymentButtons">
-                <div class="col-lg-5 mt-2">
+                <div class="col-lg-5 mt-2" *ngIf="paymentButtonManual">
                   <button type="button" class="btn btn-light btn-lg" data-mdb-ripple-color="dark" (click)="openPaymentModal()">
                     Pago Manual
                   </button>

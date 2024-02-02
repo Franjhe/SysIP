@@ -185,7 +185,9 @@ export class AutomobileComponent {
   bpagarubii: boolean = false;
   amountDollar: boolean = false;
   amountBs: boolean = false;
+  userBroker: boolean = false;
   paymentButtons: boolean = true;
+  paymentButtonManual: boolean = true;
   activateGroup: boolean = false;
   activateBrandList: boolean = true;
   activateBrandText: boolean = false;
@@ -388,6 +390,12 @@ export class AutomobileComponent {
           startWith(''),
           map(value => this._filter(value || ''))
         );
+
+        if(this.currentUser.data.crol == 6){
+          this.userBroker = false;
+        }else{
+          this.userBroker = true;
+        }
 
         this.getState();
         this.getColor();
@@ -1236,6 +1244,11 @@ export class AutomobileComponent {
       this.helmet = false;
       this.activateInspection = false;
       this.paymentButtons = true;
+      if(this.currentUser.data.crol == 7){
+        this.paymentButtonManual = false;
+      }else{
+        this.paymentButtonManual = true;
+      }
       this.planFormGroup.get('mmotin')?.setValue('');
       this.planFormGroup.get('mcatastrofico')?.setValue('');
     }
