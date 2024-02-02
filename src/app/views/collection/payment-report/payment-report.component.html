@@ -158,20 +158,27 @@
                           <div class="form-outline" *ngIf="usd"><!-- pagos en dolares  -->
                             <label class="form-label required">Moneda</label>
                             <select formControlName="cmoneda" class="form-control rounded-input form-control-lg colorgris" >
-                              <option  value="BS">BS</option>
+                              <!-- <option  value="BS">BS</option> -->
                               <option  value="USD">USD</option>
                             </select>                     
                           </div>
 
-                          <div class="form-outline"  *ngIf="!usd"><!-- pagos en bolivares -->
+                          <div class="form-outline"  *ngIf="!usd  && !depositoUSD"><!-- pagos en bolivares -->
                             <label class="form-label required">Moneda</label>
                             <select formControlName="cmoneda" class="form-control rounded-input form-control-lg colorgris">
                               <option  value="Bs">Bs</option>
                             </select>                     
                           </div>
 
+                          <div class="form-outline"  *ngIf="!usd && depositoUSD"><!-- pagos en bolivares -->
+                            <label class="form-label required">Moneda</label>
+                            <select formControlName="cmoneda" class="form-control rounded-input form-control-lg colorgris">
+                              <option  value="USD">USD</option>
+                            </select>                     
+                          </div>
+                          
                           <!-- Bancos de emision -->
-                          <div class="form-outline mt-3" *ngIf="!usd"><!-- lista de bancos emisores nacionales -->
+                          <div class="form-outline mt-3" *ngIf="!usd && !depositoUSD"><!-- lista de bancos emisores nacionales -->
                             <label class="form-label ">Banco de emision</label>
                             <select formControlName="cbanco" class="form-control rounded-input form-control-lg colorgris" >
                               <option disabled>Seleccione el banco de emision</option>
@@ -214,7 +221,7 @@
                             </select>                     
                           </div>
 
-                          <div class="form-outline mt-3" *ngIf="!usd && !pmovil && depositoUSD && !trans"><!--  lista de bancos receptores nacionales cuenta custodia -->
+                          <div class="form-outline mt-3" *ngIf=" !pmovil && depositoUSD && !trans"><!--  lista de bancos receptores nacionales cuenta custodia -->
                             <label class="form-label ">Banco receptor</label>
                             <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris" >
                               <option disabled>Seleccione el banco receptor</option>
