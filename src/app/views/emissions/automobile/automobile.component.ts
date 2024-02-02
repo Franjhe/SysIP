@@ -2207,6 +2207,7 @@ export class AutomobileComponent {
         this.vehicleFormGroup.get('xversion')?.setValue(response.data.xversion);
         this.vehicleFormGroup.get('npasajeros')?.setValue(response.data.npasajeros);
         this.vehicleFormGroup.get('xcobertura')?.setValue(response.data.xcobertura);
+        this.vehicleFormGroup.get('xcobertura')?.disable();
         this.onCoverageChange()
         this.vehicleFormGroup.get('fano')?.setValue(response.data.fano);
         this.vehicleFormGroup.get('fano')?.disable();

@@ -574,6 +574,12 @@ export class AutomobileQuotesComponent {
               location.reload();
             }
           }
+        }else{
+          if (window.confirm("¡Se ha cotizado exitosamente!... ¿Desea Emitir la Cotización?")) {
+            this.router.navigate(['/emissions/automobile'], navigationExtras);
+          } else {
+            location.reload();
+          }
         }
       }
     })
