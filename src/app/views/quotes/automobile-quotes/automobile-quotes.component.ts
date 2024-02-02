@@ -77,6 +77,8 @@ export class AutomobileQuotesComponent {
   pcasco!: any
   pperdida!: any
   ccorredor!: any
+  cagencia!: any
+  cproductor!: any
 
   quotesForm = this._formBuilder.group({
     xmarca: ['', Validators.required],
@@ -112,6 +114,8 @@ export class AutomobileQuotesComponent {
       this.tokenphp = params['token'];
       this.ccorredor = params['ccorredor'];
       this.xcorredor = params['xcorredor'];
+      this.cagencia = params['cagencia'];
+      this.cproductor = params['cproductor'];
     });
 
     const storedSession = localStorage.getItem('userSession');
@@ -136,7 +140,9 @@ export class AutomobileQuotesComponent {
               crol: 6,
               cusuario: parseInt(this.cusuario),
               token: this.tokenphp,
-              xcorredor: this.xcorredor
+              xcorredor: this.xcorredor,
+              cagencia: this.cagencia,
+              cproductor: this.cproductor,
             }
           }
           let tokenString = JSON.stringify(token);
@@ -557,10 +563,23 @@ export class AutomobileQuotesComponent {
           }
         };
 
-        if (window.confirm("¡Se ha cotizado exitosamente!... ¿Desea Emitir la Cotización?")) {
-          this.router.navigate(['/emissions/automobile'], navigationExtras);
-        } else {
-          location.reload();
+        if(this.bamplia || this.bperdida){
+          if(this.currentUser.data.ccorredor){
+            window.alert('¡Se ha cotizado exitosamente!');
+            location.reload();
+          }else{
+            if (window.confirm("¡Se ha cotizado exitosamente!... ¿Desea Emitir la Cotización?")) {
+              this.router.navigate(['/emissions/automobile'], navigationExtras);
+            } else {
+              location.reload();
+            }
+          }
+        }else{
+          if (window.confirm("¡Se ha cotizado exitosamente!... ¿Desea Emitir la Cotización?")) {
+            this.router.navigate(['/emissions/automobile'], navigationExtras);
+          } else {
+            location.reload();
+          }
         }
       }
     })

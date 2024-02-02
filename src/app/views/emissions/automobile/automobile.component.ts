@@ -185,7 +185,9 @@ export class AutomobileComponent {
   bpagarubii: boolean = false;
   amountDollar: boolean = false;
   amountBs: boolean = false;
+  userBroker: boolean = false;
   paymentButtons: boolean = true;
+  paymentButtonManual: boolean = true;
   activateGroup: boolean = false;
   activateBrandList: boolean = true;
   activateBrandText: boolean = false;
@@ -266,6 +268,7 @@ export class AutomobileComponent {
     cplan: ['', Validators.required],
     xplan: [{ value: '', disabled: true }],
     ccorredor: [''],
+    xcorredor: [''],
     ctomador: [{ value: '', disabled: false }],
     xtomador: [{ value: '', disabled: false }],
     xrif_tomador: [''],
@@ -356,6 +359,21 @@ export class AutomobileComponent {
 
   ngOnInit(){
 
+    this.getState();
+    this.getColor();
+    this.getRates();
+    this.getTypeVehicles();
+    this.getUtilityVehicle();
+    this.getClass();
+    this.getPlan();
+    this.getBroker();
+    this.getAccesories();
+    this.getMethodOfPayment();
+    this.getTakers();
+    this.setDefaultDates();
+    this.getTypeOfPay();
+    this.getUtility();
+
     fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
     .then((response) => response.json())
     .then(data => {
@@ -383,27 +401,18 @@ export class AutomobileComponent {
     
     this.currentUser = JSON.parse(this.token);
 
-      if (this.currentUser) {
-        this.filteredIdent = this.identControl.valueChanges.pipe(
-          startWith(''),
-          map(value => this._filter(value || ''))
-        );
+    this.filteredIdent = this.identControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value || ''))
+    );
 
-        this.getState();
-        this.getColor();
-        this.getRates();
-        this.getTypeVehicles();
-        this.getUtilityVehicle();
-        this.getClass();
-        this.getPlan();
-        this.getBroker();
-        this.getAccesories();
-        this.getMethodOfPayment();
-        this.getTakers();
-        this.setDefaultDates();
-        this.getTypeOfPay();
-        this.getUtility();
+    if(this.currentUser.data.crol == 6){
+      this.userBroker = false;
+    }else{
+      this.userBroker = true;
     }
+
+
   }
 
   formatCurrency(value: any): string {
@@ -1236,6 +1245,11 @@ export class AutomobileComponent {
       this.helmet = false;
       this.activateInspection = false;
       this.paymentButtons = true;
+      if(this.currentUser.data.crol == 7){
+        this.paymentButtonManual = false;
+      }else{
+        this.paymentButtonManual = true;
+      }
       this.planFormGroup.get('mmotin')?.setValue('');
       this.planFormGroup.get('mcatastrofico')?.setValue('');
     }
@@ -2194,10 +2208,14 @@ export class AutomobileComponent {
         this.vehicleFormGroup.get('xversion')?.setValue(response.data.xversion);
         this.vehicleFormGroup.get('npasajeros')?.setValue(response.data.npasajeros);
         this.vehicleFormGroup.get('xcobertura')?.setValue(response.data.xcobertura);
+        this.vehicleFormGroup.get('xcobertura')?.disable();
         this.onCoverageChange()
         this.vehicleFormGroup.get('fano')?.setValue(response.data.fano);
         this.vehicleFormGroup.get('fano')?.disable();
         this.planFormGroup.get('cplan')?.setValue(response.data.cplan);
+        this.planFormGroup.get('ccorredor')?.setValue(response.data.ccorredor);
+        this.planFormGroup.get('xcorredor')?.setValue(response.data.xcorredor);
+        this.planFormGroup.get('xcorredor')?.disable()
         let event = {
           option: {
             id: this.planFormGroup.get('cplan')?.value
