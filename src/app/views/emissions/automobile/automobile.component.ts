@@ -358,6 +358,21 @@ export class AutomobileComponent {
 
   ngOnInit(){
 
+    this.getState();
+    this.getColor();
+    this.getRates();
+    this.getTypeVehicles();
+    this.getUtilityVehicle();
+    this.getClass();
+    this.getPlan();
+    this.getBroker();
+    this.getAccesories();
+    this.getMethodOfPayment();
+    this.getTakers();
+    this.setDefaultDates();
+    this.getTypeOfPay();
+    this.getUtility();
+
     fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
     .then((response) => response.json())
     .then(data => {
@@ -395,21 +410,6 @@ export class AutomobileComponent {
     }else{
       this.userBroker = true;
     }
-
-    this.getState();
-    this.getColor();
-    this.getRates();
-    this.getTypeVehicles();
-    this.getUtilityVehicle();
-    this.getClass();
-    this.getPlan();
-    this.getBroker();
-    this.getAccesories();
-    this.getMethodOfPayment();
-    this.getTakers();
-    this.setDefaultDates();
-    this.getTypeOfPay();
-    this.getUtility();
 
 
   }
