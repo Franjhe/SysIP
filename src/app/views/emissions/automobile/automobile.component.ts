@@ -334,10 +334,16 @@ export class AutomobileComponent {
                   const fano = params['fano'];
                   const cplan = params['cplan'];
                   const ctarifa = params['ctarifa_exceso'];
+                  const ccorredor = params['ccorredor'];
+                  if(ccorredor){
+                    console.log('askdjhaskjdhakjs')
+                    this.paymentButtons = true;
+                  }
                   this.ccotizacion = cotizacion
                   this.fano = fano
                   this.cplan = cplan
                   this.ctarifa = ctarifa
+
                 });
 
                 if(this.ccotizacion){
@@ -349,6 +355,23 @@ export class AutomobileComponent {
                   }else{
                     this.activateRate = false;
                   }
+                  this.today = new Date();
+                  const formattedDate = this.today.toISOString();
+                  
+                  this.receiptFormGroup.get('fdesde')?.setValue(formattedDate);
+              
+                  const fdesdeString = this.receiptFormGroup.get('fdesde')?.value;
+              
+                  if (fdesdeString) {
+                    const fdesde = new Date(fdesdeString);
+                    const fhasta = new Date(fdesde);
+              
+                    fhasta.setFullYear(fhasta.getFullYear() + 1);
+              
+                    const formattedFhasta = fhasta.toISOString();
+                    this.receiptFormGroup.get('fhasta')?.setValue(formattedFhasta)
+                  }
+              
                   this.searchQuotes();
                 }
               }
@@ -1241,10 +1264,13 @@ export class AutomobileComponent {
   }
 
   onCoverageChange() {
+    console.log(this.vehicleFormGroup.get('xcobertura')?.value)
     if(this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv'){
+      console.log('si PASA')
+      this.paymentButtons = true;
       this.helmet = false;
       this.activateInspection = false;
-      this.paymentButtons = true;
+      
       if(this.currentUser.data.crol == 7){
         this.paymentButtonManual = false;
       }else{
@@ -2183,7 +2209,6 @@ export class AutomobileComponent {
     let data = {
       ccotizacion: this.vehicleFormGroup.get('ccotizacion')?.value
     }
-
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/search-quote', data).subscribe((response: any) => {
       if(response.status){
         this.activateBrandList = false;
@@ -2192,6 +2217,8 @@ export class AutomobileComponent {
         this.personsFormGroup.get('xapellido')?.setValue(response.data.xapellido);
         this.personsFormGroup.get('email')?.setValue(response.data.email);
         this.vehicleFormGroup.get('xmarca')?.setValue(response.data.xmarca);
+        this.planFormGroup.get('xcorredor')?.setValue(response.data.xcorredor);
+        this.planFormGroup.get('xcorredor')?.disable()
         let eventB = {
           option: {
             value: this.vehicleFormGroup.get('xmarca')?.value
@@ -2208,14 +2235,15 @@ export class AutomobileComponent {
         this.vehicleFormGroup.get('xversion')?.setValue(response.data.xversion);
         this.vehicleFormGroup.get('npasajeros')?.setValue(response.data.npasajeros);
         this.vehicleFormGroup.get('xcobertura')?.setValue(response.data.xcobertura);
+        if(this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv'){
+          this.paymentButtons = true;
+        }
         this.vehicleFormGroup.get('xcobertura')?.disable();
         this.onCoverageChange()
         this.vehicleFormGroup.get('fano')?.setValue(response.data.fano);
         this.vehicleFormGroup.get('fano')?.disable();
         this.planFormGroup.get('cplan')?.setValue(response.data.cplan);
         this.planFormGroup.get('ccorredor')?.setValue(response.data.ccorredor);
-        this.planFormGroup.get('xcorredor')?.setValue(response.data.xcorredor);
-        this.planFormGroup.get('xcorredor')?.disable()
         let event = {
           option: {
             id: this.planFormGroup.get('cplan')?.value
@@ -2223,7 +2251,6 @@ export class AutomobileComponent {
         }
         this.onPlanSelection(event)
         this.montoTotal = response.data.mtotal_rcv
-        console.log(this.montoTotal)
       }
     })
   }

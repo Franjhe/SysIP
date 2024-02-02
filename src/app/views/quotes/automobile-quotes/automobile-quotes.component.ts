@@ -118,7 +118,7 @@ export class AutomobileQuotesComponent {
       this.cproductor = params['cproductor'];
     });
 
-    const storedSession = localStorage.getItem('userSession');
+    const storedSession = localStorage.getItem('user');
 
     fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
       .then((response) => response.json())
@@ -146,7 +146,7 @@ export class AutomobileQuotesComponent {
             }
           }
           let tokenString = JSON.stringify(token);
-          localStorage.setItem('userSession', tokenString);
+          localStorage.setItem('user', tokenString);
         
           if(storedSession){
             this.currentUser = JSON.parse(storedSession);
@@ -559,7 +559,8 @@ export class AutomobileQuotesComponent {
             cotizacion: this.cotizacion,
             fano: this.quotesForm.get('fano')?.value,
             cplan: this.plan,
-            ctarifa_exceso: this.quotesForm.get('ctarifa_exceso')?.value
+            ctarifa_exceso: this.quotesForm.get('ctarifa_exceso')?.value,
+            ccorredor: this.currentUser.data.ccorredor
           }
         };
 
