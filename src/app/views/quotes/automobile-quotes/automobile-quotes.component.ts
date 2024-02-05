@@ -117,7 +117,7 @@ export class AutomobileQuotesComponent {
       this.xcorredor = params['xcorredor'];
       this.cagencia = params['cagencia'];
       this.cproductor = params['cproductor'];
-      this.xcorreo_emisor = params['xcorreo'];
+      this.xcorreo_emisor = params['correo'];
     });
 
     const storedSession = localStorage.getItem('user');
@@ -128,7 +128,6 @@ export class AutomobileQuotesComponent {
         this.bcv = data.monitors.usd.price;
 
         if (this.cusuario) {
-          console.log('pasa por usuario php')
           let token = {
             status: true,
             message: "Usuario Autenticado",
@@ -163,7 +162,6 @@ export class AutomobileQuotesComponent {
             this.currentUser = JSON.parse(this.token);
           }
         }
-        console.log(this.currentUser)
         if (this.currentUser) {
           this.getBroker();
         }
@@ -470,6 +468,7 @@ export class AutomobileQuotesComponent {
 
 
         if(this.xcorreo_emisor){
+          console.log('holaaaa')
           let data2 = {
             name: this.quotesForm.get('xnombre')?.value?.toUpperCase(),
             last_name: this.quotesForm.get('xapellido')?.value?.toUpperCase(),
