@@ -79,6 +79,7 @@ export class AutomobileQuotesComponent {
   ccorredor!: any
   cagencia!: any
   cproductor!: any
+  xcorreo_emisor!: any
 
   quotesForm = this._formBuilder.group({
     xmarca: ['', Validators.required],
@@ -116,6 +117,7 @@ export class AutomobileQuotesComponent {
       this.xcorredor = params['xcorredor'];
       this.cagencia = params['cagencia'];
       this.cproductor = params['cproductor'];
+      this.xcorreo_emisor = params['xcorreo'];
     });
 
     const storedSession = localStorage.getItem('user');
@@ -465,6 +467,20 @@ export class AutomobileQuotesComponent {
         this.xcorredor = response.data.list.result[0].xcorredor
         this.xcorreocorredor = response.data.list.result[0].xcorreocorredor
         this.xtelefonocorredor = response.data.list.result[0].xtelefonocorredor
+
+
+        if(this.xcorreo_emisor){
+          let data2 = {
+            name: this.quotesForm.get('xnombre')?.value?.toUpperCase(),
+            last_name: this.quotesForm.get('xapellido')?.value?.toUpperCase(),
+            email: this.quotesForm.get('email')?.value?.toUpperCase(),
+            email_user: this.xcorreo_emisor
+          }
+          this.http.post('https://api.lamundialdeseguros.com/get_quote/', data2).subscribe((response: any) => {
+            console.log(response.status)
+          })
+        }
+
       }
     })
   }
