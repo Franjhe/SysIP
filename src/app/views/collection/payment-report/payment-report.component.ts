@@ -30,6 +30,7 @@ export class PaymentReportComponent {
   viewData : boolean = false
   viewBank : boolean = false
   paymentMix : boolean = false
+  Submit : boolean = false 
 
   usd : boolean = false
   pmovil : boolean = false
@@ -235,7 +236,7 @@ export class PaymentReportComponent {
   newPayment(): FormGroup {
     return this._formBuilder.group({
       cmoneda:'',
-      cbanco:'',
+      cbanco: 0,
       cbanco_destino: '',
       mpago: '',
       mpagoext: '',
@@ -434,78 +435,6 @@ export class PaymentReportComponent {
 
   }
 
-  validateMount(i : number ){
-    const creds = this.searchReceipt.get("transfer") as FormArray
-    const mountDeclare = creds.at(i).get('mpago')?.value
-
-    if(this.paymentMix){
-
-
-    }else{
-      if(creds.at(i).get('cmoneda')?.value == "$   "){
-
-        if(mountDeclare < this.mount ){
-          this.toast.open('El monto no puede ser menor al estimado de pago, valide su seleccion de recibos o ingrese el monto correcto', '', {
-            duration: 3000,
-            verticalPosition: 'top',
-            panelClass: ['error-toast']
-          }); 
-          
-          creds.at(i).get('mpago')?.setValue('')
-  
-        }
-  
-      }
-      if(creds.at(i).get('cmoneda')?.value == ""){
-  
-        creds.at(i).get('mpago')?.setValue('')
-  
-        this.toast.open('Debe seleccionar una moneda antes de proceder a registrar su monto', '', {
-          duration: 3000,
-          verticalPosition: 'top',
-          panelClass: ['error-toast']
-        }); 
-      }
-      if(creds.at(i).get('cmoneda')?.value == "BS  "){
-  
-        if(mountDeclare < this.mountBs ){
-          this.toast.open('El monto no puede ser menor al estimado de pago, valide su seleccion de recibos o ingrese el monto correcto', '', {
-            duration: 3000,
-            verticalPosition: 'top',
-            panelClass: ['error-toast']
-          }); 
-          
-          creds.at(i).get('mpago')?.setValue('')
-    
-        }
-  
-      }
-    }
-
-
-
-
-  }
-
-  validateCoin(i : number ){
-
-    const creds = this.searchReceipt.get("transfer") as FormArray
-
-    const mountDeclare = creds.at(i).get('cmoneda')?.value!
-
-    if(mountDeclare == '$' || mountDeclare == 'EUR' ){
-        this.viewBank = false 
-    } else {
-      this.viewBank = true 
-    }
-
-    if(creds.at(i).get('mpago')?.value){
-      creds.at(i).get('mpago')?.setValue('')
-    }
-
-  }
-
-
   onFileSelect(event : any , i : number){
 
     const file = event.target.files[0]
@@ -551,6 +480,7 @@ export class PaymentReportComponent {
   async onSubmit(){
 
     this.llenarlistas()
+    this.Submit = true
 
     const transfer = this.searchReceipt.get("transfer") as FormArray
 
@@ -590,7 +520,7 @@ export class PaymentReportComponent {
               if(transfer.at(i).get('cmoneda')?.value == "USD" ){
                 this.transferList.push({
                   cmoneda: transfer.value[i].cmoneda,
-                  cbanco: transfer.value[i].cbanco,
+                  cbanco: transfer.value[i]?.cbanco,
                   cbanco_destino: transfer.value[i].cbanco_destino,
                   mpago: this.mountBs,
                   mpagoext: this.mount,
@@ -607,7 +537,7 @@ export class PaymentReportComponent {
               else if(transfer.at(i).get('cmoneda')?.value == "Bs"){
                 this.transferList.push({
                   cmoneda: transfer.value[i].cmoneda,
-                  cbanco: transfer.value[i].cbanco,
+                  cbanco: transfer.value[i]?.cbanco,
                   cbanco_destino: transfer.value[i].cbanco_destino,
                   mpago: this.mountBs,
                   mpagoext: this.mount,
@@ -631,7 +561,6 @@ export class PaymentReportComponent {
             
                 }
             
-  
                 this.http.post(environment.apiUrl + '/api/v1/collection/create-report', reporData).subscribe( (response: any) => {
     
   
@@ -646,9 +575,6 @@ export class PaymentReportComponent {
           location.reload();
         }, 5000);
       }
-
-
-
  
     })          
         
