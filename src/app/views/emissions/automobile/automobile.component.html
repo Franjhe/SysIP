@@ -875,7 +875,7 @@
 
         <div class="d-flex flex-row-reverse" *ngIf="activateGroup">
           <div class="p-2">
-            <button mat-raised-button color="primary" (click)="onSubmitGroup()">Guardar</button>
+            <button mat-raised-button color="primary" (click)="Alert()">Guardar</button>
           </div>
         </div>
       </form>
@@ -974,4 +974,16 @@
   <div class="modal-footer">
     <button type="button" class="btn btn-primary" (click)="modal.close('result')">Aceptar</button>
   </div>
+</ng-template>
+
+<ng-template #Alerta let-dialogRef="dialogRef">
+  <mat-dialog-content>
+    <div>
+      <h1 class="text-center">¿Desea realizar esta Carga de Flota?</h1>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="center">
+    <button mat-button (click)="dialogRef.close('confirm')">Sí</button>
+    <button mat-button (click)="dialogRef.close('cancel')">No</button>
+  </mat-dialog-actions>
 </ng-template>

@@ -1,6 +1,6 @@
-import {Component, ViewChild  } from '@angular/core';
+import {Component, ViewChild, TemplateRef } from '@angular/core';
 import {FormBuilder, Validators, FormGroup, FormControl , FormArray} from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {from, Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
@@ -17,11 +17,13 @@ import { initUbii } from '@ubiipagos/boton-ubii-dc';
 import * as Papa from 'papaparse';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 
 interface CsvItem {
   IRIF: string;
   XCLIENTE: string;
   XRIF_CLIENTE: string;
+  ID_INMA: string;
   XNOMBRE: string;
   XAPELLIDO: string;
   ICEDULA: string;
@@ -40,7 +42,7 @@ interface CsvItem {
   XCOLOR: string;
   XCOBERTURA: string;
   MSUMA_ASEG: string;
-  PCASCO: number;
+  PCASCO: string;
   MPRIMA_BRUTA: string;
   MPRIMA_CASCO: string;
   PCATASTROFICO: string;
@@ -93,6 +95,7 @@ export class AutomobileComponent {
   @ViewChild('pickerHasta') pickerHasta!: MatDatepicker<Date>;
   @ViewChild('paymentModal') paymentModal: any;
   @ViewChild(MatPaginator) paginatorGroup!: MatPaginator;
+  @ViewChild('Alerta') alertConfirmation!: TemplateRef<any>;
   displayedColumnsGroup: string[] = ['xnombre', 'xapellido', 'xcedula', 'xmarca', 'xmodelo', 'xversion', 'xcobertura', 'fdesde', 'fhasta'];
   dataSource = new MatTableDataSource<any>([]);
   dataList: any[] = []; 
@@ -326,7 +329,9 @@ export class AutomobileComponent {
                private pdfGenerationService: PdfGenerationService,
                private snackBar: MatSnackBar,
                private cdr: ChangeDetectorRef,
-               private route: ActivatedRoute
+               private route: ActivatedRoute,
+               readonly dialog: MatDialog,
+               private router: Router,
                ) {
                 dateAdapter.setLocale('es');
                 this.route.queryParams.subscribe(params => {
@@ -2575,91 +2580,113 @@ export class AutomobileComponent {
   }
 
   onFileSelected(event: any): void {
-    console.log(this.receiptFormGroup.get('irecibo')?.value)
-    if(!this.receiptFormGroup.get('irecibo')?.value){
-      this.snackBar.open('Lo sentimos, para realizar la carga de archivo por favor seleccione el Tipo de Recibo', '', {
-        duration: 4000,
-      });
-    }else{
-      const file = event.target.files[0];
+    const tipoRecibo = this.receiptFormGroup.get('irecibo')?.value;
   
-      if (file) {
-        Papa.parse(file, {
-          header: true,
-          delimiter: ';',
-          quoteChar: '"',
-          complete: (result: any) => {
-            this.dataList = result.data.slice(0, result.data.length - 1).map((item: CsvItem) => ({
-              irif: item.IRIF,
-              xcliente: item.XCLIENTE,
-              xrif_cliente: item.XRIF_CLIENTE,
-              xnombre: item.XNOMBRE,
-              xapellido: item.XAPELLIDO,
-              icedula: item.ICEDULA,
-              xcedula: item.XCEDULA,
-              fnac: item.FNAC,
-              cmetodologiapago: item.CMETODOLOGIAPAGO,
-              cplan_rc: item.CPLAN_RC,
-              ctarifa_exceso: item.CTARIFA_EXCESO,
-              xserialcarroceria: item.XSERIALCARROCERIA,
-              xserialmotor: item.XSERIALMOTOR,
-              xplaca: item.XPLACA,
-              xmarca: item.XMARCA,
-              xmodelo: item.XMODELO,
-              xversion: item.XVERSION,
-              cano: item.CANO,
-              xcolor: item.XCOLOR,
-              xcobertura: item.XCOBERTURA,
-              msuma_aseg: item.MSUMA_ASEG,
-              pcasco: item.PCASCO,
-              mprima_bruta: item.MPRIMA_BRUTA,
-              mprima_casco: item.MPRIMA_CASCO,
-              pcatastrofico: item.PCATASTROFICO,
-              mcatastrofico: item.MCATASTROFICO,
-              pmotin: item.PMOTIN,
-              mmotin: item.MMOTIN,
-              msuma_blindaje: item.MSUMA_BLINDAJE,
-              pblindaje: item.PBLINDAJE,
-              mprima_blindaje: item.MPRIMA_BLINDAJE,
-              xdireccionfiscal: item.XDIRECCIONFISCAL,
-              xtelefono_emp: item.XTELEFONO_EMP,
-              email: item.EMAIL,
-              femision: item.FEMISION,
-              fdesde_pol: item.FDESDE_POL,
-              fhasta_pol: item.FHASTA_POL,
-              ncapacidad_p: item.NCAPACIDAD_P,
-              mcapacidad_c: item.MCAPACIDAD_C,
-              xuso: item.XUSO,
-              ccorredor: item.CCORREDOR,
-              cpais: item.CPAIS,
-              cestado: item.CESTADO,
-              cciudad: item.CCIUDAD,
-              cestatusgeneral: item.CESTATUSGENERAL,
-              cclasificacion: item.CCLASIFICACION,
-              xzona_postal: item.XZONA_POSTAL,
-            }));
-            
-            this.groupList = this.dataList;
-            this.dataSource = new MatTableDataSource<any>(this.groupList);
-            this.dataSource.paginator = this.paginatorGroup;
-            this.activateGroup = true;
-          },
-          error: (error: any) => {
-            console.error('Error al analizar el archivo CSV:', error);
-          }
-        });
-      }
+    if (!tipoRecibo) {
+      this.snackBar.open(`Lo sentimos, para realizar la carga de archivo por favor seleccione el Tipo de Recibo`, '', {
+        duration: 3000,
+      });
+      
+      // Restablecer la selección del archivo
+      event.target.value = null;
+      
+      return; // Detener el proceso si no se selecciona un Tipo de Recibo
     }
+  
+    const file = event.target.files[0];
+  
+    if (!file) {
+      return; // Detener el proceso si no se selecciona un archivo
+    }
+  
+    Papa.parse(file, {
+      header: true,
+      delimiter: ';',
+      quoteChar: '"',
+      complete: (result: any) => {
+        this.dataList = result.data.slice(0, result.data.length - 1).map((item: CsvItem) => ({
+          irif: item.IRIF,
+          xcliente: item.XCLIENTE,
+          xrif_cliente: item.XRIF_CLIENTE,
+          id_inma: parseInt(item.ID_INMA),
+          xnombre: item.XNOMBRE,
+          xapellido: item.XAPELLIDO,
+          icedula: item.ICEDULA,
+          xcedula: item.XCEDULA,
+          fnac: item.FNAC,
+          cmetodologiapago: parseInt(item.CMETODOLOGIAPAGO),
+          cplan_rc: parseInt(item.CPLAN_RC),
+          ctarifa_exceso: parseInt(item.CTARIFA_EXCESO),
+          xserialcarroceria: item.XSERIALCARROCERIA,
+          xserialmotor: item.XSERIALMOTOR,
+          xplaca: item.XPLACA,
+          xmarca: item.XMARCA,
+          xmodelo: item.XMODELO,
+          xversion: item.XVERSION,
+          cano: parseInt(item.CANO),
+          xcolor: item.XCOLOR,
+          xcobertura: item.XCOBERTURA,
+          msuma_aseg: parseFloat(item.MSUMA_ASEG.replace(',', '.')),
+          pcasco: parseFloat(item.PCASCO.replace(',', '.')),
+          mprima_bruta: parseFloat(item.MPRIMA_BRUTA.replace(',', '.')),
+          mprima_casco: parseFloat(item.MPRIMA_CASCO.replace(',', '.')),
+          pcatastrofico: parseFloat(item.PCATASTROFICO.replace(',', '.')),
+          mcatastrofico: parseFloat(item.MCATASTROFICO.replace(',', '.')),
+          pmotin: parseFloat(item.PMOTIN.replace(',', '.')),
+          mmotin: parseFloat(item.MMOTIN.replace(',', '.')),
+          msuma_blindaje: parseFloat(item.MSUMA_BLINDAJE.replace(',', '.')),
+          pblindaje: parseFloat(item.PBLINDAJE.replace(',', '.')),
+          mprima_blindaje: parseFloat(item.MPRIMA_BLINDAJE.replace(',', '.')),
+          xdireccionfiscal: item.XDIRECCIONFISCAL,
+          xtelefono_emp: item.XTELEFONO_EMP,
+          email: item.EMAIL,
+          fdesde_pol: item.FDESDE_POL,
+          fhasta_pol: item.FHASTA_POL,
+          ncapacidad_p: parseInt(item.NCAPACIDAD_P),
+          xuso: item.XUSO,
+          ccorredor: parseInt(item.CCORREDOR),
+          cpais: parseInt(item.CPAIS),
+          cestado: parseInt(item.CESTADO),
+          cciudad: parseInt(item.CCIUDAD),
+          cclasificacion: item.CCLASIFICACION,
+          xzona_postal: item.XZONA_POSTAL,
+        }));
+          
+        this.groupList = this.dataList;
+        this.dataSource = new MatTableDataSource<any>(this.groupList);
+        this.dataSource.paginator = this.paginatorGroup;
+        this.activateGroup = true;
+      },
+      error: (error: any) => {
+        console.error('Error al analizar el archivo CSV:', error);
+      }
+    });
   }
   
+  Alert(): void {
+    const dialogRef = this.dialog.open(this.alertConfirmation);
+  
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(result)
+      if (result === 'confirm') {
+        this.onSubmitGroup();
+      }
+    });
+  }
 
   onSubmitGroup(){
     let data = {
       group: this.groupList
     }
-
+    console.log(data)
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/group', data).subscribe((response: any) => {
-
+      if(response.status){
+        if (window.confirm("¡La Flota se ha cargado exitosamente!... ¿Deseas Consultar esa Flota?")) {
+          this.router.navigate(['/policy/automobile-policy']);
+        } else {
+          location.reload();
+        }
+      }
     })
   }
 }
