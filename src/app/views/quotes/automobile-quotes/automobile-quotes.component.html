@@ -229,9 +229,9 @@
               </div>
 
             </div>
-            <!-- <div class="col-md-2" style="margin-left: 134px;">
+            <div class="col-md-2" style="margin-left: 134px;">
               <button mat-flat-button color="primary" (click)="updateSA()">Modificar S.A</button>
-            </div> -->
+            </div>
           </div>
 
           <div class="col-4" style="margin-bottom: 67px;" *ngIf="loading">
@@ -358,7 +358,7 @@
         </div>
       </div>
       <div class="col-12 py-3" style="text-align: end;">
-        <button mat-raised-button color="primary">Guardar</button>
+        <button mat-raised-button color="primary" (click)="modal.close('result')">Guardar</button>
       </div>
     </form>
   </div>

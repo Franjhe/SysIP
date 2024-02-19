@@ -475,7 +475,6 @@ export class AutomobileQuotesComponent {
 
 
         if(this.xcorreo_emisor){
-          console.log('holaaaa')
           let data2 = {
             name: this.quotesForm.get('xnombre')?.value?.toUpperCase(),
             last_name: this.quotesForm.get('xapellido')?.value?.toUpperCase(),
@@ -513,12 +512,20 @@ export class AutomobileQuotesComponent {
 
   updateSA(){
     const modalRef = this.modalService.open(this.updateSAModal, { centered: true, size: 'lg' });
+
+    modalRef.result.then((result) => {
+      if (result === 'result') {
+        console.log(this.quotesList)
+      }
+    }).catch((reason) => {
+
+    });
   }
 
   getDiscount() {
     const descuento = this.quotesForm.get('pdescuento')?.value;
     const sum_aseg = this.quotesForm.get('msuma_aseg')?.value
-    console.log(descuento)
+
     if (descuento) {
         if (typeof descuento === 'number') {
             // Suma asegurada original
@@ -537,6 +544,7 @@ export class AutomobileQuotesComponent {
             const valorTotal: number = Math.round(nuevaSumaAsegurada * 100) / 100;
 
             this.quotesForm.get('msuma_aseg')?.setValue(valorTotal.toString())
+            this.quotesForm.get('precarga')?.disable();
             this.descuento = valorTotal
             
             return valorTotal; // O puedes retornar este valor si lo necesitas en otro lugar de tu código
@@ -544,11 +552,9 @@ export class AutomobileQuotesComponent {
             return 0; // Retorna un valor predeterminado en caso de que el descuento no sea un número
         }
     } else {
-        if(this.quotesForm.get('precarga')?.value){
-          this.quotesForm.get('msuma_aseg')?.setValue(this.recargo)
-        }else{
-          this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
-        }
+        this.quotesForm.get('precarga')?.enable();
+        this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+
         return 0; // Retorna un valor predeterminado en caso de que no se proporcione un valor para el descuento
     }
     
@@ -580,6 +586,7 @@ export class AutomobileQuotesComponent {
             const valorTotal: number = Math.round(nuevaSumaAsegurada * 100) / 100;
 
             this.quotesForm.get('msuma_aseg')?.setValue(valorTotal.toString())
+            this.quotesForm.get('pdescuento')?.disable();
             this.recargo = valorTotal
             
             return valorTotal; // O puedes retornar este valor si lo necesitas en otro lugar de tu código
@@ -587,11 +594,9 @@ export class AutomobileQuotesComponent {
             return 0; // Retorna un valor predeterminado en caso de que el recarga no sea un número
         }
     } else {
-        if(this.quotesForm.get('pdescuento')?.value){
-          this.quotesForm.get('msuma_aseg')?.setValue(this.descuento)
-        }else{
-          this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
-        }
+        this.quotesForm.get('pdescuento')?.enable();
+        this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+
         return 0; // Retorna un valor predeterminado en caso de que no se proporcione un valor para el recarga
     }
   }
