@@ -7,11 +7,13 @@ import { EmissionsRoutingModule } from './emissions-routing.module';
 import { AutomobileComponent } from './automobile/automobile.component';
 import { MaterialExampleModule } from './../../material.module'
 import { ReactiveFormsModule } from '@angular/forms';
+import { SuretyComponent } from './surety/surety.component';
 
 
 @NgModule({
   declarations: [
-    AutomobileComponent
+    AutomobileComponent,
+    SuretyComponent
   ],
   imports: [
     CommonModule,

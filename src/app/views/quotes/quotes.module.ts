@@ -7,6 +7,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AutomobileQuotesComponent } from './automobile-quotes/automobile-quotes.component';
 import { InquiriesComponent } from './inquiries/inquiries.component';
 import { AutomobileInquiriesComponent } from './inquiries/automobile-inquiries/automobile-inquiries.component';
+import { SuretyQuotesComponent } from './surety-quotes/surety-quotes.component';
 
 
 @NgModule({
@@ -14,6 +15,7 @@ import { AutomobileInquiriesComponent } from './inquiries/automobile-inquiries/a
     AutomobileQuotesComponent,
     InquiriesComponent,
     AutomobileInquiriesComponent,
+    SuretyQuotesComponent,
   ],
   imports: [
     CommonModule,

@@ -17,6 +17,7 @@ import { PdfGenerationService } from '../../../_services/ServicePDF'
 export class AutomobileQuotesComponent {
 
   @ViewChild("coverageModal") private coverageModal!: TemplateRef<any>;
+  @ViewChild("updateSAModal") private updateSAModal!: TemplateRef<any>;
 
   isActive: boolean = false;
   public isYearValid: boolean = false;
@@ -80,6 +81,9 @@ export class AutomobileQuotesComponent {
   cagencia!: any
   cproductor!: any
   xcorreo_emisor!: any
+  sumaAseguradaInicial!: any
+  descuento!: any;
+  recargo!: any
 
   quotesForm = this._formBuilder.group({
     xmarca: ['', Validators.required],
@@ -98,6 +102,8 @@ export class AutomobileQuotesComponent {
     xcorredor: [''],
     pcasco: [''],
     pperdida: [''],
+    pdescuento: [''],
+    precarga: [''],
   });
 
   constructor(private _formBuilder: FormBuilder,
@@ -327,6 +333,7 @@ export class AutomobileQuotesComponent {
         this.activateRate = false;
       }
     }
+    this.sumaAseguradaInicial = selectedVersion.msum;
   }
 
   getBroker() {
@@ -502,6 +509,91 @@ export class AutomobileQuotesComponent {
       xcorreo: this.quotesForm.get('email')?.value
     }
     this.searchCoverages();
+  }
+
+  updateSA(){
+    const modalRef = this.modalService.open(this.updateSAModal, { centered: true, size: 'lg' });
+  }
+
+  getDiscount() {
+    const descuento = this.quotesForm.get('pdescuento')?.value;
+    const sum_aseg = this.quotesForm.get('msuma_aseg')?.value
+    console.log(descuento)
+    if (descuento) {
+        if (typeof descuento === 'number') {
+            // Suma asegurada original
+            const sumaAseguradaOriginal: number = sum_aseg ? parseFloat(sum_aseg) : 0;
+            
+            // Convertir el porcentaje de descuento a su equivalente decimal
+            const porcentajeDecimal: number = descuento / 100;
+            
+            // Calcular el descuento
+            const descuentoCalculado: number = sumaAseguradaOriginal * porcentajeDecimal;
+            
+            // Calcular la nueva suma asegurada después del descuento
+            const nuevaSumaAsegurada: number = sumaAseguradaOriginal - descuentoCalculado;
+            
+            // Redondear el resultado a 2 decimales
+            const valorTotal: number = Math.round(nuevaSumaAsegurada * 100) / 100;
+
+            this.quotesForm.get('msuma_aseg')?.setValue(valorTotal.toString())
+            this.descuento = valorTotal
+            
+            return valorTotal; // O puedes retornar este valor si lo necesitas en otro lugar de tu código
+        } else {
+            return 0; // Retorna un valor predeterminado en caso de que el descuento no sea un número
+        }
+    } else {
+        if(this.quotesForm.get('precarga')?.value){
+          this.quotesForm.get('msuma_aseg')?.setValue(this.recargo)
+        }else{
+          this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+        }
+        return 0; // Retorna un valor predeterminado en caso de que no se proporcione un valor para el descuento
+    }
+    
+  }
+
+  getRecharge(){
+    const recarga = this.quotesForm.get('precarga')?.value;
+    const sum_aseg = this.quotesForm.get('msuma_aseg')?.value
+    
+    if (recarga) {
+        if (typeof recarga === 'number') {
+            if(recarga == 0 || recarga == null){
+              console.log('hola')
+              this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+            }
+            // Suma asegurada original
+            const sumaAseguradaOriginal: number = sum_aseg ? parseFloat(sum_aseg) : 0;
+            
+            // Convertir el porcentaje de recarga a su equivalente decimal
+            const porcentajeDecimal: number = recarga / 100;
+            
+            // Calcular el recarga
+            const recargaCalculado: number = sumaAseguradaOriginal * porcentajeDecimal;
+            
+            // Calcular la nueva suma asegurada después del recarga
+            const nuevaSumaAsegurada: number = sumaAseguradaOriginal + recargaCalculado;
+            
+            // Redondear el resultado a 2 decimales
+            const valorTotal: number = Math.round(nuevaSumaAsegurada * 100) / 100;
+
+            this.quotesForm.get('msuma_aseg')?.setValue(valorTotal.toString())
+            this.recargo = valorTotal
+            
+            return valorTotal; // O puedes retornar este valor si lo necesitas en otro lugar de tu código
+        } else {
+            return 0; // Retorna un valor predeterminado en caso de que el recarga no sea un número
+        }
+    } else {
+        if(this.quotesForm.get('pdescuento')?.value){
+          this.quotesForm.get('msuma_aseg')?.setValue(this.descuento)
+        }else{
+          this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+        }
+        return 0; // Retorna un valor predeterminado en caso de que no se proporcione un valor para el recarga
+    }
   }
 
   searchCoverages() {

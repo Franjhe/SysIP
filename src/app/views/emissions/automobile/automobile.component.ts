@@ -409,20 +409,22 @@ export class AutomobileComponent {
     })
 
     this.today = new Date();
-    const formattedDate = this.today.toISOString();
+    const formattedDate = this.today.toISOString().split('T')[0]; // Obtener solo la parte de la fecha sin la hora
     
     this.receiptFormGroup.get('fdesde')?.setValue(formattedDate);
-
+    
     const fdesdeString = this.receiptFormGroup.get('fdesde')?.value;
-
+    
     if (fdesdeString) {
       const fdesde = new Date(fdesdeString);
       const fhasta = new Date(fdesde);
-
+    
       fhasta.setFullYear(fhasta.getFullYear() + 1);
-
-      const formattedFhasta = fhasta.toISOString();
-      this.receiptFormGroup.get('fhasta')?.setValue(formattedFhasta)
+    
+      const formattedFhasta = fhasta.toISOString().split('T')[0]; // Obtener solo la parte de la fecha sin la hora
+      this.receiptFormGroup.get('fhasta')?.setValue(formattedFhasta);
+      console.log(this.receiptFormGroup.get('fdesde')?.value);
+      console.log(this.receiptFormGroup.get('fhasta')?.value);
     }
 
     this.token = localStorage.getItem('user');

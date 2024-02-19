@@ -227,7 +227,11 @@
                 </div>
 
               </div>
+
             </div>
+            <!-- <div class="col-md-2" style="margin-left: 134px;">
+              <button mat-flat-button color="primary" (click)="updateSA()">Modificar S.A</button>
+            </div> -->
           </div>
 
           <div class="col-4" style="margin-bottom: 67px;" *ngIf="loading">
@@ -325,5 +329,37 @@
       <button mat-raised-button color="primary" (click)="onQuotePdf()">Comparativa</button>
     </div>
 
+  </div>
+</ng-template>
+
+<ng-template #updateSAModal let-modal>
+  <div class="modal-body">
+    <form [formGroup]="quotesForm">
+      <h1 class="text-center">Modificacion de Suma Asegurada</h1>
+      <hr>
+      <div class="row">
+        <div class="col-4">
+          <div class="form-outline">
+            <label class="form-label required">Porcentaje del Descuento</label>
+            <input type="number" formControlName="pdescuento" class="form-control form-control-lg" (change)="getDiscount()" />
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="form-outline">
+            <label class="form-label required">Porcentaje de Recarga</label>
+            <input type="number" formControlName="precarga" class="form-control form-control-lg" (change)="getRecharge()" />
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="form-outline">
+            <label class="form-label required">Suma Asegurada</label>
+            <input type="number" formControlName="msuma_aseg" class="form-control form-control-lg" />
+          </div>
+        </div>
+      </div>
+      <div class="col-12 py-3" style="text-align: end;">
+        <button mat-raised-button color="primary">Guardar</button>
+      </div>
+    </form>
   </div>
 </ng-template>
