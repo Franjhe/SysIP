@@ -515,29 +515,86 @@ export class AutomobileQuotesComponent {
   
     modalRef.result.then((result) => {
       if (result === 'result') {
-        this.quotesList.forEach(quote => {
-            // Realizar los cálculos necesarios para cada objeto
-            let mtotalAmpliaNuevo = parseFloat(quote.mtotal_amplia) - parseFloat(quote.mtotal_rcv);
-            let mtotalPerdidaNuevo = parseFloat(quote.mtotal_perdida) - parseFloat(quote.mtotal_rcv);
-
-            console.log(mtotalAmpliaNuevo)
-    
-            // Restar el 10%
-            mtotalAmpliaNuevo *= 0.9;
-            mtotalPerdidaNuevo *= 0.9;
-    
-            // Asignar los nuevos valores al objeto original
-            quote.mtotal_amplia = mtotalAmpliaNuevo.toFixed(2);
-            quote.mtotal_perdida = mtotalPerdidaNuevo.toFixed(2);
+        let recarga = this.quotesForm.get('precarga')?.value
+        let descuento = this.quotesForm.get('pdescuento')?.value
+        if(recarga){
+          this.quotesList.forEach(quote => {
+            const recargaPorcentaje = parseFloat(recarga || '');
+            const recargaDecimal = recargaPorcentaje / 100;
+        
+            const mtotal_rcv = parseFloat(quote.mtotal_rcv);
+            const mtotal_amplia = parseFloat(quote.mtotal_amplia);
+            const mtotal_perdida = parseFloat(quote.mtotal_perdida);
+        
+            // Comprobación de valores numéricos
+            if (!isNaN(mtotal_rcv) && !isNaN(mtotal_amplia) && !isNaN(mtotal_perdida)) {
+                // Realizar los cálculos necesarios para cada objeto
+                let mtotalAmpliaNuevo = mtotal_amplia - mtotal_rcv;
+                let mtotalPerdidaNuevo = mtotal_perdida - mtotal_rcv;
+        
+                // Aplicar el descuento al resultado de la resta
+                mtotalAmpliaNuevo *= (1 + recargaDecimal);
+                mtotalPerdidaNuevo *= (1 + recargaDecimal);
+        
+                // Sumar nuevamente mtotal_rcv al resultado del descuento
+                let mtotalamplia = mtotalAmpliaNuevo + mtotal_rcv;
+                let mtotalperdida = mtotalPerdidaNuevo + mtotal_rcv;
+        
+                // Asignar los nuevos valores al objeto original
+                quote.mtotal_amplia = mtotalamplia.toFixed(2);
+                quote.mtotal_perdida = mtotalperdida.toFixed(2);
+            }
         });
-    
-        // Imprimir las cotizaciones actualizadas en la consola
-        console.log(this.quotesList);
+        }else if(descuento){
+          this.quotesList.forEach(quote => {
+            const descuentoPorcentaje = parseFloat(descuento || '');
+            const descuentoDecimal = descuentoPorcentaje / 100;
+        
+            const mtotal_rcv = parseFloat(quote.mtotal_rcv);
+            const mtotal_amplia = parseFloat(quote.mtotal_amplia);
+            const mtotal_perdida = parseFloat(quote.mtotal_perdida);
+        
+            // Comprobación de valores numéricos
+            if (!isNaN(mtotal_rcv) && !isNaN(mtotal_amplia) && !isNaN(mtotal_perdida)) {
+                // Realizar los cálculos necesarios para cada objeto
+                let mtotalAmpliaNuevo = mtotal_amplia - mtotal_rcv;
+                let mtotalPerdidaNuevo = mtotal_perdida - mtotal_rcv;
+        
+                // Aplicar el descuento al resultado de la resta
+                mtotalAmpliaNuevo *= (1 - descuentoDecimal);
+                mtotalPerdidaNuevo *= (1 - descuentoDecimal);
+        
+                // Sumar nuevamente mtotal_rcv al resultado del descuento
+                let mtotalamplia = mtotalAmpliaNuevo + mtotal_rcv;
+                let mtotalperdida = mtotalPerdidaNuevo + mtotal_rcv;
+        
+                // Asignar los nuevos valores al objeto original
+                quote.mtotal_amplia = mtotalamplia.toFixed(2);
+                quote.mtotal_perdida = mtotalperdida.toFixed(2);
+            }
+          });
+        }else{
+          this.quotesList.forEach(quote => {
+            const mtotal_rcv = parseFloat(quote.mtotal_rcv);
+            const tasa_amplia = parseFloat(quote.pcobertura_amplia);
+            const tasa_perdida = parseFloat(quote.pperdida_total);
+            const suma_aseg = parseFloat(this.quotesForm.get('msuma_aseg')?.value || '');
+
+            const calculoCA = suma_aseg * tasa_amplia / 100;
+            const calculoPE = suma_aseg * tasa_perdida / 100;
+
+            const sumaCA = calculoCA + mtotal_rcv;
+            const sumaPE = calculoPE + mtotal_rcv;
+
+            quote.mtotal_amplia = sumaCA.toFixed(2);
+            quote.mtotal_perdida = sumaPE.toFixed(2);
+          })
+        }
       }
     }).catch((reason) => {
       // Manejar errores aquí
     });
-  }
+}
 
   getDiscount() {
     const descuento = this.quotesForm.get('pdescuento')?.value;
@@ -545,26 +602,26 @@ export class AutomobileQuotesComponent {
 
     if (descuento) {
         if (typeof descuento === 'number') {
-            // Suma asegurada original
-            const sumaAseguradaOriginal: number = sum_aseg ? parseFloat(sum_aseg) : 0;
+            // // Suma asegurada original
+            // const sumaAseguradaOriginal: number = sum_aseg ? parseFloat(sum_aseg) : 0;
             
-            // Convertir el porcentaje de descuento a su equivalente decimal
-            const porcentajeDecimal: number = descuento / 100;
+            // // Convertir el porcentaje de descuento a su equivalente decimal
+            // const porcentajeDecimal: number = descuento / 100;
             
-            // Calcular el descuento
-            const descuentoCalculado: number = sumaAseguradaOriginal * porcentajeDecimal;
+            // // Calcular el descuento
+            // const descuentoCalculado: number = sumaAseguradaOriginal * porcentajeDecimal;
             
-            // Calcular la nueva suma asegurada después del descuento
-            const nuevaSumaAsegurada: number = sumaAseguradaOriginal - descuentoCalculado;
+            // // Calcular la nueva suma asegurada después del descuento
+            // const nuevaSumaAsegurada: number = sumaAseguradaOriginal - descuentoCalculado;
             
-            // Redondear el resultado a 2 decimales
-            const valorTotal: number = Math.round(nuevaSumaAsegurada * 100) / 100;
+            // // Redondear el resultado a 2 decimales
+            // const valorTotal: number = Math.round(nuevaSumaAsegurada * 100) / 100;
 
-            this.quotesForm.get('msuma_aseg')?.setValue(valorTotal.toString())
-            this.quotesForm.get('precarga')?.disable();
-            this.descuento = valorTotal
-            
-            return valorTotal; // O puedes retornar este valor si lo necesitas en otro lugar de tu código
+            // 
+            // this.quotesForm.get('precarga')?.disable();
+            // this.descuento = valorTotal
+            this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+            return this.sumaAseguradaInicial; // O puedes retornar este valor si lo necesitas en otro lugar de tu código
         } else {
             return 0; // Retorna un valor predeterminado en caso de que el descuento no sea un número
         }
@@ -587,26 +644,26 @@ export class AutomobileQuotesComponent {
               console.log('hola')
               this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
             }
-            // Suma asegurada original
-            const sumaAseguradaOriginal: number = sum_aseg ? parseFloat(sum_aseg) : 0;
+            // // Suma asegurada original
+            // const sumaAseguradaOriginal: number = sum_aseg ? parseFloat(sum_aseg) : 0;
             
-            // Convertir el porcentaje de recarga a su equivalente decimal
-            const porcentajeDecimal: number = recarga / 100;
+            // // Convertir el porcentaje de recarga a su equivalente decimal
+            // const porcentajeDecimal: number = recarga / 100;
             
-            // Calcular el recarga
-            const recargaCalculado: number = sumaAseguradaOriginal * porcentajeDecimal;
+            // // Calcular el recarga
+            // const recargaCalculado: number = sumaAseguradaOriginal * porcentajeDecimal;
             
-            // Calcular la nueva suma asegurada después del recarga
-            const nuevaSumaAsegurada: number = sumaAseguradaOriginal + recargaCalculado;
+            // // Calcular la nueva suma asegurada después del recarga
+            // const nuevaSumaAsegurada: number = sumaAseguradaOriginal + recargaCalculado;
             
-            // Redondear el resultado a 2 decimales
-            const valorTotal: number = Math.round(nuevaSumaAsegurada * 100) / 100;
+            // // Redondear el resultado a 2 decimales
+            // const valorTotal: number = Math.round(nuevaSumaAsegurada * 100) / 100;
 
-            this.quotesForm.get('msuma_aseg')?.setValue(valorTotal.toString())
+            this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
             this.quotesForm.get('pdescuento')?.disable();
-            this.recargo = valorTotal
+            this.recargo = this.sumaAseguradaInicial
             
-            return valorTotal; // O puedes retornar este valor si lo necesitas en otro lugar de tu código
+            return this.sumaAseguradaInicial; // O puedes retornar este valor si lo necesitas en otro lugar de tu código
         } else {
             return 0; // Retorna un valor predeterminado en caso de que el recarga no sea un número
         }
