@@ -510,15 +510,32 @@ export class AutomobileQuotesComponent {
     this.searchCoverages();
   }
 
-  updateSA(){
+  updateSA() {
     const modalRef = this.modalService.open(this.updateSAModal, { centered: true, size: 'lg' });
-
+  
     modalRef.result.then((result) => {
       if (result === 'result') {
-        console.log(this.quotesList)
+        this.quotesList.forEach(quote => {
+            // Realizar los cálculos necesarios para cada objeto
+            let mtotalAmpliaNuevo = parseFloat(quote.mtotal_amplia) - parseFloat(quote.mtotal_rcv);
+            let mtotalPerdidaNuevo = parseFloat(quote.mtotal_perdida) - parseFloat(quote.mtotal_rcv);
+
+            console.log(mtotalAmpliaNuevo)
+    
+            // Restar el 10%
+            mtotalAmpliaNuevo *= 0.9;
+            mtotalPerdidaNuevo *= 0.9;
+    
+            // Asignar los nuevos valores al objeto original
+            quote.mtotal_amplia = mtotalAmpliaNuevo.toFixed(2);
+            quote.mtotal_perdida = mtotalPerdidaNuevo.toFixed(2);
+        });
+    
+        // Imprimir las cotizaciones actualizadas en la consola
+        console.log(this.quotesList);
       }
     }).catch((reason) => {
-
+      // Manejar errores aquí
     });
   }
 
