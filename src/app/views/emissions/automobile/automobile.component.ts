@@ -693,21 +693,7 @@ export class AutomobileComponent {
     const fanoControl = this.vehicleFormGroup.get('fano');
     
     if (fanoControl && fanoControl.value) {
-      const fanoValue = parseInt(fanoControl.value, 10);
-      
-      if (fanoValue > 2021) {
-        this.snackBar.open(`No puedes colocar un año mayor al 2021. Por favor, vuelve a intentarlo`, '', {
-          duration: 5000,
-        });
-        this.vehicleFormGroup.get('fano')?.setValue('')
-      }else if(fanoValue < 1980){
-        this.snackBar.open(`No puedes colocar un año menor a 1980. Por favor, vuelve a intentarlo`, '', {
-          duration: 5000,
-        });
-        this.vehicleFormGroup.get('fano')?.setValue('')
-      }else{
-        this.getBrand()
-      }
+      this.getBrand()
     }
   }
 
