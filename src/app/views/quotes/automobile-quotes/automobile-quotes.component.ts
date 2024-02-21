@@ -545,7 +545,8 @@ export class AutomobileQuotesComponent {
                 quote.mtotal_amplia = mtotalamplia.toFixed(2);
                 quote.mtotal_perdida = mtotalperdida.toFixed(2);
             }
-        });
+          });
+          this.updatePremiums()
         }else if(descuento){
           this.quotesList.forEach(quote => {
             const descuentoPorcentaje = parseFloat(descuento || '');
@@ -574,6 +575,7 @@ export class AutomobileQuotesComponent {
                 quote.mtotal_perdida = mtotalperdida.toFixed(2);
             }
           });
+          this.updatePremiums()
         }else{
           this.quotesList.forEach(quote => {
             const mtotal_rcv = parseFloat(quote.mtotal_rcv);
@@ -590,6 +592,7 @@ export class AutomobileQuotesComponent {
             quote.mtotal_amplia = sumaCA.toFixed(2);
             quote.mtotal_perdida = sumaPE.toFixed(2);
           })
+          this.updatePremiums()
         }
       }
     }).catch((reason) => {
@@ -674,6 +677,20 @@ export class AutomobileQuotesComponent {
 
         return 0; // Retorna un valor predeterminado en caso de que no se proporcione un valor para el recarga
     }
+  }
+
+  updatePremiums(){
+    console.log()
+    let data = {
+      ccotizacion: this.cotizacion,
+      quotes: this.quotesList,
+      msuma_aseg: this.quotesForm.get('msuma_aseg')?.value
+    }
+    this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/update-premiums', data).subscribe((response: any) => {
+      if(response.status){
+        console.log('fino señores')
+      }
+    })
   }
 
   searchCoverages() {
