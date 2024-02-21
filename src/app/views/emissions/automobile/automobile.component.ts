@@ -2615,8 +2615,6 @@ export class AutomobileComponent {
           xcolor: item.XCOLOR,
           xcobertura: item.XCOBERTURA,
           msuma_aseg: parseFloat(item.MSUMA_ASEG.replace(',', '.')),
-          mcatastrofico: parseFloat(item.MCATASTROFICO.replace(',', '.')),
-          mmotin: parseFloat(item.MMOTIN.replace(',', '.')),
           msuma_blindaje: parseFloat(item.MSUMA_BLINDAJE.replace(',', '.')),
           xdireccionfiscal: item.XDIRECCIONFISCAL,
           xtelefono_emp: item.XTELEFONO_EMP,
