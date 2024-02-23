@@ -61,6 +61,7 @@ export class AutomobileQuotesComponent {
   bamplia: boolean = false;
   bperdida: boolean = false;
   tasas: boolean = false;
+  notUpdate: boolean = false;
 
   cotizacion!: any;
   nombreCompleto!: any;
@@ -473,6 +474,12 @@ export class AutomobileQuotesComponent {
         this.xcorredor = response.data.list.result[0].xcorredor
         this.xcorreocorredor = response.data.list.result[0].xcorreocorredor
         this.xtelefonocorredor = response.data.list.result[0].xtelefonocorredor
+      
+        if(this.currentUser.data.ccorredor){
+          this.notUpdate = false;
+        }else{
+          this.notUpdate = true;
+        }
 
 
         if(this.xcorreo_emisor){
@@ -622,7 +629,7 @@ export class AutomobileQuotesComponent {
             // const valorTotal: number = Math.round(nuevaSumaAsegurada * 100) / 100;
 
             // 
-            // this.quotesForm.get('precarga')?.disable();
+            this.quotesForm.get('precarga')?.disable();
             // this.descuento = valorTotal
             this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
             return this.sumaAseguradaInicial; // O puedes retornar este valor si lo necesitas en otro lugar de tu código
@@ -645,7 +652,6 @@ export class AutomobileQuotesComponent {
     if (recarga) {
         if (typeof recarga === 'number') {
             if(recarga == 0 || recarga == null){
-              console.log('hola')
               this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
             }
             // // Suma asegurada original
