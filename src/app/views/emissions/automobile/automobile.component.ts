@@ -812,7 +812,6 @@ export class AutomobileComponent {
           const selectedValue = this.vehicleFormGroup.get('xversion')?.value;
           const selectedVersion = this.versionList.find(version => version.value === selectedValue);
           if (selectedVersion) {
-            console.log(selectedVersion)
             this.vehicleFormGroup.get('xversion')?.setValue(selectedVersion.value);
             this.vehicleFormGroup.get('npasajeros')?.setValue(selectedVersion.npasajero);
             this.vehicleFormGroup.get('cclasificacion')?.setValue(selectedVersion.cclasificacion);
@@ -868,6 +867,7 @@ export class AutomobileComponent {
       this.vehicleFormGroup.get('xversion')?.setValue(selectedVersion.value);
       this.vehicleFormGroup.get('npasajeros')?.setValue(selectedVersion.npasajero);
       this.vehicleFormGroup.get('cclasificacion')?.setValue(selectedVersion.cclasificacion);
+      this.searchRates();
       this.vehicleFormGroup.get('id_inma')?.setValue(selectedVersion.id_inma);
       this.vehicleFormGroup.get('xtipovehiculo')?.setValue(selectedVersion.xtipovehiculo);
       this.vehicleFormGroup.get('ctarifa_exceso')?.setValue(selectedVersion.ctarifa_exceso);
@@ -1062,6 +1062,18 @@ export class AutomobileComponent {
     const selectedValue = event.option.value;
     const selectedUtility = this.utilityList.find(utility => utility.value === selectedValue);
     this.vehicleFormGroup.get('xuso')?.setValue(selectedUtility.value);
+  }
+
+  searchRates(){
+    let data = {
+      cano: this.vehicleFormGroup.get('fano')?.value,
+      xclase: this.vehicleFormGroup.get('cclasificacion')?.value,
+      xmarca: this.vehicleFormGroup.get('xmarca')?.value,
+      xmodelo: this.vehicleFormGroup.get('xmodelo')?.value,
+      xversion: this.vehicleFormGroup.get('xversion')?.value,
+    }
+    console.log(data)
+    this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/search-rates', data).subscribe((response: any) => {})
   }
 
   getClass(){
