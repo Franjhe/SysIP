@@ -297,7 +297,7 @@
                 <div class="col-3">
                   <mat-form-field class="example-full-width">
                     <mat-label>Serial de Motor</mat-label>
-                    <input matInput placeholder="Serial de Motor" formControlName="xserialmotor" [maxlength]="17" required (input)="valueSerialMotor($event)">
+                    <input matInput placeholder="Serial de Motor" formControlName="xserialmotor" [maxlength]="17" (input)="valueSerialMotor($event)">
                   </mat-form-field>
                 </div>
                 <div class="col-3">
@@ -305,8 +305,8 @@
                     <mat-label>Coberturas</mat-label>
                     <mat-select formControlName="xcobertura" (selectionChange)="onCoverageChange()">
                       <mat-option value="Rcv">RCV</mat-option>
-                      <mat-option value="Cobertura Amplia" *ngIf="userBroker">COBERTURA AMPLIA</mat-option>
-                      <mat-option value="Perdida Total" *ngIf="userBroker">PERDIDA TOTAL</mat-option>
+                      <mat-option value="Cobertura Amplia" *ngIf="userBroker && casco">COBERTURA AMPLIA</mat-option>
+                      <mat-option value="Perdida Total" *ngIf="userBroker && casco">PERDIDA TOTAL</mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>

@@ -181,21 +181,9 @@ export class AutomobileQuotesComponent {
 
     if (fanoControl && fanoControl.value) {
       this.getBrand()
-      // const fanoValue = parseInt(fanoControl.value, 10);
-
-      // if (fanoValue > 2021) {
-      //   this.snackBar.open(`No puedes colocar un año mayor al 2021. Por favor, vuelve a intentarlo`, '', {
-      //     duration: 5000,
-      //   });
-      //   this.quotesForm.get('fano')?.setValue('')
-      // } else if (fanoValue < 1980) {
-      //   this.snackBar.open(`No puedes colocar un año menor a 1980. Por favor, vuelve a intentarlo`, '', {
-      //     duration: 5000,
-      //   });
-      //   this.quotesForm.get('fano')?.setValue('')
-      // } else {
-        
-      // }
+      this.snackBar.open(`Si el vehículo no existe por favor localice al ejecutivo comercial para regularizar esa incidencia`, '', {
+        duration: 4000,
+      });
     }
   }
 
@@ -325,7 +313,8 @@ export class AutomobileQuotesComponent {
       this.quotesForm.get('id_inma')?.setValue(selectedVersion.id_inma);
       this.quotesForm.get('msuma_aseg')?.setValue(selectedVersion.msum);
       this.quotesForm.get('xclasificacion')?.setValue(selectedVersion.cclasificacion);
-      this.getHullPrice()
+      this.searchRates();
+      this.getHullPrice();
       this.quotesForm.get('npasajeros')?.setValue(selectedVersion.npasajero);
 
       if (!this.quotesForm.get('ctarifa_exceso')?.value) {
@@ -336,6 +325,23 @@ export class AutomobileQuotesComponent {
       }
     }
     this.sumaAseguradaInicial = selectedVersion.msum;
+  }
+
+  searchRates(){
+    let data = {
+      cano: this.quotesForm.get('fano')?.value,
+      xclase: this.quotesForm.get('xclasificacion')?.value,
+    }
+    this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/search-rates', data).subscribe((response: any) => {
+      if(response.casco){
+        this.isYearValid = response.casco
+      }else{
+        this.snackBar.open(`${response.message}`, '', {
+          duration: 4000,
+        });
+        this.isYearValid = response.casco
+      }
+    })
   }
 
   getBroker() {
@@ -469,7 +475,7 @@ export class AutomobileQuotesComponent {
         this.version = this.quotesForm.get('xversion')?.value
 
         const fanoValue = this.quotesForm.get('fano')?.value;
-        this.isYearValid = fanoValue !== null && fanoValue !== undefined && parseInt(fanoValue, 10) >= 2007;
+        // this.isYearValid = fanoValue !== null && fanoValue !== undefined && parseInt(fanoValue, 10) >= 2007;
 
         this.xcorredor = response.data.list.result[0].xcorredor
         this.xcorreocorredor = response.data.list.result[0].xcorreocorredor
@@ -686,7 +692,6 @@ export class AutomobileQuotesComponent {
   }
 
   updatePremiums(){
-    console.log()
     let data = {
       ccotizacion: this.cotizacion,
       quotes: this.quotesList,
@@ -694,7 +699,6 @@ export class AutomobileQuotesComponent {
     }
     this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/update-premiums', data).subscribe((response: any) => {
       if(response.status){
-        console.log('fino señores')
       }
     })
   }
@@ -715,7 +719,7 @@ export class AutomobileQuotesComponent {
   }
 
   onQuotePdf() {
-    const observable = from(this.pdfGenerationService.LoadDataQuotes(this.cotizacion, this.montoRCV, this.montoAmplia, this.montoPerdida, this.allCoverages, this.planPdf, this.dataVehicle, this.quotesForm.get('fano')?.value, this.xcorredor, this.xcorreocorredor, this.xtelefonocorredor));
+    const observable = from(this.pdfGenerationService.LoadDataQuotes(this.cotizacion, this.montoRCV, parseFloat(this.montoAmplia), parseFloat(this.montoPerdida), this.allCoverages, this.planPdf, this.dataVehicle, this.quotesForm.get('fano')?.value, this.xcorredor, this.xcorreocorredor, this.xtelefonocorredor));
 
     observable.subscribe(
       (data) => {

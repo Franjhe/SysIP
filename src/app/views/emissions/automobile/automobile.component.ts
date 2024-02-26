@@ -8,7 +8,11 @@ import { environment } from 'src/environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { PdfGenerationService } from '../../../_services/ServicePDF'
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {
+  MatSnackBar,
+  MatSnackBarHorizontalPosition,
+  MatSnackBarVerticalPosition,
+} from '@angular/material/snack-bar';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { ChangeDetectorRef } from '@angular/core';
 import { format, addYears } from 'date-fns';
@@ -194,6 +198,7 @@ export class AutomobileComponent {
   activateGroup: boolean = false;
   activateBrandList: boolean = true;
   activateBrandText: boolean = false;
+  casco: boolean = false;
   primaBruta!: any;
   descuento!: any;
   sumaAsegurada!: any;
@@ -223,7 +228,7 @@ export class AutomobileComponent {
   ccotizacion!: any ; 
   fano!: any ; 
   cplan!: any ; 
-  ctarifa!: any ; 
+  ctarifa!: any ;
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -253,7 +258,7 @@ export class AutomobileComponent {
     xtipovehiculo: [''],
     xcolor: ['', Validators.required],
     xserialcarroceria: ['', [Validators.required, Validators.maxLength(17)]],
-    xserialmotor: ['', [Validators.required, Validators.maxLength(17)]],
+    xserialmotor: ['', [Validators.maxLength(17)]],
     xcobertura: ['', Validators.required],
     ctarifa_exceso: ['', Validators.required],
     cuso: [''],
@@ -693,7 +698,10 @@ export class AutomobileComponent {
     const fanoControl = this.vehicleFormGroup.get('fano');
     
     if (fanoControl && fanoControl.value) {
-      this.getBrand()
+      this.getBrand() 
+      this.snackBar.open(`Si el vehículo no existe por favor localice al ejecutivo comercial para regularizar esa incidencia`, '', {
+        duration: 4000,
+      });
     }
   }
 
@@ -1068,12 +1076,17 @@ export class AutomobileComponent {
     let data = {
       cano: this.vehicleFormGroup.get('fano')?.value,
       xclase: this.vehicleFormGroup.get('cclasificacion')?.value,
-      xmarca: this.vehicleFormGroup.get('xmarca')?.value,
-      xmodelo: this.vehicleFormGroup.get('xmodelo')?.value,
-      xversion: this.vehicleFormGroup.get('xversion')?.value,
     }
-    console.log(data)
-    this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/search-rates', data).subscribe((response: any) => {})
+    this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/search-rates', data).subscribe((response: any) => {
+      if(response.casco){
+        this.casco = response.casco;
+      }else{
+        this.snackBar.open(`${response.message}`, '', {
+          duration: 4000,
+        });
+        this.casco = response.casco;
+      }
+    })
   }
 
   getClass(){
