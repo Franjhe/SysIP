@@ -1282,9 +1282,7 @@ export class AutomobileComponent {
   }
 
   onCoverageChange() {
-    console.log(this.vehicleFormGroup.get('xcobertura')?.value)
     if(this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv'){
-      console.log('si PASA')
       this.paymentButtons = true;
       this.helmet = false;
       this.activateInspection = false;
@@ -1314,28 +1312,8 @@ export class AutomobileComponent {
   }
 
   validateYearsFromHullPrice() {
-    console.log(this.vehicleFormGroup.get('xtipovehiculo')?.value)
-    const yearActual = new Date().getFullYear();
-  
-    const yearLimite = yearActual - 16;
-  
-    const fanoValue = this.vehicleFormGroup.get('fano')?.value;
-  
-    if (fanoValue !== null && fanoValue !== undefined) {
-      const fanoNumber = parseInt(fanoValue, 10);
-
-      if (fanoNumber <= yearLimite) {
-        this.snackBar.open(`El año del vehículo es menor a ${yearLimite}, por lo tanto, no se puede prestar el servicio de ${this.vehicleFormGroup.get('xcobertura')?.value}`, '', {
-          duration: 5000,
-        });
-        this.vehicleFormGroup.get('xcobertura')?.setValue('');
-      } else {
-       
-        if(this.vehicleFormGroup.get('xtipovehiculo')?.value){
-          this.getHullPrice()
-        }else{
-        }
-      }
+    if(this.vehicleFormGroup.get('xtipovehiculo')?.value){
+      this.getHullPrice()
     }
   }
 
