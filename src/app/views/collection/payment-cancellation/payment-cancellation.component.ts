@@ -906,7 +906,10 @@ export class PaymentCancellationComponent {
         verticalPosition: 'top',
         panelClass: ['success-toast']
       });  
-      location.reload()
+
+      if(response.status){
+        location.reload()
+      }
 
     })  
     }else{
