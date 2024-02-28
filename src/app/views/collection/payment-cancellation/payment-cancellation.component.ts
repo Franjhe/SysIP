@@ -7,7 +7,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSort , MatSortModule } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { Observable } from 'rxjs';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import {animate, state, style, transition, trigger} from '@angular/animations';
@@ -22,6 +22,9 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 })
 export class PaymentCancellationComponent {
+  
+  horizontalPosition: MatSnackBarHorizontalPosition = 'center';
+  verticalPosition: MatSnackBarVerticalPosition = 'top';
 
   displayedColumns: string[] = ['id', 'name', 'progress', 'fruit'];
   dataSource = new MatTableDataSource<any> ;
@@ -31,8 +34,7 @@ export class PaymentCancellationComponent {
 
 
   @ViewChild('Alerta') InfoReceipt!: TemplateRef<any>;
-  @ViewChild('Pending') Pending!: TemplateRef<any>;
-
+  @ViewChild('Alerta1') Alerta1!: TemplateRef<any>;
 
   bcv : any
   viewData : boolean = false
@@ -148,6 +150,7 @@ export class PaymentCancellationComponent {
     private sanitizer: DomSanitizer,
     readonly dialog: MatDialog,
     private toast: MatSnackBar,
+    private _snackBar: MatSnackBar
 
     ) {
    }
@@ -391,13 +394,13 @@ export class PaymentCancellationComponent {
             let idBank = soporteItem.cbanco
             let bank = this.bankInternational
             let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
-            bankValue = filterBank[0].value
+            bankValue = filterBank[0]?.value
 
             //banco emisor
             let idBankEmi = soporteItem.cbanco_destino
             let bankEmi = this.bankInternational
             let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
-            bankValueEmi = filterBankEmi[0].value
+            bankValueEmi = filterBankEmi[0]?.value
 
           }else
           {
@@ -405,13 +408,13 @@ export class PaymentCancellationComponent {
             let idBank = soporteItem.cbanco
             let bank = this.bankNational
             let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
-            bankValue = filterBank[0].value
+            bankValue = filterBank[0]?.value
 
             //banco emisor
             let idBankEmi = soporteItem.cbanco_destino
             let bankEmi = this.bankNational
             let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
-            bankValueEmi = filterBankEmi[0].value
+            bankValueEmi = filterBankEmi[0]?.value
           }
 
 
@@ -446,8 +449,6 @@ export class PaymentCancellationComponent {
           }));
         });
       });
-
-      console.log(this.groupReceiptsForm)
 
       const listNotificate = data.searchPaymentReport.searchDataNotifiqued.dataTransaction
 
@@ -556,15 +557,13 @@ export class PaymentCancellationComponent {
     this.Alert()
   }
 
-  async PendindAlert(config?: MatDialogConfig) {
-    return this.dialog.open(this.Pending, config);
+  async alerUpdateReceipt(config?: MatDialogConfig) {
+    return this.dialog.open(this.Alerta1, config);
   }
 
   updateReceiptNotificated(i : any){
 
     const creds = this.groupReceiptsForm.controls.agrupado as FormArray;
-
-    console.log(creds.at(i).get('detalle')?.value)
 
     if(creds.at(i).get('iestadorec')?.value == 'ER' ){
       const data = {
@@ -632,7 +631,6 @@ export class PaymentCancellationComponent {
               this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((response: any) => {
                   const rutaimage  =  response.uploadedFile.filename //ruta de imagen por registro 
     
-                  console.log(this.updateReceiptPending)
                   if(this.updateReceiptPending.get('cmoneda')?.value == "USD" ){
                     this.transferList.push({
                       cmoneda:  this.updateReceiptPending.get('cmoneda')?.value,
@@ -854,21 +852,53 @@ export class PaymentCancellationComponent {
 
     const listUpdateDiferenceReceipt: any[] = []
 
-    for(let i = 0; i < creds.length; i++){
-
-      const controlesConAgrupadorTrue = creds.controls.filter(control => control.get('agrupador')?.value === true);
-
-      controlesConAgrupadorTrue.forEach(control => {
-
-        listUpdateDiferenceReceipt.push({
-          transaccion : control.get('id')?.value,
-          recibo:control.get('detalle')?.value,
-      })
-
-    });
-
+    for (let i = 0; i < creds.length; i++) {
+      const controlesConAgrupadorTrue = creds.controls.filter(
+        (control) => control.get('agrupador')?.value === true
+      );
+    
+      controlesConAgrupadorTrue.forEach((control) => {
+        const transaccionId = control.get('id')?.value;
+        const detalle = control.get('detalle')?.value;
+    
+        const transaccionExistente = listUpdateDiferenceReceipt.find(
+          (item) => item.transaccion === transaccionId
+        );
+    
+        if (!transaccionExistente) {
+          listUpdateDiferenceReceipt.push({
+            transaccion: transaccionId,
+            recibo: detalle,
+          });
+        }
+      });
     }
+    
+    function tieneRepetidos(array: string | any[]) {
+      let conjuntoDeRecibos = new Set();
+    
+      for (let i = 0; i < array.length; i++) {
+        let recibos = array[i].recibo;
+    
+        for (let j = 0; j < recibos.length; j++) {
+          let reciboActual = recibos[j];
+    
+          let reciboCadena = JSON.stringify(reciboActual);
+    
+          if (conjuntoDeRecibos.has(reciboCadena)) {
+            return true;
+          }
+    
+          conjuntoDeRecibos.add(reciboCadena);
+        }
+      }
+    
+      return false;
+    }
+    
+    let hayRepetidos = tieneRepetidos(listUpdateDiferenceReceipt);
 
+    if(hayRepetidos) {
     this.http.patch(environment.apiUrl + '/api/v1/collection/update-difference-of-notification', listUpdateDiferenceReceipt).subscribe((response: any) => {
     
       this.toast.open(response.message, '', {
@@ -876,9 +906,16 @@ export class PaymentCancellationComponent {
         verticalPosition: 'top',
         panelClass: ['success-toast']
       });  
-      location.reload()
 
-    })
+      if(response.status){
+        location.reload()
+      }
+
+    })  
+    }else{
+        this.alerUpdateReceipt()
+    }
+    
 
   }
 

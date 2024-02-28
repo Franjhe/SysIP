@@ -68,7 +68,7 @@
                     <th>Ramo</th>
                     <th>Fecha Desde</th>
                     <th style="color:red">Fecha tope de pago</th>
-                    <th style="color:red">Pendiente</th>
+                    <th style="color:red">Diferencia</th>
                     <th>Total del recibo</th>
                     <th>Seleccione los recibos a pagar </th>
                   </tr>
@@ -237,12 +237,12 @@
 
                           <div class="form-outline" >
                             <label class="form-label required">Monto</label>
-                            <input  type="text"  class="form-control rounded-input " placeholder="Ingresar monto depositado" formControlName="mpago" (change)="validateMount(i)">
+                            <input  type="text"  class="form-control rounded-input " placeholder="Ingresar monto depositado" formControlName="mpago">
                           </div>
 
                           <div class="form-outline" >
                             <label class="form-label required">Referencia</label>
-                            <input  type="number"  class="form-control rounded-input " placeholder="Ingrese la referencia" formControlName="xreferencia">
+                            <input  type="text"  class="form-control rounded-input " placeholder="Ingrese la referencia" formControlName="xreferencia">
                           </div>
 
                           <div class="form-outline" >
@@ -253,14 +253,14 @@
                       </div>
   
                       <div class="mt-3" >
-                        <button mat-button  class="bg-warning text-light m-2" (click)="addPayment()">Anadir movimiento</button>
-                        <button mat-button  class="bg-danger text-light m-2" (click)="removePayment(i)">Eliminar movimiento</button>
+                        <button mat-button [disabled]="Submit" class="bg-warning text-light m-2" (click)="addPayment()">Anadir movimiento</button>
+                        <button mat-button [disabled]="Submit" class="bg-danger text-light m-2" (click)="removePayment(i)">Eliminar movimiento</button>
                       </div> 
 
     
                     </div>
-                    <div class="mt-5">
-                      <button mat-button  class="bg-success text-light" (click)="onSubmit()">Registrar Pago</button>
+                    <div class="mt-5" >
+                      <button mat-button [disabled]="Submit" class="bg-success text-light" (click)="onSubmit()">Registrar Pago</button>
                     </div>
                   </div>
                 </div>
@@ -331,7 +331,7 @@
                 <div class="container">
                   <div class="row">
                     <div>
-                      <strong class="title">Monto VES {{mountBs}}</strong>
+                      <strong class="title" *ngIf="!diferenceBool">Monto VES {{mountBs}}</strong>
                       <button mat-icon-button color="primary" ngxClipboard [cbContent]="mountBs">
                         <mat-icon>file_copy</mat-icon>
                       </button>
@@ -366,7 +366,7 @@
               <div class="container">
                 <div class="row">
                   <div>
-                    <strong class="title">Monto {{mountIGTF}} $</strong>
+                    <strong class="title" *ngIf="!diferenceBool">Monto {{mountIGTF}} $</strong>
                     <button mat-icon-button color="primary" ngxClipboard [cbContent]="mountIGTF">
                       <mat-icon>file_copy</mat-icon>
                     </button>
@@ -398,7 +398,7 @@
               <div class="container">
                 <div class="row">
                   <div>
-                    <strong class="title">Monto VES {{mountBs}}</strong>
+                    <strong class="title" *ngIf="!diferenceBool">Monto VES {{mountBs}}</strong>
                     <button mat-icon-button color="primary" ngxClipboard [cbContent]="mountBs">
                       <mat-icon>file_copy</mat-icon>
                     </button>
@@ -428,7 +428,7 @@
               <div class="header">
                 <div class="container">
                   <div class="">
-                      <strong class="title">Monto {{mountIGTF}} $</strong><button mat-icon-button color="primary" ngxClipboard [cbContent]="mountIGTF"><mat-icon>file_copy</mat-icon></button>
+                      <strong class="title" *ngIf="!diferenceBool">Monto {{mountIGTF}} $</strong><button mat-icon-button color="primary" ngxClipboard [cbContent]="mountIGTF"><mat-icon>file_copy</mat-icon></button>
                       <br><strong class="title">Rif J-00084644-8</strong><button mat-icon-button color="primary" ngxClipboard [cbContent]="'000846448'"><mat-icon>file_copy</mat-icon></button>
                     <div>
                       <p class="text-start mt-3">
