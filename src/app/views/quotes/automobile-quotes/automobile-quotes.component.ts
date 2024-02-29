@@ -85,6 +85,8 @@ export class AutomobileQuotesComponent {
   sumaAseguradaInicial!: any
   descuento!: any;
   recargo!: any
+  sumaAseguradaMax!: any;
+  sumaAseguradaMin!: any;
 
   quotesForm = this._formBuilder.group({
     xmarca: ['', Validators.required],
@@ -594,16 +596,76 @@ export class AutomobileQuotesComponent {
             const mtotal_rcv = parseFloat(quote.mtotal_rcv);
             const tasa_amplia = parseFloat(quote.pcobertura_amplia);
             const tasa_perdida = parseFloat(quote.pperdida_total);
+
+            if(this.quotesForm.get('msuma_aseg')?.value == null || this.quotesForm.get('msuma_aseg')?.value == undefined){
+              this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+            }
+
             const suma_aseg = parseFloat(this.quotesForm.get('msuma_aseg')?.value || '');
 
-            const calculoCA = suma_aseg * tasa_amplia / 100;
-            const calculoPE = suma_aseg * tasa_perdida / 100;
+            let max = this.sumaAseguradaInicial * 0.30
+            let min = this.sumaAseguradaInicial * 0.10
 
-            const sumaCA = calculoCA + mtotal_rcv;
-            const sumaPE = calculoPE + mtotal_rcv;
+            let MaxSum = this.sumaAseguradaInicial + max;
+            let MinSum = this.sumaAseguradaInicial - min;
 
-            quote.mtotal_amplia = sumaCA.toFixed(2);
-            quote.mtotal_perdida = sumaPE.toFixed(2);
+            this.sumaAseguradaMax = MaxSum.toFixed(2)
+            this.sumaAseguradaMin = MinSum.toFixed(2)
+
+            if(suma_aseg > this.sumaAseguradaMax){
+              this.snackBar.open('La Suma Asegurada excedió el 30%.', '', {
+                duration: 5000,
+              });
+    
+              this.quotesForm.get('msuma_aseg')?.setValue(suma_aseg.toString());
+              return
+            }else{
+              const calculoCA = suma_aseg * tasa_amplia / 100;
+              const calculoPE = suma_aseg * tasa_perdida / 100;
+  
+              const sumaCA = calculoCA + mtotal_rcv;
+              const sumaPE = calculoPE + mtotal_rcv;
+  
+              quote.mtotal_amplia = sumaCA.toFixed(2);
+              quote.mtotal_perdida = sumaPE.toFixed(2);
+            }
+
+            if(suma_aseg < this.sumaAseguradaMin){
+              this.snackBar.open('La Suma Asegurada es menor al 10%.', '', {
+                duration: 5000,
+              });
+    
+              this.quotesForm.get('msuma_aseg')?.setValue(suma_aseg.toString());
+              return
+            }else{
+              const pcatastrofico = 0.10;
+              const msumaAsegRobo = 600;
+              const probo = 4.48;
+              const pmotinCA = 0.88;
+              const pmotinPE = 0.59;
+
+              const calculoCA = suma_aseg * tasa_amplia / 100;
+              const calculoPE = suma_aseg * tasa_perdida / 100;
+
+              const motinCA = (suma_aseg * pmotinCA) / 100;
+              const motinPE = (suma_aseg * pmotinPE) / 100;
+              const catastrofico = (suma_aseg * pcatastrofico) / 100;
+              const robo = (msumaAsegRobo * probo) / 100;
+
+              const CA = motinCA + catastrofico + robo;
+              const PE = motinPE + catastrofico + robo;
+
+              const resultCA = calculoCA + CA
+              const resultPE = calculoPE + PE
+  
+              const sumaCA = resultCA + mtotal_rcv;
+              const sumaPE = resultPE + mtotal_rcv;
+  
+              quote.mtotal_amplia = sumaCA.toFixed(2);
+              quote.mtotal_perdida = sumaPE.toFixed(2);
+            }
+
+
           })
           this.updatePremiums()
         }
@@ -619,34 +681,29 @@ export class AutomobileQuotesComponent {
 
     if (descuento) {
         if (typeof descuento === 'number') {
-            // // Suma asegurada original
-            // const sumaAseguradaOriginal: number = sum_aseg ? parseFloat(sum_aseg) : 0;
-            
-            // // Convertir el porcentaje de descuento a su equivalente decimal
-            // const porcentajeDecimal: number = descuento / 100;
-            
-            // // Calcular el descuento
-            // const descuentoCalculado: number = sumaAseguradaOriginal * porcentajeDecimal;
-            
-            // // Calcular la nueva suma asegurada después del descuento
-            // const nuevaSumaAsegurada: number = sumaAseguradaOriginal - descuentoCalculado;
-            
-            // // Redondear el resultado a 2 decimales
-            // const valorTotal: number = Math.round(nuevaSumaAsegurada * 100) / 100;
 
-            // 
-            this.quotesForm.get('precarga')?.disable();
-            // this.descuento = valorTotal
-            this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
-            return this.sumaAseguradaInicial; // O puedes retornar este valor si lo necesitas en otro lugar de tu código
+            if(this.currentUser.data.crol === 8){
+              if(descuento > 20){
+                window.alert('No se puede hacer un descuento de más del 20%');
+                this.quotesForm.get('pdescuento')?.setValue('');
+                this.quotesForm.get('precarga')?.enable();
+              }else{
+                this.quotesForm.get('precarga')?.disable();
+                this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+              }
+            }else{
+              this.quotesForm.get('precarga')?.disable();
+              this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+            }
+            return this.sumaAseguradaInicial;
         } else {
-            return 0; // Retorna un valor predeterminado en caso de que el descuento no sea un número
+            return 0;
         }
     } else {
         this.quotesForm.get('precarga')?.enable();
         this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
 
-        return 0; // Retorna un valor predeterminado en caso de que no se proporcione un valor para el descuento
+        return 0;
     }
     
   }
@@ -660,34 +717,60 @@ export class AutomobileQuotesComponent {
             if(recarga == 0 || recarga == null){
               this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
             }
-            // // Suma asegurada original
-            // const sumaAseguradaOriginal: number = sum_aseg ? parseFloat(sum_aseg) : 0;
-            
-            // // Convertir el porcentaje de recarga a su equivalente decimal
-            // const porcentajeDecimal: number = recarga / 100;
-            
-            // // Calcular el recarga
-            // const recargaCalculado: number = sumaAseguradaOriginal * porcentajeDecimal;
-            
-            // // Calcular la nueva suma asegurada después del recarga
-            // const nuevaSumaAsegurada: number = sumaAseguradaOriginal + recargaCalculado;
-            
-            // // Redondear el resultado a 2 decimales
-            // const valorTotal: number = Math.round(nuevaSumaAsegurada * 100) / 100;
 
-            this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
-            this.quotesForm.get('pdescuento')?.disable();
+            if(this.currentUser.data.crol === 8){
+              if(recarga > 20){
+                window.alert('No se puede hacer una recarga de más del 20%');
+                this.quotesForm.get('precarga')?.setValue('');
+                this.quotesForm.get('pdescuento')?.enable();
+              }else{
+                this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+                this.quotesForm.get('pdescuento')?.disable();
+              }
+            }else{
+              this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+              this.quotesForm.get('pdescuento')?.disable();
+            }
             this.recargo = this.sumaAseguradaInicial
             
-            return this.sumaAseguradaInicial; // O puedes retornar este valor si lo necesitas en otro lugar de tu código
+            return this.sumaAseguradaInicial;
         } else {
-            return 0; // Retorna un valor predeterminado en caso de que el recarga no sea un número
+            return 0;
         }
     } else {
         this.quotesForm.get('pdescuento')?.enable();
         this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
 
-        return 0; // Retorna un valor predeterminado en caso de que no se proporcione un valor para el recarga
+        return 0;
+    }
+  }
+
+  getSum(){
+    if(this.quotesForm.get('msuma_aseg')?.value == null || this.quotesForm.get('msuma_aseg')?.value == undefined){
+      this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+    }
+
+    const suma_aseg = parseFloat(this.quotesForm.get('msuma_aseg')?.value || '');
+
+    let max = this.sumaAseguradaInicial * 0.30
+    let min = this.sumaAseguradaInicial * 0.10
+
+    let MaxSum = this.sumaAseguradaInicial + max;
+    let MinSum = this.sumaAseguradaInicial - min;
+
+    this.sumaAseguradaMax = MaxSum.toFixed(2)
+    this.sumaAseguradaMin = MinSum.toFixed(2)
+
+    if(suma_aseg > this.sumaAseguradaMax){
+      window.alert('La Suma Asegurada excedió el 30%.');
+      this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial);
+      return
+    }
+
+    if(suma_aseg < this.sumaAseguradaMin){
+      window.alert('La Suma Asegurada es menor al 10%.');
+      this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial);
+      return
     }
   }
 

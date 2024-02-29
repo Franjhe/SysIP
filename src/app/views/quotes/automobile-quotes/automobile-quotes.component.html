@@ -353,7 +353,7 @@
         <div class="col-4">
           <div class="form-outline">
             <label class="form-label required">Suma Asegurada</label>
-            <input type="number" formControlName="msuma_aseg" class="form-control form-control-lg" />
+            <input type="number" formControlName="msuma_aseg" class="form-control form-control-lg" (change)="getSum()"/>
           </div>
         </div>
       </div>

@@ -45,6 +45,7 @@ interface CsvItem {
   CANO: string;
   XCOLOR: string;
   XCOBERTURA: string;
+  PTASA: string;
   MSUMA_ASEG: string;
   PCASCO: string;
   MPRIMA_BRUTA: string;
@@ -1345,7 +1346,7 @@ export class AutomobileComponent {
         }
         
         this.planFormGroup.get('msuma_aseg')?.setValue(this.sumaAsegurada);
-        if(this.currentUser.data.crol == 5){
+        if(this.currentUser.data.crol == 5 || this.currentUser.data.crol == 7){
           this.planFormGroup.get('msuma_aseg')?.enable();
         }else{
           this.planFormGroup.get('msuma_aseg')?.disable();
@@ -1588,8 +1589,6 @@ export class AutomobileComponent {
 
         this.sumaAseguradaMax = MaxSum.toFixed(2)
         this.sumaAseguradaMin = MinSum.toFixed(2)
-
-        console.log(this.sumaAseguradaMax)
 
         if(msumaAseg > this.sumaAseguradaMax){
           this.snackBar.open('La Suma Asegurada excedió el 30%.', '', {
@@ -2595,38 +2594,89 @@ export class AutomobileComponent {
       delimiter: ';',
       quoteChar: '"',
       complete: (result: any) => {
-        this.dataList = result.data.slice(0, result.data.length - 1).map((item: CsvItem) => ({
-          irif: item.IRIF,
-          xcliente: item.XCLIENTE,
-          xrif_cliente: item.XRIF_CLIENTE,
-          id_inma: item.ID_INMA,
-          xnombre: item.XNOMBRE,
-          xapellido: item.XAPELLIDO,
-          icedula: item.ICEDULA,
-          xcedula: item.XCEDULA,
-          fnac: item.FNAC,
-          cmetodologiapago: parseInt(item.CMETODOLOGIAPAGO),
-          cplan_rc: parseInt(item.CPLAN_RC),
-          xserialcarroceria: item.XSERIALCARROCERIA,
-          xserialmotor: item.XSERIALMOTOR,
-          xplaca: item.XPLACA,
-          xmarca: item.XMARCA,
-          xmodelo: item.XMODELO,
-          xversion: item.XVERSION,
-          cano: parseInt(item.CANO),
-          xcolor: item.XCOLOR,
-          xcobertura: item.XCOBERTURA,
-          msuma_aseg: parseFloat(item.MSUMA_ASEG.replace(',', '.')),
-          xdireccionfiscal: item.XDIRECCIONFISCAL,
-          xtelefono_emp: item.XTELEFONO_EMP,
-          email: item.EMAIL,
-          fdesde_pol: item.FDESDE_POL,
-          fhasta_pol: item.FHASTA_POL,
-          ccorredor: parseInt(item.CCORREDOR),
-          cestado: parseInt(item.CESTADO),
-          cciudad: parseInt(item.CCIUDAD),
-          xzona_postal: item.XZONA_POSTAL,
-        }));
+        
+    //     this.dataList = result.data.slice(0, result.data.length - 1).map((item: CsvItem) => ({
+    //       const msuma_aseg = parseFloat(item.MSUMA_ASEG.replace(',', '.'));
+    // const ptasa = parseFloat(item.PTASA.replace(',', '.'));
+
+    // const mprima_bruta = (msuma_aseg * ptasa) / 100;
+    // const mprima_casco = mprima_bruta * 0.7; // Por ejemplo, asumiendo un 70% para el caso
+
+    //       irif: item.IRIF,
+    //       xcliente: item.XCLIENTE,
+    //       xrif_cliente: item.XRIF_CLIENTE,
+    //       id_inma: item.ID_INMA,
+    //       xnombre: item.XNOMBRE,
+    //       xapellido: item.XAPELLIDO,
+    //       icedula: item.ICEDULA,
+    //       xcedula: item.XCEDULA,
+    //       fnac: item.FNAC,
+    //       cmetodologiapago: parseInt(item.CMETODOLOGIAPAGO),
+    //       cplan_rc: parseInt(item.CPLAN_RC),
+    //       xserialcarroceria: item.XSERIALCARROCERIA,
+    //       xserialmotor: item.XSERIALMOTOR,
+    //       xplaca: item.XPLACA,
+    //       xmarca: item.XMARCA,
+    //       xmodelo: item.XMODELO,
+    //       xversion: item.XVERSION,
+    //       cano: parseInt(item.CANO),
+    //       xcolor: item.XCOLOR,
+    //       xcobertura: item.XCOBERTURA,
+    //       pcasco: parseFloat(item.PTASA.replace(',', '.')),
+    //       msuma_aseg: parseFloat(item.MSUMA_ASEG.replace(',', '.')),
+    //       xdireccionfiscal: item.XDIRECCIONFISCAL,
+    //       xtelefono_emp: item.XTELEFONO_EMP,
+    //       email: item.EMAIL,
+    //       fdesde_pol: item.FDESDE_POL,
+    //       fhasta_pol: item.FHASTA_POL,
+    //       ccorredor: parseInt(item.CCORREDOR),
+    //       cestado: parseInt(item.CESTADO),
+    //       cciudad: parseInt(item.CCIUDAD),
+    //       xzona_postal: item.XZONA_POSTAL,
+    //     }));
+
+    this.dataList = result.data.slice(0, result.data.length - 1).map((item: CsvItem) => {
+        const msuma_aseg = parseFloat(item.MSUMA_ASEG.replace(',', '.'));
+        const ptasa = parseFloat(item.PTASA.replace(',', '.'));
+    
+        const mprima = (msuma_aseg * ptasa) / 100;
+    
+        return {
+            irif: item.IRIF,
+            xcliente: item.XCLIENTE,
+            xrif_cliente: item.XRIF_CLIENTE,
+            id_inma: item.ID_INMA,
+            xnombre: item.XNOMBRE,
+            xapellido: item.XAPELLIDO,
+            icedula: item.ICEDULA,
+            xcedula: item.XCEDULA,
+            fnac: item.FNAC,
+            cmetodologiapago: parseInt(item.CMETODOLOGIAPAGO),
+            cplan_rc: parseInt(item.CPLAN_RC),
+            xserialcarroceria: item.XSERIALCARROCERIA,
+            xserialmotor: item.XSERIALMOTOR,
+            xplaca: item.XPLACA,
+            xmarca: item.XMARCA,
+            xmodelo: item.XMODELO,
+            xversion: item.XVERSION,
+            cano: parseInt(item.CANO),
+            xcolor: item.XCOLOR,
+            xcobertura: item.XCOBERTURA,
+            pcasco: ptasa,
+            msuma_aseg: msuma_aseg,
+            mprima_bruta: mprima,
+            mprima_casco: mprima,
+            xdireccionfiscal: item.XDIRECCIONFISCAL,
+            xtelefono_emp: item.XTELEFONO_EMP,
+            email: item.EMAIL,
+            fdesde_pol: item.FDESDE_POL,
+            fhasta_pol: item.FHASTA_POL,
+            ccorredor: parseInt(item.CCORREDOR),
+            cestado: parseInt(item.CESTADO),
+            cciudad: parseInt(item.CCIUDAD),
+            xzona_postal: item.XZONA_POSTAL,
+        };
+    });
           
         this.groupList = this.dataList;
         this.dataSource = new MatTableDataSource<any>(this.groupList);
