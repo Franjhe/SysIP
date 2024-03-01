@@ -257,6 +257,7 @@
             <form action=""  [formGroup]="updateReceiptPending">
               <div class="container-fluid">
                 <h1 class="text-center">Registro de pago</h1>
+                <h1 *ngIf="error" class="bg-danger">{{messajeError}}</h1>
                 <div class="row">
                   <div class="col-3">
                     <h2>Tasa del dia {{bcv}} Bs</h2>
@@ -300,9 +301,9 @@
                     <mat-radio-group aria-label="Select an option" formControlName="itransaccion">
                       <mat-radio-button value="PM" (change)="changeStatusPm()" >Pago Movil</mat-radio-button>
                       <mat-radio-button value="EF" (change)="validationOperation()">Efectivo</mat-radio-button>
-                      <mat-radio-button value="TR" (change)="changeStatusTrans()">Tranferencia</mat-radio-button>
-                      <mat-radio-button value="PS" (change)="changeStatusTransCustodia()">Cuenta Custodia</mat-radio-button>
-                      <mat-radio-button value="DP" (change)="changeStatusUSD()">Tranferencia Moneda extranjera</mat-radio-button>
+                      <!-- <mat-radio-button value="TR" (change)="changeStatusTrans()">Tranferencia</mat-radio-button> -->
+                      <!-- <mat-radio-button value="PS" (change)="changeStatusTransCustodia()">Cuenta Custodia</mat-radio-button> -->
+                      <!-- <mat-radio-button value="DP" (change)="changeStatusUSD()">Tranferencia Moneda extranjera</mat-radio-button> -->
                     </mat-radio-group>
                   </div>
 
@@ -311,7 +312,7 @@
                     <!-- Moneda -->
                       <div class="form-outline" *ngIf="usd"><!-- pagos en dolares  -->
                         <label class="form-label required">Moneda</label>
-                        <select formControlName="cmoneda" class="form-control rounded-input form-control-lg colorgris" >
+                        <select formControlName="cmoneda" class="form-control rounded-input form-control-lg colorgris" (change)="changeError()">
                           <option  value="BS">BS</option>
                           <option  value="USD">USD</option>
                         </select>                     
@@ -319,7 +320,7 @@
 
                       <div class="form-outline"  *ngIf="!usd"><!-- pagos en bolivares -->
                         <label class="form-label required">Moneda</label>
-                        <select formControlName="cmoneda" class="form-control rounded-input form-control-lg colorgris">
+                        <select formControlName="cmoneda" class="form-control rounded-input form-control-lg colorgris" (change)="changeError()">
                           <option  value="Bs">Bs</option>
                         </select>                     
                       </div>
@@ -344,7 +345,7 @@
                       <!-- Bancos destino -->
 
                       <div class="form-outline mt-3" *ngIf="usd"><!-- lista de bancos receptores internacionales -->
-                        <label class="form-label ">Banco recptor</label>
+                        <label class="form-label ">Banco receptor</label>
                         <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris" >
                           <option disabled>Seleccione el banco receptor</option>
                           <option *ngFor="let backE of bankReceptorInternational" value="{{ backE.id }}">{{ backE.value }}</option>
@@ -384,7 +385,7 @@
 
                     <mat-form-field >
                       <mat-label>Monto pagado</mat-label>
-                      <input matInput  formControlName="mpago">
+                      <input matInput  formControlName="mpago" (change)="validateMount()">
                     </mat-form-field>
 
 
@@ -397,7 +398,6 @@
                       <mat-label>Estado de recibo</mat-label>
                       <mat-select formControlName="iestadorec">
                         <mat-option value="C">Cobrado</mat-option>
-                        <mat-option value="ER">En revision</mat-option>
                       </mat-select>
                     </mat-form-field>
 

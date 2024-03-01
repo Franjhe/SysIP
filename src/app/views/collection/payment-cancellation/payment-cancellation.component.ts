@@ -72,6 +72,9 @@ export class PaymentCancellationComponent {
   totalPending : any
   totalNotificated : any
 
+  messajeError : any
+  error : boolean = false
+
   mount : any //monto de la suma de los recibos 
   mountIGTF : any //monto con el calculo igtf 
   mountBs : any //monto en bolivares multiplicado por bcv 
@@ -702,6 +705,66 @@ export class PaymentCancellationComponent {
       this.updateReceiptPending.get('mpago')?.enable()
       this.updateReceiptPending.get('ximagen')?.enable()
       this.updateReceiptPending.get('iestadorec ')?.enable()
+  }
+
+  validateMount(){
+    let valor = this.updateReceiptPending.get('mpago')?.value || ''
+    let moneda = this.updateReceiptPending.get('cmoneda')?.value || ''
+
+    let primaBS = this.bcv * this.dataReceiptPending[0].mprimabrutaext
+    this.error = false 
+
+
+    if(moneda == 'BS'){
+      if(valor < this.dataReceiptPending[0].mprimabruta){
+        this.updateReceiptPending.get('mpago')?.setValue('')
+        this.error = true
+        this.messajeError = 'El monto no puede ser menor al deudor'
+
+      }
+      else if(valor > this.dataReceiptPending[0].mprimabruta){
+        this.updateReceiptPending.get('mpago')?.setValue('')
+        this.messajeError = 'El monto no puede ser mayor al deudor'
+        this.error = true
+
+      }
+      else if(parseInt(valor) < primaBS){
+        this.updateReceiptPending.get('mpago')?.setValue('')
+        this.error = true
+        this.messajeError = 'El monto no puede ser menor al deudor'
+
+      }
+      else if(primaBS > parseInt(valor)){
+        this.updateReceiptPending.get('mpago')?.setValue('')
+        this.messajeError = 'El monto no puede ser mayor al deudor'
+        this.error = true
+      }
+    }
+
+    if(moneda == 'USD'){
+      if(valor < this.dataReceiptPending[0].mprimabrutaext){
+        this.updateReceiptPending.get('mpago')?.setValue('')
+        this.error = true
+        this.messajeError = 'El monto no puede ser menor al deudor'
+      }
+      if(valor > this.dataReceiptPending[0].mprimabrutaext){
+        this.updateReceiptPending.get('mpago')?.setValue('')
+        this.messajeError = 'El monto no puede ser mayor al deudor'
+        this.error = true
+      }
+    }
+
+    if(moneda == ''){
+      this.updateReceiptPending.get('mpago')?.setValue('')
+      this.messajeError = 'Seleccione la moneda de registro de Pago'
+      this.error = true 
+    }
+
+  }
+
+  changeError(){
+    this.error = false 
+
   }
 
   onFileSelect(event : any ){

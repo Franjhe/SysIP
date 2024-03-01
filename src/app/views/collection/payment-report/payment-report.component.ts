@@ -323,6 +323,8 @@ export class PaymentReportComponent {
               fanopol: response.searchReceipt.receipt[i].fanopol,
               fmespol: response.searchReceipt.receipt[i].fmespol,
               cramo: response.searchReceipt.receipt[i].cramo,
+              cproductor : response.searchReceipt.receipt[i].cproductor,
+              qcuotas : response.searchReceipt.receipt[i].qcuotas,
               xramo : xramo ,
               cmoneda: response.searchReceipt.receipt[i].cmoneda,
               fdesde_pol: ISOFdesdePol,
@@ -469,6 +471,7 @@ export class PaymentReportComponent {
           mprimabruta: receipt.value[i].mprimabruta,
           mprimabrutaext: receipt.value[i].mprimabrutaext,
           ptasamon: receipt.value[i].ptasamon,
+          cproductor : receipt.value[i].cproductor,
 
         });
       }
@@ -483,6 +486,7 @@ export class PaymentReportComponent {
     this.Submit = true
 
     const transfer = this.searchReceipt.get("transfer") as FormArray
+
 
     const fecha = new Date()
     const savePaymentTrans = {
@@ -506,7 +510,6 @@ export class PaymentReportComponent {
       this.transaccion = transaccion
 
       //obtenemos el codigo de transaccion 
-      console.log(transaccion > 0)
       if(transaccion > 0){
 
         for(let i = 0; i < transfer.length; i++){
@@ -519,12 +522,13 @@ export class PaymentReportComponent {
               const rutaimage  =  image.uploadedFile.filename //ruta de imagen por registro 
 
               if(transfer.at(i).get('cmoneda')?.value == "USD" ){
+
                 this.transferList.push({
                   cmoneda: transfer.value[i].cmoneda,
                   cbanco: transfer.value[i]?.cbanco,
                   cbanco_destino: transfer.value[i].cbanco_destino,
-                  mpago: this.mountBs,
-                  mpagoext: this.mount,
+                  mpago: 0,
+                  mpagoext: transfer.value[i].mpago,
                   mpagoigtf: this.mountBsP,
                   mpagoigtfext: this.mountP ,
                   mtotal: this.mountBsExt,
@@ -540,8 +544,8 @@ export class PaymentReportComponent {
                   cmoneda: transfer.value[i].cmoneda,
                   cbanco: transfer.value[i]?.cbanco,
                   cbanco_destino: transfer.value[i].cbanco_destino,
-                  mpago: this.mountBs,
-                  mpagoext: this.mount,
+                  mpago: transfer.value[i].mpago,
+                  mpagoext: 0,
                   mpagoigtf: 0,
                   mpagoigtfext: 0 ,
                   mtotal:this.mountBs,
