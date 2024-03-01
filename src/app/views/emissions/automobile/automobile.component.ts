@@ -2707,10 +2707,18 @@ export class AutomobileComponent {
     console.log(data)
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/group', data).subscribe((response: any) => {
       if(response.status){
-        if (window.confirm("¡La Flota se ha cargado exitosamente!... ¿Deseas Consultar esa Flota?")) {
-          this.router.navigate(['/policy/automobile-policy']);
-        } else {
-          location.reload();
+        if(response.error){
+          let errorMessage = response.error.join('\n');
+          window.alert(`${errorMessage}`)
+          this.snackBar.open(`Lamentablemente, la carga de la flota no pudo ser completada debido a la falta de información sobre los vehículos en INMA. Por favor, asegúrese de cargar los datos de los vehículos correspondientes y vuelva a intentarlo.`, '', {
+            duration: 10000,
+          });
+        }else{ 
+          if (window.confirm("¡La Flota se ha cargado exitosamente!... ¿Deseas Consultar esa Flota?")) {
+            this.router.navigate(['/policy/automobile-policy']);
+          } else {
+            location.reload();
+          }
         }
       }
     })
