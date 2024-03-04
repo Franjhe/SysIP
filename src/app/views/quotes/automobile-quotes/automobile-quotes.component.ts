@@ -87,6 +87,7 @@ export class AutomobileQuotesComponent {
   recargo!: any
   sumaAseguradaMax!: any;
   sumaAseguradaMin!: any;
+  primaFinal!: any;
 
   quotesForm = this._formBuilder.group({
     xmarca: ['', Validators.required],
@@ -449,6 +450,19 @@ export class AutomobileQuotesComponent {
     this.loading = true;
     this.buttonQuotes = false;
 
+    let xtipo;
+    const ctarifa_exceso = this.quotesForm.get('ctarifa_exceso')?.value;
+
+    if (ctarifa_exceso !== null && ctarifa_exceso !== undefined) {
+      const parsedValue = parseInt(ctarifa_exceso, 10);
+    
+      if (!isNaN(parsedValue) && parsedValue === 20) {
+        xtipo = 'M';
+      } else {
+        xtipo = 'V';
+      }
+    }
+
     let data = {
       id_inma: this.quotesForm.get('id_inma')?.value,
       fano: this.quotesForm.get('fano')?.value,
@@ -460,6 +474,7 @@ export class AutomobileQuotesComponent {
       xclasificacion: this.quotesForm.get('xclasificacion')?.value,
       ncapacidad_p: this.quotesForm.get('npasajeros')?.value,
       ccorredor: this.quotesForm.get('ccorredor')?.value,
+      xtipo: xtipo
     }
 
     this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/create', data).subscribe((response: any) => {
@@ -470,6 +485,7 @@ export class AutomobileQuotesComponent {
         this.quotesBoolean = true;
         this.quotesList = response.data.list.result;
         this.quotesList.sort((a, b) => a.xplan_rc > b.xplan_rc ? 1 : -1);
+        console.log(this.quotesList)
 
         this.nombreCompleto = data.xnombre + ' ' + data.xapellido;
         this.vehiculo = this.quotesForm.get('xmarca')?.value + ' ' + this.quotesForm.get('xmodelo')?.value;
@@ -622,6 +638,8 @@ export class AutomobileQuotesComponent {
             }else{
               const calculoCA = suma_aseg * tasa_amplia / 100;
               const calculoPE = suma_aseg * tasa_perdida / 100;
+
+              console.log(calculoCA)
   
               const sumaCA = calculoCA + mtotal_rcv;
               const sumaPE = calculoPE + mtotal_rcv;
@@ -813,7 +831,7 @@ export class AutomobileQuotesComponent {
     );
   }
 
-  onToggle(cobertura: string, plan: number) {
+  onToggle(cobertura: string, plan: number, prima: any) {
     if (cobertura == 'Rcv') {
       this.brcv = true;
       this.bamplia = false;
@@ -822,10 +840,12 @@ export class AutomobileQuotesComponent {
       this.brcv = false;
       this.bamplia = true;
       this.bperdida = false;
+      this.primaFinal = prima
     } else if (cobertura == 'Perdida Total') {
       this.brcv = false;
       this.bamplia = false;
       this.bperdida = true;
+      this.primaFinal = prima
     }
 
     this.plan = plan;
@@ -857,7 +877,9 @@ export class AutomobileQuotesComponent {
             fano: this.quotesForm.get('fano')?.value,
             cplan: this.plan,
             ctarifa_exceso: this.quotesForm.get('ctarifa_exceso')?.value,
-            ccorredor: this.currentUser.data.ccorredor
+            ccorredor: this.currentUser.data.ccorredor,
+            suma_aseg: this.quotesForm.get('msuma_aseg')?.value,
+            prima: this.primaFinal
           }
         };
 

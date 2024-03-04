@@ -193,7 +193,7 @@
                     <strong>Rcv: </strong>{{quotes.mtotal_rcv}}$ / Anual
                   </div>
                   <div>
-                    <mat-slide-toggle color="primary" matTooltip="Aceptar Rcv" (change)="onToggle('Rcv', quotes.cplan_rc)"></mat-slide-toggle>
+                    <mat-slide-toggle color="primary" matTooltip="Aceptar Rcv" (change)="onToggle('Rcv', quotes.cplan_rc, quotes.mtotal_rcv)"></mat-slide-toggle>
                   </div>
                 </div>
                 <br>
@@ -203,7 +203,7 @@
                       <strong>C. Amplia: </strong>{{quotes.mtotal_amplia}}$ / Anual
                     </div>
                     <div>
-                      <mat-slide-toggle color="primary" matTooltip="Aceptar Cobertura Amplia" (change)="onToggle('Cobertura Amplia', quotes.cplan_rc)"></mat-slide-toggle>
+                      <mat-slide-toggle color="primary" matTooltip="Aceptar Cobertura Amplia" (change)="onToggle('Cobertura Amplia', quotes.cplan_rc, quotes.mtotal_amplia)"></mat-slide-toggle>
                     </div>
                   </div>
                   <br>
@@ -212,7 +212,7 @@
                       <strong>P. Total: </strong>{{quotes.mtotal_perdida}}$ / Anual
                     </div>
                     <div>
-                      <mat-slide-toggle color="primary" matTooltip="Aceptar Pérdida Total" (change)="onToggle('Perdida Total', quotes.cplan_rc)"></mat-slide-toggle>
+                      <mat-slide-toggle color="primary" matTooltip="Aceptar Pérdida Total" (change)="onToggle('Perdida Total', quotes.cplan_rc, quotes.mtotal_perdida)"></mat-slide-toggle>
                     </div>
                   </div>
                 </div>
