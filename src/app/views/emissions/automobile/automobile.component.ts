@@ -2631,50 +2631,11 @@ export class AutomobileComponent {
   
     Papa.parse(file, {
       header: true,
-      delimiter: ';',
+      //delimiter: [',', ';'],
       quoteChar: '"',
       complete: (result: any) => {
-        
-    //     this.dataList = result.data.slice(0, result.data.length - 1).map((item: CsvItem) => ({
-    //       const msuma_aseg = parseFloat(item.MSUMA_ASEG.replace(',', '.'));
-    // const ptasa = parseFloat(item.PTASA.replace(',', '.'));
-
-    // const mprima_bruta = (msuma_aseg * ptasa) / 100;
-    // const mprima_casco = mprima_bruta * 0.7; // Por ejemplo, asumiendo un 70% para el caso
-
-    //       irif: item.IRIF,
-    //       xcliente: item.XCLIENTE,
-    //       xrif_cliente: item.XRIF_CLIENTE,
-    //       id_inma: item.ID_INMA,
-    //       xnombre: item.XNOMBRE,
-    //       xapellido: item.XAPELLIDO,
-    //       icedula: item.ICEDULA,
-    //       xcedula: item.XCEDULA,
-    //       fnac: item.FNAC,
-    //       cmetodologiapago: parseInt(item.CMETODOLOGIAPAGO),
-    //       cplan_rc: parseInt(item.CPLAN_RC),
-    //       xserialcarroceria: item.XSERIALCARROCERIA,
-    //       xserialmotor: item.XSERIALMOTOR,
-    //       xplaca: item.XPLACA,
-    //       xmarca: item.XMARCA,
-    //       xmodelo: item.XMODELO,
-    //       xversion: item.XVERSION,
-    //       cano: parseInt(item.CANO),
-    //       xcolor: item.XCOLOR,
-    //       xcobertura: item.XCOBERTURA,
-    //       pcasco: parseFloat(item.PTASA.replace(',', '.')),
-    //       msuma_aseg: parseFloat(item.MSUMA_ASEG.replace(',', '.')),
-    //       xdireccionfiscal: item.XDIRECCIONFISCAL,
-    //       xtelefono_emp: item.XTELEFONO_EMP,
-    //       email: item.EMAIL,
-    //       fdesde_pol: item.FDESDE_POL,
-    //       fhasta_pol: item.FHASTA_POL,
-    //       ccorredor: parseInt(item.CCORREDOR),
-    //       cestado: parseInt(item.CESTADO),
-    //       cciudad: parseInt(item.CCIUDAD),
-    //       xzona_postal: item.XZONA_POSTAL,
-    //     }));
-
+      
+        console.log(result)
     this.dataList = result.data.slice(0, result.data.length - 1).map((item: CsvItem) => {
         const msuma_aseg = parseFloat(item.MSUMA_ASEG.replace(',', '.'));
         const ptasa = parseFloat(item.PTASA.replace(',', '.'));
@@ -2689,8 +2650,7 @@ export class AutomobileComponent {
             xnombre: item.XNOMBRE,
             xapellido: item.XAPELLIDO,
             icedula: item.ICEDULA,
-            xcedula: item.XCEDULA,
-            fnac: item.FNAC,
+            xcedula: parseInt(item.XCEDULA),
             cmetodologiapago: parseInt(item.CMETODOLOGIAPAGO),
             cplan_rc: parseInt(item.CPLAN_RC),
             xserialcarroceria: item.XSERIALCARROCERIA,
