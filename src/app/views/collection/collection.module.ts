@@ -10,11 +10,13 @@ import { CollectionRoutingModule } from './collection-routing.module';
 import { PaymentReportComponent } from './payment-report/payment-report.component';
 import { PaymentCancellationComponent } from './payment-cancellation/payment-cancellation.component';
 import { ClipboardModule } from 'ngx-clipboard';
+import { CommissionsComponent } from './commissions/commissions.component';
 
 @NgModule({
   declarations: [
     PaymentReportComponent,
-    PaymentCancellationComponent
+    PaymentCancellationComponent,
+    CommissionsComponent
   ],
   imports: [
     CommonModule,
