@@ -2649,7 +2649,7 @@ export class AutomobileComponent {
             xnombre: item.XNOMBRE,
             xapellido: item.XAPELLIDO,
             icedula: item.ICEDULA,
-            xcedula: parseInt(item.XCEDULA),
+            xcedula: item.XCEDULA,
             cmetodologiapago: parseInt(item.CMETODOLOGIAPAGO),
             cplan_rc: parseInt(item.CPLAN_RC),
             xserialcarroceria: item.XSERIALCARROCERIA,
