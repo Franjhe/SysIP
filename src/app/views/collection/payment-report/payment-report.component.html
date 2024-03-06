@@ -42,7 +42,7 @@
 
               </div>
             <div>
-              <button mat-button matStepperNext (click)="searchDataReceipt()">Siguiente</button>
+              <button class="bg-primary text-light" mat-button matStepperNext (click)="searchDataReceipt()">Siguiente</button>
             </div>
           </form>
         </mat-step>
@@ -95,8 +95,8 @@
             </div>
 
             <div>
-              <button mat-button matStepperPrevious>Atras</button>
-              <button mat-button matStepperNext>Siguiente</button>
+              <button mat-button matStepperPrevious class="bg-warning text-light">Atras</button>
+              <button mat-button matStepperNext class="bg-primary text-light">Siguiente</button>
             </div>
 
           </form>
@@ -118,16 +118,16 @@
             </strong>  
 
             <div class="d-grid gap-2 col-6 mx-auto">
-              <button class="btn btn-primary rounded-pill p-3" type="button" (click)="modalTransfer()"><strong>Transferencia</strong></button>
-              <button class="btn btn-primary rounded-pill p-3" type="button" (click)="modalDeposit()"><strong>Deposito cuenta custodia</strong></button>
-              <button class="btn btn-primary rounded-pill p-3" type="button" (click)="modalPagoMovil()"><strong>Pago Movil</strong></button>
-              <button class="btn btn-primary rounded-pill p-3" type="button" (click)="modalDepositoUSD()"><strong>Transferencia USD</strong></button>
+              <button class="btn bg-success rounded-pill p-3 text-light" type="button" (click)="modalTransfer()"><strong>Transferencia</strong></button>
+              <button class="btn bg-info rounded-pill p-3 text-light" type="button" (click)="modalDeposit()"><strong>Deposito cuenta custodia</strong></button>
+              <button class="btn bg-success rounded-pill p-3 text-light" type="button" (click)="modalPagoMovil()"><strong>Pago Movil</strong></button>
+              <button class="btn bg-info rounded-pill p-3 text-light" type="button" (click)="modalDepositoUSD()"><strong>Transferencia USD</strong></button>
             </div>
 
           </div>
           <div class="mt-5">
-            <button mat-button matStepperPrevious>Atras</button>
-            <button mat-button matStepperNext>Siguiente</button>
+            <button mat-button matStepperPrevious class="bg-warning text-light">Atras</button>
+            <button mat-button matStepperNext class="bg-primary text-light">Siguiente</button>
  
           </div>
         </mat-step>
