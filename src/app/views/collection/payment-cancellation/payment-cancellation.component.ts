@@ -74,6 +74,7 @@ export class PaymentCancellationComponent {
 
   messajeError : any
   error : boolean = false
+  revision : boolean = false
 
   mount : any //monto de la suma de los recibos 
   mountIGTF : any //monto con el calculo igtf 
@@ -381,6 +382,8 @@ export class PaymentCancellationComponent {
             iestadorec : '',
             xobservacion : '',
             mdiferencia : '',
+            idiferencia : '',
+            cmoneda : '',
             recibo: '',
             ptasamon: [item.transaccion.ptasamon],
             mpago: [item.transaccion.mpago],
@@ -600,15 +603,39 @@ export class PaymentCancellationComponent {
     const creds = this.groupReceiptsForm.controls.agrupado as FormArray;
 
     if(creds.at(i).get('iestadorec')?.value == 'ER' ){
-      const data = {
-        transacccion : creds.at(i).get('id')?.value,
-        xobservacion: creds.at(i).get('xobservacion')?.value,
-        mdiferencia: creds.at(i).get('mdiferencia')?.value,
-        iestadorec: creds.at(i).get('iestadorec')?.value,
-        casegurado : creds.at(i).get('casegurado')?.value,
-        recibo : creds.at(i).get('recibo')?.value,
+
+      let data = {}
+      
+      if(creds.at(i).get('cmoneda')?.value == 'BS'){
+        let monto = creds.at(i).get('mdiferencia')?.value * this.bcv
+        data = {
+          transacccion : creds.at(i).get('id')?.value,
+          xobservacion: creds.at(i).get('xobservacion')?.value,
+          mdiferencia: creds.at(i).get('mdiferencia')?.value,
+          mdiferenciaext: monto,
+          iestadorec: creds.at(i).get('iestadorec')?.value,
+          casegurado : creds.at(i).get('casegurado')?.value,
+          recibo : creds.at(i).get('recibo')?.value,
+          cmoneda : creds.at(i).get('cmoneda')?.value,
+          idiferencia : creds.at(i).get('idiferencia')?.value,
+        }
+
+      }else{
+        let monto = creds.at(i).get('mdiferencia')?.value / this.bcv
+        data = {
+          transacccion : creds.at(i).get('id')?.value,
+          xobservacion: creds.at(i).get('xobservacion')?.value,
+          mdiferenciaext: creds.at(i).get('mdiferencia')?.value,
+          mdiferencia: monto,
+          iestadorec: creds.at(i).get('iestadorec')?.value,
+          casegurado : creds.at(i).get('casegurado')?.value,
+          recibo : creds.at(i).get('recibo')?.value,
+          cmoneda : creds.at(i).get('cmoneda')?.value,
+          idiferencia : creds.at(i).get('idiferencia')?.value,
+        }
 
       }
+
       this.http.post(environment.apiUrl + '/api/v1/collection/receipt-under-review/', data ).subscribe((response: any) => {
         if(response.status){
           location.reload()
@@ -629,6 +656,19 @@ export class PaymentCancellationComponent {
         }
   
       })
+    }
+
+  }
+
+  validateMov(i : any){
+
+    const creds = this.groupReceiptsForm.controls.agrupado as FormArray;
+
+    if(creds.at(i).get('iestadorec')?.value == 'ER'){
+      this.revision = true
+    }else{
+      this.revision = false
+
     }
 
   }

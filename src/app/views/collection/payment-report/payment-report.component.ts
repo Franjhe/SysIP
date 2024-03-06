@@ -38,7 +38,6 @@ export class PaymentReportComponent {
   trans: boolean = false
   
   cliente : any
-
   mount : any //monto de la suma de los recibos 
   mountIGTF : any //monto con el calculo igtf 
   mountBs : any //monto en bolivares multiplicado por bcv 
@@ -313,7 +312,6 @@ export class PaymentReportComponent {
           let filterdata = treatments.filter((data: { id: any; }) => data.id == id)
           const xramo = filterdata[0].value
 
-
           this.receipt.push(
             this._formBuilder.group({
               cnpoliza: response.searchReceipt.receipt[i].cnpoliza,
@@ -335,7 +333,9 @@ export class PaymentReportComponent {
               mprimabrutaext: response.searchReceipt.receipt[i].mprimabrutaext,
               ptasamon: response.searchReceipt.receipt[i].ptasamon,
               seleccionado : false,
-              mpendiente: response.searchReceipt.receipt[i].mpendiente,
+              mdiferenciaext: response.searchReceipt.receipt[i].mdiferenciaext,
+              mdiferencia: response.searchReceipt.receipt[i].mdiferencia,
+              xobservacion: response.searchReceipt.receipt[i].xobservacion,
 
             })
           )

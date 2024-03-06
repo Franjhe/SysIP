@@ -15,37 +15,6 @@
               <button class="btn btn-primary rounded-pill p-3" type="button" [disabled]="!GroupReceiptsBool" (click)="updateDifferenceNotification()">Cobrar notificaciones agrupadas</button>
             </div>
 
-            <!-- <div class="mat-elevation-z8 mt-5" formArrayName="agrupado" >
-
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th scope="col">Cedula de Identidad</th>
-                    <th scope="col">Fecha de notificacion de pago</th>
-                    <th scope="col">Tasa BCV</th>
-                    <th scope="col">Pago declarado Bs</th>
-                    <th scope="col">Pago declarado $</th>
-                    <th scope="col">Validar Recibos</th>
-
-                  </tr>
-                </thead>
-                <tbody *ngFor="let creds of agrupado.value; let i=index">
-                  <tr [formGroupName]="i" [class.bg-danger]="creds.iestado_tran == 'ER' ">
-                    <th (click)="dataNotification(creds.ctransaccion)">{{creds.casegurado}}</th>
-                    <td (click)="dataNotification(creds.ctransaccion)">{{creds.freporte}}</td>
-                    <td (click)="dataNotification(creds.ctransaccion)">{{creds.ptasamon}}</td>
-                    <td (click)="dataNotification(creds.ctransaccion)">{{creds.mpago}}</td>
-                    <td (click)="dataNotification(creds.ctransaccion)">{{creds.mpagoext}}</td>
-                    <td>
-                      <mat-checkbox class="example-margin" formControlName="agrupador" (change)="GroupReceipt()"></mat-checkbox>
-                    </td>
-                  </tr>
-
-                </tbody>
-              </table>
-            </div> -->
-
-
             <div class="mt-5 p-2">
               <ngb-accordion
               #accordion formArrayName="agrupado" 
@@ -147,26 +116,41 @@
 
                             <mat-form-field>
                               <mat-label>Estado de recibo</mat-label>
-                              <mat-select formControlName="iestadorec">
+                              <mat-select (selectionChange)="validateMov(i)" formControlName="iestadorec" >
                                 <mat-option value="C">Cobrado</mat-option>
                                 <mat-option value="ER">En revision</mat-option>
                               </mat-select>
                             </mat-form-field>
         
-                            <mat-form-field >
+                            <mat-form-field *ngIf="revision">
                               <mat-label>Diferencia</mat-label>
-                              <input matInput formControlName="mdiferencia"  matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input>
+                              <input matInput formControlName="mdiferencia" type="number" placeholder="Ingrese la diferencia del recibo" #input>
                             </mat-form-field>
 
+                            <mat-form-field *ngIf="revision">
+                              <mat-label>Tipo de Diferencia</mat-label>
+                              <mat-select formControlName="idiferencia">
+                                <mat-option value="D">En contra</mat-option>
+                                <mat-option value="H">A favor</mat-option>
+                              </mat-select>
+                            </mat-form-field>
 
-                            <mat-form-field>
-                              <mat-label>Seleccione el recibo con la diferencia</mat-label>
+                            <mat-form-field *ngIf="revision">
+                              <mat-label>Moneda de cobro de diferencia</mat-label>
+                              <mat-select formControlName="cmoneda">
+                                <mat-option value="BS">BS</mat-option>
+                                <mat-option value="USD">USD</mat-option>
+                              </mat-select>
+                            </mat-form-field>
+
+                            <mat-form-field *ngIf="revision">
+                              <mat-label>Seleccione el Recibo con diferencia</mat-label>
                               <mat-select formControlName="recibo">
                                 <mat-option *ngFor="let recibo of group.value.detalle"  value="{{ recibo.crecibo }}">{{ recibo.crecibo }}</mat-option>
                               </mat-select>
                             </mat-form-field>
         
-                            <mat-form-field >
+                            <mat-form-field *ngIf="revision">
                               <mat-label>Observacion</mat-label>
                               <textarea matInput placeholder="Observacion" formControlName="xobservacion"></textarea>
                             </mat-form-field>

@@ -82,7 +82,7 @@
                     <td >{{creds.xramo}}</td>
                     <td>{{creds.fdesde_rec}}</td>
                     <td > {{creds.fhasta_rec}}</td>
-                    <td > {{creds.mpendiente}}</td>
+                    <td > {{creds.mdiferencia}} Bs - {{creds.mdiferenciaext}} $</td>
                     <td >{{creds.mprimabrutaext}} {{creds.cmoneda}}</td>
                     <td>
                       <mat-checkbox formControlName="seleccionado" (change)="calculateMount(i)"> </mat-checkbox>
@@ -328,7 +328,7 @@
         </ng-template>
 
         <ng-template #Transfer >
-          <mat-dialog-content  style="width: 70%;">
+          <mat-dialog-content >
               <div class="header">
                 <div class="container">
                   <div class="row">
@@ -426,7 +426,7 @@
         </ng-template>
 
         <ng-template #DepositoUSD >
-          <mat-dialog-content  style="width: 70%;">
+          <mat-dialog-content >
               <div class="header">
                 <div class="container">
                   <div class="">
