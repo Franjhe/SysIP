@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, TemplateRef, ViewChild  } from '@angular/core';
 import {FormBuilder, Validators, FormGroup, FormControl , FormArray} from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
@@ -14,9 +14,17 @@ import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition
   styleUrls: ['./commissions.component.scss']
 })
 export class CommissionsComponent {
+  
   groupReceiptsForm = this._formBuilder.group({
     agrupado : this._formBuilder.array([])
   });
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
+  displayedColumns: string[] = ['id', 'name', 'progress'];
+  dataSource = new MatTableDataSource<any> ;
+  listCualquierData: any = []
 
   constructor( private _formBuilder: FormBuilder,
     private http: HttpClient,
@@ -39,7 +47,27 @@ export class CommissionsComponent {
     // })
 
     this.http.post(environment.apiUrl + '/api/v1/commissions', '').subscribe((response: any) => {
-      console.log(response);
+      this.listCualquierData = response.cualquierData.search
+      
+      
+      this.dataSource = new MatTableDataSource(response.cualquierData.search);
+      console.log(this.dataSource);
+      console.log('↑');
+      
+      const listPending = response.cualquierData.search
+
+      // const sumaTotal = listPending.reduce((acumulador: any, search: { mprimabrutaext: any; }) => {
+ 
+      //   acumulador += search.mprimabrutaext;
+        
+      //   return acumulador;
+      // }, 0);
+
+      // this.totalPending = sumaTotal.toFixed(2)
+
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      // console.log(response);
       
       // for(let i = 0; i < response.data.bank.length; i++){
       //   this.bankInternational.push({
@@ -49,5 +77,10 @@ export class CommissionsComponent {
       // }
     })
 
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 }
