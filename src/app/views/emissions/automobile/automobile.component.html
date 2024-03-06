@@ -297,7 +297,7 @@
                 <div class="col-3">
                   <mat-form-field class="example-full-width">
                     <mat-label>Serial de Motor</mat-label>
-                    <input matInput placeholder="Serial de Motor" formControlName="xserialmotor" [maxlength]="17" required (input)="valueSerialMotor($event)">
+                    <input matInput placeholder="Serial de Motor" formControlName="xserialmotor" [maxlength]="17" (input)="valueSerialMotor($event)">
                   </mat-form-field>
                 </div>
                 <div class="col-3">
@@ -305,8 +305,8 @@
                     <mat-label>Coberturas</mat-label>
                     <mat-select formControlName="xcobertura" (selectionChange)="onCoverageChange()">
                       <mat-option value="Rcv">RCV</mat-option>
-                      <mat-option value="Cobertura Amplia" *ngIf="userBroker">COBERTURA AMPLIA</mat-option>
-                      <mat-option value="Perdida Total" *ngIf="userBroker">PERDIDA TOTAL</mat-option>
+                      <mat-option value="Cobertura Amplia" *ngIf="userBroker && casco">COBERTURA AMPLIA</mat-option>
+                      <mat-option value="Perdida Total" *ngIf="userBroker && casco">PERDIDA TOTAL</mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>
@@ -720,7 +720,7 @@
                 </div> -->
               </div>
 
-              <div class="row justify-content-center">
+              <div class="row justify-content-center" *ngIf="messageCoti">
                 <div class="col-3" *ngIf="amountTotalRcv" style="margin-top: 34px;">
                   <h4><strong>Monto Total RCV:  </strong>{{montoTotal}}$</h4>
                   <h4><strong>Tasa del día:</strong> {{bcv}}</h4>
@@ -875,7 +875,7 @@
 
         <div class="d-flex flex-row-reverse" *ngIf="activateGroup">
           <div class="p-2">
-            <button mat-raised-button color="primary" (click)="onSubmitGroup()">Guardar</button>
+            <button mat-raised-button color="primary" (click)="Alert()">Guardar</button>
           </div>
         </div>
       </form>
@@ -974,4 +974,16 @@
   <div class="modal-footer">
     <button type="button" class="btn btn-primary" (click)="modal.close('result')">Aceptar</button>
   </div>
+</ng-template>
+
+<ng-template #Alerta let-dialogRef="dialogRef">
+  <mat-dialog-content>
+    <div>
+      <h1 class="text-center">¿Desea realizar esta Carga de Flota?</h1>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="center">
+    <button mat-button (click)="dialogRef.close('confirm')">Sí</button>
+    <button mat-button (click)="dialogRef.close('cancel')">No</button>
+  </mat-dialog-actions>
 </ng-template>

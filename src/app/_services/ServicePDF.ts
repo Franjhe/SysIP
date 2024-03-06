@@ -1901,7 +1901,7 @@ export class PdfGenerationService {
 				table: {
 				  widths: ['*'],
 				  body: [
-					[{text: [{text: `Aprobado por la Superintendencia de la Actividad Aseguradora FSAA-1-1-0363-2022 mediante Oficio N° de fecha 05-08-2022. El Tomador Asegurado o Beneficiario de las Pólizas, que sienta vulneración de sus derechos, y requiera presentar cualquier denuncia, queja, reclamo o solicitud de asesoría sugerida con ocasión de este contrato de seguros; puede acudir a la Ofici na de la Defensor del Asegurado de la Superintendencia de la Actividad Aseguradora, o comunicarlo a través de la Pagina web: http: //www,lamundialdeseguros.com`}], alignment: 'justify', fontSize: 6, bold: true, border: [false, false, false, false]} ]
+					[{text: [{text: `Aprobado por la Superintendencia de la Actividad Aseguradora mediante Oficio N° FSAA-1-1-0363-2022 de fecha 05-08-2022. El Tomador Asegurado o Beneficiario de las Pólizas, que sienta vulneración de sus derechos, y requiera presentar cualquier denuncia, queja, reclamo o solicitud de asesoría sugerida con ocasión de este contrato de seguros; puede acudir a la Ofici na de la Defensor del Asegurado de la Superintendencia de la Actividad Aseguradora, o comunicarlo a través de la Pagina web: http: //www,lamundialdeseguros.com`}], alignment: 'justify', fontSize: 6, bold: true, border: [false, false, false, false]} ]
 				  ]
 				},
 			},
@@ -2347,25 +2347,7 @@ export class PdfGenerationService {
 					table: {
 					widths: ['*'],
 					body: [
-						[{text: 'Cotización', alignment: 'left', bold: true, border: [false, false, false, false]}]
-						]
-					}
-				},
-				{
-					style: 'data',
-					table: {
-					widths: ['*'],
-					body: [
 						[{text: `La presente cotización de seguro se mantendrá en vigencia durante un plazo máximo de quince (15) días continuos contados a partir del ${this.fcotizacion}, lo que ocurra primero, siempre y no se hayan modificado las condiciones del riesgo o no se haya evidenciado reticencia o declaraciones falsas del solicitante. Esta Cotización no implica la aceptación del riesgo por parte de la compañía.`, alignment: 'justify', border: [false, false, false, false]}]
-						]
-					}
-				},
-				{
-					style: 'data',
-					table: {
-					widths: ['*'],
-					body: [
-						[{text: 'Inspección', alignment: 'left', bold: true, border: [false, false, false, false]}]
 						]
 					}
 				},
@@ -2383,7 +2365,7 @@ export class PdfGenerationService {
 					table: {
 					widths: ['*'],
 					body: [
-						[{text: 'Aprobado por la Superintendencia de la Actividad Aseguradora FSAA-1-1-0363-2022 mediante Oficio N° de fecha 05-08-2022.', alignment: 'justify', border: [false, false, false, false]}]
+						[{text: 'Aprobado por la Superintendencia de la Actividad Aseguradora mediante Oficio N° FSAA-1-1-0363-2022 de fecha 05-08-2022.', alignment: 'justify', border: [false, false, false, false]}]
 						]
 					}
 				},

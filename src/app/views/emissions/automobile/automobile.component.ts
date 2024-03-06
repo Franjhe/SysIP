@@ -1,6 +1,6 @@
-import {Component, ViewChild  } from '@angular/core';
+import {Component, ViewChild, TemplateRef } from '@angular/core';
 import {FormBuilder, Validators, FormGroup, FormControl , FormArray} from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {from, Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
@@ -8,7 +8,11 @@ import { environment } from 'src/environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { PdfGenerationService } from '../../../_services/ServicePDF'
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {
+  MatSnackBar,
+  MatSnackBarHorizontalPosition,
+  MatSnackBarVerticalPosition,
+} from '@angular/material/snack-bar';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { ChangeDetectorRef } from '@angular/core';
 import { format, addYears } from 'date-fns';
@@ -17,11 +21,13 @@ import { initUbii } from '@ubiipagos/boton-ubii-dc';
 import * as Papa from 'papaparse';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 
 interface CsvItem {
   IRIF: string;
   XCLIENTE: string;
   XRIF_CLIENTE: string;
+  ID_INMA: string;
   XNOMBRE: string;
   XAPELLIDO: string;
   ICEDULA: string;
@@ -39,8 +45,9 @@ interface CsvItem {
   CANO: string;
   XCOLOR: string;
   XCOBERTURA: string;
+  PTASA: string;
   MSUMA_ASEG: string;
-  PCASCO: number;
+  PCASCO: string;
   MPRIMA_BRUTA: string;
   MPRIMA_CASCO: string;
   PCATASTROFICO: string;
@@ -93,6 +100,7 @@ export class AutomobileComponent {
   @ViewChild('pickerHasta') pickerHasta!: MatDatepicker<Date>;
   @ViewChild('paymentModal') paymentModal: any;
   @ViewChild(MatPaginator) paginatorGroup!: MatPaginator;
+  @ViewChild('Alerta') alertConfirmation!: TemplateRef<any>;
   displayedColumnsGroup: string[] = ['xnombre', 'xapellido', 'xcedula', 'xmarca', 'xmodelo', 'xversion', 'xcobertura', 'fdesde', 'fhasta'];
   dataSource = new MatTableDataSource<any>([]);
   dataList: any[] = []; 
@@ -191,6 +199,7 @@ export class AutomobileComponent {
   activateGroup: boolean = false;
   activateBrandList: boolean = true;
   activateBrandText: boolean = false;
+  casco: boolean = false;
   primaBruta!: any;
   descuento!: any;
   sumaAsegurada!: any;
@@ -220,7 +229,10 @@ export class AutomobileComponent {
   ccotizacion!: any ; 
   fano!: any ; 
   cplan!: any ; 
-  ctarifa!: any ; 
+  ctarifa!: any ;
+  suma_aseg!: any ;
+  prima!: any ;
+  messageCoti: boolean = false;
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -250,7 +262,7 @@ export class AutomobileComponent {
     xtipovehiculo: [''],
     xcolor: ['', Validators.required],
     xserialcarroceria: ['', [Validators.required, Validators.maxLength(17)]],
-    xserialmotor: ['', [Validators.required, Validators.maxLength(17)]],
+    xserialmotor: ['', [Validators.maxLength(17)]],
     xcobertura: ['', Validators.required],
     ctarifa_exceso: ['', Validators.required],
     cuso: [''],
@@ -326,7 +338,9 @@ export class AutomobileComponent {
                private pdfGenerationService: PdfGenerationService,
                private snackBar: MatSnackBar,
                private cdr: ChangeDetectorRef,
-               private route: ActivatedRoute
+               private route: ActivatedRoute,
+               readonly dialog: MatDialog,
+               private router: Router,
                ) {
                 dateAdapter.setLocale('es');
                 this.route.queryParams.subscribe(params => {
@@ -335,6 +349,8 @@ export class AutomobileComponent {
                   const cplan = params['cplan'];
                   const ctarifa = params['ctarifa_exceso'];
                   const ccorredor = params['ccorredor'];
+                  const msuma_aseg = params['suma_aseg'];
+                  const prima = params['prima'];
                   if(ccorredor){
                     this.paymentButtons = true;
                     this.buttonEmissions = true;
@@ -343,6 +359,8 @@ export class AutomobileComponent {
                   this.fano = fano
                   this.cplan = cplan
                   this.ctarifa = ctarifa
+                  this.suma_aseg = parseFloat(msuma_aseg)
+                  this.prima = parseFloat(prima)
 
                 });
 
@@ -350,6 +368,9 @@ export class AutomobileComponent {
                   this.vehicleFormGroup.get('ccotizacion')?.setValue(this.ccotizacion);
                   this.vehicleFormGroup.get('fano')?.setValue(this.fano);
                   this.vehicleFormGroup.get('ctarifa_exceso')?.setValue(this.ctarifa);
+                  this.planFormGroup.get('msuma_aseg')?.setValue(this.suma_aseg);
+                  this.planFormGroup.get('mprima_casco_text')?.setValue(this.prima);
+                  this.planFormGroup.get('mprima_casco')?.setValue(this.prima);
                   if(!this.vehicleFormGroup.get('ctarifa_exceso')?.value){
                     this.activateRate = true;
                   }else{
@@ -404,20 +425,22 @@ export class AutomobileComponent {
     })
 
     this.today = new Date();
-    const formattedDate = this.today.toISOString();
+    const formattedDate = this.today.toISOString().split('T')[0]; // Obtener solo la parte de la fecha sin la hora
     
     this.receiptFormGroup.get('fdesde')?.setValue(formattedDate);
-
+    
     const fdesdeString = this.receiptFormGroup.get('fdesde')?.value;
-
+    
     if (fdesdeString) {
       const fdesde = new Date(fdesdeString);
       const fhasta = new Date(fdesde);
-
+    
       fhasta.setFullYear(fhasta.getFullYear() + 1);
-
-      const formattedFhasta = fhasta.toISOString();
-      this.receiptFormGroup.get('fhasta')?.setValue(formattedFhasta)
+    
+      const formattedFhasta = fhasta.toISOString().split('T')[0]; // Obtener solo la parte de la fecha sin la hora
+      this.receiptFormGroup.get('fhasta')?.setValue(formattedFhasta);
+      console.log(this.receiptFormGroup.get('fdesde')?.value);
+      console.log(this.receiptFormGroup.get('fhasta')?.value);
     }
 
     this.token = localStorage.getItem('user');
@@ -686,21 +709,10 @@ export class AutomobileComponent {
     const fanoControl = this.vehicleFormGroup.get('fano');
     
     if (fanoControl && fanoControl.value) {
-      const fanoValue = parseInt(fanoControl.value, 10);
-      
-      if (fanoValue > 2021) {
-        this.snackBar.open(`No puedes colocar un año mayor al 2021. Por favor, vuelve a intentarlo`, '', {
-          duration: 5000,
-        });
-        this.vehicleFormGroup.get('fano')?.setValue('')
-      }else if(fanoValue < 1980){
-        this.snackBar.open(`No puedes colocar un año menor a 1980. Por favor, vuelve a intentarlo`, '', {
-          duration: 5000,
-        });
-        this.vehicleFormGroup.get('fano')?.setValue('')
-      }else{
-        this.getBrand()
-      }
+      this.getBrand() 
+      this.snackBar.open(`Si el vehículo no existe por favor localice al ejecutivo comercial para regularizar esa incidencia`, '', {
+        duration: 4000,
+      });
     }
   }
 
@@ -819,7 +831,6 @@ export class AutomobileComponent {
           const selectedValue = this.vehicleFormGroup.get('xversion')?.value;
           const selectedVersion = this.versionList.find(version => version.value === selectedValue);
           if (selectedVersion) {
-            console.log(selectedVersion)
             this.vehicleFormGroup.get('xversion')?.setValue(selectedVersion.value);
             this.vehicleFormGroup.get('npasajeros')?.setValue(selectedVersion.npasajero);
             this.vehicleFormGroup.get('cclasificacion')?.setValue(selectedVersion.cclasificacion);
@@ -875,6 +886,7 @@ export class AutomobileComponent {
       this.vehicleFormGroup.get('xversion')?.setValue(selectedVersion.value);
       this.vehicleFormGroup.get('npasajeros')?.setValue(selectedVersion.npasajero);
       this.vehicleFormGroup.get('cclasificacion')?.setValue(selectedVersion.cclasificacion);
+      this.searchRates();
       this.vehicleFormGroup.get('id_inma')?.setValue(selectedVersion.id_inma);
       this.vehicleFormGroup.get('xtipovehiculo')?.setValue(selectedVersion.xtipovehiculo);
       this.vehicleFormGroup.get('ctarifa_exceso')?.setValue(selectedVersion.ctarifa_exceso);
@@ -1071,6 +1083,23 @@ export class AutomobileComponent {
     this.vehicleFormGroup.get('xuso')?.setValue(selectedUtility.value);
   }
 
+  searchRates(){
+    let data = {
+      cano: this.vehicleFormGroup.get('fano')?.value,
+      xclase: this.vehicleFormGroup.get('cclasificacion')?.value,
+    }
+    this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/search-rates', data).subscribe((response: any) => {
+      if(response.casco){
+        this.casco = response.casco;
+      }else{
+        this.snackBar.open(`${response.message}`, '', {
+          duration: 4000,
+        });
+        this.casco = response.casco;
+      }
+    })
+  }
+
   getClass(){
     this.http.post(environment.apiUrl + '/api/v1/valrep/class', null).subscribe((response: any) => {
       if (response.data.class) {
@@ -1264,9 +1293,7 @@ export class AutomobileComponent {
   }
 
   onCoverageChange() {
-    console.log(this.vehicleFormGroup.get('xcobertura')?.value)
     if(this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv'){
-      console.log('si PASA')
       this.paymentButtons = true;
       this.helmet = false;
       this.activateInspection = false;
@@ -1282,7 +1309,14 @@ export class AutomobileComponent {
     else if(this.vehicleFormGroup.get('xcobertura')?.value !== 'Rcv'){
       this.validateYearsFromHullPrice()
       this.activateInspection = true;
-      this.helmet = true;
+      if(this.ccotizacion){
+        this.helmet = true;
+        this.messageCoti = false;
+      }else{
+        this.helmet = true;
+        this.messageCoti = false;
+      }
+      
       this.paymentButtons = false;
     }
   }
@@ -1296,28 +1330,8 @@ export class AutomobileComponent {
   }
 
   validateYearsFromHullPrice() {
-    console.log(this.vehicleFormGroup.get('xtipovehiculo')?.value)
-    const yearActual = new Date().getFullYear();
-  
-    const yearLimite = yearActual - 16;
-  
-    const fanoValue = this.vehicleFormGroup.get('fano')?.value;
-  
-    if (fanoValue !== null && fanoValue !== undefined) {
-      const fanoNumber = parseInt(fanoValue, 10);
-
-      if (fanoNumber <= yearLimite) {
-        this.snackBar.open(`El año del vehículo es menor a ${yearLimite}, por lo tanto, no se puede prestar el servicio de ${this.vehicleFormGroup.get('xcobertura')?.value}`, '', {
-          duration: 5000,
-        });
-        this.vehicleFormGroup.get('xcobertura')?.setValue('');
-      } else {
-       
-        if(this.vehicleFormGroup.get('xtipovehiculo')?.value){
-          this.getHullPrice()
-        }else{
-        }
-      }
+    if(this.vehicleFormGroup.get('xtipovehiculo')?.value){
+      this.getHullPrice()
     }
   }
 
@@ -1328,33 +1342,36 @@ export class AutomobileComponent {
     };
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/hull-price', data).subscribe((response: any) => {
       if(response.status){
-        let SumaAsegurada = this.sumaAsegurada
-        this.tasaCascoInicial = response.data.ptasa_casco
-        if(this.vehicleFormGroup.get('xcobertura')?.value == 'Cobertura Amplia'){
-          this.planFormGroup.get('pcasco')?.setValue(response.data.ptasa_casco);
-          this.planFormGroup.get('pblindaje')?.setValue(response.data.ptasa_casco);
-          if(this.vehicleFormGroup.get('xtipovehiculo')?.value == 'CARGA' || this.vehicleFormGroup.get('xtipovehiculo')?.value == 'Carga'){
-            this.planFormGroup.get('paditamento')?.setValue(response.data.ptasa_casco);
+        if(!this.ccotizacion){
+          let SumaAsegurada = this.sumaAsegurada
+          this.tasaCascoInicial = response.data.ptasa_casco
+          if(this.vehicleFormGroup.get('xcobertura')?.value == 'Cobertura Amplia'){
+            this.planFormGroup.get('pcasco')?.setValue(response.data.ptasa_casco);
+            this.planFormGroup.get('pblindaje')?.setValue(response.data.ptasa_casco);
+            if(this.vehicleFormGroup.get('xtipovehiculo')?.value == 'CARGA' || this.vehicleFormGroup.get('xtipovehiculo')?.value == 'Carga'){
+              this.planFormGroup.get('paditamento')?.setValue(response.data.ptasa_casco);
+            }else{
+              this.planFormGroup.get('paditamento')?.setValue(null);
+            }
           }else{
-            this.planFormGroup.get('paditamento')?.setValue(null);
+            this.planFormGroup.get('pcasco')?.setValue(response.data.pperdida_total);
+            this.planFormGroup.get('pblindaje')?.setValue(response.data.pperdida_total);
+            if(this.vehicleFormGroup.get('xtipovehiculo')?.value == 'CARGA' || this.vehicleFormGroup.get('xtipovehiculo')?.value == 'Carga'){
+              this.planFormGroup.get('paditamento')?.setValue(response.data.pperdida_total);
+            }else{
+              this.planFormGroup.get('paditamento')?.setValue(null);
+            }
           }
-        }else{
-          this.planFormGroup.get('pcasco')?.setValue(response.data.pperdida_total);
-          this.planFormGroup.get('pblindaje')?.setValue(response.data.pperdida_total);
-          if(this.vehicleFormGroup.get('xtipovehiculo')?.value == 'CARGA' || this.vehicleFormGroup.get('xtipovehiculo')?.value == 'Carga'){
-            this.planFormGroup.get('paditamento')?.setValue(response.data.pperdida_total);
+          
+          this.planFormGroup.get('msuma_aseg')?.setValue(this.sumaAsegurada);
+          if(this.currentUser.data.crol == 5 || this.currentUser.data.crol == 7){
+            this.planFormGroup.get('msuma_aseg')?.enable();
           }else{
-            this.planFormGroup.get('paditamento')?.setValue(null);
+            this.planFormGroup.get('msuma_aseg')?.disable();
           }
+          this.planFormGroup.get('msuma_aseg_text')?.setValue(this.formatCurrency(SumaAsegurada));
+  
         }
-        
-        this.planFormGroup.get('msuma_aseg')?.setValue(this.sumaAsegurada);
-        if(this.currentUser.data.crol == 5){
-          this.planFormGroup.get('msuma_aseg')?.enable();
-        }else{
-          this.planFormGroup.get('msuma_aseg')?.disable();
-        }
-        this.planFormGroup.get('msuma_aseg_text')?.setValue(this.formatCurrency(SumaAsegurada));
 
         this.openDiscount();
       }
@@ -1497,6 +1514,7 @@ export class AutomobileComponent {
     const descuento = this.planFormGroup.get('pdescuento')?.value;
     const pcascoValue = this.planFormGroup.get('pcasco')?.value;
     const casco = this.planFormGroup.get('mprima_casco')?.value;
+    const sumaAseg = parseFloat(this.planFormGroup.get('msuma_aseg')?.value || '')
     
     let division: number = 0;
     let multiplicacion: number = 0;
@@ -1509,9 +1527,9 @@ export class AutomobileComponent {
 
         const cascoNumero = parseFloat(casco);
       
-        division = restRecharge / 100;
-        multiplicacion = cascoNumero * division;
-        calculo_descuento = cascoNumero - multiplicacion;
+        // division = restRecharge / 100;
+        // multiplicacion = cascoNumero * division;
+        calculo_descuento = restRecharge * sumaAseg / 100;
 
         let valorTotal = calculo_descuento.toFixed(2)
   
@@ -1539,6 +1557,7 @@ export class AutomobileComponent {
     const precargaValue = this.planFormGroup.get('precarga')?.value;
     const pcascoValue = this.planFormGroup.get('pcasco')?.value;
     const casco = this.planFormGroup.get('mprima_casco')?.value;
+    const sumaAseg = parseFloat(this.planFormGroup.get('msuma_aseg')?.value || '')
 
     let division: number = 0;
     let multiplicacion: number = 0;
@@ -1551,10 +1570,13 @@ export class AutomobileComponent {
         const sumRecharge = pcascoValue + calculatedAmount;
   
         const cascoNumero = parseFloat(casco);
+
+        console.log(sumRecharge)
+        console.log(this.planFormGroup.get('msuma_aseg')?.value)
         
-        division = sumRecharge / 100;
-        multiplicacion = cascoNumero * division;
-        calculo_recarga = cascoNumero + multiplicacion;
+        // division = sumRecharge / 100;
+        // multiplicacion = cascoNumero * division;
+        calculo_recarga = sumRecharge * sumaAseg / 100;
   
         let valorTotal = calculo_recarga.toFixed(2)
   
@@ -1592,8 +1614,6 @@ export class AutomobileComponent {
 
         this.sumaAseguradaMax = MaxSum.toFixed(2)
         this.sumaAseguradaMin = MinSum.toFixed(2)
-
-        console.log(this.sumaAseguradaMax)
 
         if(msumaAseg > this.sumaAseguradaMax){
           this.snackBar.open('La Suma Asegurada excedió el 30%.', '', {
@@ -2172,48 +2192,63 @@ export class AutomobileComponent {
     const primaCascoControl = this.planFormGroup.get('mprima_casco_text');
     const primaBlindajeControl = this.planFormGroup.get('mprima_blindaje');
     const primaAditamentoControl = this.planFormGroup.get('mprima_aditamento');
-  
-    if (primaCascoControl && primaCascoControl.value) {
-      this.xprimaTotalCasco = Number(primaCascoControl.value);
-  
-      if (primaBlindajeControl && primaBlindajeControl.value) {
-        this.xprimaTotalCasco += Number(primaBlindajeControl.value);
-      }
 
-      if (primaAditamentoControl && primaAditamentoControl.value) {
-        this.xprimaTotalCasco += Number(primaAditamentoControl.value);
-      }
-  
-        for(let i = 0; i < this.accesorios.value.length; i++){
-          if (
-            this.accesorios.value[i].xprimaAccesorio !== 0 &&
-            this.accesorios.value[i].xprimaAccesorio !== ""
-          ) {
-            this.xprimaTotalCasco += Number(this.accesorios.value[i].xprimaAccesorio);
-          }
+    if(this.ccotizacion){
 
+      let motin = parseFloat(this.primaMotin) 
+      let riesgo = parseFloat(this.primaRiesgo) 
+      let robo = parseFloat(this.primaRobo) 
+
+      let resta = this.prima - motin - riesgo - robo - this.montoTotal
+
+      this.planFormGroup.get('mprima_casco')?.setValue(resta.toString())
+
+      this.primaFinal = this.prima;
+    }else{
+      if (primaCascoControl && primaCascoControl.value) {
+        this.xprimaTotalCasco = Number(primaCascoControl.value);
+    
+        if (primaBlindajeControl && primaBlindajeControl.value) {
+          this.xprimaTotalCasco += Number(primaBlindajeControl.value);
         }
-          
-          if(this.primaMotin !== 0 || this.primaMotin !== ""){
-            this.xprimaTotalCasco += Number(this.primaMotin)
-          }
-
-            if(this.primaRiesgo !== 0 || this.primaRiesgo !== ""){
-              this.xprimaTotalCasco += Number(this.primaRiesgo)
+  
+        if (primaAditamentoControl && primaAditamentoControl.value) {
+          this.xprimaTotalCasco += Number(primaAditamentoControl.value);
+        }
+    
+          for(let i = 0; i < this.accesorios.value.length; i++){
+            if (
+              this.accesorios.value[i].xprimaAccesorio !== 0 &&
+              this.accesorios.value[i].xprimaAccesorio !== ""
+            ) {
+              this.xprimaTotalCasco += Number(this.accesorios.value[i].xprimaAccesorio);
             }
-
-              if(this.primaRobo !== 0 || this.primaRobo !== ""){
-                this.xprimaTotalCasco += Number(this.primaRobo)
+  
+          }
+            
+            if(this.primaMotin !== 0 || this.primaMotin !== ""){
+              this.xprimaTotalCasco += Number(this.primaMotin)
+            }
+  
+              if(this.primaRiesgo !== 0 || this.primaRiesgo !== ""){
+                this.xprimaTotalCasco += Number(this.primaRiesgo)
               }
-
-      this.xprimaTotalCasco = Number(this.xprimaTotalCasco.toFixed(2));
-
-      this.primaFinal = this.xprimaTotalCasco + this.montoTotal;
-      // Corregir redondeo aquí también
-      this.primaFinal = Number(this.primaFinal.toFixed(2));
-    } else {
-      this.xprimaTotalCasco = 0;
+  
+                if(this.primaRobo !== 0 || this.primaRobo !== ""){
+                  this.xprimaTotalCasco += Number(this.primaRobo)
+                }
+  
+        this.xprimaTotalCasco = Number(this.xprimaTotalCasco.toFixed(2));
+  
+        this.primaFinal = this.xprimaTotalCasco + this.montoTotal;
+        // Corregir redondeo aquí también
+        this.primaFinal = Number(this.primaFinal.toFixed(2));
+      } else {
+        this.xprimaTotalCasco = 0;
+      }
     }
+  
+
   }
 
   searchQuotes(){
@@ -2575,91 +2610,117 @@ export class AutomobileComponent {
   }
 
   onFileSelected(event: any): void {
-    console.log(this.receiptFormGroup.get('irecibo')?.value)
-    if(!this.receiptFormGroup.get('irecibo')?.value){
-      this.snackBar.open('Lo sentimos, para realizar la carga de archivo por favor seleccione el Tipo de Recibo', '', {
-        duration: 4000,
-      });
-    }else{
-      const file = event.target.files[0];
+    const tipoRecibo = this.receiptFormGroup.get('irecibo')?.value;
   
-      if (file) {
-        Papa.parse(file, {
-          header: true,
-          delimiter: ';',
-          quoteChar: '"',
-          complete: (result: any) => {
-            this.dataList = result.data.slice(0, result.data.length - 1).map((item: CsvItem) => ({
-              irif: item.IRIF,
-              xcliente: item.XCLIENTE,
-              xrif_cliente: item.XRIF_CLIENTE,
-              xnombre: item.XNOMBRE,
-              xapellido: item.XAPELLIDO,
-              icedula: item.ICEDULA,
-              xcedula: item.XCEDULA,
-              fnac: item.FNAC,
-              cmetodologiapago: item.CMETODOLOGIAPAGO,
-              cplan_rc: item.CPLAN_RC,
-              ctarifa_exceso: item.CTARIFA_EXCESO,
-              xserialcarroceria: item.XSERIALCARROCERIA,
-              xserialmotor: item.XSERIALMOTOR,
-              xplaca: item.XPLACA,
-              xmarca: item.XMARCA,
-              xmodelo: item.XMODELO,
-              xversion: item.XVERSION,
-              cano: item.CANO,
-              xcolor: item.XCOLOR,
-              xcobertura: item.XCOBERTURA,
-              msuma_aseg: item.MSUMA_ASEG,
-              pcasco: item.PCASCO,
-              mprima_bruta: item.MPRIMA_BRUTA,
-              mprima_casco: item.MPRIMA_CASCO,
-              pcatastrofico: item.PCATASTROFICO,
-              mcatastrofico: item.MCATASTROFICO,
-              pmotin: item.PMOTIN,
-              mmotin: item.MMOTIN,
-              msuma_blindaje: item.MSUMA_BLINDAJE,
-              pblindaje: item.PBLINDAJE,
-              mprima_blindaje: item.MPRIMA_BLINDAJE,
-              xdireccionfiscal: item.XDIRECCIONFISCAL,
-              xtelefono_emp: item.XTELEFONO_EMP,
-              email: item.EMAIL,
-              femision: item.FEMISION,
-              fdesde_pol: item.FDESDE_POL,
-              fhasta_pol: item.FHASTA_POL,
-              ncapacidad_p: item.NCAPACIDAD_P,
-              mcapacidad_c: item.MCAPACIDAD_C,
-              xuso: item.XUSO,
-              ccorredor: item.CCORREDOR,
-              cpais: item.CPAIS,
-              cestado: item.CESTADO,
-              cciudad: item.CCIUDAD,
-              cestatusgeneral: item.CESTATUSGENERAL,
-              cclasificacion: item.CCLASIFICACION,
-              xzona_postal: item.XZONA_POSTAL,
-            }));
-            
-            this.groupList = this.dataList;
-            this.dataSource = new MatTableDataSource<any>(this.groupList);
-            this.dataSource.paginator = this.paginatorGroup;
-            this.activateGroup = true;
-          },
-          error: (error: any) => {
-            console.error('Error al analizar el archivo CSV:', error);
-          }
-        });
-      }
+    if (!tipoRecibo) {
+      this.snackBar.open(`Lo sentimos, para realizar la carga de archivo por favor seleccione el Tipo de Recibo`, '', {
+        duration: 3000,
+      });
+      
+      // Restablecer la selección del archivo
+      event.target.value = null;
+      
+      return; // Detener el proceso si no se selecciona un Tipo de Recibo
     }
+  
+    const file = event.target.files[0];
+  
+    if (!file) {
+      return; // Detener el proceso si no se selecciona un archivo
+    }
+  
+    Papa.parse(file, {
+      header: true,
+      //delimiter: [',', ';'],
+      quoteChar: '"',
+      complete: (result: any) => {
+      
+        console.log(result)
+    this.dataList = result.data.slice(0, result.data.length - 1).map((item: CsvItem) => {
+        const msuma_aseg = parseFloat(item.MSUMA_ASEG.replace(',', '.'));
+        const ptasa = parseFloat(item.PTASA.replace(',', '.'));
+    
+        const mprima = (msuma_aseg * ptasa) / 100;
+    
+        return {
+            irif: item.IRIF,
+            xcliente: item.XCLIENTE,
+            xrif_cliente: item.XRIF_CLIENTE,
+            id_inma: item.ID_INMA,
+            xnombre: item.XNOMBRE,
+            xapellido: item.XAPELLIDO,
+            icedula: item.ICEDULA,
+            xcedula: parseInt(item.XCEDULA),
+            cmetodologiapago: parseInt(item.CMETODOLOGIAPAGO),
+            cplan_rc: parseInt(item.CPLAN_RC),
+            xserialcarroceria: item.XSERIALCARROCERIA,
+            xserialmotor: item.XSERIALMOTOR,
+            xplaca: item.XPLACA,
+            xmarca: item.XMARCA,
+            xmodelo: item.XMODELO,
+            xversion: item.XVERSION,
+            cano: parseInt(item.CANO),
+            xcolor: item.XCOLOR,
+            xcobertura: item.XCOBERTURA,
+            pcasco: ptasa,
+            msuma_aseg: msuma_aseg,
+            mprima_bruta: mprima,
+            mprima_casco: mprima,
+            xdireccionfiscal: item.XDIRECCIONFISCAL,
+            xtelefono_emp: item.XTELEFONO_EMP,
+            email: item.EMAIL,
+            fdesde_pol: item.FDESDE_POL,
+            fhasta_pol: item.FHASTA_POL,
+            ccorredor: parseInt(item.CCORREDOR),
+            cestado: parseInt(item.CESTADO),
+            cciudad: parseInt(item.CCIUDAD),
+            xzona_postal: item.XZONA_POSTAL,
+        };
+    });
+          
+        this.groupList = this.dataList;
+        this.dataSource = new MatTableDataSource<any>(this.groupList);
+        this.dataSource.paginator = this.paginatorGroup;
+        this.activateGroup = true;
+      },
+      error: (error: any) => {
+        console.error('Error al analizar el archivo CSV:', error);
+      }
+    });
   }
   
+  Alert(): void {
+    const dialogRef = this.dialog.open(this.alertConfirmation);
+  
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(result)
+      if (result === 'confirm') {
+        this.onSubmitGroup();
+      }
+    });
+  }
 
   onSubmitGroup(){
     let data = {
       group: this.groupList
     }
-
+    console.log(data)
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/group', data).subscribe((response: any) => {
-
+      if(response.status){
+        if(response.error){
+          let errorMessage = response.error.join('\n');
+          window.alert(`${errorMessage}`)
+          this.snackBar.open(`Lamentablemente, la carga de la flota no pudo ser completada debido a la falta de información sobre los vehículos en INMA. Por favor, asegúrese de cargar los datos de los vehículos correspondientes y vuelva a intentarlo.`, '', {
+            duration: 10000,
+          });
+        }else{ 
+          if (window.confirm("¡La Flota se ha cargado exitosamente!... ¿Deseas Consultar esa Flota?")) {
+            this.router.navigate(['/policy/automobile-policy']);
+          } else {
+            location.reload();
+          }
+        }
+      }
     })
   }
 }

@@ -17,6 +17,7 @@ import { PdfGenerationService } from '../../../_services/ServicePDF'
 export class AutomobileQuotesComponent {
 
   @ViewChild("coverageModal") private coverageModal!: TemplateRef<any>;
+  @ViewChild("updateSAModal") private updateSAModal!: TemplateRef<any>;
 
   isActive: boolean = false;
   public isYearValid: boolean = false;
@@ -60,6 +61,7 @@ export class AutomobileQuotesComponent {
   bamplia: boolean = false;
   bperdida: boolean = false;
   tasas: boolean = false;
+  notUpdate: boolean = false;
 
   cotizacion!: any;
   nombreCompleto!: any;
@@ -80,6 +82,12 @@ export class AutomobileQuotesComponent {
   cagencia!: any
   cproductor!: any
   xcorreo_emisor!: any
+  sumaAseguradaInicial!: any
+  descuento!: any;
+  recargo!: any
+  sumaAseguradaMax!: any;
+  sumaAseguradaMin!: any;
+  primaFinal!: any;
 
   quotesForm = this._formBuilder.group({
     xmarca: ['', Validators.required],
@@ -98,6 +106,8 @@ export class AutomobileQuotesComponent {
     xcorredor: [''],
     pcasco: [''],
     pperdida: [''],
+    pdescuento: [''],
+    precarga: [''],
   });
 
   constructor(private _formBuilder: FormBuilder,
@@ -173,21 +183,10 @@ export class AutomobileQuotesComponent {
     const fanoControl = this.quotesForm.get('fano');
 
     if (fanoControl && fanoControl.value) {
-      const fanoValue = parseInt(fanoControl.value, 10);
-
-      if (fanoValue > 2021) {
-        this.snackBar.open(`No puedes colocar un año mayor al 2021. Por favor, vuelve a intentarlo`, '', {
-          duration: 5000,
-        });
-        this.quotesForm.get('fano')?.setValue('')
-      } else if (fanoValue < 1980) {
-        this.snackBar.open(`No puedes colocar un año menor a 1980. Por favor, vuelve a intentarlo`, '', {
-          duration: 5000,
-        });
-        this.quotesForm.get('fano')?.setValue('')
-      } else {
-        this.getBrand()
-      }
+      this.getBrand()
+      this.snackBar.open(`Si el vehículo no existe por favor localice al ejecutivo comercial para regularizar esa incidencia`, '', {
+        duration: 4000,
+      });
     }
   }
 
@@ -317,7 +316,8 @@ export class AutomobileQuotesComponent {
       this.quotesForm.get('id_inma')?.setValue(selectedVersion.id_inma);
       this.quotesForm.get('msuma_aseg')?.setValue(selectedVersion.msum);
       this.quotesForm.get('xclasificacion')?.setValue(selectedVersion.cclasificacion);
-      this.getHullPrice()
+      this.searchRates();
+      this.getHullPrice();
       this.quotesForm.get('npasajeros')?.setValue(selectedVersion.npasajero);
 
       if (!this.quotesForm.get('ctarifa_exceso')?.value) {
@@ -327,6 +327,24 @@ export class AutomobileQuotesComponent {
         this.activateRate = false;
       }
     }
+    this.sumaAseguradaInicial = selectedVersion.msum;
+  }
+
+  searchRates(){
+    let data = {
+      cano: this.quotesForm.get('fano')?.value,
+      xclase: this.quotesForm.get('xclasificacion')?.value,
+    }
+    this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/search-rates', data).subscribe((response: any) => {
+      if(response.casco){
+        this.isYearValid = response.casco
+      }else{
+        this.snackBar.open(`${response.message}`, '', {
+          duration: 4000,
+        });
+        this.isYearValid = response.casco
+      }
+    })
   }
 
   getBroker() {
@@ -432,6 +450,19 @@ export class AutomobileQuotesComponent {
     this.loading = true;
     this.buttonQuotes = false;
 
+    let xtipo;
+    const ctarifa_exceso = this.quotesForm.get('ctarifa_exceso')?.value;
+
+    if (ctarifa_exceso !== null && ctarifa_exceso !== undefined) {
+      const parsedValue = parseInt(ctarifa_exceso, 10);
+    
+      if (!isNaN(parsedValue) && parsedValue === 20) {
+        xtipo = 'M';
+      } else {
+        xtipo = 'V';
+      }
+    }
+
     let data = {
       id_inma: this.quotesForm.get('id_inma')?.value,
       fano: this.quotesForm.get('fano')?.value,
@@ -443,6 +474,7 @@ export class AutomobileQuotesComponent {
       xclasificacion: this.quotesForm.get('xclasificacion')?.value,
       ncapacidad_p: this.quotesForm.get('npasajeros')?.value,
       ccorredor: this.quotesForm.get('ccorredor')?.value,
+      xtipo: xtipo
     }
 
     this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/create', data).subscribe((response: any) => {
@@ -453,6 +485,7 @@ export class AutomobileQuotesComponent {
         this.quotesBoolean = true;
         this.quotesList = response.data.list.result;
         this.quotesList.sort((a, b) => a.xplan_rc > b.xplan_rc ? 1 : -1);
+        console.log(this.quotesList)
 
         this.nombreCompleto = data.xnombre + ' ' + data.xapellido;
         this.vehiculo = this.quotesForm.get('xmarca')?.value + ' ' + this.quotesForm.get('xmodelo')?.value;
@@ -460,15 +493,20 @@ export class AutomobileQuotesComponent {
         this.version = this.quotesForm.get('xversion')?.value
 
         const fanoValue = this.quotesForm.get('fano')?.value;
-        this.isYearValid = fanoValue !== null && fanoValue !== undefined && parseInt(fanoValue, 10) >= 2007;
+        // this.isYearValid = fanoValue !== null && fanoValue !== undefined && parseInt(fanoValue, 10) >= 2007;
 
         this.xcorredor = response.data.list.result[0].xcorredor
         this.xcorreocorredor = response.data.list.result[0].xcorreocorredor
         this.xtelefonocorredor = response.data.list.result[0].xtelefonocorredor
+      
+        if(this.currentUser.data.ccorredor){
+          this.notUpdate = false;
+        }else{
+          this.notUpdate = true;
+        }
 
 
         if(this.xcorreo_emisor){
-          console.log('holaaaa')
           let data2 = {
             name: this.quotesForm.get('xnombre')?.value?.toUpperCase(),
             last_name: this.quotesForm.get('xapellido')?.value?.toUpperCase(),
@@ -504,6 +542,268 @@ export class AutomobileQuotesComponent {
     this.searchCoverages();
   }
 
+  updateSA() {
+    const modalRef = this.modalService.open(this.updateSAModal, { centered: true, size: 'lg' });
+  
+    modalRef.result.then((result) => {
+      if (result === 'result') {
+        let recarga = this.quotesForm.get('precarga')?.value
+        let descuento = this.quotesForm.get('pdescuento')?.value
+        if(recarga){
+          this.quotesList.forEach(quote => {
+            const recargaPorcentaje = parseFloat(recarga || '');
+            const recargaDecimal = recargaPorcentaje / 100;
+        
+            const mtotal_rcv = parseFloat(quote.mtotal_rcv);
+            const mtotal_amplia = parseFloat(quote.mtotal_amplia);
+            const mtotal_perdida = parseFloat(quote.mtotal_perdida);
+        
+            // Comprobación de valores numéricos
+            if (!isNaN(mtotal_rcv) && !isNaN(mtotal_amplia) && !isNaN(mtotal_perdida)) {
+                // Realizar los cálculos necesarios para cada objeto
+                let mtotalAmpliaNuevo = mtotal_amplia - mtotal_rcv;
+                let mtotalPerdidaNuevo = mtotal_perdida - mtotal_rcv;
+        
+                // Aplicar el descuento al resultado de la resta
+                mtotalAmpliaNuevo *= (1 + recargaDecimal);
+                mtotalPerdidaNuevo *= (1 + recargaDecimal);
+        
+                // Sumar nuevamente mtotal_rcv al resultado del descuento
+                let mtotalamplia = mtotalAmpliaNuevo + mtotal_rcv;
+                let mtotalperdida = mtotalPerdidaNuevo + mtotal_rcv;
+        
+                // Asignar los nuevos valores al objeto original
+                quote.mtotal_amplia = mtotalamplia.toFixed(2);
+                quote.mtotal_perdida = mtotalperdida.toFixed(2);
+            }
+          });
+          this.updatePremiums()
+        }else if(descuento){
+          this.quotesList.forEach(quote => {
+            const descuentoPorcentaje = parseFloat(descuento || '');
+            const descuentoDecimal = descuentoPorcentaje / 100;
+        
+            const mtotal_rcv = parseFloat(quote.mtotal_rcv);
+            const mtotal_amplia = parseFloat(quote.mtotal_amplia);
+            const mtotal_perdida = parseFloat(quote.mtotal_perdida);
+        
+            // Comprobación de valores numéricos
+            if (!isNaN(mtotal_rcv) && !isNaN(mtotal_amplia) && !isNaN(mtotal_perdida)) {
+                // Realizar los cálculos necesarios para cada objeto
+                let mtotalAmpliaNuevo = mtotal_amplia - mtotal_rcv;
+                let mtotalPerdidaNuevo = mtotal_perdida - mtotal_rcv;
+        
+                // Aplicar el descuento al resultado de la resta
+                mtotalAmpliaNuevo *= (1 - descuentoDecimal);
+                mtotalPerdidaNuevo *= (1 - descuentoDecimal);
+        
+                // Sumar nuevamente mtotal_rcv al resultado del descuento
+                let mtotalamplia = mtotalAmpliaNuevo + mtotal_rcv;
+                let mtotalperdida = mtotalPerdidaNuevo + mtotal_rcv;
+        
+                // Asignar los nuevos valores al objeto original
+                quote.mtotal_amplia = mtotalamplia.toFixed(2);
+                quote.mtotal_perdida = mtotalperdida.toFixed(2);
+            }
+          });
+          this.updatePremiums()
+        }else{
+          this.quotesList.forEach(quote => {
+            const mtotal_rcv = parseFloat(quote.mtotal_rcv);
+            const tasa_amplia = parseFloat(quote.pcobertura_amplia);
+            const tasa_perdida = parseFloat(quote.pperdida_total);
+
+            if(this.quotesForm.get('msuma_aseg')?.value == null || this.quotesForm.get('msuma_aseg')?.value == undefined){
+              this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+            }
+
+            const suma_aseg = parseFloat(this.quotesForm.get('msuma_aseg')?.value || '');
+
+            let max = this.sumaAseguradaInicial * 0.30
+            let min = this.sumaAseguradaInicial * 0.10
+
+            let MaxSum = this.sumaAseguradaInicial + max;
+            let MinSum = this.sumaAseguradaInicial - min;
+
+            this.sumaAseguradaMax = MaxSum.toFixed(2)
+            this.sumaAseguradaMin = MinSum.toFixed(2)
+
+            if(suma_aseg > this.sumaAseguradaMax){
+              this.snackBar.open('La Suma Asegurada excedió el 30%.', '', {
+                duration: 5000,
+              });
+    
+              this.quotesForm.get('msuma_aseg')?.setValue(suma_aseg.toString());
+              return
+            }else{
+              const calculoCA = suma_aseg * tasa_amplia / 100;
+              const calculoPE = suma_aseg * tasa_perdida / 100;
+
+              console.log(calculoCA)
+  
+              const sumaCA = calculoCA + mtotal_rcv;
+              const sumaPE = calculoPE + mtotal_rcv;
+  
+              quote.mtotal_amplia = sumaCA.toFixed(2);
+              quote.mtotal_perdida = sumaPE.toFixed(2);
+            }
+
+            if(suma_aseg < this.sumaAseguradaMin){
+              this.snackBar.open('La Suma Asegurada es menor al 10%.', '', {
+                duration: 5000,
+              });
+    
+              this.quotesForm.get('msuma_aseg')?.setValue(suma_aseg.toString());
+              return
+            }else{
+              const pcatastrofico = 0.10;
+              const msumaAsegRobo = 600;
+              const probo = 4.48;
+              const pmotinCA = 0.88;
+              const pmotinPE = 0.59;
+
+              const calculoCA = suma_aseg * tasa_amplia / 100;
+              const calculoPE = suma_aseg * tasa_perdida / 100;
+
+              const motinCA = (suma_aseg * pmotinCA) / 100;
+              const motinPE = (suma_aseg * pmotinPE) / 100;
+              const catastrofico = (suma_aseg * pcatastrofico) / 100;
+              const robo = (msumaAsegRobo * probo) / 100;
+
+              const CA = motinCA + catastrofico + robo;
+              const PE = motinPE + catastrofico + robo;
+
+              const resultCA = calculoCA + CA
+              const resultPE = calculoPE + PE
+  
+              const sumaCA = resultCA + mtotal_rcv;
+              const sumaPE = resultPE + mtotal_rcv;
+  
+              quote.mtotal_amplia = sumaCA.toFixed(2);
+              quote.mtotal_perdida = sumaPE.toFixed(2);
+            }
+
+
+          })
+          this.updatePremiums()
+        }
+      }
+    }).catch((reason) => {
+      // Manejar errores aquí
+    });
+}
+
+  getDiscount() {
+    const descuento = this.quotesForm.get('pdescuento')?.value;
+    const sum_aseg = this.quotesForm.get('msuma_aseg')?.value
+
+    if (descuento) {
+        if (typeof descuento === 'number') {
+
+            if(this.currentUser.data.crol === 8){
+              if(descuento > 20){
+                window.alert('No se puede hacer un descuento de más del 20%');
+                this.quotesForm.get('pdescuento')?.setValue('');
+                this.quotesForm.get('precarga')?.enable();
+              }else{
+                this.quotesForm.get('precarga')?.disable();
+                this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+              }
+            }else{
+              this.quotesForm.get('precarga')?.disable();
+              this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+            }
+            return this.sumaAseguradaInicial;
+        } else {
+            return 0;
+        }
+    } else {
+        this.quotesForm.get('precarga')?.enable();
+        this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+
+        return 0;
+    }
+    
+  }
+
+  getRecharge(){
+    const recarga = this.quotesForm.get('precarga')?.value;
+    const sum_aseg = this.quotesForm.get('msuma_aseg')?.value
+    
+    if (recarga) {
+        if (typeof recarga === 'number') {
+            if(recarga == 0 || recarga == null){
+              this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+            }
+
+            if(this.currentUser.data.crol === 8){
+              if(recarga > 20){
+                window.alert('No se puede hacer una recarga de más del 20%');
+                this.quotesForm.get('precarga')?.setValue('');
+                this.quotesForm.get('pdescuento')?.enable();
+              }else{
+                this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+                this.quotesForm.get('pdescuento')?.disable();
+              }
+            }else{
+              this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+              this.quotesForm.get('pdescuento')?.disable();
+            }
+            this.recargo = this.sumaAseguradaInicial
+            
+            return this.sumaAseguradaInicial;
+        } else {
+            return 0;
+        }
+    } else {
+        this.quotesForm.get('pdescuento')?.enable();
+        this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+
+        return 0;
+    }
+  }
+
+  getSum(){
+    if(this.quotesForm.get('msuma_aseg')?.value == null || this.quotesForm.get('msuma_aseg')?.value == undefined){
+      this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+    }
+
+    const suma_aseg = parseFloat(this.quotesForm.get('msuma_aseg')?.value || '');
+
+    let max = this.sumaAseguradaInicial * 0.30
+    let min = this.sumaAseguradaInicial * 0.10
+
+    let MaxSum = this.sumaAseguradaInicial + max;
+    let MinSum = this.sumaAseguradaInicial - min;
+
+    this.sumaAseguradaMax = MaxSum.toFixed(2)
+    this.sumaAseguradaMin = MinSum.toFixed(2)
+
+    if(suma_aseg > this.sumaAseguradaMax){
+      window.alert('La Suma Asegurada excedió el 30%.');
+      this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial);
+      return
+    }
+
+    if(suma_aseg < this.sumaAseguradaMin){
+      window.alert('La Suma Asegurada es menor al 10%.');
+      this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial);
+      return
+    }
+  }
+
+  updatePremiums(){
+    let data = {
+      ccotizacion: this.cotizacion,
+      quotes: this.quotesList,
+      msuma_aseg: this.quotesForm.get('msuma_aseg')?.value
+    }
+    this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/update-premiums', data).subscribe((response: any) => {
+      if(response.status){
+      }
+    })
+  }
+
   searchCoverages() {
     this.http.post(environment.apiUrl + '/api/v1/quotes/automobile/search-coverages', null).subscribe((response: any) => {
       if (response.status) {
@@ -520,7 +820,7 @@ export class AutomobileQuotesComponent {
   }
 
   onQuotePdf() {
-    const observable = from(this.pdfGenerationService.LoadDataQuotes(this.cotizacion, this.montoRCV, this.montoAmplia, this.montoPerdida, this.allCoverages, this.planPdf, this.dataVehicle, this.quotesForm.get('fano')?.value, this.xcorredor, this.xcorreocorredor, this.xtelefonocorredor));
+    const observable = from(this.pdfGenerationService.LoadDataQuotes(this.cotizacion, this.montoRCV, parseFloat(this.montoAmplia), parseFloat(this.montoPerdida), this.allCoverages, this.planPdf, this.dataVehicle, this.quotesForm.get('fano')?.value, this.xcorredor, this.xcorreocorredor, this.xtelefonocorredor));
 
     observable.subscribe(
       (data) => {
@@ -531,7 +831,7 @@ export class AutomobileQuotesComponent {
     );
   }
 
-  onToggle(cobertura: string, plan: number) {
+  onToggle(cobertura: string, plan: number, prima: any) {
     if (cobertura == 'Rcv') {
       this.brcv = true;
       this.bamplia = false;
@@ -540,10 +840,12 @@ export class AutomobileQuotesComponent {
       this.brcv = false;
       this.bamplia = true;
       this.bperdida = false;
+      this.primaFinal = prima
     } else if (cobertura == 'Perdida Total') {
       this.brcv = false;
       this.bamplia = false;
       this.bperdida = true;
+      this.primaFinal = prima
     }
 
     this.plan = plan;
@@ -575,7 +877,9 @@ export class AutomobileQuotesComponent {
             fano: this.quotesForm.get('fano')?.value,
             cplan: this.plan,
             ctarifa_exceso: this.quotesForm.get('ctarifa_exceso')?.value,
-            ccorredor: this.currentUser.data.ccorredor
+            ccorredor: this.currentUser.data.ccorredor,
+            suma_aseg: this.quotesForm.get('msuma_aseg')?.value,
+            prima: this.primaFinal
           }
         };
 

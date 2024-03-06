@@ -325,6 +325,37 @@ export class PaymentCancellationComponent {
     .then((response) => response.json())
     .then(data => {
 
+
+      // if(soporteItem.cmoneda == 'USD ' ){
+
+      //   //banco destino
+      //   let idBank = soporteItem.cbanco
+      //   let bank = this.bankInternational
+      //   let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
+      //   bankValue = filterBank[0]?.value
+
+      //   //banco emisor
+      //   let idBankEmi = soporteItem.cbanco_destino
+      //   let bankEmi = this.bankInternational
+      //   let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
+      //   bankValueEmi = filterBankEmi[0]?.value
+
+      // }else
+      // {
+      //   //banco destino
+      //   let idBank = soporteItem.cbanco
+      //   let bank = this.bankNational
+      //   let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
+      //   bankValue = filterBank[0]?.value
+
+      //   //banco emisor
+      //   let idBankEmi = soporteItem.cbanco_destino
+      //   let bankEmi = this.bankNational
+      //   let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
+      //   bankValueEmi = filterBankEmi[0]?.value
+      // }
+
+
       this.listCollectedReport = data.searchPaymentCollected.recibo
 
     })
