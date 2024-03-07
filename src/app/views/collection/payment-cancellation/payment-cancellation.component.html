@@ -4,7 +4,7 @@
             <h1>Normalización de Pagos</h1>
         </div>
 
-        <mat-tab-group>
+        <mat-tab-group color="primary" backgroundColor="primary">
           <!-- recibos notificados -->
           <mat-tab class="bg-success text-light" label="Recibos notificados"> 
             <div class="p-4">
@@ -29,7 +29,7 @@
                         <div class="col-4 text-light" style="font-size: medium;">
                           Cédula de Identidad {{group.value.casegurado}}<br>
                           Fecha de notificacion de pago {{group.value.freporte}}<br>
-                          Tasa BCV  {{group.value.ptasamon}}
+                          Tasa BCV de cobros {{group.value.ptasamon}}
                         </div>
 
                         <div class="col-4 text-light" style="font-size: medium;">
@@ -71,14 +71,13 @@
                           <h2>Detalles del Soporte de pago</h2>
                             <strong>Banco remitente</strong>  {{group.cbanco}}<br>
                             <strong>Banco Receptor</strong> {{group.cbanco_destino}}<br>
-                            <strong> Moneda</strong>  {{group.cmoneda}}<br>
-
                             <div *ngIf="group.cmoneda == 'Bs  ' ">
-                              <strong> Monto Pagado</strong>  {{group.mpago}}<br>
+                              <strong> Monto Pagado</strong>  {{group.mpago}} {{group.cmoneda}}<br>
                             </div>
 
                             <div *ngIf="group.cmoneda == 'USD ' ">
-                              <strong> Monto Pagado</strong>  {{group.mpagoext}}<br>
+                              <strong> Monto Pagado</strong>  {{group.mpagoext}} {{group.cmoneda}}<br>
+                              <strong> IGTF</strong> {{group.mpagoigtfext}}$ - {{group.mpagoigtf}} Bs<br>
                             </div>
 
 

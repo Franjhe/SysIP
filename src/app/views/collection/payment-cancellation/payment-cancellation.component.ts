@@ -927,21 +927,22 @@ export class PaymentCancellationComponent {
   }
 
   downloadExcelCollected() {
+    console.log(this.listCollectedReport)
     // Filtra y renombra los campos que deseas exportar
     const filteredData = this.listCollectedReport.map((item: any) => ({
-      'Poliza': item.cpoliza,
-      'Recibo': item.crecibo,
-      'Prima Bs': item.mprimabruta,
-      'Prima USD': item.mprimabrutaext,
-      'Fecha hasta recibo': item.fhasta,
-      'Cedula': item.casegurado,
-      'Cliente': item.XCLIENTE,
+      'Poliza': item.Nro._Poliza,
+      'Recibo': item.Nro_Recibo,
+      'Prima Bs': item.Suma_asegurada,
+      'Prima USD': item.Suma_asegurada_Ext,
+      'Fecha hasta recibo': item.Fecha_hasta_Recibo,
+      'Cedula': item.CID,
+      'Cliente': item.Nombre_Asegurado,
       'Telefono': item.XTELEFONO,
       'Correo': item.XEMAIL,
       'Direccion ': item.XDIRECCIONFISCAL,
       'Banco emisor': item.cbanco,
       'Banco destino': item.cbanco_destino,
-      'Ramo': item.cramo,
+      'Ramo': item.CódigodelRamo,
       'Total Bs': item.mtotal,
       'Total $': item.mtotalext,
       'Tasa': item.ptasamon,

@@ -61,7 +61,7 @@ export class PaymentReportComponent {
   bankReceptorNational : any = []
   bankReceptorPM : any = []
   bankReceptorCustodia : any = []
-  
+  classText : any 
   searchReceipt = this._formBuilder.group({
     receipt :  this._formBuilder.array([]),
     transfer : this._formBuilder.array([]),
@@ -69,7 +69,7 @@ export class PaymentReportComponent {
   });
 
   diferenceBool :boolean = false;
-  messageDiference : any
+  messageDiference : any = []
 
   constructor( private _formBuilder: FormBuilder,
     private http: HttpClient,
@@ -312,6 +312,18 @@ export class PaymentReportComponent {
           let filterdata = treatments.filter((data: { id: any; }) => data.id == id)
           const xramo = filterdata[0].value
 
+          console.log(response.searchReceipt.receipt[i].idiferencia)
+
+          let messaje : string 
+          if(response.searchReceipt.receipt[i].idiferencia == 'D'){
+            messaje = 	'debe'
+          }else if(response.searchReceipt.receipt[i].idiferencia == 'H'){
+            messaje = 'a favor'
+          }else{
+            messaje = ''
+          }
+
+
           this.receipt.push(
             this._formBuilder.group({
               cnpoliza: response.searchReceipt.receipt[i].cnpoliza,
@@ -329,34 +341,36 @@ export class PaymentReportComponent {
               fhasta_pol: ISOFhastaPol,
               fdesde_rec: ISOFdesdeP,
               fhasta_rec: ISOFhastaP,
-              mprimabruta: response.searchReceipt.receipt[i].mprimabruta,
-              mprimabrutaext: response.searchReceipt.receipt[i].mprimabrutaext,
+              mprimabruta: response.searchReceipt.receipt[i].mmontorec,
+              mprimabrutaext: response.searchReceipt.receipt[i].mmontorecext,
               ptasamon: response.searchReceipt.receipt[i].ptasamon,
               seleccionado : false,
               mdiferenciaext: response.searchReceipt.receipt[i].mdiferenciaext,
               mdiferencia: response.searchReceipt.receipt[i].mdiferencia,
               xobservacion: response.searchReceipt.receipt[i].xobservacion,
-
+              idiferencia: messaje
             })
           )
+
+          // let messaje : string 
+          // if(response.searchReceipt.receipt[i].idiferencia == 'D'){
+          //   messaje = 	'debe'
+          //   this.classText = 'text-danger'
+          //   this.messageDiference.push('El cliente ' + messaje + 
+          //   response.searchReceipt.receipt[i].mdiferencia + 'Bs /' + response.searchReceipt.receipt[i].mdiferenciaext +'USD')
+          // }else{
+          //   messaje = 'tiene un saldo a favor de '
+          //   this.classText = 'text-success'
+          //   this.messageDiference.push('El cliente ' + messaje + 
+          //   response.searchReceipt.receipt[i].mdiferencia + 'Bs /' + response.searchReceipt.receipt[i].mdiferenciaext +'USD')  
+          // }
+
         }
         for(let i = 0; i < response.searchReceipt.client.length; i++){
 
           this.cliente = response.searchReceipt.client[i].xcliente
         } 
         
-        if(response.searchReceipt.diferenceList.length > 0){
-
-          this.diferenceBool = true
-          for(let i = 0; i < response.searchReceipt.diferenceList.length; i++){
-
-            this.messageDiference = 'El cliente posee ' + response.searchReceipt.diferenceList[i].mdiferencia +  ' de diferencia ,por concepto de : '  + response.searchReceipt.diferenceList[i].xobservacion
-          } 
-        }else{
-          this.diferenceBool = false
-          this.messageDiference = ''
-
-        }
 
         this.addPayment()
 
