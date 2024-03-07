@@ -7,6 +7,26 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSort , MatSortModule } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import {MatTableModule} from '@angular/material/table';
+
+export interface PeriodicElement {
+  name: string;
+  position: number;
+  weight: number;
+}
+
+const ELEMENT_DATA: PeriodicElement[] = [
+  {position: 1, name: 'Hydrogen', weight: 1.0079},
+  {position: 2, name: 'Helium', weight: 4.0026},
+  {position: 3, name: 'Lithium', weight: 6.941},
+  {position: 4, name: 'Beryllium', weight: 9.0122},
+  {position: 5, name: 'Boron', weight: 10.811},
+  {position: 6, name: 'Carbon', weight: 12.0107},
+  {position: 7, name: 'Nitrogen', weight: 14.0067},
+  {position: 8, name: 'Oxygen', weight: 15.9994},
+  {position: 9, name: 'Fluorine', weight: 18.9984},
+  {position: 10, name: 'Neon', weight: 20.1797},
+];
 
 @Component({
   selector: 'app-commissions',
@@ -22,9 +42,11 @@ export class CommissionsComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  displayedColumns: string[] = ['id', 'name', 'progress'];
+  // displayedColumns: string[] = ['id', 'name', 'progress'];
   dataSource = new MatTableDataSource<any> ;
   listCualquierData: any = []
+  displayedColumns: string[] = ['position', 'name', 'weight'];
+  // dataSource = ELEMENT_DATA;
 
   constructor( private _formBuilder: FormBuilder,
     private http: HttpClient,
