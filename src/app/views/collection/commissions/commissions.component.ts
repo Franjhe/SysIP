@@ -7,26 +7,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSort , MatSortModule } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
-import {MatTableModule} from '@angular/material/table';
-
-export interface PeriodicElement {
-  name: string;
-  position: number;
-  weight: number;
-}
-
-const ELEMENT_DATA: PeriodicElement[] = [
-  {position: 1, name: 'Hydrogen', weight: 1.0079},
-  {position: 2, name: 'Helium', weight: 4.0026},
-  {position: 3, name: 'Lithium', weight: 6.941},
-  {position: 4, name: 'Beryllium', weight: 9.0122},
-  {position: 5, name: 'Boron', weight: 10.811},
-  {position: 6, name: 'Carbon', weight: 12.0107},
-  {position: 7, name: 'Nitrogen', weight: 14.0067},
-  {position: 8, name: 'Oxygen', weight: 15.9994},
-  {position: 9, name: 'Fluorine', weight: 18.9984},
-  {position: 10, name: 'Neon', weight: 20.1797},
-];
+import {SelectionModel} from '@angular/cdk/collections';
 
 @Component({
   selector: 'app-commissions',
@@ -42,11 +23,17 @@ export class CommissionsComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  // displayedColumns: string[] = ['id', 'name', 'progress'];
+  @ViewChild('Alerta') InfoReceipt!: TemplateRef<any>;
+  @ViewChild('Alerta1') Alerta1!: TemplateRef<any>;
+
+  displayedColumns: string[] = ['cproductor', 'xnombre', 'mcomtot', 'mcomexttot', 'mcomtot2'];
   dataSource = new MatTableDataSource<any> ;
-  listCualquierData: any = []
-  displayedColumns: string[] = ['position', 'name', 'weight'];
-  // dataSource = ELEMENT_DATA;
+  displayedColumns2: string[] = ['select','0','1', '2', '3', '4', '5', '6'];
+  dataSource2 = new MatTableDataSource<any> ;
+  selection = new SelectionModel<any>(true, []);
+
+  currentRowID: any
+  
 
   constructor( private _formBuilder: FormBuilder,
     private http: HttpClient,
@@ -68,8 +55,8 @@ export class CommissionsComponent {
     //   // this.bcv = data.monitors.usd.price
     // })
 
-    this.http.post(environment.apiUrl + '/api/v1/commissions', '').subscribe((response: any) => {
-      this.listCualquierData = response.cualquierData.search
+    this.http.post(environment.apiUrl + '/api/v1/commissions/search', '').subscribe((response: any) => {
+      // this.listCualquierData = response.cualquierData.search
       
       
       this.dataSource = new MatTableDataSource(response.cualquierData.search);
@@ -105,4 +92,31 @@ export class CommissionsComponent {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
+
+  Alert(config?: MatDialogConfig) {
+    return this.dialog.open(this.InfoReceipt, config);
+  }
+  
+  async dataCorredor(cproductor : any){
+    this.http.post(environment.apiUrl + '/api/v1/commissions', '').subscribe((response: any) => {
+      this.dataSource2 = new MatTableDataSource(response.cualquierData.search);
+    });
+
+
+    this.Alert();
+  }
+
+    /** Whether the number of selected elements matches the total number of rows. */
+    isAllSelected() {
+      const numSelected = this.selection.selected.length;
+      const numRows = this.dataSource.data.length;
+      return numSelected === numRows;
+    }
+  
+    /** Selects all rows if they are not all selected; otherwise clear selection. */
+    masterToggle() {
+      this.isAllSelected() ?
+          this.selection.clear() :
+          this.dataSource.data.forEach(row => this.selection.select(row));
+    }
 }

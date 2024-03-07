@@ -1,5 +1,5 @@
 <div class="card container-fluid">
-    <form [formGroup]="groupReceiptsForm" >
+    <form [formGroup]="groupReceiptsForm">
         <div class="text-center">
             <h1>Gestión de Comisiones</h1>
         </div>
@@ -9,84 +9,157 @@
 
         <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
-          <!--- Note that these columns can be defined in any order.
+            <!--- Note that these columns can be defined in any order.
                 The actual rendered columns are set as a property on the row definition" -->
-        
-          <!-- Position Column -->
-          <ng-container matColumnDef="position">
-            <th mat-header-cell *matHeaderCellDef> No. </th>
-            <td mat-cell *matCellDef="let row"> {{row.cproductor}} </td>
-          </ng-container>
-        
-          <!-- Name Column -->
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef> Name </th>
-            <td mat-cell *matCellDef="let row"> {{row.xnombre}} </td>
-          </ng-container>
-        
-          <!-- Weight Column -->
-          <ng-container matColumnDef="weight">
-            <th mat-header-cell *matHeaderCellDef> Weight </th>
-            <td mat-cell *matCellDef="let row"> {{row.mmovcom}} </td>
-          </ng-container>
-        
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <!-- Position Column -->
+            <ng-container matColumnDef="cproductor">
+                <th mat-header-cell *matHeaderCellDef> C. Corredor </th>
+                <td mat-cell *matCellDef="let row"> {{row.cproductor}} </td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="xnombre">
+                <th mat-header-cell *matHeaderCellDef> Nombre/Denominación </th>
+                <td mat-cell *matCellDef="let row"> {{row.xnombre}} </td>
+            </ng-container>
+
+            <!-- Weight Column -->
+            <ng-container matColumnDef="mcomtot">
+                <th mat-header-cell *matHeaderCellDef> Comisión </th>
+                <td mat-cell *matCellDef="let row"> {{row.mcomtot}} </td>
+            </ng-container>
+
+            <!-- Weight Column -->
+            <ng-container matColumnDef="mcomexttot">
+                <th mat-header-cell *matHeaderCellDef> Impuesto </th>
+                <td mat-cell *matCellDef="let row"> {{row.mcomexttot}}</td>
+            </ng-container>
+
+            <!-- Weight Column -->
+            <ng-container matColumnDef="mcomtot2">
+                <th mat-header-cell *matHeaderCellDef> A pagar </th>
+                <td mat-cell *matCellDef="let row"> {{row.mcomtot}} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <!-- <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr> -->
+            <tr mat-row (click)="dataCorredor(row.cproductor)" [class.demo-row-is-clicked]=""
+                *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
 
-        
+
         <div class="mat-elevation-z8">
             <!-- <h2>foihawefawieo</h2> -->
             <!-- <table mat-table [dataSource]="dataSource" matSort> -->
-          
-              <!-- ID Column -->
-              <!-- <ng-container matColumnDef="id">
+
+            <!-- ID Column -->
+            <!-- <ng-container matColumnDef="id">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header> C. Productor </th>
                 <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.cproductor}} </td>
               </ng-container> -->
-          
-              <!-- Progress Column -->
-              <!-- <ng-container matColumnDef="name">
+
+            <!-- Progress Column -->
+            <!-- <ng-container matColumnDef="name">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre </th>
                 <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.xnombre}}</td>
               </ng-container> -->
-          
-              <!-- Name Column -->
-              <!-- <ng-container matColumnDef="progress">
+
+            <!-- Name Column -->
+            <!-- <ng-container matColumnDef="progress">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header> Comision </th>
                 <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.mmovcom}} </td>
               </ng-container> -->
-          
-              <!-- Fruit Column -->
-              <!-- <ng-container matColumnDef="fruit">
+
+            <!-- Fruit Column -->
+            <!-- <ng-container matColumnDef="fruit">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header> Asegurado </th>
                 <td mat-cell *matCellDef="let row" > {{row.casegurado}} </td>
               </ng-container> -->
-          
-              <!-- <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+            <!-- <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr> -->
-          
-              <!-- Row shown when there is no matching data. -->
-              <!-- <tr class="mat-row" *matNoDataRow>
+
+            <!-- Row shown when there is no matching data. -->
+            <!-- <tr class="mat-row" *matNoDataRow>
                 <td class="mat-cell" colspan="3">No data matching the filter </td>
               </tr> -->
             <!-- </table> -->
-          
+
             <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator> -->
-          </div>
+        </div>
         <!-- <ng-template #Alerta >
           
         </ng-template> -->
 
-        <!-- <ng-template #Alerta1>
-          <mat-dialog-content  style="width: 85%;">
-              <h1>
-                No es posible asociar transacciones que cuenten con recibos diferentes
-              </h1> 
-                
-          </mat-dialog-content>
+        <!-- <ng-template #Alerta>
+            <mat-dialog-content style="width: 85%;">
+                <h1>
+                    dadadata
+                </h1>
+            </mat-dialog-content>
         </ng-template> -->
+        <ng-template #Alerta>
+            <mat-dialog-content style="width: 100%;">
+                <table mat-table [dataSource]="dataSource2" class="mat-elevation-z8">
+
+                    <!--- Note that these columns can be defined in any order.
+                        The actual rendered columns are set as a property on the row definition" -->
+        
+                    <!-- Weight Column -->
+                    <ng-container matColumnDef="select">
+                        <th mat-header-cell *matHeaderCellDef>
+                          <mat-checkbox (change)="$event ? masterToggle() : null"
+                                        [checked]="selection.hasValue() && isAllSelected()"
+                                        [indeterminate]="selection.hasValue() && !isAllSelected()">
+                          </mat-checkbox>
+                        </th>
+                        <td mat-cell *matCellDef="let row">
+                          <mat-checkbox (click)="$event.stopPropagation()"
+                                        (change)="$event ? selection.toggle(row) : null"
+                                        [checked]="selection.isSelected(row)">
+                          </mat-checkbox>
+                        </td>
+                      </ng-container>
+                    <ng-container matColumnDef="0">
+                        <th mat-header-cell *matHeaderCellDef> Póliza </th>
+                        <td mat-cell *matCellDef="let row"> {{row.crecibo}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="1">
+                        <th mat-header-cell *matHeaderCellDef> Recibo/Préstamo </th>
+                        <td mat-cell *matCellDef="let row"> {{row.crecibo}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="2">
+                        <th mat-header-cell *matHeaderCellDef> Tipo Movimiento </th>
+                        <td mat-cell *matCellDef="let row"> {{row.imovcom}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="3">
+                        <th mat-header-cell *matHeaderCellDef> Anexo </th>
+                        <td mat-cell *matCellDef="let row"> {{row.canexo}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="4">
+                        <th mat-header-cell *matHeaderCellDef> Fecha </th>
+                        <td mat-cell *matCellDef="let row"> {{row.femision}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="5">
+                        <th mat-header-cell *matHeaderCellDef> Monto de la Prima </th>
+                        <td mat-cell *matCellDef="let row"> {{row.mmovcom}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="6">
+                        <th mat-header-cell *matHeaderCellDef> Monto del Movimiento </th>
+                        <td mat-cell *matCellDef="let row"> {{row.mcomtot}} </td>
+                    </ng-container>
+
+        
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
+                    <!-- <tr mat-row (click)="clickedRow(row)" -->
+                        <!-- *matRowDef="let row; columns: displayedColumns2;"></tr> -->
+                </table>
+            </mat-dialog-content>
+        </ng-template>
 
     </form>
+
 
 </div>
