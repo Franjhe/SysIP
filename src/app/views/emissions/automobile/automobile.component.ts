@@ -2635,7 +2635,6 @@ export class AutomobileComponent {
       quoteChar: '"',
       complete: (result: any) => {
       
-        console.log(result)
     this.dataList = result.data.slice(0, result.data.length - 1).map((item: CsvItem) => {
         const msuma_aseg = parseFloat(item.MSUMA_ASEG.replace(',', '.'));
         const ptasa = parseFloat(item.PTASA.replace(',', '.'));
@@ -2704,10 +2703,9 @@ export class AutomobileComponent {
     let data = {
       group: this.groupList
     }
-    console.log(data)
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/group', data).subscribe((response: any) => {
       if(response.status){
-        if(response.error){
+        if(response.error[0]){
           let errorMessage = response.error.join('\n');
           window.alert(`${errorMessage}`)
           this.snackBar.open(`Lamentablemente, la carga de la flota no pudo ser completada debido a la falta de información sobre los vehículos en INMA. Por favor, asegúrese de cargar los datos de los vehículos correspondientes y vuelva a intentarlo.`, '', {
