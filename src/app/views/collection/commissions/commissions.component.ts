@@ -34,9 +34,13 @@ export class CommissionsComponent {
   selection = new SelectionModel<any>(true, []);
   selection2 = new SelectionModel<any>(true, []);
 
+  rowsABuscar: any = [];
+
   total_movcom = 0;
   total_impuesto = 0;
   total_comision = 0;
+
+  blablabla = 0;
 
   mamama = this._formBuilder.group({
     itransacion: '',
@@ -113,14 +117,12 @@ export class CommissionsComponent {
   }
 
 
-  async dataCorredor(cproductor: any) {
+  dataCorredor(cproductor: any) {
     this.http.post(environment.apiUrl + '/api/v1/commissions/search/' + cproductor, '').subscribe((response: any) => {
       this.dataSource2 = new MatTableDataSource<any>;
       this.dataSource2 = new MatTableDataSource(response.cualquierData.search);
       this.Alert();
     });
-
-
   }
 
   Alert(config?: MatDialogConfig) {
@@ -136,6 +138,8 @@ export class CommissionsComponent {
 
     return this.dialog.open(this.InfoReceipt, config);
   }
+
+
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
@@ -183,13 +187,35 @@ export class CommissionsComponent {
   }
 
   procesarSolicitudes() {
-    this.selection2.selected.forEach(row => console.log(row));
+    // console.log("Procesar solicitudes");
+
+    this.selection.selected.forEach(row => (
+      console.log(row),
+      this.rowsABuscar.push(row)
+    ));
+    console.log(this.rowsABuscar);
+
     this.total_movcom = 0;
     this.total_comision = 0;
+    // console.log("Salir Procesar solicitudes");
     this.showProcesarSolicitudes();
   }
 
   showProcesarSolicitudes(config?: MatDialogConfig) {
+    this.rowsABuscar.forEach((element: any) => {
+      // console.log('awpeijfoiawfopawj');
+
+      console.log(element);
+
+      
+
+      // this.http.post(environment.apiUrl + '/api/v1/commissions/search/' + element.cproductor, '').subscribe((response: any) => {
+      //   this.dataSource2 = new MatTableDataSource<any>;
+      //   this.dataSource2 = new MatTableDataSource(response.cualquierData.search);
+      //   this.Alert(); 
+      // });
+    });
+
 
 
     return this.dialog.open(this.procesarSolicitudesDePago, config);
