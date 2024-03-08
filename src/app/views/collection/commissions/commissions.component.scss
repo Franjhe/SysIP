@@ -7,3 +7,9 @@
 .mat-mdc-row:hover .mat-mdc-cell {
   border-color: currentColor;
 }
+
+.footer-table {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
