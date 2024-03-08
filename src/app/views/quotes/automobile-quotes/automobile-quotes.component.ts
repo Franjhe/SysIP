@@ -728,7 +728,7 @@ export class AutomobileQuotesComponent {
 
   getRecharge(){
     const recarga = this.quotesForm.get('precarga')?.value;
-    const sum_aseg = this.quotesForm.get('msuma_aseg')?.value
+    const sum_aseg = this.quotesForm.get('msuma_aseg')?.value || ''
     
     if (recarga) {
         if (typeof recarga === 'number') {
@@ -746,7 +746,7 @@ export class AutomobileQuotesComponent {
                 this.quotesForm.get('pdescuento')?.disable();
               }
             }else{
-              this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+              this.quotesForm.get('msuma_aseg')?.setValue(sum_aseg.toString())
               this.quotesForm.get('pdescuento')?.disable();
             }
             this.recargo = this.sumaAseguradaInicial
@@ -780,13 +780,13 @@ export class AutomobileQuotesComponent {
     this.sumaAseguradaMin = MinSum.toFixed(2)
 
     if(suma_aseg > this.sumaAseguradaMax){
-      window.alert('La Suma Asegurada excedió el 30%.');
+      window.alert('La Suma Asegurada excedió el 30% de inma.');
       this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial);
       return
     }
 
     if(suma_aseg < this.sumaAseguradaMin){
-      window.alert('La Suma Asegurada es menor al 10%.');
+      window.alert('La Suma Asegurada es menor al 10% de inma.');
       this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial);
       return
     }
