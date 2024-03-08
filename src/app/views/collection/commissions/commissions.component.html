@@ -157,101 +157,102 @@
 
 
         <ng-template #procesarSolicitudesDePago>
-            <mat-dialog-content>
+            <mat-dialog-content style="width: 900px;">
                 <!-- class="mat-elevation-z8" -->
 
-                <mat-grid-list cols="4" style="width: 900px; height: auto;" rowHeight="65px">
-                    <!-- <mat-grid-tile>Tile 1 </mat-grid-tile>
-                    <mat-grid-tile colspan="3" rowspan="2">ABC</mat-grid-tile> -->
-                    <!-- <mat-grid-tile>Tile 2 </mat-grid-tile>
-                    <mat-grid-tile>Tile 3 </mat-grid-tile>
-                    <mat-grid-tile>Tile 4 </mat-grid-tile> -->
-                    
-                <!-- <div class="row"> -->
+                <div class="row">
                     <!--  -->
-                    <mat-grid-tile>
+                    <div class="col-3">
                         <mat-form-field >
                             <mat-label>Transacción</mat-label>
                             <input type="hidden" formControlName="itransaccion" value="CM">
                             <input matInput type="text" value="Pago de Comisiones" disabled>
                             <!-- <input matInput   matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input> -->
                           </mat-form-field>
-                    </mat-grid-tile>
-                    <mat-grid-tile>
+                    </div>
+                    <div class="col-3">
                         <mat-form-field >
                             <mat-label>Sucursal</mat-label>
                             <!-- <input matInput type="text" value="Caracas" disabled> -->
                             <input matInput type="text" value="Caracas" disabled>
                             <!-- <input matInput   matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input> -->
                           </mat-form-field>
-                    </mat-grid-tile>
-                    <mat-grid-tile>
+                    </div>
+                    <div class="col-3">
                         <mat-form-field >
                             <mat-label>Facturación</mat-label>
                             <!-- <input matInput type="text" value="13/10/1996" disabled> -->
                             <input matInput type="text" value="13/10/1996" disabled>
                             <!-- <input matInput   matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input> -->
                           </mat-form-field>
-                    </mat-grid-tile>
-                    <mat-grid-tile>
+                    </div>
+                    <div class="col-3">
                         <mat-form-field >
                             <mat-label>Status</mat-label>
                             <!-- <input matInput type="text" value="Pendiente" disabled> -->
                             <input matInput type="text" value="Pendiente" disabled>
                             <!-- <input matInput   matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input> -->
                           </mat-form-field>
-                    </mat-grid-tile>
+                    </div>
                     <!--  -->
-                    <mat-grid-tile>
+                    <div class="col-3">
                         <mat-form-field >
                             <mat-label>Págase a la orden de:</mat-label>
                             <input matInput type="text" value="V-25221952" disabled>
                           </mat-form-field>
-                    </mat-grid-tile>
-                    <mat-grid-tile colspan="2">
+                    </div>
+                    <div class="col-9">
                         <mat-form-field >
                             <mat-label>Nombre:</mat-label>
                             <input matInput type="text" value="La Mundial De Seguros" disabled>
                           </mat-form-field>
-                    </mat-grid-tile>
-                    <mat-grid-tile>
+                    </div>
+                    <!-- <div class="col-3"></div> -->
+                    <div class="col-3">
                         <mat-form-field >
                             <mat-label>Concepto:</mat-label>
                             <input matInput type="text" value="Cierre De Caja" disabled>
                           </mat-form-field>
-                    </mat-grid-tile>
-                    <mat-grid-tile>
+                    </div>
+                    <div class="col-9">
                         <mat-form-field >
                             <mat-label>Corredor:</mat-label>
                             <input matInput type="text" value="215 - La Mundial De Seguros" disabled>
                           </mat-form-field>
-                    </mat-grid-tile>
-                    <mat-grid-tile>
+                    </div>
+                    <div class="col-3">
                         <mat-form-field >
                             <mat-label>Monto total:</mat-label>
                             <input matInput type="text" value="46.471,95" disabled>
                           </mat-form-field>
-                    </mat-grid-tile>
-                    <mat-grid-tile>
+                    </div>
+                    <div class="col-9">
                         <mat-form-field >
                             <mat-label>Observaciones:</mat-label>
-                            <input matInput type="text" >
+                            <input matInput formControlName="xobservaciones" type="text" #input>
                           </mat-form-field>
-                    </mat-grid-tile>
+                    </div>
+                    <div class="col col-2 text-center"><button mat-raised-button (click)="logSelection2()">Cerrar</button></div>
+                    <div class="col col-8"></div>
+                    <div class="col col-2 text-center"><button mat-raised-button (click)="logSelection2()">Aceptar</button></div>
+
                     
-                    <mat-grid-tile>1</mat-grid-tile>
-                    <mat-grid-tile>2</mat-grid-tile>
-                    <mat-grid-tile>3</mat-grid-tile>
-                    <mat-grid-tile>4</mat-grid-tile>
-                </mat-grid-list>
+                        
+                        
+                    
+                    
+                    <!-- <div class="col-3">1</div>
+                    <div class="col-3">2</div>
+                    <div class="col-3">3</div>
+                    <div class="col-3">4</div>
                     <mat-form-field>
                         <mat-label>Estado de recibo</mat-label>
                         <mat-select formControlName="iestadorec">
                           <mat-option value="C">Cobrado</mat-option>
                           <mat-option value="ER">En revision</mat-option>
                         </mat-select>
-                      </mat-form-field>
-                <!-- </div> -->
+                      </mat-form-field> -->
+                </div>
                 
                 
                 <!-- <div class="footer-table">
