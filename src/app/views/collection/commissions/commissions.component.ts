@@ -25,16 +25,31 @@ export class CommissionsComponent {
 
   @ViewChild('Alerta') InfoReceipt!: TemplateRef<any>;
   @ViewChild('Alerta1') Alerta1!: TemplateRef<any>;
+  @ViewChild('procesarSolicitudesDePago') procesarSolicitudesDePago!: TemplateRef<any>;
 
-  displayedColumns: string[] = ['select','cproductor', 'xnombre', 'mcomtot', 'mcomexttot', 'mcomtot2'];
+  displayedColumns: string[] = ['select', 'cproductor', 'xnombre', 'mcomtot', 'mcomexttot', 'mcomtot2'];
   dataSource = new MatTableDataSource<any>;
   displayedColumns2: string[] = ['select', '0', '1', '2', '3', '4', '5', '6'];
   dataSource2 = new MatTableDataSource<any>;
   selection = new SelectionModel<any>(true, []);
+  selection2 = new SelectionModel<any>(true, []);
 
   total_movcom = 0;
   total_impuesto = 0;
   total_comision = 0;
+
+  mamama = this._formBuilder.group({
+    itransacion: '',
+    // csucur: '',
+    fsolicit: '',
+    istatsol: '',
+    cci_rif: '',
+    // itransacion: [{ value: '', disabled: true }],
+    csucur :[{ value: '', disabled: true }],
+    // fsolicit : [{ value: '', disabled: true }],
+    // istatsol: [{ value: '', disabled: true }],
+    // cci_rif: [{ value: '', disabled: true }],
+  });
 
   constructor(private _formBuilder: FormBuilder,
     private http: HttpClient,
@@ -98,7 +113,8 @@ export class CommissionsComponent {
 
 
   async dataCorredor(cproductor: any) {
-    this.http.post(environment.apiUrl + '/api/v1/commissions', '').subscribe((response: any) => {
+    this.http.post(environment.apiUrl + '/api/v1/commissions/search/' + cproductor, '').subscribe((response: any) => {
+      this.dataSource2 = new MatTableDataSource<any>;
       this.dataSource2 = new MatTableDataSource(response.cualquierData.search);
       this.Alert();
     });
@@ -108,17 +124,18 @@ export class CommissionsComponent {
 
   Alert(config?: MatDialogConfig) {
     console.log(this.dataSource2);
-    this.dataSource2.data.forEach(row => this.selection.select(row));
+    this.total_movcom = 0;
+    this.total_comision = 0;
+
+    this.dataSource2.data.forEach(row => this.selection2.select(row));
     this.dataSource2.data.forEach(row => (
       this.total_movcom += row.mmovcom,
       this.total_comision = this.total_movcom - this.total_impuesto
-    )
-    );
+    ));
 
     return this.dialog.open(this.InfoReceipt, config);
-    // this.total_movcom = 0;
-    // this.total_comision = 0;
   }
+
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
@@ -136,7 +153,7 @@ export class CommissionsComponent {
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected2() {
-    const numSelected = this.selection.selected.length;
+    const numSelected = this.selection2.selected.length;
     const numRows = this.dataSource.data.length;
     return numSelected === numRows;
     // this.varable1 = 100;
@@ -145,24 +162,36 @@ export class CommissionsComponent {
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle2() {
     this.isAllSelected2() ?
-      this.selection.clear() :
-      this.dataSource2.data.forEach(row => this.selection.select(row));
+      this.selection2.clear() :
+      this.dataSource2.data.forEach(row => this.selection2.select(row));
   }
 
   calculateMmovcom() {
     this.total_movcom = 0;
     this.total_comision = 0;
-    this.selection.selected.forEach(row => (
+    this.selection2.selected.forEach(row => (
       this.total_movcom += row.mmovcom,
       this.total_comision = this.total_movcom - this.total_impuesto
-    ),
-      // console.log(s.name)
-    );
-    // console.log(this.total_movcom);
-
+    ));
   }
 
   logSelection2() {
-    this.selection.selected.forEach(row => console.log(row.name));
+    console.log(this.dataSource.data[0].mcomtot = this.total_comision);
+    this.selection2.selected.forEach(row => console.log(row.mmovcom));
+    this.dialog.closeAll();
   }
+
+  procesarSolicitudes() {
+    this.selection2.selected.forEach(row => console.log(row));
+    this.total_movcom = 0;
+    this.total_comision = 0;
+    this.showProcesarSolicitudes();
+  }
+
+  showProcesarSolicitudes(config?: MatDialogConfig) {
+
+
+    return this.dialog.open(this.procesarSolicitudesDePago, config);
+  }
+
 }
