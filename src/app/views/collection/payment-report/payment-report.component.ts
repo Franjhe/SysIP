@@ -294,7 +294,6 @@ export class PaymentReportComponent {
 
       if(response.searchReceipt.receipt.length > 0){
         for(let i = 0; i < response.searchReceipt.receipt.length; i++){
-          this.viewData = true
           const fdesdeP = new Date(response.searchReceipt.receipt[i].fdesde);
           let ISOFdesdeP = fdesdeP.toISOString().substring(0, 10);
 
@@ -311,8 +310,6 @@ export class PaymentReportComponent {
           let treatments = this.tradesList
           let filterdata = treatments.filter((data: { id: any; }) => data.id == id)
           const xramo = filterdata[0].value
-
-          console.log(response.searchReceipt.receipt[i].idiferencia)
 
           let messaje : string 
           if(response.searchReceipt.receipt[i].idiferencia == 'D'){
@@ -352,18 +349,32 @@ export class PaymentReportComponent {
             })
           )
 
-          // let messaje : string 
-          // if(response.searchReceipt.receipt[i].idiferencia == 'D'){
-          //   messaje = 	'debe'
-          //   this.classText = 'text-danger'
-          //   this.messageDiference.push('El cliente ' + messaje + 
-          //   response.searchReceipt.receipt[i].mdiferencia + 'Bs /' + response.searchReceipt.receipt[i].mdiferenciaext +'USD')
-          // }else{
-          //   messaje = 'tiene un saldo a favor de '
-          //   this.classText = 'text-success'
-          //   this.messageDiference.push('El cliente ' + messaje + 
-          //   response.searchReceipt.receipt[i].mdiferencia + 'Bs /' + response.searchReceipt.receipt[i].mdiferenciaext +'USD')  
-          // }
+          let messajeCliente : string 
+          let class_text: string 
+          if(response.searchReceipt.receipt[i].idiferencia == 'D'){
+            this.viewData = true
+            messajeCliente = 	'debe'
+            class_text = 'text-danger'
+
+            this.messageDiference.push({
+              class : class_text,
+              messaje: 'El cliente ' + messajeCliente + 
+              response.searchReceipt.receipt[i].mdiferencia + 'Bs /' + response.searchReceipt.receipt[i].mdiferenciaext +'USD'
+            })
+            
+          }else if(response.searchReceipt.receipt[i].idiferencia == 'H'){
+            messajeCliente = 'tiene un saldo a favor de '
+            class_text = 'text-success'
+            this.viewData = true
+            this.messageDiference.push({
+            class : class_text,
+            messaje: 'El cliente ' + messajeCliente + 
+              response.searchReceipt.receipt[i].mdiferencia + 'Bs /' + response.searchReceipt.receipt[i].mdiferenciaext +'USD'})  
+            
+
+          }else{
+            this.viewData = false
+          }
 
         }
         for(let i = 0; i < response.searchReceipt.client.length; i++){

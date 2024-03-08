@@ -55,8 +55,10 @@
             <h1><strong>{{cliente}}</strong></h1>
             <h1> Sus recibos pendientes </h1>
 
-            <div >
-              <h1  class="{{classText}}" *ngFor="let message of messageDiference"> {{message}}</h1>
+            <div *ngIf="viewData">
+              <div *ngFor="let message of messageDiference" >
+                <h1  class="{{message.class_text}}" > {{message.messaje}}</h1>
+              </div>
             </div>
 
             <div formArrayName="receipt" >
@@ -68,8 +70,8 @@
                     <th>N° Cuota</th>
                     <th>Ramo</th>
                     <th style="color:red">Fecha tope de pago</th>
-                    <th style="background-color: powderblue;">Diferencia</th>
-                    <th style="background-color: powderblue;"></th>
+                    <th *ngIf="viewData" style=" background-color: red;color: white;font-weight: 100; ">Diferencia</th>
+                    <th *ngIf="viewData" style=" background-color: red;color: white;font-weight: 100; "></th>
                     <th>Total del recibo</th>
                     <th>Seleccione los recibos a pagar </th>
                   </tr>
@@ -81,8 +83,8 @@
                     <td >{{creds.qcuotas}}</td>
                     <td >{{creds.xramo}}</td>
                     <td > {{creds.fhasta_rec}}</td>
-                    <td style="background-color: powderblue;"> {{creds.mdiferencia}} Bs - {{creds.mdiferenciaext}} $</td>
-                    <td style="background-color: powderblue;">{{creds.idiferencia}}</td>
+                    <td *ngIf="viewData" style=" background-color: #fbc8c8;color: white;"> {{creds.mdiferencia}} Bs - {{creds.mdiferenciaext}} $</td>
+                    <td *ngIf="viewData" style=" background-color: #fbc8c8;color: white; ">{{creds.idiferencia}}</td>
                     <td >{{creds.mprimabrutaext}} {{creds.cmoneda}}</td>
                     <td>
                       <mat-checkbox formControlName="seleccionado" (change)="calculateMount(i)"> </mat-checkbox>
@@ -321,7 +323,6 @@
                 <div class="content">
                   <h2 class="title">Cliente no encontrado</h2>
                   <h4>Valide sus datos</h4>
-    
                 </div>
               </div>
           </mat-dialog-content>
