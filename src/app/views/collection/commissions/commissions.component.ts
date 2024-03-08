@@ -40,12 +40,13 @@ export class CommissionsComponent {
 
   mamama = this._formBuilder.group({
     itransacion: '',
-    // csucur: '',
+    csucur: '',
     fsolicit: '',
     istatsol: '',
     cci_rif: '',
+    xobservaciones: '',
     // itransacion: [{ value: '', disabled: true }],
-    csucur :[{ value: '', disabled: true }],
+    // csucur :[{ value: '', disabled: true }],
     // fsolicit : [{ value: '', disabled: true }],
     // istatsol: [{ value: '', disabled: true }],
     // cci_rif: [{ value: '', disabled: true }],
