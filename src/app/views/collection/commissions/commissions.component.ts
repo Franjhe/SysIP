@@ -9,6 +9,27 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { SelectionModel } from '@angular/cdk/collections';
 
+export interface PaymentRequest {
+  // name: string;
+  // position: number;
+  // weight: number;
+  // symbol: string;
+  xtransaccion: string;
+  csucursal?: string;
+  xsucursal?: string;
+  ffacturacion: string;
+  cstatus: string;
+  xstatus: string;
+  cid: string;
+  xbeneficiario: string;
+  cconcepto: string;
+  xconcepto: string;
+  ccorredor: string;
+  xcorredor: string;
+  mmontototal: any;
+  xobservaciones?: any;
+}
+
 @Component({
   selector: 'app-commissions',
   templateUrl: './commissions.component.html',
@@ -25,7 +46,7 @@ export class CommissionsComponent {
 
   @ViewChild('Alerta') InfoReceipt!: TemplateRef<any>;
   @ViewChild('Alerta1') Alerta1!: TemplateRef<any>;
-  @ViewChild('procesarSolicitudesDePago') procesarSolicitudesDePago!: TemplateRef<any>;
+  @ViewChild('dialogPaymentRequest') dialogPaymentRequest!: TemplateRef<any>;
 
   displayedColumns: string[] = ['select', 'cproductor', 'xnombre', 'mcomtot', 'mcomexttot', 'mcomtot2'];
   dataSource = new MatTableDataSource<any>;
@@ -34,13 +55,24 @@ export class CommissionsComponent {
   selection = new SelectionModel<any>(true, []);
   selection2 = new SelectionModel<any>(true, []);
 
+
   rowsABuscar: any = [];
 
   total_movcom = 0;
   total_impuesto = 0;
   total_comision = 0;
 
-  blablabla = 0;
+  listPaymentRequest: PaymentRequest[] = [];
+  // pre_xtransaccion = "Pago de Comisiones";
+  // pre_xsucursal: any;
+  // pre_ffacturacion = new Date().toLocaleDateString();
+  // pre_xstatus = 'Pendiente';
+  // pre_cci_rif: any;
+  // pre_xbeneficiario: any;
+  // pre_xconcepto= 'Cierre de caja';
+  // pre_xcorredor: any;
+  // pre_mmontototal: any;
+  // xobservaciones: any
 
   mamama = this._formBuilder.group({
     itransacion: '',
@@ -71,7 +103,7 @@ export class CommissionsComponent {
     // fetch(environment.apiUrl +'/api/v1/commissions')
     // .then((response) => response.json())
     // .then(data => {
-    //   console.log(data);
+    //   // console.log(data);
 
     //   // this.bcv = data.monitors.usd.price
     // })
@@ -81,8 +113,8 @@ export class CommissionsComponent {
 
 
       this.dataSource = new MatTableDataSource(response.cualquierData.search);
-      console.log(this.dataSource);
-      console.log('↑');
+      // console.log(this.dataSource);
+      // console.log('↑');
 
       const listPending = response.cualquierData.search
 
@@ -99,7 +131,7 @@ export class CommissionsComponent {
       this.dataSource.sort = this.sort;
       this.dataSource2.paginator = this.paginator;
       this.dataSource2.sort = this.sort;
-      // console.log(response);
+      // // console.log(response);
 
       // for(let i = 0; i < response.data.bank.length; i++){
       //   this.bankInternational.push({
@@ -126,7 +158,7 @@ export class CommissionsComponent {
   }
 
   Alert(config?: MatDialogConfig) {
-    console.log(this.dataSource2);
+    // console.log(this.dataSource2);
     this.total_movcom = 0;
     this.total_comision = 0;
 
@@ -181,44 +213,86 @@ export class CommissionsComponent {
   }
 
   logSelection2() {
-    console.log(this.dataSource.data[0].mcomtot = this.total_comision);
-    this.selection2.selected.forEach(row => console.log(row.mmovcom));
+    // console.log(this.dataSource.data[0].mcomtot = this.total_comision);
+    // this.selection2.selected.forEach(row => console.log(row.mmovcom));
     this.dialog.closeAll();
   }
 
-  procesarSolicitudes() {
-    // console.log("Procesar solicitudes");
+  generatePaymentRequests() {
+    // // console.log("Procesar solicitudes");
 
     this.selection.selected.forEach(row => (
-      console.log(row),
+      // console.log(row),
       this.rowsABuscar.push(row)
     ));
-    console.log(this.rowsABuscar);
+    // console.log(this.rowsABuscar);
 
     this.total_movcom = 0;
     this.total_comision = 0;
-    // console.log("Salir Procesar solicitudes");
-    this.showProcesarSolicitudes();
+    // // console.log("Salir Procesar solicitudes");
+    this.showDialogPaymentRequests();
   }
 
-  showProcesarSolicitudes(config?: MatDialogConfig) {
+  showDialogPaymentRequests(config?: MatDialogConfig) {
     this.rowsABuscar.forEach((element: any) => {
-      // console.log('awpeijfoiawfopawj');
+      this.http.post(environment.apiUrl + '/api/v1/commissions/search-data/' + element.cproductor, '').subscribe((response: any) => {
 
-      console.log(element);
+        response.cualquierData.search.forEach((e: any) => {
+          var paymentRequest: PaymentRequest = {
+            xtransaccion: "Pago de Comisiones",
+            ffacturacion: new Date().toLocaleDateString(),
+            cstatus: '',
+            xstatus: 'pendiente',
+            cid: e.cid,
+            xbeneficiario: element.xnombre,
+            cconcepto: '',
+            xconcepto: 'Cierre de Caja',
+            ccorredor: e.cci_rif,
+            xcorredor: e.xnombre,
+            mmontototal: element.mcomtot
+          }
 
-      
+          // console.log(paymentRequest);
+          this.listPaymentRequest.push(paymentRequest);
+        });
 
-      // this.http.post(environment.apiUrl + '/api/v1/commissions/search/' + element.cproductor, '').subscribe((response: any) => {
-      //   this.dataSource2 = new MatTableDataSource<any>;
-      //   this.dataSource2 = new MatTableDataSource(response.cualquierData.search);
-      //   this.Alert(); 
-      // });
+        // console.log(this.listPaymentRequest);
+
+      });
     });
 
+    return this.dialog.open(this.dialogPaymentRequest, config);
+  }
 
+  proccessPaymentRequests(config?: MatDialogConfig) {
+    this.rowsABuscar.forEach((element: any) => {
+      this.http.post(environment.apiUrl + '/api/v1/commissions/search-data/' + element.cproductor, '').subscribe((response: any) => {
 
-    return this.dialog.open(this.procesarSolicitudesDePago, config);
+        response.cualquierData.search.forEach((e: any) => {
+          var paymentRequest: PaymentRequest = {
+            xtransaccion: "Pago de Comisiones",
+            ffacturacion: new Date().toLocaleDateString(),
+            cstatus: '',
+            xstatus: 'pendiente',
+            cid: e.cid,
+            xbeneficiario: element.xnombre,
+            cconcepto: '',
+            xconcepto: 'Cierre de Caja',
+            ccorredor: e.cci_rif,
+            xcorredor: e.xnombre,
+            mmontototal: element.mcomtot
+          }
+
+          // console.log(paymentRequest);
+          this.listPaymentRequest.push(paymentRequest);
+        });
+
+        // console.log(this.listPaymentRequest);
+
+      });
+    });
+
+    return this.dialog.open(this.dialogPaymentRequest, config);
   }
 
 }
