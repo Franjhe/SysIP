@@ -40,24 +40,24 @@
             <!-- Weight Column -->
             <ng-container matColumnDef="mcomtot">
                 <th mat-header-cell *matHeaderCellDef> Comisión </th>
-                <td mat-cell *matCellDef="let row"> {{row.mcomtot}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mcomtot}}</td>
             </ng-container>
 
             <!-- Weight Column -->
             <ng-container matColumnDef="mcomexttot">
                 <th mat-header-cell *matHeaderCellDef> Impuesto </th>
-                <td mat-cell *matCellDef="let row"> {{row.mcomexttot}}</td>
+                <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mcomexttot}}</td>
             </ng-container>
 
             <!-- Weight Column -->
             <ng-container matColumnDef="mcomtot2">
                 <th mat-header-cell *matHeaderCellDef> A pagar </th>
-                <td mat-cell *matCellDef="let row"> {{row.mcomtot}} </td>
+                <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mcomtot}}</td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <!-- <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr> -->
-            <tr mat-row (click)="dataCorredor(row.cproductor)" [class.demo-row-is-clicked]=""
+            <tr mat-row (click)="dataCorredor(row.cproductor, row.cmoneda)" [class.demo-row-is-clicked]=""
                 *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
 
@@ -84,7 +84,7 @@
         <ng-template #Alerta>
             <mat-dialog-content>
                 <!-- class="mat-elevation-z8" -->
-                <table mat-table [dataSource]="dataSource2">
+                <table mat-table [dataSource]="tableCommisionPorProductor">
 
                     <!--- Note that these columns can be defined in any order.
                         The actual rendered columns are set as a property on the row definition" -->
@@ -92,7 +92,8 @@
                     <!-- Weight Column -->
                     <ng-container matColumnDef="select">
                         <th mat-header-cell *matHeaderCellDef>
-                            <mat-checkbox (change)="$event ? masterToggle2() : null"
+                            <!-- <mat-checkbox (change)="$event ? masterToggle2() : null" -->
+                            <mat-checkbox (change)="masterToggle2()"
                                 [checked]="selection2.hasValue() && isAllSelected2()"
                                 [indeterminate]="selection2.hasValue() && !isAllSelected2()">
                             </mat-checkbox>
@@ -125,17 +126,17 @@
                     </ng-container>
                     <ng-container matColumnDef="4">
                         <th mat-header-cell *matHeaderCellDef> Fecha </th>
-                        <td mat-cell *matCellDef="let row"> {{row.femision}} </td>
+                        <td mat-cell *matCellDef="let row"> {{row.femision | date: "dd/MM/YYYY"}} </td>
 
                     </ng-container>
                     <ng-container matColumnDef="5">
                         <th mat-header-cell *matHeaderCellDef> Monto de la Prima </th>
-                        <td mat-cell *matCellDef="let row"> {{row.mprimabrutaext}} </td>
+                        <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mprimanetaext}} </td>
 
                     </ng-container>
                     <ng-container matColumnDef="6">
                         <th mat-header-cell *matHeaderCellDef> Monto del Movimiento </th>
-                        <td mat-cell *matCellDef="let row"> {{row.mmovcom}} </td>
+                        <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mmovcom}} </td>
 
                     </ng-container>
                     <!-- Row shown when there is no matching data. -->
@@ -144,6 +145,7 @@
                     <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
                 </table>
 
+                <hr>
                 <div class="footer-table">
                     <b>Montos:</b>
                     <span>Comision: {{total_movcom}}</span>
@@ -251,7 +253,7 @@
                 <div class="row mt-4">
                     <div class="col col-2 text-center"><button mat-raised-button (click)="logSelection2()">Cancelar</button></div>
                     <div class="col col-8"></div>
-                    <div class="col col-2 text-center"><button mat-raised-button (click)="logSelection2()">Procesar</button></div>
+                    <div class="col col-2 text-center"><button mat-raised-button (click)="proccessPaymentRequests()">Procesar</button></div>
                 </div>
                 
                 
