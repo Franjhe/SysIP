@@ -106,17 +106,11 @@ export class PaymentCancellationComponent {
   lisDiferenceClient: any 
   listDetalle: any
   listSoport : any = []
-
-
   diference : boolean = false
 
   listReceipts  : any = []
   boollistReceipts: boolean = false
   GroupReceiptsBool : boolean = false
-
-  listpureba : any = []
-
-
   groupReceiptsForm = this._formBuilder.group({
     agrupado : this._formBuilder.array([])
   });
@@ -318,183 +312,122 @@ export class PaymentCancellationComponent {
     .then(data => {
       this.listVencido = data.searchPaymentData.recibo
 
-      
     })
 
 
     fetch(environment.apiUrl + '/api/v1/collection/search-collected' )
     .then((response) => response.json())
     .then(data => {
-
-
-      // if(soporteItem.cmoneda == 'USD ' ){
-
-      //   //banco destino
-      //   let idBank = soporteItem.cbanco
-      //   let bank = this.bankInternational
-      //   let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
-      //   bankValue = filterBank[0]?.value
-
-      //   //banco emisor
-      //   let idBankEmi = soporteItem.cbanco_destino
-      //   let bankEmi = this.bankInternational
-      //   let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
-      //   bankValueEmi = filterBankEmi[0]?.value
-
-      // }else
-      // {
-      //   //banco destino
-      //   let idBank = soporteItem.cbanco
-      //   let bank = this.bankNational
-      //   let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
-      //   bankValue = filterBank[0]?.value
-
-      //   //banco emisor
-      //   let idBankEmi = soporteItem.cbanco_destino
-      //   let bankEmi = this.bankNational
-      //   let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
-      //   bankValueEmi = filterBankEmi[0]?.value
-      // }
-
-
       this.listCollectedReport = data.searchPaymentCollected.recibo
-
     })
 
 
     fetch(environment.apiUrl + '/api/v1/collection/search-notification' )
     .then((response) => response.json())
     .then(data => {
-
-      this.listpureba = data.searchPaymentReport.searchDataNotifiqued.dataTransaction
-
-      this.listpureba.forEach((item : any) => {
-
-        let dateNotification = new Date(item.transaccion.freporte);
+      
+      for(let i = 0; i < data.searchPaymentReport.length; i++){
+        let dateNotification = new Date(data.searchPaymentReport[i].freporte);
         let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
 
-        this.agrupado.push(this._formBuilder.group({
+        let idTrades = data.searchPaymentReport[i].cramo
+        let trades = this.tradesList
+        let filterTRades = trades.filter((data: { id: any; }) => data.id == idTrades)
+        const tradesValue = filterTRades[0].value
+
+        let bankValue : any
+        let bankValueEmi : any
+
+        if(data.searchPaymentReport[i].cmoneda == 'USD ' ){
+
+          //banco destino
+          let idBank = data.searchPaymentReport[i].cbanco
+          let bank = this.bankInternational
+          let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
+          bankValue = filterBank[0]?.value
+
+          //banco emisor
+          let idBankEmi = data.searchPaymentReport[i].cbanco_destino
+          let bankEmi = this.bankInternational
+          let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
+          bankValueEmi = filterBankEmi[0]?.value
+
+        }else
+        {
+          //banco destino
+          let idBank = data.searchPaymentReport[i].cbanco
+          let bank = this.bankNational
+          let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
+          bankValue = filterBank[0]?.value
+
+          //banco emisor
+          let idBankEmi = data.searchPaymentReport[i].cbanco_destino
+          let bankEmi = this.bankNational
+          let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
+          bankValueEmi = filterBankEmi[0]?.value
+        }
+
+        const imageUrl = data.searchPaymentReport[i].xruta;
+        const fullImageUrl = this.getImage(imageUrl);
+
+        const safeImageUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullImageUrl);
+
+          this.agrupado.push(this._formBuilder.group({
             // Define tus controles aquí
-            id: [item.transaccion.id],
-            casegurado: [item.transaccion.casegurado],
-            freporte: [fechaISOHasta],
-            agrupador:false,
+            id: data.searchPaymentReport[i].ctransaccion,
             iestadorec : '',
             xobservacion : '',
             mdiferencia : '',
             idiferencia : '',
             cmoneda : '',
             recibo: '',
-            ptasamon: [item.transaccion.ptasamon],
-            mpago: [item.transaccion.mpago],
-            mpagoext: [item.transaccion.mpagoext],
-            iestado_tran: [item.transaccion.iestado_tran],
-
-          detalle: this._formBuilder.array([]),
-          soporte: this._formBuilder.array([]),
-          diference: this._formBuilder.array([]),
-        }));
+            ctransaccion: data.searchPaymentReport[i].ctransaccion,
+            freporte:fechaISOHasta,
+            casegurado: data.searchPaymentReport[i].casegurado,
+            xcliente: data.searchPaymentReport[i].xcliente, 
+            monto_transaccion: data.searchPaymentReport[i].monto_transaccion,
+            monto_transaccion_ext: data.searchPaymentReport[i].monto_transaccion_ext,
+            ptasamon: data.searchPaymentReport[i].ptasamon,
+            iestado: data.searchPaymentReport[i].iestado,
+            iestado_tran: data.searchPaymentReport[i].iestado_tran,
+            cdoccob: data.searchPaymentReport[i].cdoccob,
+            crecibo: data.searchPaymentReport[i].crecibo,
+            cnrecibo: data.searchPaymentReport[i].cnrecibo,
+            cpoliza: data.searchPaymentReport[i].cpoliza,
+            cnpoliza: data.searchPaymentReport[i].cnpoliza,
+            mmontorec: data.searchPaymentReport[i].mmontorec,
+            mmontorecext: data.searchPaymentReport[i].mmontorecext,
+            cramo: tradesValue,
+            cplan:data.searchPaymentReport[i].cplan,
+            fdesde: data.searchPaymentReport[i].fdesde,
+            fhasta:data.searchPaymentReport[i].fhasta,
+            fcobro: data.searchPaymentReport[i].fcobro,
+            npago: data.searchPaymentReport[i].npago,
+            moneda_pago:data.searchPaymentReport[i].moneda_pago,
+            cbanco: bankValueEmi,
+            cbanco_destino: bankValue,
+            monto_declarado: data.searchPaymentReport[i].monto_declarado,
+            monto_declarado_ext: data.searchPaymentReport[i].monto_declarado_ext,
+            mpagoigtf: data.searchPaymentReport[i].mpagoigtf,
+            mpagoigtfext: data.searchPaymentReport[i].mpagoigtfext,
+            xreferencia: data.searchPaymentReport[i].xreferencia,
+            mountdiferencia: data.searchPaymentReport[i].mdiferencia,
+            mdiferenciaext: data.searchPaymentReport[i].mdiferenciaext,
+            tasa_diferencia: data.searchPaymentReport[i].tasa_diferencia,
+            xobservacion_muestra: data.searchPaymentReport[i].xobservacion,
+            estado_diferencia: data.searchPaymentReport[i].estado_diferencia,
+            ximagen: safeImageUrl
   
-        // Obtén el FormArray de la transacción actual
-        const detalleArray = (this.agrupado.at(this.agrupado.length - 1) as FormGroup).get('detalle') as FormArray;
-        const soporteArray = (this.agrupado.at(this.agrupado.length - 1) as FormGroup).get('soporte') as FormArray;
-        const diferenceArray = (this.agrupado.at(this.agrupado.length - 1) as FormGroup).get('diference') as FormArray;
-  
-        // Itera sobre los detalles y agrega un FormGroup por cada elemento
-        item.detalle.forEach((detalleItem: any) => {
-
-          let idTrades = detalleItem.cramo
-          let trades = this.tradesList
-          let filterTRades = trades.filter((data: { id: any; }) => data.id == idTrades)
-          const tradesValue = filterTRades[0].value
-
-          detalleArray.push(this._formBuilder.group({
-            crecibo: [detalleItem.crecibo] ,
-            cpoliza: [detalleItem.cpoliza] ,
-            cramo: [tradesValue],
-            mprimabrutaext: [detalleItem.mprimabrutaext],
-            mprimabruta: [detalleItem.mprimabruta] ,
-            fhasta_rec: [detalleItem.fhasta_rec] ,
-       
           }));
-        });
-  
-        // Itera sobre los soportes y agrega un FormGroup por cada elemento
-        item.soporte.forEach((soporteItem: any) => {
 
-          let bankValue : any
-          let bankValueEmi : any
+      }
+    
+      const listNotificate = data.searchPaymentReport
 
-          if(soporteItem.cmoneda == 'USD ' ){
-
-            //banco destino
-            let idBank = soporteItem.cbanco
-            let bank = this.bankInternational
-            let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
-            bankValue = filterBank[0]?.value
-
-            //banco emisor
-            let idBankEmi = soporteItem.cbanco_destino
-            let bankEmi = this.bankInternational
-            let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
-            bankValueEmi = filterBankEmi[0]?.value
-
-          }else
-          {
-            //banco destino
-            let idBank = soporteItem.cbanco
-            let bank = this.bankNational
-            let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
-            bankValue = filterBank[0]?.value
-
-            //banco emisor
-            let idBankEmi = soporteItem.cbanco_destino
-            let bankEmi = this.bankNational
-            let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
-            bankValueEmi = filterBankEmi[0]?.value
-          }
-
-
-
-          const imageUrl = soporteItem.xruta;
-          const fullImageUrl = this.getImage(imageUrl);
-
-          const safeImageUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullImageUrl);
-
-          soporteArray.push(this._formBuilder.group({
-            cbanco: [bankValue],
-            cbanco_destino: [bankValueEmi] ,
-            cmoneda:[soporteItem.cmoneda],
-            mpago: [soporteItem.mpago],
-            mpagoext: [soporteItem.mpagoext] ,
-            mpagoigtf: [soporteItem.mpagoigtf] ,
-            mpagoigtfext: [soporteItem.mpagoigtfext] ,
-            ptasamon: [soporteItem.ptasamon] ,
-            ptasaref: [soporteItem.ptasaref] ,
-            xreferencia: [soporteItem.xreferencia],
-            ximagen: safeImageUrl,
-         
-          }));
-        });
-  
-        // Itera sobre las diferencias y agrega un FormGroup por cada elemento
-        item.diference.forEach((diferenceItem: any) => {
-          diferenceArray.push(this._formBuilder.group({
-            mdiferencia: [diferenceItem.mdiferencia],
-            xobservacion: [diferenceItem.xobservacion],
-
-          }));
-        });
-      });
-
-      const listNotificate = data.searchPaymentReport.searchDataNotifiqued.dataTransaction
-
-      const sumaMpagoext = listNotificate.reduce((total: any, item: any ) => total + item.transaccion.mpagoext, 0);
+      const sumaMpagoext = listNotificate.reduce((total: any, item: any ) => total + item.monto_declarado, 0);
 
       this.totalNotificated = sumaMpagoext.toFixed(2)
-
     })
-
 
 
   }

@@ -439,8 +439,7 @@ export class AutomobileComponent {
     
       const formattedFhasta = fhasta.toISOString().split('T')[0]; // Obtener solo la parte de la fecha sin la hora
       this.receiptFormGroup.get('fhasta')?.setValue(formattedFhasta);
-      console.log(this.receiptFormGroup.get('fdesde')?.value);
-      console.log(this.receiptFormGroup.get('fhasta')?.value);
+
     }
 
     this.token = localStorage.getItem('user');

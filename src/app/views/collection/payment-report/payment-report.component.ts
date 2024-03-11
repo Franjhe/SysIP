@@ -320,7 +320,6 @@ export class PaymentReportComponent {
             messaje = ''
           }
 
-
           this.receipt.push(
             this._formBuilder.group({
               cnpoliza: response.searchReceipt.receipt[i].cnpoliza,

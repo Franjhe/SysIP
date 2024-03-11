@@ -65,10 +65,8 @@ export class DefaultLayoutComponent {
       }
       let tokenString = JSON.stringify(token);
 
-      console.log('pasa por usuario php')
       this.currentUser = JSON.parse(tokenString);
     }else{
-      console.log('pasa por usuario normal')
       this.token = localStorage.getItem('user');
       this.currentUser = JSON.parse(this.token);
     }
@@ -82,12 +80,10 @@ export class DefaultLayoutComponent {
         cdepartamento: this.currentUser.data.cdepartamento,
       };
 
-      console.log(params)
 
       this.http
       .post(environment.apiUrl + '/api/v1/menu/get-menu', params)
       .subscribe((response: any) => {
-        console.log(response)
         this.listmenus = response.data.menuPrincipal;
         const menuPrincipal = response.data.menuPrincipal;
         this.navItems = [];

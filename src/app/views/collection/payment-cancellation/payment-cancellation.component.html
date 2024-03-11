@@ -11,34 +11,26 @@
               <h2>Total Notificado {{totalNotificated}} $</h2>
             </div>
 
-            <div>
-              <button class="btn btn-primary rounded-pill p-3" type="button" [disabled]="!GroupReceiptsBool" (click)="updateDifferenceNotification()">Cobrar notificaciones agrupadas</button>
-            </div>
-
             <div class="mt-5 p-2">
               <ngb-accordion
               #accordion formArrayName="agrupado" 
                 [closeOthers]="false" >
                 <ngb-panel
-                    *ngFor="let group of agrupado.controls;let i=index" 
+                    *ngFor="let group of agrupado.value;let i=index" 
                     [formGroupName]="i" 
                     [id]="'pannel'+i">
                     <ng-template ngbPanelHeader let-opened="opened"  >
-                      <div class="row p-3  bg-info bg-gradient" [class.bg-danger]="group.value.iestado_tran == 'ER' ">
+                      <div class="row p-3  bg-info bg-gradient" [class.bg-danger]="group.iestado_tran == 'ER' ">
 
                         <div class="col-4 text-light" style="font-size: medium;">
-                          Cédula de Identidad {{group.value.casegurado}}<br>
-                          Fecha de notificacion de pago {{group.value.freporte}}<br>
-                          Tasa BCV de cobros {{group.value.ptasamon}}
+                          Asegurado {{group.casegurado}} {{group.xcliente}}<br>
+                          Fecha de notificacion de pago {{group.freporte}}<br>
+                          Tasa BCV de cobros {{group.ptasamon}}
                         </div>
 
                         <div class="col-4 text-light" style="font-size: medium;">
-                          Pago Bs {{group.value.mpago}}<br>
-                          Pago $  {{group.value.mpagoext}}<br>
-                        </div>
-
-                        <div class="col-2 text-light" style="font-size: medium;">
-                          <mat-checkbox class="example-margin" formControlName="agrupador" matTooltip="Este campo servira SOLO para agrupar transacciones,aplicara en casos en el que el cliente reporte varios pagos para un mismo recibo" (change)="GroupReceipt()"> Validar transacción</mat-checkbox>
+                          Pago Bs {{group.monto_transaccion}}<br>
+                          Pago $  {{group.monto_transaccion_ext}}<br>
                         </div>
 
                         <div class="col-2">
@@ -54,29 +46,25 @@
 
                       <div class="row p-3">
 
-                        <div class="col"  *ngFor="let group of group.value.detalle;let i=index" >
+                        <div class="col" >
                           <h2>Detalles del recibo Pagado</h2>
                             <strong>Poliza</strong>  {{group.cpoliza}}<br>
                             <strong>Reciboo</strong> {{group.crecibo}}<br>
                             <strong>Ramo</strong>  {{group.cramo}}<br>
-                            <strong>Monto Bs</strong> {{group.mprimabruta}}<br>
-                            <strong>Monto $</strong>  {{group.mprimabrutaext}}<br>
-
-
-                          
-                         
+                            <strong>Monto Bs</strong> {{group.mmontorec}}<br>
+                            <strong>Monto $</strong>  {{group.mmontorecext}}<br>
                         </div>
 
-                        <div class="col" *ngFor="let group of group.value.soporte;let i=index" >
+                        <div class="col">
                           <h2>Detalles del Soporte de pago</h2>
                             <strong>Banco remitente</strong>  {{group.cbanco}}<br>
                             <strong>Banco Receptor</strong> {{group.cbanco_destino}}<br>
-                            <div *ngIf="group.cmoneda == 'Bs  ' ">
-                              <strong> Monto Pagado</strong>  {{group.mpago}} {{group.cmoneda}}<br>
+                            <div *ngIf="group.moneda_pago == 'Bs  ' ">
+                              <strong> Monto Pagado</strong>  {{group.monto_declarado}} {{group.moneda_pago}}<br>
                             </div>
 
-                            <div *ngIf="group.cmoneda == 'USD ' ">
-                              <strong> Monto Pagado</strong>  {{group.mpagoext}} {{group.cmoneda}}<br>
+                            <div *ngIf="group.moneda_pago == 'USD ' ">
+                              <strong> Monto Pagado</strong>  {{group.monto_declarado_ext}} {{group.moneda_pago}}<br>
                               <strong> IGTF</strong> {{group.mpagoigtfext}}$ - {{group.mpagoigtf}} Bs<br>
                             </div>
 
@@ -88,12 +76,12 @@
                             </div>
                         </div>
 
-                        <div class="col" *ngFor="let group of group.value.diference;let i=index">
-                          <div class="row p-3 bg-danger " *ngIf="group.mdiferencia > 1">
+                        <div class="col" >
+                          <div class="row p-3 bg-danger " *ngIf="group.mountdiferencia > 1">
                             <h2>Transaccion con diferencia</h2>
   
-                              <strong>Diferencia de {{group.mdiferencia}} <br/>
-                                observacion  "{{group.xobservacion}}" </strong> 
+                              <strong>Diferencia de {{group.mountdiferencia}} <br/>
+                                observacion  "{{group.xobservacion_muestra}}" </strong> 
                         
                           </div> 
   
@@ -109,7 +97,7 @@
                           </div>
                         </div>
 
-                        <div *ngIf="group.value.diference.length == 0">
+                        <div *ngIf="group.mountdiferencia !== 0">
                           <div>
 
 
@@ -145,7 +133,7 @@
                             <mat-form-field *ngIf="revision">
                               <mat-label>Seleccione el Recibo con diferencia</mat-label>
                               <mat-select formControlName="recibo">
-                                <mat-option *ngFor="let recibo of group.value.detalle"  value="{{ recibo.crecibo }}">{{ recibo.crecibo }}</mat-option>
+                                <mat-option *ngFor="let recibo of group.value"  value="{{ recibo.crecibo }}">{{ recibo.crecibo }}</mat-option>
                               </mat-select>
                             </mat-form-field>
         
