@@ -7,6 +7,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 
+
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.component.html',
@@ -49,12 +50,17 @@ onSubmit(){
   let data = {
     bprima: this.report_form.get('bprima')?.value,
     fdesde: this.report_form.get('fdesde')?.value,
-    fhasta: this.report_form.get('fhasta')?.value,
+    estado: this.report_form.get('fhasta')?.value,
   };
-  this.http.post(environment.apiUrl + '/api/v1/report/search', data).subscribe((response: any) => {
+  let estado = this.report_form.get('fhasta')?.value
+  this.http.get(environment.apiUrl_reporte + '/lamundialapi/recibos/'+ estado).subscribe((response: any) => {
     if (response.data.list) {
       this.dataSource.data = response.data.list;
     }
   });
+}
+
+buscarReporte(){
+
 }
 }
