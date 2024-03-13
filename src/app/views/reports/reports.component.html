@@ -1,15 +1,94 @@
-<div class="card container registration-form" *ngIf="showTable">
-    <div class="image-container"></div>
-    <div class="d-flex justify-content-end mr-auto p-2" style="position: relative; top: -382px;">
-        <div class="card col-lg-4 position-fixed reset" style="background-color: #1d76c947;">
-            <div class="card-header">
-                <h3>Reportes</h3>
-            </div>
-            <div class="card-body">
-                <h4>Por favor, elija la categoría de reportes que desee.</h4>
-            </div>
-        </div>
-    </div>
-</div>
+<mat-tab-group>
+    <mat-tab label="Carga Individual">
+                        <mat-divider></mat-divider>
+                    <section>
+                        <div class="row">
+                            <div class="col-5">
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>Nro. Póliza</mat-label>
+                                  <input matInput type="number" placeholder="Ingrese Nro. Póliza">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-5">
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>Recibo</mat-label>
+                                  <input matInput type="number" placeholder="Ingrese Nro. Recibo">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-2" >
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>Moneda</mat-label>
+                                  <input matInput type="text" placeholder="Ingrese Moneda">
+                                </mat-form-field>
+                              </div>
+                            <div class="col-4" >
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>Sucursal</mat-label>
+                                  <input matInput type="text" placeholder="Ingrese Sucursal">
+                                </mat-form-field>
+                              </div>
+                              <div class="col-6" >
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>Ramo</mat-label>
+                                  <input matInput type="text" placeholder="Ingrese el Ramo de Póliza">
+                                </mat-form-field>
+                              </div>
+                              <div class="col-2" >
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>Productor</mat-label>
+                                  <input matInput type="text" placeholder="Ingrese Productor">
+                                </mat-form-field>
+                              </div>
+                              <div class="col-4" >
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>Reasegurador</mat-label>
+                                  <input matInput type="text" placeholder="Ingrese Reasegurador">
+                                </mat-form-field>
+                              </div>
+                              <div class="col-6" >
+                                <mat-form-field class="example-full-width">
+                                  <mat-label>Estado</mat-label>
+                                  <input matInput type="text" placeholder="Ingrese Estado">
+                                </mat-form-field>
+                              </div>
+                            <div class="izquierda2 col-11">
+                                <div>
+                                <mat-form-field>
+                                    <mat-label>Fecha Desde</mat-label>
+                                    <input matInput [matDatepicker]="picker">
+                                    <mat-hint>MM/DD/YYYY</mat-hint>
+                                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker></mat-datepicker>
+                                  </mat-form-field>
+                                  <mat-form-field>
+                                    <mat-label>Fecha Hasta</mat-label>
+                                    <input matInput [matDatepicker]="picker">
+                                    <mat-hint>MM/DD/YYYY</mat-hint>
+                                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker></mat-datepicker>
+                                  </mat-form-field>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="example-button-row">
+                          <button mat-raised-button class="mat-raised-button" style="color: #fff; background-color: #13ad34fb;">
+                            <img class="izquierda" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/1101px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png" width="20px" height="20px" margin-right="2px">Excel
+                          </button>
+                          <button mat-raised-button class="mat-raised-button" style="color: #fff; background-color: #db1313fb;">
+                            <img class="izquierda" src="https://www.islahospitalmenorca.org/wp-content/uploads/2015/12/adobe-pdf-file-icon-logo-vector.png" width="23px" height="20px" margin-right="2px"> PDF
+                        </button>
+                        </div>
+                    </section>
+                  
+                    
+                    <!-- <div class="card-body">
+                        <h4>Por favor, elija la categoría de reportes que desee.</h4>
+                    </div> -->
+            
+    </mat-tab>
+    <mat-tab label="Aquí va el masivo"> Aquí va el masivo </mat-tab>
+    
+  </mat-tab-group>
+
 
 <router-outlet></router-outlet>

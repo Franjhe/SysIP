@@ -1,4 +1,4 @@
-.image-container {
+.card-container {
     width: 100%;
     max-width: 600px; /* Aumenta el ancho máximo para hacerlo más grande */
     height: 400px; /* Aumenta la altura para hacerlo más grande */
@@ -19,4 +19,24 @@
 .reset {
     margin: 0;
     padding: 0;
+}
+.mat-raised-button{
+  width: 47%;
+  margin-left: 12px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 10px;
+}
+.title_receipt{
+    margin-top: 10px;
+}
+.izquierda {
+    margin-right: 6px;
+    float: left;
+  }
+.mat-mdc-chip-set {
+    max-width: 200px;
+  }
+.izquierda2{
+    margin-left: 20px;
 }
