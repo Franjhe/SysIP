@@ -57,8 +57,8 @@
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <!-- <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr> -->
-            <tr mat-row (click)="dataCorredor(row.cproductor, row.cmoneda)" [class.demo-row-is-clicked]=""
-                *matRowDef="let row; columns: displayedColumns;"></tr>
+            <tr mat-row (click)="dataCorredor(row.cproductor, row.cmoneda, i)" [class.demo-row-is-clicked]=""
+                *matRowDef="let row; columns: displayedColumns; let i = index"></tr>
         </table>
 
         <div class="text-center mt-5">
@@ -99,8 +99,9 @@
                             </mat-checkbox>
                         </th>
                         <td mat-cell *matCellDef="let row">
-                            <mat-checkbox (click)="$event.stopPropagation(); calculateMmovcom()"
-                                (change)="$event ? selection2.toggle(row) : null" [checked]="selection2.isSelected(row)">
+                            <mat-checkbox (click)="$event.stopPropagation();"
+                                (change)="$event ? selection2.toggle(row) : null; calculateMmovcom();" 
+                                [checked]="selection2.isSelected(row)">
                             </mat-checkbox>
                         </td>
                     </ng-container>
@@ -151,7 +152,7 @@
                     <span>Comision: {{total_movcom}}</span>
                     <span>Impuesto: {{total_impuesto}}</span>
                     <span>A pagar: {{total_comision}}</span>
-                    <button mat-raised-button (click)="logSelection2()">Seleccionar</button>
+                    <button mat-raised-button (click)="calculatePaymentCommissions()">Seleccionar</button>
                 </div>
 
             </mat-dialog-content>

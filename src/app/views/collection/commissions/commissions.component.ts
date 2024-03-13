@@ -8,6 +8,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { SelectionModel } from '@angular/cdk/collections';
+import { clear } from 'console';
 
 export interface PaymentRequest {
   // name: string;
@@ -57,6 +58,8 @@ export class CommissionsComponent {
 
 
   rowsABuscar: any = [];
+
+  dataSourceindex: any;
 
   total_movcom = 0;
   total_impuesto = 0;
@@ -110,7 +113,7 @@ export class CommissionsComponent {
 
     this.http.post(environment.apiUrl + '/api/v1/commissions/search', '').subscribe((response: any) => {
       console.log(response);
-      
+
       // this.listCualquierData = response.returnData.search
 
 
@@ -154,14 +157,17 @@ export class CommissionsComponent {
     this.total_movcom = 0;
     this.total_impuesto = 0;
     this.total_comision = 0;
-
   }
 
 
-  dataCorredor(ccorredor: any, cmoneda: any) {
+  dataCorredor(ccorredor: any, cmoneda: any, index: any) {
+    this.clearData();
+    alert(this.total_movcom);
+    // console.log(index);
+    this.dataSourceindex = index;
     let data = {
       "ccorredor": ccorredor,
-      "cmoneda":cmoneda
+      "cmoneda": cmoneda
     }
     this.http.post(environment.apiUrl + '/api/v1/commissions/search-insurerCommissions/', data).subscribe((response: any) => {
       // this.tableCommisionPorProductor = new MatTableDataSource<any>;
@@ -171,14 +177,15 @@ export class CommissionsComponent {
   }
 
   showInsurerComissions(config?: MatDialogConfig) {
-    // console.log(this.tableCommisionPorProductor);
-    this.total_movcom = 0;
-    this.total_comision = 0;
+    this.clearData();
 
     this.tableCommisionPorProductor.data.forEach(row => this.selection2.select(row));
     this.tableCommisionPorProductor.data.forEach(row => (
+      alert('111-'+`${this.total_comision}`),
+      
       this.total_movcom += row.mmovcom,
-      this.total_comision = this.total_movcom - this.total_impuesto
+      this.total_comision = this.total_movcom - this.total_impuesto,
+      alert('222-'+`${this.total_comision}`)
     ));
 
     return this.dialog.open(this.InfoReceipt, config);
@@ -214,25 +221,48 @@ export class CommissionsComponent {
   masterToggle2() {
     if (this.isAllSelected2()) {
       this.selection2.clear();
+      // this.calculateMmovcom();
       alert('limpio');
     } else {
       this.tableCommisionPorProductor.data.forEach(row => this.selection2.select(row));
+      // this.calculateMmovcom();
       alert('lleno');
     }
     this.calculateMmovcom();
-     
+
   }
 
   calculateMmovcom() {
+    var comision = 0;
+    
+    // alert('oewifjaowejfkñ'),
     this.total_movcom = 0;
     this.total_comision = 0;
     this.selection2.selected.forEach(row => (
-      this.total_movcom += row.mmovcom,
-      this.total_comision = this.total_movcom - this.total_impuesto
+      console.log(row),
+      
+      alert("total_comision:" + this.total_comision),
+      comision += row.mmovcom,
+      alert("total_comision:" + comision)
+      // this.total_comision = this.total_comision - this.total_impuesto
+      
     ));
+    this.total_comision = comision;
   }
 
   logSelection2() {
+    // console.log(this.dataSource.data[0].mcomtot = this.total_comision);
+    // this.selection2.selected.forEach(row => console.log(row.mmovcom));
+    this.dialog.closeAll();
+  }
+
+  calculatePaymentCommissions() {
+    // console.log();
+    this.dataSource.data[this.dataSourceindex].mcomtot = this.total_comision;
+    alert('333-'+this.total_comision);
+    this.clearData();
+    alert('444-'+this.total_comision);
+
     // console.log(this.dataSource.data[0].mcomtot = this.total_comision);
     // this.selection2.selected.forEach(row => console.log(row.mmovcom));
     this.dialog.closeAll();
@@ -286,25 +316,25 @@ export class CommissionsComponent {
 
   proccessPaymentRequests(config?: MatDialogConfig) {
     // this.listPaymentRequest.forEach((data: any) => {
-      // console.log(element);
+    // console.log(element);
 
-      let data = {
-        list: this.listPaymentRequest
-      }
-      
-      this.http.post(environment.apiUrl + '/api/v1/commissions/create-paymetRequests', data).subscribe((response: any) => {
+    let data = {
+      list: this.listPaymentRequest
+    }
 
-        console.log(response);
-        // response.returnData.search.forEach((e: any) => {
-        
-        //   });
+    this.http.post(environment.apiUrl + '/api/v1/commissions/create-paymetRequests', data).subscribe((response: any) => {
 
-          
-        // });
+      console.log(response);
+      // response.returnData.search.forEach((e: any) => {
 
-        
+      //   });
 
-      
+
+      // });
+
+
+
+
     });
 
     return this.dialog.closeAll();
