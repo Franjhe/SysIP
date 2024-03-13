@@ -70,6 +70,7 @@
                     <th>N° Cuota</th>
                     <th>Ramo</th>
                     <th style="color:red">Fecha tope de pago</th>
+                    <th >Recibo notificado</th>
                     <th *ngIf="viewData" style=" background-color: red;color: white;font-weight: 100; ">Diferencia</th>
                     <th *ngIf="viewData" style=" background-color: red;color: white;font-weight: 100; "></th>
                     <th>Total del recibo</th>
@@ -83,6 +84,10 @@
                     <td >{{creds.qcuotas}}</td>
                     <td >{{creds.xramo}}</td>
                     <td > {{creds.fhasta_rec}}</td>
+                    <td >
+                      <div *ngIf="creds.cdoccob > 0"><mat-icon style="color:green">check</mat-icon></div>
+                      <div *ngIf="creds.cdoccob == 0"><mat-icon style="color:red">close</mat-icon></div>
+                    </td>
                     <td *ngIf="viewData" style=" background-color: #fbc8c8;color: white;"> {{creds.mdiferencia}} Bs - {{creds.mdiferenciaext}} $</td>
                     <td *ngIf="viewData" style=" background-color: #fbc8c8;color: white; ">{{creds.idiferencia}}</td>
                     <td >{{creds.mprimabrutaext}} {{creds.cmoneda}}</td>

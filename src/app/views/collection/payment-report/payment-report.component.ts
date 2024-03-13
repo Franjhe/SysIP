@@ -27,6 +27,8 @@ export class PaymentReportComponent {
   selectedFiles?: FileList;
   currentFile?: File;
 
+  idTrans : any
+  
   viewData : boolean = false
   viewBank : boolean = false
   paymentMix : boolean = false
@@ -290,10 +292,12 @@ export class PaymentReportComponent {
     }
 
     this.http.post(environment.apiUrl + '/api/v1/collection/search', client ).subscribe((response: any) => {
-
-
+      this.idTrans = response.searchReceipt.transaccion
       if(response.searchReceipt.receipt.length > 0){
         for(let i = 0; i < response.searchReceipt.receipt.length; i++){
+
+          this.cliente = response.searchReceipt.receipt[i].xcliente
+
           const fdesdeP = new Date(response.searchReceipt.receipt[i].fdesde);
           let ISOFdesdeP = fdesdeP.toISOString().substring(0, 10);
 
@@ -319,7 +323,6 @@ export class PaymentReportComponent {
           }else{
             messaje = ''
           }
-
           this.receipt.push(
             this._formBuilder.group({
               cnpoliza: response.searchReceipt.receipt[i].cnpoliza,
@@ -344,9 +347,11 @@ export class PaymentReportComponent {
               mdiferenciaext: response.searchReceipt.receipt[i].mdiferenciaext,
               mdiferencia: response.searchReceipt.receipt[i].mdiferencia,
               xobservacion: response.searchReceipt.receipt[i].xobservacion,
-              idiferencia: messaje
+              idiferencia: messaje,
+              cdoccob: response.searchReceipt.receipt[i].cdoccob
             })
           )
+
 
           let messajeCliente : string 
           let class_text: string 
@@ -376,11 +381,6 @@ export class PaymentReportComponent {
           }
 
         }
-        for(let i = 0; i < response.searchReceipt.client.length; i++){
-
-          this.cliente = response.searchReceipt.client[i].xcliente
-        } 
-        
 
         this.addPayment()
 
@@ -479,25 +479,51 @@ export class PaymentReportComponent {
 
     for(let i = 0; i < receipt.length; i++){
       if(receipt.value[i].seleccionado == true){
-        this.receiptList.push({
-          cnpoliza: receipt.value[i].cnpoliza,
-          cnrecibo: receipt.value[i].cnrecibo,
-          crecibo: receipt.value[i].crecibo,
-          cpoliza: receipt.value[i].cpoliza,
-          fanopol: receipt.value[i].fanopol,
-          fmespol: receipt.value[i].fmespol,
-          cramo: receipt.value[i].cramo,        
-          cmoneda: receipt.value[i].cmoneda,
-          fdesde_pol: receipt.value[i].fdesde_pol,
-          fhasta_pol: receipt.value[i].fhasta_pol,
-          fdesde_rec: receipt.value[i].fdesde_rec,
-          fhasta_rec: receipt.value[i].fhasta_rec,
-          mprimabruta: receipt.value[i].mprimabruta,
-          mprimabrutaext: receipt.value[i].mprimabrutaext,
-          ptasamon: receipt.value[i].ptasamon,
-          cproductor : receipt.value[i].cproductor,
+        if(receipt.value[i].cdoccob > 0){
+          this.receipt.value[i].cdoccob = this.idTrans
 
-        });
+          this.receiptList.push({
+            cnpoliza: receipt.value[i].cnpoliza,
+            cnrecibo: receipt.value[i].cnrecibo,
+            crecibo: receipt.value[i].crecibo,
+            cpoliza: receipt.value[i].cpoliza,
+            fanopol: receipt.value[i].fanopol,
+            fmespol: receipt.value[i].fmespol,
+            cramo: receipt.value[i].cramo,        
+            cmoneda: receipt.value[i].cmoneda,
+            fdesde_pol: receipt.value[i].fdesde_pol,
+            fhasta_pol: receipt.value[i].fhasta_pol,
+            fdesde_rec: receipt.value[i].fdesde_rec,
+            fhasta_rec: receipt.value[i].fhasta_rec,
+            mprimabruta: receipt.value[i].mprimabruta,
+            mprimabrutaext: receipt.value[i].mprimabrutaext,
+            ptasamon: receipt.value[i].ptasamon,
+            cproductor : receipt.value[i].cproductor,
+  
+          });
+        }else{
+
+          this.receiptList.push({
+            cnpoliza: receipt.value[i].cnpoliza,
+            cnrecibo: receipt.value[i].cnrecibo,
+            crecibo: receipt.value[i].crecibo,
+            cpoliza: receipt.value[i].cpoliza,
+            fanopol: receipt.value[i].fanopol,
+            fmespol: receipt.value[i].fmespol,
+            cramo: receipt.value[i].cramo,        
+            cmoneda: receipt.value[i].cmoneda,
+            fdesde_pol: receipt.value[i].fdesde_pol,
+            fhasta_pol: receipt.value[i].fhasta_pol,
+            fdesde_rec: receipt.value[i].fdesde_rec,
+            fhasta_rec: receipt.value[i].fhasta_rec,
+            mprimabruta: receipt.value[i].mprimabruta,
+            mprimabrutaext: receipt.value[i].mprimabrutaext,
+            ptasamon: receipt.value[i].ptasamon,
+            cproductor : receipt.value[i].cproductor,
+  
+          });
+        }
+
       }
 
     }   
@@ -510,7 +536,6 @@ export class PaymentReportComponent {
     this.Submit = true
 
     const transfer = this.searchReceipt.get("transfer") as FormArray
-
 
     const fecha = new Date()
     const savePaymentTrans = {
@@ -526,12 +551,13 @@ export class PaymentReportComponent {
       ifuente : 'Web_Sys',
       iestado : 0,
       ccategoria : this.searchReceipt.get('ccategoria')?.value,
+      idTrans: this.idTrans
     }
     //primero llenamos el recipo y la tabla de transacciones 
     this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
       this.searchReceipt.disable()
-      const transaccion = response.ctransaccion
-      this.transaccion = transaccion
+      const transaccion = this.idTrans
+      this.transaccion = this.idTrans
 
       //obtenemos el codigo de transaccion 
       if(transaccion > 0){
