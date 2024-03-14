@@ -29,6 +29,7 @@ export interface PaymentRequest {
   xcorredor: string;
   mmontototal: any;
   xobservaciones?: any;
+  recibos: any;
 }
 
 @Component({
@@ -48,6 +49,7 @@ export class CommissionsComponent {
   @ViewChild('Alerta') InfoReceipt!: TemplateRef<any>;
   @ViewChild('Alerta1') Alerta1!: TemplateRef<any>;
   @ViewChild('dialogPaymentRequest') dialogPaymentRequest!: TemplateRef<any>;
+  @ViewChild('observaciones') observaciones!: TemplateRef<any>;
 
   displayedColumns: string[] = ['select', 'cproductor', 'xnombre', 'mcomtot', 'mcomexttot', 'mcomtot2'];
   dataSource = new MatTableDataSource<any>;
@@ -58,6 +60,7 @@ export class CommissionsComponent {
 
 
   rowsABuscar: any = [];
+  listPaymentReceipts: any = [];
 
   dataSourceindex: any;
 
@@ -114,26 +117,26 @@ export class CommissionsComponent {
     this.http.post(environment.apiUrl + '/api/v1/commissions/search', '').subscribe((response: any) => {
       console.log(response);
 
-      // this.listCualquierData = response.returnData.search
-
-
+      
+      // let contador = 0;
+      // response.returnData.search.forEach((element: any) => {
+      //   // this.http.post(environment.apiUrl + '/api/v1/commissions/search', '').subscribe((response: any) => {
+      //     let data = {
+      //       'jfjfj': contador
+      //     }
+      //     // response.returnData.search[contador] += data;
+      //     Object.assign(response.returnData.search[contador], data);
+      //     contador += 1;
+          
+      //   // });
+        
+      // });
+      // console.log(response.returnData.search);
+      
       this.dataSource = new MatTableDataSource(response.returnData.search);
-      // console.log(this.dataSource);
-      // console.log('↑');
-
-      const listPending = response.returnData.search
-
-      // const sumaTotal = listPending.reduce((acumulador: any, search: { mprimabrutaext: any; }) => {
-
-      //   acumulador += search.mprimabrutaext;
-
-      //   return acumulador;
-      // }, 0);
-
-      // this.totalPending = sumaTotal.toFixed(2)
-
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+
       this.tableCommisionPorProductor.paginator = this.paginator;
       this.tableCommisionPorProductor.sort = this.sort;
       // // console.log(response);
@@ -162,7 +165,7 @@ export class CommissionsComponent {
 
   dataCorredor(ccorredor: any, cmoneda: any, index: any) {
     this.clearData();
-    alert(this.total_movcom);
+
     // console.log(index);
     this.dataSourceindex = index;
     let data = {
@@ -181,11 +184,11 @@ export class CommissionsComponent {
 
     this.tableCommisionPorProductor.data.forEach(row => this.selection2.select(row));
     this.tableCommisionPorProductor.data.forEach(row => (
-      alert('111-'+`${this.total_comision}`),
+
       
       this.total_movcom += row.mmovcom,
-      this.total_comision = this.total_movcom - this.total_impuesto,
-      alert('222-'+`${this.total_comision}`)
+      this.total_comision = this.total_movcom - this.total_impuesto
+
     ));
 
     return this.dialog.open(this.InfoReceipt, config);
@@ -222,11 +225,11 @@ export class CommissionsComponent {
     if (this.isAllSelected2()) {
       this.selection2.clear();
       // this.calculateMmovcom();
-      alert('limpio');
+
     } else {
       this.tableCommisionPorProductor.data.forEach(row => this.selection2.select(row));
       // this.calculateMmovcom();
-      alert('lleno');
+
     }
     this.calculateMmovcom();
 
@@ -235,19 +238,24 @@ export class CommissionsComponent {
   calculateMmovcom() {
     var comision = 0;
     
-    // alert('oewifjaowejfkñ'),
-    this.total_movcom = 0;
-    this.total_comision = 0;
+
+    // this.total_movcom = 0;
+    // this.total_comision = 0;
+    this.clearData();
+    console.log(this.selection2);
+    
+    
     this.selection2.selected.forEach(row => (
       console.log(row),
       
-      alert("total_comision:" + this.total_comision),
-      comision += row.mmovcom,
-      alert("total_comision:" + comision)
+
+      comision += row.mmovcom
+
       // this.total_comision = this.total_comision - this.total_impuesto
       
     ));
     this.total_comision = comision;
+
   }
 
   logSelection2() {
@@ -257,34 +265,48 @@ export class CommissionsComponent {
   }
 
   calculatePaymentCommissions() {
-    // console.log();
+    
+    this.calculateMmovcom();
     this.dataSource.data[this.dataSourceindex].mcomtot = this.total_comision;
-    alert('333-'+this.total_comision);
-    this.clearData();
-    alert('444-'+this.total_comision);
+    console.log('↓');
+    this.dataSource.data[this.dataSourceindex].recibos = [];
+    // console.log();
+    
+    this.selection2.selected.forEach(element => {
+      this.dataSource.data[this.dataSourceindex].recibos.push(element.crecibo);
+    });
 
-    // console.log(this.dataSource.data[0].mcomtot = this.total_comision);
-    // this.selection2.selected.forEach(row => console.log(row.mmovcom));
+    console.log(this.dataSource.data);
+    // ();
+    
+    this.selection2.clear();
+    
     this.dialog.closeAll();
   }
 
   generatePaymentRequests() {
-    // // console.log("Procesar solicitudes");
-
+    this.rowsABuscar = [];
+    
     this.selection.selected.forEach(row => (
-      // console.log(row),
       this.rowsABuscar.push(row)
+      // this.listPaymentReceipts.push(element.crecibo)
     ));
-    // console.log(this.rowsABuscar);
-
-    this.total_movcom = 0;
-    this.total_comision = 0;
-    // // console.log("Salir Procesar solicitudes");
+    
+    this.selection.clear();
+    this.clearData();
     this.showDialogPaymentRequests();
   }
 
   showDialogPaymentRequests(config?: MatDialogConfig) {
+    this.listPaymentRequest = [];
+    this.listPaymentReceipts = [];
+    // let observaciones = document.getElementsByClassName('.observaciones');
+    
+    
+
     this.rowsABuscar.forEach((element: any) => {
+      // this.listPaymentReceipts.push(element.crecibo)
+
       this.http.post(environment.apiUrl + '/api/v1/commissions/search-data/' + element.cproductor, '').subscribe((response: any) => {
 
         response.returnData.search.forEach((e: any) => {
@@ -299,42 +321,46 @@ export class CommissionsComponent {
             xconcepto: 'Cierre de Caja',
             ccorredor: e.cci_rif,
             xcorredor: e.xnombre,
-            mmontototal: element.mcomtot
+            mmontototal: element.mcomtot,
+            recibos: element.recibos,
+            xobservaciones: ''
           }
-
-          // console.log(paymentRequest);
           this.listPaymentRequest.push(paymentRequest);
         });
-
-        // console.log(this.listPaymentRequest);
-
+        
       });
+      console.log(this.listPaymentRequest);
     });
+
+    
 
     return this.dialog.open(this.dialogPaymentRequest, config);
   }
 
+  cancelPaymentRequests(config?: MatDialogConfig) {
+    this.listPaymentRequest = [];
+    return this.dialog.closeAll();
+  }
+
   proccessPaymentRequests(config?: MatDialogConfig) {
-    // this.listPaymentRequest.forEach((data: any) => {
-    // console.log(element);
+
+    for (let i = 0; i < this.listPaymentRequest.length; i++) {
+      this.listPaymentRequest[i].xobservaciones = (<HTMLInputElement>document.getElementById(`observaciones${i}`)).value;
+      
+    }
 
     let data = {
       list: this.listPaymentRequest
     }
 
+    console.log(this.listPaymentRequest);
+    // let observaciones = 
+    // console.log(observaciones);
+    
+    // i = 0;
     this.http.post(environment.apiUrl + '/api/v1/commissions/create-paymetRequests', data).subscribe((response: any) => {
-
-      console.log(response);
-      // response.returnData.search.forEach((e: any) => {
-
-      //   });
-
-
-      // });
-
-
-
-
+      alert(response.returnData.result.message);
+      location.reload();
     });
 
     return this.dialog.closeAll();
