@@ -292,7 +292,13 @@ export class PaymentReportComponent {
     }
 
     this.http.post(environment.apiUrl + '/api/v1/collection/search', client ).subscribe((response: any) => {
-      this.idTrans = response.searchReceipt.transaccion
+      
+      if(response.searchReceipt.transaccion == null){
+        this.idTrans = 1
+      }else{
+        this.idTrans = response.searchReceipt.transaccion
+      }
+
       if(response.searchReceipt.receipt.length > 0){
         for(let i = 0; i < response.searchReceipt.receipt.length; i++){
 
@@ -553,6 +559,7 @@ export class PaymentReportComponent {
       ccategoria : this.searchReceipt.get('ccategoria')?.value,
       idTrans: this.idTrans
     }
+
     //primero llenamos el recipo y la tabla de transacciones 
     this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
       this.searchReceipt.disable()

@@ -92,7 +92,8 @@
                     <td *ngIf="viewData" style=" background-color: #fbc8c8;color: white; ">{{creds.idiferencia}}</td>
                     <td >{{creds.mprimabrutaext}} {{creds.cmoneda}}</td>
                     <td>
-                      <mat-checkbox formControlName="seleccionado" (change)="calculateMount(i)"> </mat-checkbox>
+                      <div *ngIf="creds.cdoccob > 0"></div>
+                      <div *ngIf="creds.cdoccob == 0"> <mat-checkbox formControlName="seleccionado" (change)="calculateMount(i)"> </mat-checkbox></div>
                     </td>
                   </tr>
                 </tbody>

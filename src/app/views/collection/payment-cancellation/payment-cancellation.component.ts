@@ -71,6 +71,7 @@ export class PaymentCancellationComponent {
 
   totalPending : any
   totalNotificated : any
+  totalNotificatedExt: any
 
   messajeError : any
   error : boolean = false
@@ -306,127 +307,185 @@ export class PaymentCancellationComponent {
 
     })
 
-
-    fetch(environment.apiUrl + '/api/v1/collection/search-vencido' )
-    .then((response) => response.json())
-    .then(data => {
-      this.listVencido = data.searchPaymentData.recibo
-
-    })
-
-
-    fetch(environment.apiUrl + '/api/v1/collection/search-collected' )
-    .then((response) => response.json())
-    .then(data => {
-      this.listCollectedReport = data.searchPaymentCollected.recibo
-    })
-
-
     fetch(environment.apiUrl + '/api/v1/collection/search-notification' )
     .then((response) => response.json())
     .then(data => {
+        this.listReceipts = data.searchPaymentReport
+
+        const transformedData = Object.values(this.listReceipts.reduce((acc : any, curr: any) => {
+          
+            let dateNotification = new Date(curr.freporte);
+            let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
+
+            let idTrades = curr.cramo
+            let trades = this.tradesList
+            let filterTRades = trades.filter((data: { id: any; }) => data.id == idTrades)
+            const tradesValue = filterTRades[0].value
+
+          if (!acc[curr.ctransaccion]) {
+              acc[curr.ctransaccion] = {
+                  id: curr.ctransaccion,
+                  ctransaccion: curr.ctransaccion,
+                  iestadorec : '',
+                  xobservacion : '',
+                  mdiferencia : '',
+                  idiferencia : '',
+                  cmoneda : '',
+                  recibo: '',
+                  freporte:fechaISOHasta,
+                  casegurado: curr.casegurado,
+                  xcliente: curr.xcliente,
+                  iestado: curr.iestado,
+                  iestado_tran: curr.iestado_tran,
+                  cdoccob: curr.cdoccob,
+                  monto_transaccion: curr.monto_transaccion,
+                  monto_transaccion_ext: curr.monto_transaccion_ext,
+                  ptasamon: curr.ptasamon,
+                  recibos: [],
+                  poliza: [],
+                  diferencia: []
+              };
+          }
+
+          const imageUrl = curr.xruta;
+          const fullImageUrl = this.getImage(imageUrl);
+
+          const safeImageUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullImageUrl);
+
+          let bankValue : any
+          let bankValueEmi : any
+
+          if(curr.moneda_pago == 'USD ' ){
+
+            //banco destino
+            let idBank = curr.cbanco
+            let bank = this.bankInternational
+            let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
+            bankValue = filterBank[0]?.value
+
+            //banco emisor
+            let idBankEmi = curr.cbanco_destino
+            let bankEmi = this.bankInternational
+            let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
+            bankValueEmi = filterBankEmi[0]?.value
+
+          }else
+          {
+            //banco destino
+            let idBank = curr.cbanco
+            let bank = this.bankNational
+            let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
+            bankValue = filterBank[0]?.value
+
+            //banco emisor
+            let idBankEmi = curr.cbanco_destino
+            let bankEmi = this.bankNational
+            let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
+            bankValueEmi = filterBankEmi[0]?.value
+          }
       
-      for(let i = 0; i < data.searchPaymentReport.length; i++){
-        let dateNotification = new Date(data.searchPaymentReport[i].freporte);
-        let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
+          acc[curr.ctransaccion].recibos.push({
+              cmoneda: curr.cmoneda,
+              npago: curr.npago,
+              moneda_pago: curr.moneda_pago,
+              xreferencia: curr.xreferencia,
+              cbanco: bankValueEmi,
+              cbanco_destino: bankValue,
+              monto_declarado: curr.monto_declarado,
+              monto_declarado_ext: curr.monto_declarado_ext,
+              mpagoigtf: curr.mpagoigtf,
+              mpagoigtfext: curr.mpagoigtfext,
+              ximagen: safeImageUrl
 
-        let idTrades = data.searchPaymentReport[i].cramo
-        let trades = this.tradesList
-        let filterTRades = trades.filter((data: { id: any; }) => data.id == idTrades)
-        const tradesValue = filterTRades[0].value
+          });
+      
+          acc[curr.ctransaccion].poliza.push({
+              crecibo: curr.crecibo,
+              cnrecibo:curr.cnrecibo,
+              cpoliza: curr.cpoliza,
+              cnpoliza: curr.cnpoliza,
+              mmontorec: curr.mmontorec,
+              mmontorecext: curr.mmontorecext,
+              cramo: tradesValue,
+              cplan: curr.cplan,
+              fdesde: curr.fdesde,
+              fhasta: curr.fhasta,
+          });
 
-        let bankValue : any
-        let bankValueEmi : any
+          acc[curr.ctransaccion].diferencia.push({
+            mountdiferencia: curr.mdiferencia,
+            mdiferenciaext: curr.mdiferenciaext,
+            tasa_diferencia: curr.tasa_diferencia,
+            xobservacion_muestra: curr.xobservacion,
+            estado_diferencia: curr.estado_diferencia,
+          });
+        
+          return acc;
+        }, {}));
+        // Obtener la referencia al FormArray transactions
+        const transactionsArray = this.groupReceiptsForm.get("agrupado") as FormArray
 
-        if(data.searchPaymentReport[i].cmoneda == 'USD ' ){
+        // Iterar sobre los elementos de transformedData y agregarlos al FormArray
+        transformedData.forEach((transaction : any) => {
 
-          //banco destino
-          let idBank = data.searchPaymentReport[i].cbanco
-          let bank = this.bankInternational
-          let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
-          bankValue = filterBank[0]?.value
-
-          //banco emisor
-          let idBankEmi = data.searchPaymentReport[i].cbanco_destino
-          let bankEmi = this.bankInternational
-          let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
-          bankValueEmi = filterBankEmi[0]?.value
-
-        }else
-        {
-          //banco destino
-          let idBank = data.searchPaymentReport[i].cbanco
-          let bank = this.bankNational
-          let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
-          bankValue = filterBank[0]?.value
-
-          //banco emisor
-          let idBankEmi = data.searchPaymentReport[i].cbanco_destino
-          let bankEmi = this.bankNational
-          let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
-          bankValueEmi = filterBankEmi[0]?.value
-        }
-
-        const imageUrl = data.searchPaymentReport[i].xruta;
-        const fullImageUrl = this.getImage(imageUrl);
-
-        const safeImageUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullImageUrl);
-
-          this.agrupado.push(this._formBuilder.group({
-            // Define tus controles aquí
-            id: data.searchPaymentReport[i].ctransaccion,
+          let dateNotification = new Date(transaction.freporte);
+          let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
+          const transactionGroup = this._formBuilder.group({
+            id: transaction.ctransaccion,
             iestadorec : '',
             xobservacion : '',
             mdiferencia : '',
             idiferencia : '',
             cmoneda : '',
             recibo: '',
-            ctransaccion: data.searchPaymentReport[i].ctransaccion,
             freporte:fechaISOHasta,
-            casegurado: data.searchPaymentReport[i].casegurado,
-            xcliente: data.searchPaymentReport[i].xcliente, 
-            monto_transaccion: data.searchPaymentReport[i].monto_transaccion,
-            monto_transaccion_ext: data.searchPaymentReport[i].monto_transaccion_ext,
-            ptasamon: data.searchPaymentReport[i].ptasamon,
-            iestado: data.searchPaymentReport[i].iestado,
-            iestado_tran: data.searchPaymentReport[i].iestado_tran,
-            cdoccob: data.searchPaymentReport[i].cdoccob,
-            crecibo: data.searchPaymentReport[i].crecibo,
-            cnrecibo: data.searchPaymentReport[i].cnrecibo,
-            cpoliza: data.searchPaymentReport[i].cpoliza,
-            cnpoliza: data.searchPaymentReport[i].cnpoliza,
-            mmontorec: data.searchPaymentReport[i].mmontorec,
-            mmontorecext: data.searchPaymentReport[i].mmontorecext,
-            cramo: tradesValue,
-            cplan:data.searchPaymentReport[i].cplan,
-            fdesde: data.searchPaymentReport[i].fdesde,
-            fhasta:data.searchPaymentReport[i].fhasta,
-            fcobro: data.searchPaymentReport[i].fcobro,
-            npago: data.searchPaymentReport[i].npago,
-            moneda_pago:data.searchPaymentReport[i].moneda_pago,
-            cbanco: bankValueEmi,
-            cbanco_destino: bankValue,
-            monto_declarado: data.searchPaymentReport[i].monto_declarado,
-            monto_declarado_ext: data.searchPaymentReport[i].monto_declarado_ext,
-            mpagoigtf: data.searchPaymentReport[i].mpagoigtf,
-            mpagoigtfext: data.searchPaymentReport[i].mpagoigtfext,
-            xreferencia: data.searchPaymentReport[i].xreferencia,
-            mountdiferencia: data.searchPaymentReport[i].mdiferencia,
-            mdiferenciaext: data.searchPaymentReport[i].mdiferenciaext,
-            tasa_diferencia: data.searchPaymentReport[i].tasa_diferencia,
-            xobservacion_muestra: data.searchPaymentReport[i].xobservacion,
-            estado_diferencia: data.searchPaymentReport[i].estado_diferencia,
-            ximagen: safeImageUrl
-  
-          }));
+            casegurado: transaction.casegurado,
+            xcliente: transaction.xcliente,
+            iestado: transaction.iestado,
+            iestado_tran: transaction.iestado_tran,
+            cdoccob: transaction.cdoccob,
+            monto_transaccion: transaction.monto_transaccion,
+            monto_transaccion_ext: transaction.monto_transaccion_ext,
+            ptasamon: transaction.ptasamon,
+            recibos: this._formBuilder.array([]),
+            poliza:  this._formBuilder.array([]),
+            diferencia: this._formBuilder.array([])
+          });
 
-      }
-    
+          // Obtener la referencia a los FormArrays banco y poliza
+          const receiptArray = transactionGroup.get('recibos') as FormArray;
+          const polizaArray = transactionGroup.get('poliza') as FormArray;
+          const diferenceArray = transactionGroup.get('diferencia') as FormArray;
+
+          // Iterar sobre los elementos de la propiedad banco y agregarlos al FormArray
+          transaction.recibos.forEach((reciboItem : any) => {
+            receiptArray.push(this._formBuilder.group(reciboItem));
+          });
+
+          // Iterar sobre los elementos de la propiedad poliza y agregarlos al FormArray
+          transaction.poliza.forEach((polizaItem : any) => {
+            polizaArray.push(this._formBuilder.group(polizaItem));
+          });
+
+          // Iterar sobre los elementos de la propiedad poliza y agregarlos al FormArray
+          transaction.diferencia.forEach((diferenceItem : any) => {
+            diferenceArray.push(this._formBuilder.group(diferenceItem));
+          });
+
+          // Agregar el FormGroup al FormArray transactions
+          transactionsArray.push(transactionGroup);
+        });
+      
       const listNotificate = data.searchPaymentReport
 
-      const sumaMpagoext = listNotificate.reduce((total: any, item: any ) => total + item.monto_declarado, 0);
+      const sumaMpagoext = listNotificate.reduce((total: any, item: any ) => total + item.monto_declarado_ext, 0);
 
-      this.totalNotificated = sumaMpagoext.toFixed(2)
+      const sumaMpago = listNotificate.reduce((total: any, item: any ) => total + item.monto_declarado, 0);
+
+
+      this.totalNotificated = sumaMpago.toFixed(2)
+      this.totalNotificatedExt = sumaMpagoext.toFixed(2)
+
     })
 
 
@@ -434,7 +493,7 @@ export class PaymentCancellationComponent {
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.dataSource.filter = filterValue.toLowerCase();
   }
 
   getImage(imageUrl: string): string {
@@ -581,7 +640,7 @@ export class PaymentCancellationComponent {
         transacccion : creds.at(i).get('id')?.value,
         iestadorec: creds.at(i).get('iestadorec')?.value,
         casegurado : creds.at(i).get('casegurado')?.value,
-        detalle : creds.at(i).get('detalle')?.value,
+        detalle : creds.at(i).get('poliza')?.value,
       }
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt/', data ).subscribe((response: any) => {
         if(response.status){
@@ -800,99 +859,6 @@ export class PaymentCancellationComponent {
 
   }
 
-  downloadExcel() {
-
-    // Filtra y renombra los campos que deseas exportar
-    const filteredData = this.listPending.map((item :any) => ({
-        'Poliza': item.cpoliza,
-        'Recibo': item.crecibo,
-        'Ramo': item.cramo,
-        'Cedula': item.cedula,
-        'Cliente' : item.XCLIENTE,
-        'Prima Bs': item.mprimabruta,
-        'Prima USD': item.mprimabrutaext,
-        'Fecha hasta recibo': item.fhasta,
-        'Correo' : item.xemail,
-        'Telefono' : item.xtelefono,
-        'Direccion' : item.XDIRECCIONFISCAL,
-        'Corredor' :item.CCORREDOR
-    }));
-  
-    const worksheet = XLSX.utils.json_to_sheet(filteredData);
-  
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
-  
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  
-    const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  
-    saveAs(excelData, `Reporte de recibos pendientes solicitados.xlsx`);
-  }
-
-  downloadExcelVencido() {
-    // Filtra y renombra los campos que deseas exportar
-    const filteredData = this.listVencido.map((item : any) => ({
-      'Poliza': item.cpoliza,
-      'Recibo': item.crecibo,
-      'Ramo': item.cramo,
-      'Cedula': item.cedula,
-      'Cliente' : item.XCLIENTE,
-      'Prima Bs': item.mprimabruta,
-      'Prima USD': item.mprimabrutaext,
-      'Fecha hasta recibo': item.fhasta,
-      'Correo' : item.xemail,
-      'Telefono' : item.xtelefono,
-      'Direccion' : item.XDIRECCIONFISCAL,
-      'Corredor' :item.CCORREDOR
-    }));
-  
-    const worksheet = XLSX.utils.json_to_sheet(filteredData);
-  
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
-  
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  
-    const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  
-    saveAs(excelData, `Reporte de recibos vencidos solicitados.xlsx`);
-  }
-
-  downloadExcelCollected() {
-    console.log(this.listCollectedReport)
-    // Filtra y renombra los campos que deseas exportar
-    const filteredData = this.listCollectedReport.map((item: any) => ({
-      'Poliza': item.Nro._Poliza,
-      'Recibo': item.Nro_Recibo,
-      'Prima Bs': item.Suma_asegurada,
-      'Prima USD': item.Suma_asegurada_Ext,
-      'Fecha hasta recibo': item.Fecha_hasta_Recibo,
-      'Cedula': item.CID,
-      'Cliente': item.Nombre_Asegurado,
-      'Telefono': item.XTELEFONO,
-      'Correo': item.XEMAIL,
-      'Direccion ': item.XDIRECCIONFISCAL,
-      'Banco emisor': item.cbanco,
-      'Banco destino': item.cbanco_destino,
-      'Ramo': item.CódigodelRamo,
-      'Total Bs': item.mtotal,
-      'Total $': item.mtotalext,
-      'Tasa': item.ptasamon,
-      'Referencia': item.xreferencia,
-    }));
-  
-    const worksheet = XLSX.utils.json_to_sheet(filteredData);
-  
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
-  
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  
-    const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  
-    saveAs(excelData, `Reporte de recibos cobrados solicitados.xlsx`);
-  }
 
   GroupReceipt(){
     const creds = this.groupReceiptsForm.controls.agrupado as FormArray;

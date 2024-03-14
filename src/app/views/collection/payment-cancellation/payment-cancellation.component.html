@@ -1,4 +1,4 @@
-<div class="card container-fluid">
+<div class="card bcontainer-fluid">
     <form [formGroup]="groupReceiptsForm" >
         <div class="text-center">
             <h1>Normalización de Pagos</h1>
@@ -8,7 +8,9 @@
           <!-- recibos notificados -->
           <mat-tab class="bg-success text-light" label="Recibos notificados"> 
             <div class="p-4">
-              <h2>Total Notificado {{totalNotificated}} $</h2>
+              <h2>Total Notificado {{totalNotificated}} Bs</h2>
+              <h2>Total Notificado {{totalNotificatedExt}} $</h2>
+
             </div>
 
             <div class="mt-5 p-2">
@@ -16,21 +18,21 @@
               #accordion formArrayName="agrupado" 
                 [closeOthers]="false" >
                 <ngb-panel
-                    *ngFor="let group of agrupado.value;let i=index" 
+                    *ngFor="let group of agrupado.controls;let i=index" 
                     [formGroupName]="i" 
                     [id]="'pannel'+i">
                     <ng-template ngbPanelHeader let-opened="opened"  >
-                      <div class="row p-3  bg-info bg-gradient" [class.bg-danger]="group.iestado_tran == 'ER' ">
+                      <div class="row p-3  bg-info bg-gradient" [class.bg-danger]="group.value.iestado_tran == 'ER' ">
 
                         <div class="col-4 text-light" style="font-size: medium;">
-                          Asegurado {{group.casegurado}} {{group.xcliente}}<br>
-                          Fecha de notificacion de pago {{group.freporte}}<br>
-                          Tasa BCV de cobros {{group.ptasamon}}
+                          Asegurado {{group.value.casegurado}} {{group.value.xcliente}}<br>
+                          Fecha de notificacion de pago {{group.value.freporte}}<br>
+                          Tasa BCV de cobros {{group.value.ptasamon}}
                         </div>
 
                         <div class="col-4 text-light" style="font-size: medium;">
-                          Pago Bs {{group.monto_transaccion}}<br>
-                          Pago $  {{group.monto_transaccion_ext}}<br>
+                          Pago Bs {{group.value.monto_transaccion}}<br>
+                          Pago $  {{group.value.monto_transaccion_ext}}<br>
                         </div>
 
                         <div class="col-2">
@@ -38,66 +40,54 @@
                         </div>
 
                       </div>
-
-
                     </ng-template>
 
-                    <ng-template ngbPanelContent>
+                    <ng-template ngbPanelContent style="display: initial;">
 
                       <div class="row p-3">
 
-                        <div class="col" >
+                        <div class="col" *ngFor="let poliza of group.value.poliza;let i=index" >
                           <h2>Detalles del recibo Pagado</h2>
-                            <strong>Poliza</strong>  {{group.cpoliza}}<br>
-                            <strong>Reciboo</strong> {{group.crecibo}}<br>
-                            <strong>Ramo</strong>  {{group.cramo}}<br>
-                            <strong>Monto Bs</strong> {{group.mmontorec}}<br>
-                            <strong>Monto $</strong>  {{group.mmontorecext}}<br>
+                            <strong>Poliza</strong>  {{poliza.cpoliza}}<br>
+                            <strong>Reciboo</strong> {{poliza.crecibo}}<br>
+                            <strong>Ramo</strong>  {{poliza.cramo}}<br>
+                            <strong>Monto Bs</strong> {{poliza.mmontorec}}<br>
+                            <strong>Monto $</strong>  {{poliza.mmontorecext}}<br>
                         </div>
 
-                        <div class="col">
+                        <div class="col" *ngFor="let recibos of group.value.recibos;let i=index">
                           <h2>Detalles del Soporte de pago</h2>
-                            <strong>Banco remitente</strong>  {{group.cbanco}}<br>
-                            <strong>Banco Receptor</strong> {{group.cbanco_destino}}<br>
-                            <div *ngIf="group.moneda_pago == 'Bs  ' ">
-                              <strong> Monto Pagado</strong>  {{group.monto_declarado}} {{group.moneda_pago}}<br>
+                            <strong>Banco remitente</strong>  {{recibos.cbanco}}<br>
+                            <strong>Banco Receptor</strong> {{recibos.cbanco_destino}}<br>
+                            <div *ngIf="recibos.moneda_pago == 'Bs  ' ">
+                              <strong> Monto Pagado</strong>  {{recibos.monto_declarado}} {{recibos.moneda_pago}}<br>
                             </div>
 
-                            <div *ngIf="group.moneda_pago == 'USD ' ">
-                              <strong> Monto Pagado</strong>  {{group.monto_declarado_ext}} {{group.moneda_pago}}<br>
-                              <strong> IGTF</strong> {{group.mpagoigtfext}}$ - {{group.mpagoigtf}} Bs<br>
+                            <div *ngIf="recibos.moneda_pago == 'USD ' ">
+                              <strong> Monto Pagado</strong>  {{recibos.monto_declarado_ext}} {{recibos.moneda_pago}}<br>
+                              <strong> IGTF</strong> {{recibos.mpagoigtfext}}$ - {{recibos.mpagoigtf}} Bs<br>
                             </div>
 
 
-                            <strong> Referencia</strong> {{group.xreferencia}}<br>
+                            <strong> Referencia</strong> {{recibos.xreferencia}}<br>
                             
                             <div class="col-3">
-                              <img  [src]="group.ximagen"  alt="" class="img-fluid">
+                              <img  [src]="recibos.ximagen"  alt="" class="img-fluid">
                             </div>
                         </div>
 
-                        <div class="col" >
-                          <div class="row p-3 bg-danger " *ngIf="group.mountdiferencia > 1">
+                        <div class="col" *ngFor="let diferencia of group.value.diferencia;let i=index">
+                          <div class="row p-3 bg-danger " *ngIf="diferencia.mountdiferencia > 1">
                             <h2>Transaccion con diferencia</h2>
   
-                              <strong>Diferencia de {{group.mountdiferencia}} <br/>
-                                observacion  "{{group.xobservacion_muestra}}" </strong> 
+                              <strong>Diferencia de {{diferencia.mountdiferencia}} <br/>
+                                observacion  "{{diferencia.xobservacion_muestra}}" </strong> 
                         
                           </div> 
   
-                          <div>
-
-                            <mat-form-field>
-                              <mat-label>Estado de recibo</mat-label>
-                              <mat-select formControlName="iestadorec">
-                                <mat-option value="C">Cobrado</mat-option>
-                              </mat-select>
-                            </mat-form-field>
-        
-                          </div>
                         </div>
 
-                        <div *ngIf="group.mountdiferencia !== 0">
+
                           <div>
 
 
@@ -133,7 +123,7 @@
                             <mat-form-field *ngIf="revision">
                               <mat-label>Seleccione el Recibo con diferencia</mat-label>
                               <mat-select formControlName="recibo">
-                                <mat-option *ngFor="let recibo of group.value"  value="{{ recibo.crecibo }}">{{ recibo.crecibo }}</mat-option>
+                                <mat-option *ngFor="let recibo of group.value.poliza"  value="{{ recibo.crecibo }}">{{ recibo.crecibo }}</mat-option>
                               </mat-select>
                             </mat-form-field>
         
@@ -143,7 +133,7 @@
                             </mat-form-field>
         
                           </div>
-                        </div>
+                    
 
                         <div class="text-center">
                           <button class="btn-primary" mat-button (click)="updateReceiptNotificated(i)">Actualizar recibo</button>
@@ -153,7 +143,8 @@
 
                     </ng-template>
                 </ngb-panel>
-              </ngb-accordion>              
+              </ngb-accordion>  
+
             </div>
 
 
@@ -165,10 +156,6 @@
 
             <div class="p-4">
               <h2>Total Pendiente {{totalPending}} $</h2>
-              <button class="btn btn-primary rounded-pill p-3" type="button" (click)="downloadExcel()"><strong>Descargar recibos pendientes</strong></button>
-              <button class="btn btn-primary rounded-pill p-3" type="button" (click)="downloadExcelVencido()"><strong>Descargar recibos vencidos</strong></button>
-              <button class="btn btn-primary rounded-pill p-3" type="button" (click)="downloadExcelCollected()"><strong>Descargar recibos cobrados</strong></button>
-
             </div>
 
             <div class="mat-elevation-z8">
