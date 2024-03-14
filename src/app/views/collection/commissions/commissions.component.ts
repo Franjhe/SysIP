@@ -345,6 +345,7 @@ export class CommissionsComponent {
   proccessPaymentRequests(config?: MatDialogConfig) {
 
     for (let i = 0; i < this.listPaymentRequest.length; i++) {
+      const element = this.listPaymentRequest[i];
       this.listPaymentRequest[i].xobservaciones = (<HTMLInputElement>document.getElementById(`observaciones${i}`)).value;
       
     }
@@ -353,7 +354,7 @@ export class CommissionsComponent {
       list: this.listPaymentRequest
     }
 
-    console.log(this.listPaymentRequest);
+    // console.log(this.observaciones);
     // let observaciones = 
     // console.log(observaciones);
     
