@@ -72,6 +72,10 @@ export class PaymentCancellationComponent {
   totalPending : any
   totalNotificated : any
 
+  messajeError : any
+  error : boolean = false
+  revision : boolean = false
+
   mount : any //monto de la suma de los recibos 
   mountIGTF : any //monto con el calculo igtf 
   mountBs : any //monto en bolivares multiplicado por bcv 
@@ -347,6 +351,8 @@ export class PaymentCancellationComponent {
             iestadorec : '',
             xobservacion : '',
             mdiferencia : '',
+            idiferencia : '',
+            cmoneda : '',
             recibo: '',
             ptasamon: [item.transaccion.ptasamon],
             mpago: [item.transaccion.mpago],
@@ -566,15 +572,39 @@ export class PaymentCancellationComponent {
     const creds = this.groupReceiptsForm.controls.agrupado as FormArray;
 
     if(creds.at(i).get('iestadorec')?.value == 'ER' ){
-      const data = {
-        transacccion : creds.at(i).get('id')?.value,
-        xobservacion: creds.at(i).get('xobservacion')?.value,
-        mdiferencia: creds.at(i).get('mdiferencia')?.value,
-        iestadorec: creds.at(i).get('iestadorec')?.value,
-        casegurado : creds.at(i).get('casegurado')?.value,
-        recibo : creds.at(i).get('recibo')?.value,
+
+      let data = {}
+      
+      if(creds.at(i).get('cmoneda')?.value == 'BS'){
+        let monto = creds.at(i).get('mdiferencia')?.value * this.bcv
+        data = {
+          transacccion : creds.at(i).get('id')?.value,
+          xobservacion: creds.at(i).get('xobservacion')?.value,
+          mdiferencia: creds.at(i).get('mdiferencia')?.value,
+          mdiferenciaext: monto,
+          iestadorec: creds.at(i).get('iestadorec')?.value,
+          casegurado : creds.at(i).get('casegurado')?.value,
+          recibo : creds.at(i).get('recibo')?.value,
+          cmoneda : creds.at(i).get('cmoneda')?.value,
+          idiferencia : creds.at(i).get('idiferencia')?.value,
+        }
+
+      }else{
+        let monto = creds.at(i).get('mdiferencia')?.value / this.bcv
+        data = {
+          transacccion : creds.at(i).get('id')?.value,
+          xobservacion: creds.at(i).get('xobservacion')?.value,
+          mdiferenciaext: creds.at(i).get('mdiferencia')?.value,
+          mdiferencia: monto,
+          iestadorec: creds.at(i).get('iestadorec')?.value,
+          casegurado : creds.at(i).get('casegurado')?.value,
+          recibo : creds.at(i).get('recibo')?.value,
+          cmoneda : creds.at(i).get('cmoneda')?.value,
+          idiferencia : creds.at(i).get('idiferencia')?.value,
+        }
 
       }
+
       this.http.post(environment.apiUrl + '/api/v1/collection/receipt-under-review/', data ).subscribe((response: any) => {
         if(response.status){
           location.reload()
@@ -595,6 +625,19 @@ export class PaymentCancellationComponent {
         }
   
       })
+    }
+
+  }
+
+  validateMov(i : any){
+
+    const creds = this.groupReceiptsForm.controls.agrupado as FormArray;
+
+    if(creds.at(i).get('iestadorec')?.value == 'ER'){
+      this.revision = true
+    }else{
+      this.revision = false
+
     }
 
   }
@@ -704,6 +747,66 @@ export class PaymentCancellationComponent {
       this.updateReceiptPending.get('iestadorec ')?.enable()
   }
 
+  validateMount(){
+    let valor = this.updateReceiptPending.get('mpago')?.value || ''
+    let moneda = this.updateReceiptPending.get('cmoneda')?.value || ''
+
+    let primaBS = this.bcv * this.dataReceiptPending[0].mprimabrutaext
+    this.error = false 
+
+
+    if(moneda == 'BS'){
+      if(valor < this.dataReceiptPending[0].mprimabruta){
+        this.updateReceiptPending.get('mpago')?.setValue('')
+        this.error = true
+        this.messajeError = 'El monto no puede ser menor al deudor'
+
+      }
+      else if(valor > this.dataReceiptPending[0].mprimabruta){
+        this.updateReceiptPending.get('mpago')?.setValue('')
+        this.messajeError = 'El monto no puede ser mayor al deudor'
+        this.error = true
+
+      }
+      else if(parseInt(valor) < primaBS){
+        this.updateReceiptPending.get('mpago')?.setValue('')
+        this.error = true
+        this.messajeError = 'El monto no puede ser menor al deudor'
+
+      }
+      else if(primaBS > parseInt(valor)){
+        this.updateReceiptPending.get('mpago')?.setValue('')
+        this.messajeError = 'El monto no puede ser mayor al deudor'
+        this.error = true
+      }
+    }
+
+    if(moneda == 'USD'){
+      if(valor < this.dataReceiptPending[0].mprimabrutaext){
+        this.updateReceiptPending.get('mpago')?.setValue('')
+        this.error = true
+        this.messajeError = 'El monto no puede ser menor al deudor'
+      }
+      if(valor > this.dataReceiptPending[0].mprimabrutaext){
+        this.updateReceiptPending.get('mpago')?.setValue('')
+        this.messajeError = 'El monto no puede ser mayor al deudor'
+        this.error = true
+      }
+    }
+
+    if(moneda == ''){
+      this.updateReceiptPending.get('mpago')?.setValue('')
+      this.messajeError = 'Seleccione la moneda de registro de Pago'
+      this.error = true 
+    }
+
+  }
+
+  changeError(){
+    this.error = false 
+
+  }
+
   onFileSelect(event : any ){
 
     const file = event.target.files[0]
@@ -793,21 +896,22 @@ export class PaymentCancellationComponent {
   }
 
   downloadExcelCollected() {
+    console.log(this.listCollectedReport)
     // Filtra y renombra los campos que deseas exportar
     const filteredData = this.listCollectedReport.map((item: any) => ({
-      'Poliza': item.cpoliza,
-      'Recibo': item.crecibo,
-      'Prima Bs': item.mprimabruta,
-      'Prima USD': item.mprimabrutaext,
-      'Fecha hasta recibo': item.fhasta,
-      'Cedula': item.casegurado,
-      'Cliente': item.XCLIENTE,
+      'Poliza': item.Nro._Poliza,
+      'Recibo': item.Nro_Recibo,
+      'Prima Bs': item.Suma_asegurada,
+      'Prima USD': item.Suma_asegurada_Ext,
+      'Fecha hasta recibo': item.Fecha_hasta_Recibo,
+      'Cedula': item.CID,
+      'Cliente': item.Nombre_Asegurado,
       'Telefono': item.XTELEFONO,
       'Correo': item.XEMAIL,
       'Direccion ': item.XDIRECCIONFISCAL,
       'Banco emisor': item.cbanco,
       'Banco destino': item.cbanco_destino,
-      'Ramo': item.cramo,
+      'Ramo': item.CódigodelRamo,
       'Total Bs': item.mtotal,
       'Total $': item.mtotalext,
       'Tasa': item.ptasamon,

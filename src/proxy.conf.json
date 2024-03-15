@@ -1,6 +1,16 @@
 {
+    "/repository/*": {
+        "target": "https://api.lamundialdeseguros.com/",
+        "secure": false,
+        "logLevel": "debug"
+    },
+    "*": {
+        "target": "https://apisys2000.lamundialdeseguros.com/",
+        "secure": false,
+        "logLevel": "debug"
+    },
     "/api/*": {
-        "target": "http://localhost:5250",
+        "target": "https://qaapisys2000.lamundialdeseguros.com/",
         "secure": false,
         "logLevel": "debug"
     },

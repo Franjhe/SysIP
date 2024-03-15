@@ -55,8 +55,10 @@
             <h1><strong>{{cliente}}</strong></h1>
             <h1> Sus recibos pendientes </h1>
 
-            <div *ngIf="diferenceBool">
-              <h1 class="text-danger">{{messageDiference}}</h1>
+            <div *ngIf="viewData">
+              <div *ngFor="let message of messageDiference" >
+                <h1  class="{{message.class_text}}" > {{message.messaje}}</h1>
+              </div>
             </div>
 
             <div formArrayName="receipt" >
@@ -65,10 +67,11 @@
                   <tr>
                     <th>N° Poliza</th>
                     <th>N° Recibo</th>
+                    <th>N° Cuota</th>
                     <th>Ramo</th>
-                    <th>Fecha Desde</th>
                     <th style="color:red">Fecha tope de pago</th>
-                    <th style="color:red">Diferencia</th>
+                    <th *ngIf="viewData" style=" background-color: red;color: white;font-weight: 100; ">Diferencia</th>
+                    <th *ngIf="viewData" style=" background-color: red;color: white;font-weight: 100; "></th>
                     <th>Total del recibo</th>
                     <th>Seleccione los recibos a pagar </th>
                   </tr>
@@ -77,10 +80,11 @@
                   <tr [formGroupName]="i">
                     <td >{{creds.cpoliza}}</td>
                     <td >{{creds.crecibo}}</td>
+                    <td >{{creds.qcuotas}}</td>
                     <td >{{creds.xramo}}</td>
-                    <td>{{creds.fdesde_rec}}</td>
                     <td > {{creds.fhasta_rec}}</td>
-                    <td > {{creds.mpendiente}}</td>
+                    <td *ngIf="viewData" style=" background-color: #fbc8c8;color: white;"> {{creds.mdiferencia}} Bs - {{creds.mdiferenciaext}} $</td>
+                    <td *ngIf="viewData" style=" background-color: #fbc8c8;color: white; ">{{creds.idiferencia}}</td>
                     <td >{{creds.mprimabrutaext}} {{creds.cmoneda}}</td>
                     <td>
                       <mat-checkbox formControlName="seleccionado" (change)="calculateMount(i)"> </mat-checkbox>
@@ -94,8 +98,8 @@
                 <h2 *ngIf="!diferenceBool">Total a Pagar {{mount}} $  -- {{mountBs}} Bs</h2>
             </div>
 
-            <div>
-              <button mat-button matStepperPrevious class="bg-warning text-light">Atras</button>
+            <div class="mt-5 text-center">
+              <button mat-button matStepperPrevious class="bg-warning text-light p-3">Atras</button>
               <button mat-button matStepperNext class="bg-primary text-light">Siguiente</button>
             </div>
 
@@ -118,15 +122,15 @@
             </strong>  
 
             <div class="d-grid gap-2 col-6 mx-auto">
-              <button class="btn bg-success rounded-pill p-3 text-light" type="button" (click)="modalTransfer()"><strong>Transferencia</strong></button>
-              <button class="btn bg-info rounded-pill p-3 text-light" type="button" (click)="modalDeposit()"><strong>Deposito cuenta custodia</strong></button>
-              <button class="btn bg-success rounded-pill p-3 text-light" type="button" (click)="modalPagoMovil()"><strong>Pago Movil</strong></button>
-              <button class="btn bg-info rounded-pill p-3 text-light" type="button" (click)="modalDepositoUSD()"><strong>Transferencia USD</strong></button>
+              <button class="btn btn-primary" type="button" (click)="modalTransfer()">Transferencia</button>
+              <button class="btn btn-primary" type="button" (click)="modalDeposit()">Deposito cuenta custodia</button>
+              <button class="btn btn-primary" type="button" (click)="modalPagoMovil()">Pago Movil</button>
+              <button class="btn btn-primary" type="button" (click)="modalDepositoUSD()">Transferencia USD</button>
             </div>
 
           </div>
-          <div class="mt-5">
-            <button mat-button matStepperPrevious class="bg-warning text-light">Atras</button>
+          <div class="mt-5 text-center">
+            <button mat-button matStepperPrevious class="bg-warning text-light p-3">Atras</button>
             <button mat-button matStepperNext class="bg-primary text-light">Siguiente</button>
  
           </div>
@@ -319,14 +323,13 @@
                 <div class="content">
                   <h2 class="title">Cliente no encontrado</h2>
                   <h4>Valide sus datos</h4>
-    
                 </div>
               </div>
           </mat-dialog-content>
         </ng-template>
 
         <ng-template #Transfer >
-          <mat-dialog-content  style="width: 70%;">
+          <mat-dialog-content >
               <div class="header">
                 <div class="container">
                   <div class="row">
@@ -424,7 +427,7 @@
         </ng-template>
 
         <ng-template #DepositoUSD >
-          <mat-dialog-content  style="width: 70%;">
+          <mat-dialog-content >
               <div class="header">
                 <div class="container">
                   <div class="">
