@@ -30,6 +30,7 @@ export interface PaymentRequest {
   mmontototal: any;
   xobservaciones?: any;
   recibos: any;
+  cmoneda: any;
 }
 
 @Component({
@@ -67,32 +68,9 @@ export class CommissionsComponent {
   total_movcom = 0;
   total_impuesto = 0;
   total_comision = 0;
+  total_cmoneda = '';
 
   listPaymentRequest: PaymentRequest[] = [];
-  // pre_xtransaccion = "Pago de Comisiones";
-  // pre_xsucursal: any;
-  // pre_ffacturacion = new Date().toLocaleDateString();
-  // pre_xstatus = 'Pendiente';
-  // pre_cci_rif: any;
-  // pre_xbeneficiario: any;
-  // pre_xconcepto= 'Cierre de caja';
-  // pre_xcorredor: any;
-  // pre_mmontototal: any;
-  // xobservaciones: any
-
-  mamama = this._formBuilder.group({
-    itransacion: '',
-    csucur: '',
-    fsolicit: '',
-    istatsol: '',
-    cci_rif: '',
-    xobservaciones: '',
-    // itransacion: [{ value: '', disabled: true }],
-    // csucur :[{ value: '', disabled: true }],
-    // fsolicit : [{ value: '', disabled: true }],
-    // istatsol: [{ value: '', disabled: true }],
-    // cci_rif: [{ value: '', disabled: true }],
-  });
 
   constructor(private _formBuilder: FormBuilder,
     private http: HttpClient,
@@ -160,6 +138,7 @@ export class CommissionsComponent {
     this.total_movcom = 0;
     this.total_impuesto = 0;
     this.total_comision = 0;
+    this.total_cmoneda = '';
   }
 
 
@@ -187,7 +166,8 @@ export class CommissionsComponent {
 
       
       this.total_movcom += row.mmovcom,
-      this.total_comision = this.total_movcom - this.total_impuesto
+      this.total_comision = this.total_movcom - this.total_impuesto,
+      this.total_cmoneda = row.cmoneda
 
     ));
 
@@ -306,6 +286,9 @@ export class CommissionsComponent {
 
     this.rowsABuscar.forEach((element: any) => {
       // this.listPaymentReceipts.push(element.crecibo)
+      console.log("--->>>>-----<<<<<<----");
+      console.log(this.rowsABuscar);
+      
 
       this.http.post(environment.apiUrl + '/api/v1/commissions/search-data/' + element.cproductor, '').subscribe((response: any) => {
 
@@ -323,6 +306,7 @@ export class CommissionsComponent {
             xcorredor: e.xnombre,
             mmontototal: element.mcomtot,
             recibos: element.recibos,
+            cmoneda: element.cmoneda,
             xobservaciones: ''
           }
           this.listPaymentRequest.push(paymentRequest);
