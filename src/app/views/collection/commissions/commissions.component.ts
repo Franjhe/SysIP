@@ -159,11 +159,13 @@ export class CommissionsComponent {
   }
 
   showInsurerComissions(config?: MatDialogConfig) {
+    this.selection2.clear();
     this.clearData();
 
     this.tableCommisionPorProductor.data.forEach(row => this.selection2.select(row));
     this.tableCommisionPorProductor.data.forEach(row => (
 
+      console.log(row),
       
       this.total_movcom += row.mmovcom,
       this.total_comision = this.total_movcom - this.total_impuesto,
