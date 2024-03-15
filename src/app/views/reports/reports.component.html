@@ -1,11 +1,78 @@
 <div class="bg">
-    <div class="center">
-        <h3><strong style="color: #3f51b5">Datos para Impresión de Reportes</strong></h3>
-    </div>
-<mat-tab-group>
-    <mat-tab label="Reporte Individual">
+ <div class="center">
+     <h3><h1 style="color: #3f51b5">Datos para Impresión de Reportes</h1></h3>
+ </div>
+<mat-tab-group color="primary" backgroundColor="primary">
+  <mat-tab label="Reporte Masivo">
+    <form [formGroup]="consulta_reporte" >
+        <mat-divider></mat-divider>
+        <div class="card-body">
+            <br>
+            <h4>&nbsp;&nbsp;Por favor, Indique el Reporte que desea solicitar.</h4>
+        </div>
+       <section class="p-3">
+           <div class="row">
+               <div class="col-6">
+                   <mat-form-field class="example-full-width">
+                       <mat-label>Seleccione el Reporte</mat-label>
+                       <mat-select formControlName="estatus" (selectionChange)="dataReport()" >
+                           <mat-option value="C">Cobrado</mat-option>
+                           <mat-option value="P">Pendiente</mat-option>
+                           <mat-option value="A">Anulado</mat-option>
+                           <mat-option value="N">Notificado</mat-option>
+                       </mat-select>
+                   </mat-form-field>
+               </div>
+               <div class="col-5">
+                   <mat-form-field class="example-full-width">
+                   <mat-label>Correo para Enviar el Reporte</mat-label>
+                   <input matInput type="mail" 
+                   formControlName="correo" placeholder="Ingrese su Correo">
+                   </mat-form-field>
+                   <!-- <button (click)="buscarReporte()" mat-raised-button class="mat-raised-button" color="primary">
+                    <img class="" src="https://cdn-icons-png.flaticon.com/512/1034/1034313.png" width="23px" height="20px" margin-right="2px"> Enviar
+                 </button> -->
+               </div>
+                   <!-- <div class="registration-form" *ngIf="showTable">
+                       <form [formGroup]="report_form">
+                           <div class="row d-flex justify-content-center">
+                   <div class="col-6">
+                       <div class="form-group mb-3">
+                       <label for="fdesde" class="label-opaque">Fecha Desde</label>
+                       <input class="label-opaque" type="date" id="fdesde" formControlName="fdesde" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && report_form.controls['fdesde'].errors }">
+                       <div class="invalid-feedback" *ngIf="submitted && report_form.controls['fdesde'].errors">Error en el nombre</div>
+                       </div>
+                   </div>
+                   <div class="col-6">
+                       <div class="form-group mb-3">
+                       <label for="fhasta" class="label-opaque">Fecha Hasta</label>
+                       <input class="label-opaque" type="date" id="fhasta" formControlName="fhasta" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && report_form.controls['fhasta'].errors }" (change)="onSubmit()">
+                       <div class="invalid-feedback" *ngIf="submitted && report_form.controls['fhasta'].errors">Error en el nombre</div>
+                       </div>
+                   </div>
+               </div>
+           </form>
+       </div> -->
+   </div>
+<div class="example-button-row">
+<button (click)="makeExcel()" mat-raised-button class="mat-raised-button" style="color: #fff; background-color: #13ad34fb;">
+   <img class="izquierda" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/1101px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png" width="20px" height="20px" margin-right="2px">Excel
+</button>
+<button (click)="buscarReporte()" mat-raised-button class="mat-raised-button" style="color: #fff; background-color: #db1313fb;">
+   <img class="izquierda" src="https://www.islahospitalmenorca.org/wp-content/uploads/2015/12/adobe-pdf-file-icon-logo-vector.png" width="23px" height="20px" margin-right="2px"> PDF
+</button>
+</div>
+       </section>            
+           <br>
+       <div class="card-body">
+           <h4>Por favor, elija la categoría de reportes que desee.</h4>
+       </div> 
+    </form>
+
+        </mat-tab>
+    <mat-tab label="Reporte Individual" disabled>
                         <mat-divider></mat-divider>
-                    <section>
+                    <section class="p-4">
                         <div class="row">
                             <div class="col-5">
                                 <mat-form-field class="example-full-width">
@@ -112,67 +179,6 @@
                      <div class="card-body">
                         <h4>Por favor, elija la categoría de reportes que desee.</h4>
                     </div>
-                 </mat-tab>
-                 <mat-tab label="Reporte Masivo">
-                     <mat-divider></mat-divider>
-                     <div class="card-body">
-                         <br>
-                         <h4>Por favor, Indique el Reporte que desea solicitar.</h4>
-                     </div>
-                    <section>
-                        <div class="row">
-                            <div class="col-6">
-                                <mat-form-field class="example-full-width">
-                                    <mat-label>Seleccione el Reporte</mat-label>
-                                    <mat-select formControlName="iestadorec" (selectionchange)="buscarReporte()">
-                                        <mat-option value="C">Cobrado</mat-option>
-                                    </mat-select>
-
-                                </mat-form-field>
-                            </div>
-                            <div class="col-5">
-                                <mat-form-field class="example-full-width">
-                                <mat-label>Correo para Enviar el Reporte</mat-label>
-                                <input matInput type="mail" placeholder="Ingrese su Correo">
-                                </mat-form-field>
-                            </div>
-                                <!-- <div class="registration-form" *ngIf="showTable">
-                                    <form [formGroup]="report_form">
-                                        <div class="row d-flex justify-content-center">
-                                <div class="col-6">
-                                    <div class="form-group mb-3">
-                                    <label for="fdesde" class="label-opaque">Fecha Desde</label>
-                                    <input class="label-opaque" type="date" id="fdesde" formControlName="fdesde" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && report_form.controls['fdesde'].errors }">
-                                    <div class="invalid-feedback" *ngIf="submitted && report_form.controls['fdesde'].errors">Error en el nombre</div>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="form-group mb-3">
-                                    <label for="fhasta" class="label-opaque">Fecha Hasta</label>
-                                    <input class="label-opaque" type="date" id="fhasta" formControlName="fhasta" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && report_form.controls['fhasta'].errors }" (change)="onSubmit()">
-                                    <div class="invalid-feedback" *ngIf="submitted && report_form.controls['fhasta'].errors">Error en el nombre</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div> -->
-                </div>
-            <div class="example-button-row">
-            <button mat-raised-button class="mat-raised-button" style="color: #fff; background-color: #13ad34fb;">
-                <img class="izquierda" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/1101px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png" width="20px" height="20px" margin-right="2px">Excel
-            </button>
-            <button mat-raised-button class="mat-raised-button" style="color: #fff; background-color: #db1313fb;">
-                <img class="izquierda" src="https://www.islahospitalmenorca.org/wp-content/uploads/2015/12/adobe-pdf-file-icon-logo-vector.png" width="23px" height="20px" margin-right="2px"> PDF
-            </button>
-            </div>
-                    </section>            
-                        <br>
-                    <div class="card-body">
-                        <h4>Por favor, elija la categoría de reportes que desee.</h4>
-                    </div> 
-
-                </mat-tab>
-  </mat-tab-group>
-
-
+        </mat-tab>          
+</mat-tab-group>
 <router-outlet></router-outlet>
