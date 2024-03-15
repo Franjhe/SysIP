@@ -1396,7 +1396,7 @@ export class AutomobileComponent {
 
   private _filterTakers(value: string): string[] {
     const filterValue = value.toLowerCase();
-    const lista = this.takersList.map(taker => taker.value).filter(taker => taker.toUpperCase().includes(filterValue));;
+    const lista = this.takersList.map(taker => taker.value).filter(taker => taker.toLowerCase().includes(filterValue));;
   
     if(!lista[0]){
       this.planFormGroup.get('xtomador')?.setValue(filterValue)
