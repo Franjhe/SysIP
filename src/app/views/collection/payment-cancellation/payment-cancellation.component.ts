@@ -307,6 +307,25 @@ export class PaymentCancellationComponent {
 
     })
 
+
+    fetch(environment.apiUrl + '/api/v1/collection/search-vencido' )
+    .then((response) => response.json())
+    .then(data => {
+      this.listVencido = data.searchPaymentData.recibo
+
+      
+    })
+
+
+    fetch(environment.apiUrl + '/api/v1/collection/search-collected' )
+    .then((response) => response.json())
+    .then(data => {
+
+      this.listCollectedReport = data.searchPaymentCollected.recibo
+
+    })
+
+
     fetch(environment.apiUrl + '/api/v1/collection/search-notification' )
     .then((response) => response.json())
     .then(data => {
