@@ -85,7 +85,8 @@ onSubmit(){
 buscarReporte(){
 
   let estado = this.consulta_reporte.get('estatus')?.value
-  let url = environment.apiUrl_reporte + '/lamundialapi/recibos/'+ estado + '/'
+  let url = environment.apiUrl_reporte + '/recibos/'+ estado + '/'
+  // let url = environment.apiUrl_reporte + '/lamundialapi/recibos/'+ estado + '/'
   window.open(url, '_blank');
 
 }
@@ -143,6 +144,7 @@ makeExcel(){
           'Suma_asegurada': item.Suma_asegurada,
           'Suma_asegurada_Ext': item.Suma_asegurada_Ext,
           'Monto_Recibo' : item.Monto_Recibo,
+          'Monto Recibo Ext' : item.Monto_Recibo_Ext,
           'Tasa_Cambio' : item.Tasa_Cambio,
           'Dias_de_vigencia' : item.Dias_de_vigencia,
           'Sucursal' :item.Sucursal,
@@ -182,8 +184,9 @@ makeExcelCollection(){
     'Estado_del_Recibo' :item.Estado_del_Recibo,
     'Descripcion_estado_rec' :item.Descripcion_estado_rec,
     'Suma_asegurada': item.Suma_asegurada,
-    'Suma_asegurada_Ext': item.Suma_asegurada_Ext,
+    // 'Suma_asegurada_Ext': item.Suma_asegurada_Ext,
     'Monto_Recibo' : item.Monto_Recibo,
+    'Monto Recibo Ext' : item.Monto_Recibo_Ext,
     'Tasa_Cambio' : item.Tasa_Cambio,
     'Dias_de_vigencia' : item.Dias_de_vigencia,
     'Sucursal' :item.Sucursal,
