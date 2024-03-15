@@ -78,10 +78,12 @@
 
                         <div class="col" *ngFor="let diferencia of group.value.diferencia;let i=index">
                           <div class="row p-3 bg-danger " *ngIf="diferencia.mountdiferencia > 1">
-                            <h2>Transaccion con diferencia</h2>
+                            <h2 class="text-light">Transaccion con diferencia</h2>
   
-                              <strong>Diferencia de {{diferencia.mountdiferencia}} <br/>
-                                observacion  "{{diferencia.xobservacion_muestra}}" </strong> 
+                              <strong class="text-light">
+                                Diferencia de {{diferencia.mountdiferencia}} {{diferencia.moneda_cobro_diferencia}} <br/>
+                                Observacion : "{{diferencia.xobservacion_muestra}}" 
+                              </strong> 
                         
                           </div> 
   

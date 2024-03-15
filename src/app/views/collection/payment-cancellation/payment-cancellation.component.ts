@@ -418,6 +418,7 @@ export class PaymentCancellationComponent {
             tasa_diferencia: curr.tasa_diferencia,
             xobservacion_muestra: curr.xobservacion,
             estado_diferencia: curr.estado_diferencia,
+            moneda_cobro_diferencia: curr.moneda_cobro_diferencia,
           });
         
           return acc;
@@ -599,7 +600,7 @@ export class PaymentCancellationComponent {
       let data = {}
       
       if(creds.at(i).get('cmoneda')?.value == 'BS'){
-        let monto = creds.at(i).get('mdiferencia')?.value * this.bcv
+        let monto = creds.at(i).get('mdiferencia')?.value / this.bcv
         data = {
           transacccion : creds.at(i).get('id')?.value,
           xobservacion: creds.at(i).get('xobservacion')?.value,
@@ -610,10 +611,12 @@ export class PaymentCancellationComponent {
           recibo : creds.at(i).get('recibo')?.value,
           cmoneda : creds.at(i).get('cmoneda')?.value,
           idiferencia : creds.at(i).get('idiferencia')?.value,
+          tasa : this.bcv
+
         }
 
       }else{
-        let monto = creds.at(i).get('mdiferencia')?.value / this.bcv
+        let monto = creds.at(i).get('mdiferencia')?.value * this.bcv
         data = {
           transacccion : creds.at(i).get('id')?.value,
           xobservacion: creds.at(i).get('xobservacion')?.value,
@@ -624,6 +627,7 @@ export class PaymentCancellationComponent {
           recibo : creds.at(i).get('recibo')?.value,
           cmoneda : creds.at(i).get('cmoneda')?.value,
           idiferencia : creds.at(i).get('idiferencia')?.value,
+          tasa : this.bcv
         }
 
       }

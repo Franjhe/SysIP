@@ -299,8 +299,17 @@ export class PaymentReportComponent {
         this.idTrans = response.searchReceipt.transaccion
       }
 
+      this.viewData = false;
+
       if(response.searchReceipt.receipt.length > 0){
         for(let i = 0; i < response.searchReceipt.receipt.length; i++){
+
+          const currentReceipt = response.searchReceipt.receipt[i];
+
+          // Verificar si mdiferencia es diferente de nulo
+          if (currentReceipt.mdiferencia !== null) {
+            this.viewData = true; // Cambiar el estado del booleano si se encuentra un valor diferente de nulo
+          }
 
           this.cliente = response.searchReceipt.receipt[i].xcliente
 
@@ -323,9 +332,9 @@ export class PaymentReportComponent {
 
           let messaje : string 
           if(response.searchReceipt.receipt[i].idiferencia == 'D'){
-            messaje = 	'debe'
+            messaje = 	'debe '
           }else if(response.searchReceipt.receipt[i].idiferencia == 'H'){
-            messaje = 'a favor'
+            messaje = 'a favor '
           }else{
             messaje = ''
           }
@@ -362,8 +371,7 @@ export class PaymentReportComponent {
           let messajeCliente : string 
           let class_text: string 
           if(response.searchReceipt.receipt[i].idiferencia == 'D'){
-            this.viewData = true
-            messajeCliente = 	'debe'
+            messajeCliente = 	'debe '
             class_text = 'text-danger'
 
             this.messageDiference.push({
@@ -375,15 +383,12 @@ export class PaymentReportComponent {
           }else if(response.searchReceipt.receipt[i].idiferencia == 'H'){
             messajeCliente = 'tiene un saldo a favor de '
             class_text = 'text-success'
-            this.viewData = true
             this.messageDiference.push({
             class : class_text,
             messaje: 'El cliente ' + messajeCliente + 
               response.searchReceipt.receipt[i].mdiferencia + 'Bs /' + response.searchReceipt.receipt[i].mdiferenciaext +'USD'})  
             
 
-          }else{
-            this.viewData = false
           }
 
         }
@@ -430,6 +435,35 @@ export class PaymentReportComponent {
 
   }
 
+  calculateMountDiferent(i :any){
+    const creds = this.searchReceipt.get("receipt") as FormArray
+
+    const sumaTotal = creds.value.reduce((acumulador: any, recibo: { seleccionado: any; mdiferenciaext: any; }) => {
+      if (recibo.seleccionado) {
+          acumulador += recibo.mdiferenciaext;
+      }
+      return acumulador;
+    }, 0);
+
+    this.mount = sumaTotal //suma de los dolares brutos
+
+    const operation = this.mount * this.bcv
+    this.mountBs = operation.toFixed(2)  //dolares brutos convertidos en bolivares 
+
+    const mountIGTF = this.mount + ((3/100)*this.mount) 
+    this.mountIGTF = mountIGTF.toFixed(2) //dolares netos
+
+    const mountBs = this.mountIGTF*this.bcv
+    this.mountBsExt = mountBs.toFixed(2) //bolivares netos
+
+    const porcentajeBs = this.bcv * ((3/100)*this.mount) 
+    this.mountBsP = porcentajeBs.toFixed(2) //porcentaje del igtf en bolivares 
+
+    const porcentaje = (3/100)*this.mount
+    this.mountP = porcentaje.toFixed(2) //porcentaje del igtf en dolares  
+
+  }
+
   Alert(config?: MatDialogConfig) {
 
     return this.dialog.open(this.Alerta, config);
@@ -441,7 +475,6 @@ export class PaymentReportComponent {
     return this.dialog.open(this.NotFound, config);
 
   }
-
 
   modalTransfer(config?: MatDialogConfig) {
     this.changeStatusTrans()
@@ -486,8 +519,7 @@ export class PaymentReportComponent {
     for(let i = 0; i < receipt.length; i++){
       if(receipt.value[i].seleccionado == true){
         if(receipt.value[i].cdoccob > 0){
-          this.receipt.value[i].cdoccob = this.idTrans
-
+          this.idTrans = receipt.value[i].cdoccob
           this.receiptList.push({
             cnpoliza: receipt.value[i].cnpoliza,
             cnrecibo: receipt.value[i].cnrecibo,
@@ -642,6 +674,87 @@ export class PaymentReportComponent {
         
 
   }
+
+  async onSubmitDiferent(){
+
+    await this.llenarlistas()
+    this.Submit = true
+
+    const transfer = this.searchReceipt.get("transfer") as FormArray
+
+    for(let i = 0; i < transfer.length; i++){
+
+      const formData = new FormData();
+      formData.append('file', transfer.at(i).get('ximagen')?.value!);
+  
+      //cargamos las imagenes con el codigo de transaccion
+      this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {
+          const rutaimage  =  image.uploadedFile.filename //ruta de imagen por registro 
+
+          if(transfer.at(i).get('cmoneda')?.value == "USD" ){
+
+            this.transferList.push({
+              cmoneda: transfer.value[i].cmoneda,
+              cbanco: transfer.value[i]?.cbanco,
+              cbanco_destino: transfer.value[i].cbanco_destino,
+              mpago: 0,
+              mpagoext: transfer.value[i].mpago,
+              mpagoigtf: this.mountBsP,
+              mpagoigtfext: this.mountP ,
+              mtotal: this.mountBsExt,
+              mtotalext: this.mountIGTF,
+              ptasamon: this.bcv,
+              ptasaref: 0,        
+              xreferencia: transfer.value[i].xreferencia,
+              ximagen: rutaimage,
+            });
+          }
+          else if(transfer.at(i).get('cmoneda')?.value == "Bs"){
+            this.transferList.push({
+              cmoneda: transfer.value[i].cmoneda,
+              cbanco: transfer.value[i]?.cbanco,
+              cbanco_destino: transfer.value[i].cbanco_destino,
+              mpago: transfer.value[i].mpago,
+              mpagoext: 0,
+              mpagoigtf: 0,
+              mpagoigtfext: 0 ,
+              mtotal:this.mountBs,
+              mtotalext: this.mount,
+              ptasaref: 0,
+              ptasamon: this.bcv,        
+              xreferencia: transfer.value[i].xreferencia,
+              ximagen: rutaimage,
+            });
+          }
+
+          if(image.status){
+
+            const reporData = {
+              report : this.transferList,
+              ctransaccion : this.idTrans,
+              casegurado: this.searchReceipt.get('xcedula')?.value,
+              diference : true
+        
+            }
+        
+            this.http.post(environment.apiUrl + '/api/v1/collection/create-report', reporData).subscribe( (response: any) => {
+
+
+            })
+          }
+
+      })
+
+    }
+      
+    // setTimeout(() => {
+    //   location.reload();
+    // }, 5000);
+      
+
+  }
+
+  
 
   changeStatusPm(){
     if(this.pmovil == false){

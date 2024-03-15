@@ -88,12 +88,14 @@
                       <div *ngIf="creds.cdoccob > 0"><mat-icon style="color:green">check</mat-icon></div>
                       <div *ngIf="creds.cdoccob == 0"><mat-icon style="color:red">close</mat-icon></div>
                     </td>
-                    <td *ngIf="viewData" style=" background-color: #fbc8c8;color: white;"> {{creds.mdiferencia}} Bs - {{creds.mdiferenciaext}} $</td>
-                    <td *ngIf="viewData" style=" background-color: #fbc8c8;color: white; ">{{creds.idiferencia}}</td>
+                    <td *ngIf="viewData" style=" background-color: #ff7272;color: white;"> {{creds.mdiferencia}} Bs - {{creds.mdiferenciaext}} $</td>
+                    <td *ngIf="viewData" style=" background-color: #ff7272;color: white; ">{{creds.idiferencia}}</td>
                     <td >{{creds.mprimabrutaext}} {{creds.cmoneda}}</td>
                     <td>
-                      <div *ngIf="creds.cdoccob > 0"></div>
-                      <div *ngIf="creds.cdoccob == 0"> <mat-checkbox formControlName="seleccionado" (change)="calculateMount(i)"> </mat-checkbox></div>
+                      <div *ngIf="creds.cdoccob > 0 && !viewData"></div>
+                      <div *ngIf="creds.cdoccob == 0 && !viewData"> <mat-checkbox formControlName="seleccionado" (change)="calculateMount(i)"> </mat-checkbox></div>
+                      <div *ngIf="creds.cdoccob > 0 && viewData"> <mat-checkbox formControlName="seleccionado" (change)="calculateMountDiferent(i)"> </mat-checkbox></div>
+
                     </td>
                   </tr>
                 </tbody>
@@ -101,7 +103,7 @@
             </div>
             <div class="container text-center">
                 <h2>Tasa de cobro {{bcv}} Bs</h2> 
-                <h2 *ngIf="!diferenceBool">Total a Pagar {{mount}} $  -- {{mountBs}} Bs</h2>
+                <h2 >Total a Pagar {{mount}} $  -- {{mountBs}} Bs</h2>
             </div>
 
             <div class="mt-5 text-center">
@@ -116,15 +118,10 @@
           <ng-template matStepLabel>Como vas a pagar</ng-template>
           <div class="row text-center">
 
-            <strong *ngIf="!diferenceBool">Para reportar tu pago debes transferir un TOTAL de  
+            <strong >Para reportar tu pago debes transferir un TOTAL de  
               <h1 class="bold mt-4" style="font-size:2.5rem" >{{mountIGTF}} $   --- {{mountBs}} Bs</h1> 
               <h1 class="bold mt-4" >Tasa de calculo {{bcv}} Bs</h1>
               <h2 class="bold mt-4" >El total incluye IGTF</h2>
-            </strong>  
-
-            <strong *ngIf="diferenceBool">              
-              <h1 class="bold mt-4" style="font-size:1.5rem" >{{messageDiference}}</h1> 
-              <h1 class="bold mt-4" >Tasa de calculo {{bcv}} Bs</h1>
             </strong>  
 
             <div class="d-grid gap-2 col-6 mx-auto">
@@ -270,7 +267,11 @@
     
                     </div>
                     <div class="mt-5" >
-                      <button mat-button [disabled]="Submit" class="bg-success text-light" (click)="onSubmit()">Registrar Pago</button>
+                      <button *ngIf="viewData" mat-button [disabled]="Submit" class="bg-success text-light" (click)="onSubmitDiferent()">Registrar Pago</button>
+                      
+                      <button *ngIf="!viewData"  mat-button [disabled]="Submit" class="bg-success text-light" (click)="onSubmit()">Registrar Pago</button>
+
+
                     </div>
                   </div>
                 </div>
