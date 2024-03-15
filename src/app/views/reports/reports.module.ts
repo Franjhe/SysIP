@@ -7,6 +7,7 @@ import { MaterialExampleModule } from './../../material.module'
 import { ReactiveFormsModule } from '@angular/forms';
 import { ReceiptsComponent } from './receipts/receipts.component';
 
+
 @NgModule({
   declarations: [
     PremiumsComponent,
