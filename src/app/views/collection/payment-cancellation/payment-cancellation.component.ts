@@ -71,6 +71,11 @@ export class PaymentCancellationComponent {
 
   totalPending : any
   totalNotificated : any
+  totalNotificatedExt: any
+
+  messajeError : any
+  error : boolean = false
+  revision : boolean = false
 
   mount : any //monto de la suma de los recibos 
   mountIGTF : any //monto con el calculo igtf 
@@ -102,17 +107,11 @@ export class PaymentCancellationComponent {
   lisDiferenceClient: any 
   listDetalle: any
   listSoport : any = []
-
-
   diference : boolean = false
 
   listReceipts  : any = []
   boollistReceipts: boolean = false
   GroupReceiptsBool : boolean = false
-
-  listpureba : any = []
-
-
   groupReceiptsForm = this._formBuilder.group({
     agrupado : this._formBuilder.array([])
   });
@@ -322,37 +321,6 @@ export class PaymentCancellationComponent {
     .then((response) => response.json())
     .then(data => {
 
-
-      // if(soporteItem.cmoneda == 'USD ' ){
-
-      //   //banco destino
-      //   let idBank = soporteItem.cbanco
-      //   let bank = this.bankInternational
-      //   let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
-      //   bankValue = filterBank[0]?.value
-
-      //   //banco emisor
-      //   let idBankEmi = soporteItem.cbanco_destino
-      //   let bankEmi = this.bankInternational
-      //   let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
-      //   bankValueEmi = filterBankEmi[0]?.value
-
-      // }else
-      // {
-      //   //banco destino
-      //   let idBank = soporteItem.cbanco
-      //   let bank = this.bankNational
-      //   let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
-      //   bankValue = filterBank[0]?.value
-
-      //   //banco emisor
-      //   let idBankEmi = soporteItem.cbanco_destino
-      //   let bankEmi = this.bankNational
-      //   let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
-      //   bankValueEmi = filterBankEmi[0]?.value
-      // }
-
-
       this.listCollectedReport = data.searchPaymentCollected.recibo
 
     })
@@ -361,74 +329,61 @@ export class PaymentCancellationComponent {
     fetch(environment.apiUrl + '/api/v1/collection/search-notification' )
     .then((response) => response.json())
     .then(data => {
+        this.listReceipts = data.searchPaymentReport
 
-      this.listpureba = data.searchPaymentReport.searchDataNotifiqued.dataTransaction
+        const transformedData = Object.values(this.listReceipts.reduce((acc : any, curr: any) => {
+          
+            let dateNotification = new Date(curr.freporte);
+            let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
 
-      this.listpureba.forEach((item : any) => {
+            let idTrades = curr.cramo
+            let trades = this.tradesList
+            let filterTRades = trades.filter((data: { id: any; }) => data.id == idTrades)
+            const tradesValue = filterTRades[0].value
 
-        let dateNotification = new Date(item.transaccion.freporte);
-        let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
+          if (!acc[curr.ctransaccion]) {
+              acc[curr.ctransaccion] = {
+                  id: curr.ctransaccion,
+                  ctransaccion: curr.ctransaccion,
+                  iestadorec : '',
+                  xobservacion : '',
+                  mdiferencia : '',
+                  idiferencia : '',
+                  cmoneda : '',
+                  recibo: '',
+                  freporte:fechaISOHasta,
+                  casegurado: curr.casegurado,
+                  xcliente: curr.xcliente,
+                  iestado: curr.iestado,
+                  iestado_tran: curr.iestado_tran,
+                  cdoccob: curr.cdoccob,
+                  monto_transaccion: curr.monto_transaccion,
+                  monto_transaccion_ext: curr.monto_transaccion_ext,
+                  ptasamon: curr.ptasamon,
+                  recibos: [],
+                  poliza: [],
+                  diferencia: []
+              };
+          }
 
-        this.agrupado.push(this._formBuilder.group({
-            // Define tus controles aquí
-            id: [item.transaccion.id],
-            casegurado: [item.transaccion.casegurado],
-            freporte: [fechaISOHasta],
-            agrupador:false,
-            iestadorec : '',
-            xobservacion : '',
-            mdiferencia : '',
-            recibo: '',
-            ptasamon: [item.transaccion.ptasamon],
-            mpago: [item.transaccion.mpago],
-            mpagoext: [item.transaccion.mpagoext],
-            iestado_tran: [item.transaccion.iestado_tran],
+          const imageUrl = curr.xruta;
+          const fullImageUrl = this.getImage(imageUrl);
 
-          detalle: this._formBuilder.array([]),
-          soporte: this._formBuilder.array([]),
-          diference: this._formBuilder.array([]),
-        }));
-  
-        // Obtén el FormArray de la transacción actual
-        const detalleArray = (this.agrupado.at(this.agrupado.length - 1) as FormGroup).get('detalle') as FormArray;
-        const soporteArray = (this.agrupado.at(this.agrupado.length - 1) as FormGroup).get('soporte') as FormArray;
-        const diferenceArray = (this.agrupado.at(this.agrupado.length - 1) as FormGroup).get('diference') as FormArray;
-  
-        // Itera sobre los detalles y agrega un FormGroup por cada elemento
-        item.detalle.forEach((detalleItem: any) => {
-
-          let idTrades = detalleItem.cramo
-          let trades = this.tradesList
-          let filterTRades = trades.filter((data: { id: any; }) => data.id == idTrades)
-          const tradesValue = filterTRades[0].value
-
-          detalleArray.push(this._formBuilder.group({
-            crecibo: [detalleItem.crecibo] ,
-            cpoliza: [detalleItem.cpoliza] ,
-            cramo: [tradesValue],
-            mprimabrutaext: [detalleItem.mprimabrutaext],
-            mprimabruta: [detalleItem.mprimabruta] ,
-            fhasta_rec: [detalleItem.fhasta_rec] ,
-       
-          }));
-        });
-  
-        // Itera sobre los soportes y agrega un FormGroup por cada elemento
-        item.soporte.forEach((soporteItem: any) => {
+          const safeImageUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullImageUrl);
 
           let bankValue : any
           let bankValueEmi : any
 
-          if(soporteItem.cmoneda == 'USD ' ){
+          if(curr.moneda_pago == 'USD ' ){
 
             //banco destino
-            let idBank = soporteItem.cbanco
+            let idBank = curr.cbanco
             let bank = this.bankInternational
             let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
             bankValue = filterBank[0]?.value
 
             //banco emisor
-            let idBankEmi = soporteItem.cbanco_destino
+            let idBankEmi = curr.cbanco_destino
             let bankEmi = this.bankInternational
             let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
             bankValueEmi = filterBankEmi[0]?.value
@@ -436,66 +391,129 @@ export class PaymentCancellationComponent {
           }else
           {
             //banco destino
-            let idBank = soporteItem.cbanco
+            let idBank = curr.cbanco
             let bank = this.bankNational
             let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
             bankValue = filterBank[0]?.value
 
             //banco emisor
-            let idBankEmi = soporteItem.cbanco_destino
+            let idBankEmi = curr.cbanco_destino
             let bankEmi = this.bankNational
             let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
             bankValueEmi = filterBankEmi[0]?.value
           }
+      
+          acc[curr.ctransaccion].recibos.push({
+              cmoneda: curr.cmoneda,
+              npago: curr.npago,
+              moneda_pago: curr.moneda_pago,
+              xreferencia: curr.xreferencia,
+              cbanco: bankValueEmi,
+              cbanco_destino: bankValue,
+              monto_declarado: curr.monto_declarado,
+              monto_declarado_ext: curr.monto_declarado_ext,
+              mpagoigtf: curr.mpagoigtf,
+              mpagoigtfext: curr.mpagoigtfext,
+              ximagen: safeImageUrl
 
+          });
+      
+          acc[curr.ctransaccion].poliza.push({
+              crecibo: curr.crecibo,
+              cnrecibo:curr.cnrecibo,
+              cpoliza: curr.cpoliza,
+              cnpoliza: curr.cnpoliza,
+              mmontorec: curr.mmontorec,
+              mmontorecext: curr.mmontorecext,
+              cramo: tradesValue,
+              cplan: curr.cplan,
+              fdesde: curr.fdesde,
+              fhasta: curr.fhasta,
+          });
 
+          acc[curr.ctransaccion].diferencia.push({
+            mountdiferencia: curr.mdiferencia,
+            mdiferenciaext: curr.mdiferenciaext,
+            tasa_diferencia: curr.tasa_diferencia,
+            xobservacion_muestra: curr.xobservacion,
+            estado_diferencia: curr.estado_diferencia,
+            moneda_cobro_diferencia: curr.moneda_cobro_diferencia,
+          });
+        
+          return acc;
+        }, {}));
+        // Obtener la referencia al FormArray transactions
+        const transactionsArray = this.groupReceiptsForm.get("agrupado") as FormArray
 
-          const imageUrl = soporteItem.xruta;
-          const fullImageUrl = this.getImage(imageUrl);
+        // Iterar sobre los elementos de transformedData y agregarlos al FormArray
+        transformedData.forEach((transaction : any) => {
 
-          const safeImageUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullImageUrl);
+          let dateNotification = new Date(transaction.freporte);
+          let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
+          const transactionGroup = this._formBuilder.group({
+            id: transaction.ctransaccion,
+            iestadorec : '',
+            xobservacion : '',
+            mdiferencia : '',
+            idiferencia : '',
+            cmoneda : '',
+            recibo: '',
+            freporte:fechaISOHasta,
+            casegurado: transaction.casegurado,
+            xcliente: transaction.xcliente,
+            iestado: transaction.iestado,
+            iestado_tran: transaction.iestado_tran,
+            cdoccob: transaction.cdoccob,
+            monto_transaccion: transaction.monto_transaccion,
+            monto_transaccion_ext: transaction.monto_transaccion_ext,
+            ptasamon: transaction.ptasamon,
+            recibos: this._formBuilder.array([]),
+            poliza:  this._formBuilder.array([]),
+            diferencia: this._formBuilder.array([])
+          });
 
-          soporteArray.push(this._formBuilder.group({
-            cbanco: [bankValue],
-            cbanco_destino: [bankValueEmi] ,
-            cmoneda:[soporteItem.cmoneda],
-            mpago: [soporteItem.mpago],
-            mpagoext: [soporteItem.mpagoext] ,
-            mpagoigtf: [soporteItem.mpagoigtf] ,
-            mpagoigtfext: [soporteItem.mpagoigtfext] ,
-            ptasamon: [soporteItem.ptasamon] ,
-            ptasaref: [soporteItem.ptasaref] ,
-            xreferencia: [soporteItem.xreferencia],
-            ximagen: safeImageUrl,
-         
-          }));
+          // Obtener la referencia a los FormArrays banco y poliza
+          const receiptArray = transactionGroup.get('recibos') as FormArray;
+          const polizaArray = transactionGroup.get('poliza') as FormArray;
+          const diferenceArray = transactionGroup.get('diferencia') as FormArray;
+
+          // Iterar sobre los elementos de la propiedad banco y agregarlos al FormArray
+          transaction.recibos.forEach((reciboItem : any) => {
+            receiptArray.push(this._formBuilder.group(reciboItem));
+          });
+
+          // Iterar sobre los elementos de la propiedad poliza y agregarlos al FormArray
+          transaction.poliza.forEach((polizaItem : any) => {
+            polizaArray.push(this._formBuilder.group(polizaItem));
+          });
+
+          // Iterar sobre los elementos de la propiedad poliza y agregarlos al FormArray
+          transaction.diferencia.forEach((diferenceItem : any) => {
+            diferenceArray.push(this._formBuilder.group(diferenceItem));
+          });
+
+          // Agregar el FormGroup al FormArray transactions
+          transactionsArray.push(transactionGroup);
         });
-  
-        // Itera sobre las diferencias y agrega un FormGroup por cada elemento
-        item.diference.forEach((diferenceItem: any) => {
-          diferenceArray.push(this._formBuilder.group({
-            mdiferencia: [diferenceItem.mdiferencia],
-            xobservacion: [diferenceItem.xobservacion],
+      
+      const listNotificate = data.searchPaymentReport
 
-          }));
-        });
-      });
+      const sumaMpagoext = listNotificate.reduce((total: any, item: any ) => total + item.monto_declarado_ext, 0);
 
-      const listNotificate = data.searchPaymentReport.searchDataNotifiqued.dataTransaction
+      const sumaMpago = listNotificate.reduce((total: any, item: any ) => total + item.monto_declarado, 0);
 
-      const sumaMpagoext = listNotificate.reduce((total: any, item: any ) => total + item.transaccion.mpagoext, 0);
 
-      this.totalNotificated = sumaMpagoext.toFixed(2)
+      this.totalNotificated = sumaMpago.toFixed(2)
+      this.totalNotificatedExt = sumaMpagoext.toFixed(2)
 
     })
-
 
 
   }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.dataSource.filter = filterValue.toLowerCase();
   }
 
   getImage(imageUrl: string): string {
@@ -597,15 +615,42 @@ export class PaymentCancellationComponent {
     const creds = this.groupReceiptsForm.controls.agrupado as FormArray;
 
     if(creds.at(i).get('iestadorec')?.value == 'ER' ){
-      const data = {
-        transacccion : creds.at(i).get('id')?.value,
-        xobservacion: creds.at(i).get('xobservacion')?.value,
-        mdiferencia: creds.at(i).get('mdiferencia')?.value,
-        iestadorec: creds.at(i).get('iestadorec')?.value,
-        casegurado : creds.at(i).get('casegurado')?.value,
-        recibo : creds.at(i).get('recibo')?.value,
+
+      let data = {}
+      
+      if(creds.at(i).get('cmoneda')?.value == 'BS'){
+        let monto = creds.at(i).get('mdiferencia')?.value / this.bcv
+        data = {
+          transacccion : creds.at(i).get('id')?.value,
+          xobservacion: creds.at(i).get('xobservacion')?.value,
+          mdiferencia: creds.at(i).get('mdiferencia')?.value,
+          mdiferenciaext: monto,
+          iestadorec: creds.at(i).get('iestadorec')?.value,
+          casegurado : creds.at(i).get('casegurado')?.value,
+          recibo : creds.at(i).get('recibo')?.value,
+          cmoneda : creds.at(i).get('cmoneda')?.value,
+          idiferencia : creds.at(i).get('idiferencia')?.value,
+          tasa : this.bcv
+
+        }
+
+      }else{
+        let monto = creds.at(i).get('mdiferencia')?.value * this.bcv
+        data = {
+          transacccion : creds.at(i).get('id')?.value,
+          xobservacion: creds.at(i).get('xobservacion')?.value,
+          mdiferenciaext: creds.at(i).get('mdiferencia')?.value,
+          mdiferencia: monto,
+          iestadorec: creds.at(i).get('iestadorec')?.value,
+          casegurado : creds.at(i).get('casegurado')?.value,
+          recibo : creds.at(i).get('recibo')?.value,
+          cmoneda : creds.at(i).get('cmoneda')?.value,
+          idiferencia : creds.at(i).get('idiferencia')?.value,
+          tasa : this.bcv
+        }
 
       }
+
       this.http.post(environment.apiUrl + '/api/v1/collection/receipt-under-review/', data ).subscribe((response: any) => {
         if(response.status){
           location.reload()
@@ -618,7 +663,7 @@ export class PaymentCancellationComponent {
         transacccion : creds.at(i).get('id')?.value,
         iestadorec: creds.at(i).get('iestadorec')?.value,
         casegurado : creds.at(i).get('casegurado')?.value,
-        detalle : creds.at(i).get('detalle')?.value,
+        detalle : creds.at(i).get('poliza')?.value,
       }
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt/', data ).subscribe((response: any) => {
         if(response.status){
@@ -626,6 +671,19 @@ export class PaymentCancellationComponent {
         }
   
       })
+    }
+
+  }
+
+  validateMov(i : any){
+
+    const creds = this.groupReceiptsForm.controls.agrupado as FormArray;
+
+    if(creds.at(i).get('iestadorec')?.value == 'ER'){
+      this.revision = true
+    }else{
+      this.revision = false
+
     }
 
   }
@@ -735,6 +793,66 @@ export class PaymentCancellationComponent {
       this.updateReceiptPending.get('iestadorec ')?.enable()
   }
 
+  validateMount(){
+    let valor = this.updateReceiptPending.get('mpago')?.value || ''
+    let moneda = this.updateReceiptPending.get('cmoneda')?.value || ''
+
+    let primaBS = this.bcv * this.dataReceiptPending[0].mprimabrutaext
+    this.error = false 
+
+
+    if(moneda == 'BS'){
+      if(valor < this.dataReceiptPending[0].mprimabruta){
+        this.updateReceiptPending.get('mpago')?.setValue('')
+        this.error = true
+        this.messajeError = 'El monto no puede ser menor al deudor'
+
+      }
+      else if(valor > this.dataReceiptPending[0].mprimabruta){
+        this.updateReceiptPending.get('mpago')?.setValue('')
+        this.messajeError = 'El monto no puede ser mayor al deudor'
+        this.error = true
+
+      }
+      else if(parseInt(valor) < primaBS){
+        this.updateReceiptPending.get('mpago')?.setValue('')
+        this.error = true
+        this.messajeError = 'El monto no puede ser menor al deudor'
+
+      }
+      else if(primaBS > parseInt(valor)){
+        this.updateReceiptPending.get('mpago')?.setValue('')
+        this.messajeError = 'El monto no puede ser mayor al deudor'
+        this.error = true
+      }
+    }
+
+    if(moneda == 'USD'){
+      if(valor < this.dataReceiptPending[0].mprimabrutaext){
+        this.updateReceiptPending.get('mpago')?.setValue('')
+        this.error = true
+        this.messajeError = 'El monto no puede ser menor al deudor'
+      }
+      if(valor > this.dataReceiptPending[0].mprimabrutaext){
+        this.updateReceiptPending.get('mpago')?.setValue('')
+        this.messajeError = 'El monto no puede ser mayor al deudor'
+        this.error = true
+      }
+    }
+
+    if(moneda == ''){
+      this.updateReceiptPending.get('mpago')?.setValue('')
+      this.messajeError = 'Seleccione la moneda de registro de Pago'
+      this.error = true 
+    }
+
+  }
+
+  changeError(){
+    this.error = false 
+
+  }
+
   onFileSelect(event : any ){
 
     const file = event.target.files[0]
@@ -764,98 +882,6 @@ export class PaymentCancellationComponent {
 
   }
 
-  downloadExcel() {
-
-    // Filtra y renombra los campos que deseas exportar
-    const filteredData = this.listPending.map((item :any) => ({
-        'Poliza': item.cpoliza,
-        'Recibo': item.crecibo,
-        'Ramo': item.cramo,
-        'Cedula': item.cedula,
-        'Cliente' : item.XCLIENTE,
-        'Prima Bs': item.mprimabruta,
-        'Prima USD': item.mprimabrutaext,
-        'Fecha hasta recibo': item.fhasta,
-        'Correo' : item.xemail,
-        'Telefono' : item.xtelefono,
-        'Direccion' : item.XDIRECCIONFISCAL,
-        'Corredor' :item.CCORREDOR
-    }));
-  
-    const worksheet = XLSX.utils.json_to_sheet(filteredData);
-  
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
-  
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  
-    const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  
-    saveAs(excelData, `Reporte de recibos pendientes solicitados.xlsx`);
-  }
-
-  downloadExcelVencido() {
-    // Filtra y renombra los campos que deseas exportar
-    const filteredData = this.listVencido.map((item : any) => ({
-      'Poliza': item.cpoliza,
-      'Recibo': item.crecibo,
-      'Ramo': item.cramo,
-      'Cedula': item.cedula,
-      'Cliente' : item.XCLIENTE,
-      'Prima Bs': item.mprimabruta,
-      'Prima USD': item.mprimabrutaext,
-      'Fecha hasta recibo': item.fhasta,
-      'Correo' : item.xemail,
-      'Telefono' : item.xtelefono,
-      'Direccion' : item.XDIRECCIONFISCAL,
-      'Corredor' :item.CCORREDOR
-    }));
-  
-    const worksheet = XLSX.utils.json_to_sheet(filteredData);
-  
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
-  
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  
-    const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  
-    saveAs(excelData, `Reporte de recibos vencidos solicitados.xlsx`);
-  }
-
-  downloadExcelCollected() {
-    // Filtra y renombra los campos que deseas exportar
-    const filteredData = this.listCollectedReport.map((item: any) => ({
-      'Poliza': item.cpoliza,
-      'Recibo': item.crecibo,
-      'Prima Bs': item.mprimabruta,
-      'Prima USD': item.mprimabrutaext,
-      'Fecha hasta recibo': item.fhasta,
-      'Cedula': item.casegurado,
-      'Cliente': item.XCLIENTE,
-      'Telefono': item.XTELEFONO,
-      'Correo': item.XEMAIL,
-      'Direccion ': item.XDIRECCIONFISCAL,
-      'Banco emisor': item.cbanco,
-      'Banco destino': item.cbanco_destino,
-      'Ramo': item.cramo,
-      'Total Bs': item.mtotal,
-      'Total $': item.mtotalext,
-      'Tasa': item.ptasamon,
-      'Referencia': item.xreferencia,
-    }));
-  
-    const worksheet = XLSX.utils.json_to_sheet(filteredData);
-  
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
-  
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  
-    const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  
-    saveAs(excelData, `Reporte de recibos cobrados solicitados.xlsx`);
-  }
 
   GroupReceipt(){
     const creds = this.groupReceiptsForm.controls.agrupado as FormArray;

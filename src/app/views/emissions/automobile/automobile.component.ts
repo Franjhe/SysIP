@@ -439,8 +439,7 @@ export class AutomobileComponent {
     
       const formattedFhasta = fhasta.toISOString().split('T')[0]; // Obtener solo la parte de la fecha sin la hora
       this.receiptFormGroup.get('fhasta')?.setValue(formattedFhasta);
-      console.log(this.receiptFormGroup.get('fdesde')?.value);
-      console.log(this.receiptFormGroup.get('fhasta')?.value);
+
     }
 
     this.token = localStorage.getItem('user');
@@ -2634,8 +2633,38 @@ export class AutomobileComponent {
       //delimiter: [',', ';'],
       quoteChar: '"',
       complete: (result: any) => {
+        const requiredHeaders: string[] = [
+          "irif", "xcliente", "xrif_cliente", "xnombre", "xapellido", "icedula", "xcedula", "cmetodologiapago",
+          "cplan_rc", "xserialcarroceria", "xserialmotor", "xplaca", "xmarca", "xmodelo", "xversion", "cano", "xcolor",
+          "xcobertura", "msuma_aseg", "ptasa", "xdireccionfiscal", "xtelefono_emp",
+          "email", "fdesde_pol", "fhasta_pol", "ccorredor", "cestado", "cciudad", "xzona_postal"
+      ];
+
+      let csvHeaders: string[] = Object.keys(result.data[0]);
+      let error = "";
+
+      // Convertir todos los encabezados a minúsculas para hacer la comparación insensible a mayúsculas y minúsculas
+      const lowerCaseRequiredHeaders = requiredHeaders.map(header => header.toLowerCase());
+      const lowerCaseCsvHeaders = csvHeaders.map(header => header.toLowerCase());
+
+      // Verificar si todos los encabezados requeridos están presentes
+      const missingHeaders = lowerCaseRequiredHeaders.filter(header => !lowerCaseCsvHeaders.includes(header));
+      if (missingHeaders.length > 0) {
+          error = `Error: El archivo no incluye todos los atributos necesarios. Faltan los siguientes campos: ${missingHeaders.join(', ')}`;
+      }
+
+      // Verificar si hay encabezados adicionales en el archivo
+      const extraHeaders = lowerCaseCsvHeaders.filter(header => !lowerCaseRequiredHeaders.includes(header));
+      if (extraHeaders.length > 0) {
+          error = `Error: El archivo incluye atributos adicionales. Elimine los siguientes campos: ${extraHeaders.join(', ')}`;
+      }
+
+      if (error) {
+          window.alert(error)
+          location.reload()
+          return;
+      }
       
-        console.log(result)
     this.dataList = result.data.slice(0, result.data.length - 1).map((item: CsvItem) => {
         const msuma_aseg = parseFloat(item.MSUMA_ASEG.replace(',', '.'));
         const ptasa = parseFloat(item.PTASA.replace(',', '.'));
@@ -2704,21 +2733,12 @@ export class AutomobileComponent {
     let data = {
       group: this.groupList
     }
-    console.log(data)
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/group', data).subscribe((response: any) => {
       if(response.status){
-        if(response.error){
-          let errorMessage = response.error.join('\n');
-          window.alert(`${errorMessage}`)
-          this.snackBar.open(`Lamentablemente, la carga de la flota no pudo ser completada debido a la falta de información sobre los vehículos en INMA. Por favor, asegúrese de cargar los datos de los vehículos correspondientes y vuelva a intentarlo.`, '', {
-            duration: 10000,
-          });
-        }else{ 
-          if (window.confirm("¡La Flota se ha cargado exitosamente!... ¿Deseas Consultar esa Flota?")) {
-            this.router.navigate(['/policy/automobile-policy']);
-          } else {
-            location.reload();
-          }
+        if (window.confirm("¡La Flota se ha cargado exitosamente!... ¿Deseas Consultar esa Flota?")) {
+          this.router.navigate(['/policy/automobile-policy']);
+        } else {
+          location.reload();
         }
       }
     })
