@@ -85,7 +85,8 @@ onSubmit(){
 buscarReporte(){
 
   let estado = this.consulta_reporte.get('estatus')?.value
-  let url = environment.apiUrl_reporte + '/lamundialapi/recibos/'+ estado + '/'
+  let url = environment.apiUrl_reporte + '/recibos/'+ estado + '/'
+  // let url = environment.apiUrl_reporte + '/lamundialapi/recibos/'+ estado + '/'
   window.open(url, '_blank');
 
 }
