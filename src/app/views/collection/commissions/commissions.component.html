@@ -40,7 +40,7 @@
             <!-- Weight Column -->
             <ng-container matColumnDef="mcomtot">
                 <th mat-header-cell *matHeaderCellDef> Comisión </th>
-                <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mcomtot}}</td>
+                <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mmovcom}}</td>
             </ng-container>
 
             <!-- Weight Column -->
@@ -107,7 +107,7 @@
                     </ng-container>
                     <ng-container matColumnDef="0">
                         <th mat-header-cell *matHeaderCellDef> Póliza </th>
-                        <td mat-cell *matCellDef="let row"> {{row.crecibo}} </td>
+                        <td mat-cell *matCellDef="let row"> {{row.cnpoliza}} </td>
 
                     </ng-container>
                     <ng-container matColumnDef="1">
@@ -132,7 +132,7 @@
                     </ng-container>
                     <ng-container matColumnDef="5">
                         <th mat-header-cell *matHeaderCellDef> Monto de la Prima </th>
-                        <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mprimanetaext}} </td>
+                        <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mmontoapag}} </td>
 
                     </ng-container>
                     <ng-container matColumnDef="6">
@@ -149,9 +149,9 @@
                 <hr>
                 <div class="footer-table">
                     <b>Montos:</b>
-                    <span>Comision: {{total_movcom}}</span>
-                    <span>Impuesto: {{total_impuesto}}</span>
-                    <span>A pagar: {{total_comision}}</span>
+                    <!-- <span>Comision: {{total_movcom}}</span>
+                    <span>Impuesto: {{total_impuesto}}</span> -->
+                    <span>A pagar: {{total_cmoneda}}{{total_comision}}</span>
                     <button mat-raised-button (click)="calculatePaymentCommissions()">Seleccionar</button>
                 </div>
 
@@ -229,7 +229,7 @@
                     <div class="col-3">
                         <mat-form-field >
                             <mat-label>Monto total:</mat-label>
-                            <input matInput type="text" value="{{paymentRequest.mmontototal}} $" disabled>
+                            <input matInput type="text" value="{{paymentRequest.cmoneda}}{{paymentRequest.mmontototal}}" disabled>
                           </mat-form-field>
                     </div>
                     <div class="col-9">
