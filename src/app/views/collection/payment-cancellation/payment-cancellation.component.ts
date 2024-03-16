@@ -116,6 +116,9 @@ export class PaymentCancellationComponent {
     agrupado : this._formBuilder.array([])
   });
 
+  currentUser : any
+  token: any
+
   get agrupado() : FormArray {
     return this.groupReceiptsForm.get("agrupado") as FormArray
   }
@@ -155,6 +158,10 @@ export class PaymentCancellationComponent {
    }
 
   ngOnInit(){
+
+
+    this.token = localStorage.getItem('user');
+    this.currentUser = JSON.parse(this.token);
 
     fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
     .then((response) => response.json())
@@ -699,9 +706,9 @@ export class PaymentCancellationComponent {
       ptasamon : this.bcv,
       freporte : fecha ,
       cprog : 'Cobranza web',
-      cusuario : 13,
       iestadorec : 'C',
       iestado : 1,
+      cusuario: this.currentUser,
       ifuente : 'Web_Sys',
     }
 
