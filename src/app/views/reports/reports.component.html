@@ -55,10 +55,10 @@
        </div> -->
    </div>
 <div class="example-button-row">
-<button (click)="makeExcel()" mat-raised-button class="mat-raised-button" style="color: #fff; background-color: #13ad34fb;">
+<button (click)="makeExcel()" [disabled]="!showButton" mat-raised-button class="mat-raised-button" style="color: #fff; background-color: #13ad34fb;">
    <img class="izquierda" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/1101px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png" width="20px" height="20px" margin-right="2px">Excel
 </button>
-<button (click)="buscarReporte()" mat-raised-button class="mat-raised-button" style="color: #fff; background-color: #db1313fb;">
+<button (click)="buscarReporte()" [disabled]="!showButton" mat-raised-button class="mat-raised-button" style="color: #fff; background-color: #db1313fb;">
    <img class="izquierda" src="https://www.islahospitalmenorca.org/wp-content/uploads/2015/12/adobe-pdf-file-icon-logo-vector.png" width="23px" height="20px" margin-right="2px"> PDF
 </button>
 </div>
@@ -166,8 +166,8 @@
                             </div>
                         </div>
                         <br>
-                        <div class="example-button-row">
-                          <button mat-raised-button class="mat-raised-button" style="color: #fff; background-color: #13ad34fb;">
+                        <div class="example-button-row" >
+                          <button [disabled]="!showButton" mat-raised-button class="mat-raised-button" style="color: #fff; background-color: #13ad34fb;">
                             <img class="izquierda" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/1101px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png" width="20px" height="20px" margin-right="2px">Excel
                           </button>
                           <button mat-raised-button class="mat-raised-button" style="color: #fff; background-color: #db1313fb;">
