@@ -633,6 +633,7 @@ export class PaymentReportComponent {
     let fechaTran = fecha.toISOString().substring(0, 10);
 
     const savePaymentTrans = {
+      ctransaccion : this.idTrans,
       receipt : this.receiptList,
       report: this.transferList,
       casegurado: asegurado,
@@ -646,20 +647,19 @@ export class PaymentReportComponent {
       ifuente : 'Web_Sys',
       iestado : 0,
       ccategoria : this.searchReceipt.get('ccategoria')?.value,
-      idTrans: this.idTrans,
-      diference : false
+      diference: false
 
     }
     // primero llenamos el recipo y la tabla de transacciones 
     this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
-      if (response) {
+      if (response.status) {
         this.uploadFile()
       }
     })   
 
-    // setTimeout(() => {
-    //   location.reload();
-    // }, 3000);
+    setTimeout(() => {
+      location.reload();
+    }, 3000);
   }
 
   async onSubmitDiferent(){
@@ -667,76 +667,24 @@ export class PaymentReportComponent {
     await this.llenarlistas()
     this.Submit = true
 
-    const transfer = this.searchReceipt.get("transfer") as FormArray
-
-    for(let i = 0; i < transfer.length; i++){
-
-      const formData = new FormData();
-      formData.append('file', transfer.at(i).get('ximagen')?.value!);
-  
-      //cargamos las imagenes con el codigo de transaccion
-      this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {
-          const rutaimage  =  image.uploadedFile.filename //ruta de imagen por registro 
-
-          if(transfer.at(i).get('cmoneda')?.value == "USD" ){
-
-            this.transferList.push({
-              cmoneda: transfer.value[i].cmoneda,
-              cbanco: transfer.value[i]?.cbanco,
-              cbanco_destino: transfer.value[i].cbanco_destino,
-              mpago: 0,
-              mpagoext: transfer.value[i].mpago,
-              mpagoigtf: this.mountBsP,
-              mpagoigtfext: this.mountP ,
-              mtotal: this.mountBsExt,
-              mtotalext: this.mountIGTF,
-              ptasamon: this.bcv,
-              ptasaref: 0,        
-              xreferencia: transfer.value[i].xreferencia,
-              ximagen: rutaimage,
-            });
-          }
-          else if(transfer.at(i).get('cmoneda')?.value == "Bs"){
-            this.transferList.push({
-              cmoneda: transfer.value[i].cmoneda,
-              cbanco: transfer.value[i]?.cbanco,
-              cbanco_destino: transfer.value[i].cbanco_destino,
-              mpago: transfer.value[i].mpago,
-              mpagoext: 0,
-              mpagoigtf: 0,
-              mpagoigtfext: 0 ,
-              mtotal:this.mountBs,
-              mtotalext: this.mount,
-              ptasaref: 0,
-              ptasamon: this.bcv,        
-              xreferencia: transfer.value[i].xreferencia,
-              ximagen: rutaimage,
-            });
-          }
-
-          if(image.status){
-
-            const reporData = {
-              report : this.transferList,
-              ctransaccion : this.idTrans,
-              casegurado: this.searchReceipt.get('xcedula')?.value,
-              diference : true
-        
-            }
-        
-            this.http.post(environment.apiUrl + '/api/v1/collection/create-report', reporData).subscribe( (response: any) => {
-
-
-            })
-          }
-
-      })
+    const reporData = {
+      report : this.transferList,
+      ctransaccion : this.idTrans,
+      casegurado: this.searchReceipt.get('xcedula')?.value,
+      diference : true
 
     }
-      
-    // setTimeout(() => {
-    //   location.reload();
-    // }, 5000);
+
+    this.http.post(environment.apiUrl + '/api/v1/collection/create-report', reporData).subscribe( (response: any) => {
+      if (response.status) {
+        this.uploadFile()
+      }
+
+    })
+          
+    setTimeout(() => {
+      location.reload();
+    }, 3000);
       
 
   }

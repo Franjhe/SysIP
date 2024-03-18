@@ -358,6 +358,7 @@ export class PaymentCancellationComponent {
                   idiferencia : '',
                   cmoneda : '',
                   recibo: '',
+                  xcorreo:curr.xcorreo,
                   freporte:fechaISOHasta,
                   casegurado: curr.casegurado,
                   xcliente: curr.xcliente,
@@ -459,12 +460,14 @@ export class PaymentCancellationComponent {
           let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
           const transactionGroup = this._formBuilder.group({
             id: transaction.ctransaccion,
+            ctransaccion: transaction.ctransaccion,
             iestadorec : '',
             xobservacion : '',
             mdiferencia : '',
             idiferencia : '',
             cmoneda : '',
             recibo: '',
+            xcorreo:transaction.xcorreo,
             freporte:fechaISOHasta,
             casegurado: transaction.casegurado,
             xcliente: transaction.xcliente,
@@ -635,6 +638,7 @@ export class PaymentCancellationComponent {
           iestadorec: creds.at(i).get('iestadorec')?.value,
           casegurado : creds.at(i).get('casegurado')?.value,
           recibo : creds.at(i).get('recibo')?.value,
+          correo : creds.at(i).get('xcorreo')?.value,
           cmoneda : creds.at(i).get('cmoneda')?.value,
           idiferencia : creds.at(i).get('idiferencia')?.value,
           tasa : this.bcv
@@ -648,6 +652,7 @@ export class PaymentCancellationComponent {
           xobservacion: creds.at(i).get('xobservacion')?.value,
           mdiferenciaext: creds.at(i).get('mdiferencia')?.value,
           mdiferencia: monto,
+          correo : creds.at(i).get('xcorreo')?.value,
           iestadorec: creds.at(i).get('iestadorec')?.value,
           casegurado : creds.at(i).get('casegurado')?.value,
           recibo : creds.at(i).get('recibo')?.value,
@@ -670,6 +675,7 @@ export class PaymentCancellationComponent {
         transacccion : creds.at(i).get('id')?.value,
         iestadorec: creds.at(i).get('iestadorec')?.value,
         casegurado : creds.at(i).get('casegurado')?.value,
+        correo : creds.at(i).get('xcorreo')?.value,
         detalle : creds.at(i).get('poliza')?.value,
       }
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt/', data ).subscribe((response: any) => {
