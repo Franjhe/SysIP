@@ -418,7 +418,7 @@ export class AutomobileComponent {
     this.getTypeOfPay();
     this.getUtility();
 
-    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
+    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv')
     .then((response) => response.json())
     .then(data => {
       this.bcv = data.monitors.usd.price
@@ -1396,7 +1396,7 @@ export class AutomobileComponent {
 
   private _filterTakers(value: string): string[] {
     const filterValue = value.toLowerCase();
-    const lista = this.takersList.map(taker => taker.value).filter(taker => taker.toUpperCase().includes(filterValue));;
+    const lista = this.takersList.map(taker => taker.value).filter(taker => taker.toLowerCase().includes(filterValue));;
   
     if(!lista[0]){
       this.planFormGroup.get('xtomador')?.setValue(filterValue)
