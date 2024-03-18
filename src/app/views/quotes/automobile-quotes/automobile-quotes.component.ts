@@ -172,7 +172,6 @@ export class AutomobileQuotesComponent {
             this.currentUser = JSON.parse(this.token);
           }
         }
-        console.log(this.currentUser)
         if (this.currentUser) {
           this.getBroker();
         }
