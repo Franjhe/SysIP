@@ -67,7 +67,7 @@ export class AutomobileInquiriesComponent {
               private pdfGenerationService: PdfGenerationService,) {}
 
   ngOnInit(){
-    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
+    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv')
     .then((response) => response.json())
     .then(data => {
       this.bcv = data.monitors.usd.price

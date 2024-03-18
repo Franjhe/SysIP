@@ -421,10 +421,8 @@ export class AutomobileComponent {
     this.setDefaultDates();
     this.getTypeOfPay();
     this.getUtility();
-
     this.fechas = 'Fecha de Nacimiento';
-
-    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
+    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv')
     .then((response) => response.json())
     .then(data => {
       this.bcv = data.monitors.usd.price

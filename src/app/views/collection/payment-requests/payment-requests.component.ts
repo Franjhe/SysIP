@@ -10,6 +10,25 @@ import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition
 import { SelectionModel } from '@angular/cdk/collections';
 import { clear } from 'console';
 
+export interface PaymentRequest {
+  xtransaccion: string;
+  csucursal?: string;
+  xsucursal?: string;
+  ffacturacion: string;
+  cstatus: string;
+  xstatus: string;
+  cid: string;
+  xbeneficiario: string;
+  cconcepto: string;
+  xconcepto: string;
+  ccorredor: string;
+  xcorredor: string;
+  mmontototal: any;
+  xobservaciones?: any;
+  recibos: any;
+  cmoneda: any;
+}
+
 @Component({
   selector: 'app-payment-requests',
   templateUrl: './payment-requests.component.html',
@@ -46,17 +65,8 @@ export class PaymentRequestsComponent {
   total_comision = 0;
 
   listPaymentRequest: PaymentRequest[] = [];
-  // pre_xtransaccion = "Pago de Comisiones";
-  // pre_xsucursal: any;
-  // pre_ffacturacion = new Date().toLocaleDateString();
-  // pre_xstatus = 'Pendiente';
-  // pre_cci_rif: any;
-  // pre_xbeneficiario: any;
-  // pre_xconcepto= 'Cierre de caja';
-  // pre_xcorredor: any;
-  // pre_mmontototal: any;
-  // xobservaciones: any
-
+  paymentRequest: any;
+  
   constructor(private _formBuilder: FormBuilder,
     private http: HttpClient,
     // private sanitizer: DomSanitizer,
@@ -94,8 +104,10 @@ export class PaymentRequestsComponent {
 
 
   dataCorredor(ccorredor: any, cmoneda: any, index: any) {
-    console.log('hola');
+    console.log(this.dataSource.data[index]);
+    this.paymentRequest = this.dataSource.data[index];
     
+    return this.dialog.open(this.dialogPaymentRequest);
   }
 
 
@@ -118,6 +130,23 @@ export class PaymentRequestsComponent {
     // console.log(this.dataSource.data[0].mcomtot = this.total_comision);
     // this.selection2.selected.forEach(row => console.log(row.mmovcom));
     this.dialog.closeAll();
+  }
+
+  cancelPaymentRequests() {
+    this.paymentRequest.clear;
+    return this.dialog.closeAll();
+  }
+
+  proccessPaymentRequests(csolpag: any) {
+    let data = {
+      csolpag: csolpag
+    }
+    this.http.post(environment.apiUrl + '/api/v1/commissions/pay-paymetRequests', data).subscribe((response: any) => {
+      alert(response.returnData.result.message);
+      location.reload();
+    });
+
+    return this.dialog.closeAll();
   }
 
 }
