@@ -25,7 +25,7 @@ export class ReportsComponent {
   submitted = false;
   name?: string;
   color: ThemePalette;
-  showTable: boolean = true;
+  showButton: boolean = false;
   selectedOption: string = '';
 
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
@@ -51,6 +51,8 @@ availableColors = [
 {name: 'Primas Cobradas', color: 'warn'},
 ];
 ngOnInit() {
+  this.showButton = false
+
   this.report_form = this.formBuilder.group({
     bprima: [''],
     fdesde: [''],
@@ -93,7 +95,7 @@ buscarReporte(){
 
 dataReport(){
   let estado = this.consulta_reporte.get('estatus')?.value
-
+  this.showButton = true
   // if(estado == 'C'){
 
   //   fetch(environment.apiUrl + '/api/v1/collection/search-collected/'+ estado )
@@ -108,6 +110,7 @@ dataReport(){
     .then((response) => response.json())
     .then(data => {
 
+      this.listPending = []
       for(let i = 0; i < data.searchPaymentCollected.recibo.length; i++){
 
        
