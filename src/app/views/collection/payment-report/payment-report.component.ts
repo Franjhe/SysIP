@@ -105,7 +105,7 @@ export class PaymentReportComponent {
 
   ngOnInit(){
 
-    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
+    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv')
     .then((response) => response.json())
     .then(data => {
       this.bcv = data.monitors.usd.price
@@ -565,17 +565,9 @@ export class PaymentReportComponent {
       }
 
     }   
-    
-  }
 
-  async onSubmit(){
-
-    this.llenarlistas()
-    this.Submit = true
-    this.searchReceipt.disable()
 
     const transfer = this.searchReceipt.get("transfer") as FormArray
-
     let asegurado = this.searchReceipt.get('xcedula')?.value || ''
     const fecha = new Date()
     let fechaTran = fecha.toISOString().substring(0, 10);
@@ -585,11 +577,7 @@ export class PaymentReportComponent {
       const fileObject = transfer.at(i).get('ximagen')?.value!
       const fileType = fileObject.type;
       const extension = fileType.split('/').pop();
-
       let nombre = asegurado +'-' + fechaTran +'-'+ i + transfer.value[i].xreferencia +'.'+ extension;
-      const formData = new FormData();
-      formData.append('image', transfer.at(i).get('ximagen')?.value!, nombre);
-  
 
       if(transfer.at(i).get('cmoneda')?.value == "USD" ){
 
@@ -628,10 +616,21 @@ export class PaymentReportComponent {
         });
       }
 
-      //cargamos las imagenes con el codigo de transaccion
-      this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {})
-
     }
+    
+  }
+
+  async onSubmit(){
+
+    await this.llenarlistas()
+    this.Submit = true
+    this.searchReceipt.disable()
+
+    const transfer = this.searchReceipt.get("transfer") as FormArray
+
+    let asegurado = this.searchReceipt.get('xcedula')?.value || ''
+    const fecha = new Date()
+    let fechaTran = fecha.toISOString().substring(0, 10);
 
     const savePaymentTrans = {
       receipt : this.receiptList,
@@ -651,18 +650,16 @@ export class PaymentReportComponent {
       diference : false
 
     }
-
     // primero llenamos el recipo y la tabla de transacciones 
     this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
-
-      if(response.status) {
-        location.reload();
+      if (response) {
+        this.uploadFile()
       }
+    })   
 
-
-    })          
-        
-
+    // setTimeout(() => {
+    //   location.reload();
+    // }, 3000);
   }
 
   async onSubmitDiferent(){
@@ -744,7 +741,29 @@ export class PaymentReportComponent {
 
   }
 
+  uploadFile(){
+
+    const transfer = this.searchReceipt.get("transfer") as FormArray
+
+    let asegurado = this.searchReceipt.get('xcedula')?.value || ''
+    const fecha = new Date()
+    let fechaTran = fecha.toISOString().substring(0, 10);
+
+
+    for(let i = 0; i < transfer.length; i++){
+
+      const fileObject = transfer.at(i).get('ximagen')?.value!
+      const fileType = fileObject.type;
+      const extension = fileType.split('/').pop();
+      let nombre = asegurado +'-' + fechaTran +'-'+ i + transfer.value[i].xreferencia +'.'+ extension;
+      const formData = new FormData();
+      formData.append('image', transfer.at(i).get('ximagen')?.value!, nombre);
   
+      //cargamos las imagenes con el codigo de transaccion
+      this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {})
+
+    }
+  }
 
   changeStatusPm(){
     if(this.pmovil == false){

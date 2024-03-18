@@ -163,7 +163,7 @@ export class PaymentCancellationComponent {
     this.token = localStorage.getItem('user');
     this.currentUser = JSON.parse(this.token);
 
-    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
+    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv')
     .then((response) => response.json())
     .then(data => {
       this.bcv = data.monitors.usd.price
@@ -373,11 +373,6 @@ export class PaymentCancellationComponent {
               };
           }
 
-          const imageUrl = curr.xruta;
-          const fullImageUrl = this.getImage(imageUrl);
-
-          const safeImageUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullImageUrl);
-
           let bankValue : any
           let bankValueEmi : any
 
@@ -409,6 +404,11 @@ export class PaymentCancellationComponent {
             let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
             bankValueEmi = filterBankEmi[0]?.value
           }
+
+          const imageUrl = curr.xruta;
+          const fullImageUrl = this.getImage(imageUrl);
+
+          const safeImageUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullImageUrl);
       
           acc[curr.ctransaccion].recibos.push({
               cmoneda: curr.cmoneda,
