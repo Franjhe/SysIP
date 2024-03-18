@@ -103,11 +103,21 @@ export class PaymentRequestsComponent {
   }
 
 
-  dataCorredor(ccorredor: any, cmoneda: any, index: any) {
-    console.log(this.dataSource.data[index]);
-    this.paymentRequest = this.dataSource.data[index];
+  dataCorredor(csolpag: any, index: any) {
+    // alert(csolpag);
+    // console.log(this.dataSource.data[csolpag]);
+    // this.paymentRequest = this.dataSource.data[csolpag];
+    // alert(csolpag);
+    let data = {
+      csolpag: csolpag
+    }
+    this.http.post(environment.apiUrl + '/api/v1/commissions/detail-paymentRequest', data).subscribe((response: any) => {
+      this.paymentRequest = response.returnData.search[0]
+      console.log(this.paymentRequest);
+
+      return this.dialog.open(this.dialogPaymentRequest);
+    });
     
-    return this.dialog.open(this.dialogPaymentRequest);
   }
 
 
