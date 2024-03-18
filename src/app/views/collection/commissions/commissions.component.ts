@@ -293,6 +293,8 @@ export class CommissionsComponent {
       
 
       this.http.post(environment.apiUrl + '/api/v1/commissions/search-data/' + element.cproductor, '').subscribe((response: any) => {
+        console.log(element.cproductor);
+        
 
         response.returnData.search.forEach((e: any) => {
           var paymentRequest: PaymentRequest = {
