@@ -418,7 +418,7 @@ export class AutomobileComponent {
     this.getTypeOfPay();
     this.getUtility();
 
-    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
+    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv')
     .then((response) => response.json())
     .then(data => {
       this.bcv = data.monitors.usd.price
@@ -439,8 +439,7 @@ export class AutomobileComponent {
     
       const formattedFhasta = fhasta.toISOString().split('T')[0]; // Obtener solo la parte de la fecha sin la hora
       this.receiptFormGroup.get('fhasta')?.setValue(formattedFhasta);
-      console.log(this.receiptFormGroup.get('fdesde')?.value);
-      console.log(this.receiptFormGroup.get('fhasta')?.value);
+
     }
 
     this.token = localStorage.getItem('user');
@@ -1397,7 +1396,7 @@ export class AutomobileComponent {
 
   private _filterTakers(value: string): string[] {
     const filterValue = value.toLowerCase();
-    const lista = this.takersList.map(taker => taker.value).filter(taker => taker.toUpperCase().includes(filterValue));;
+    const lista = this.takersList.map(taker => taker.value).filter(taker => taker.toLowerCase().includes(filterValue));;
   
     if(!lista[0]){
       this.planFormGroup.get('xtomador')?.setValue(filterValue)
@@ -2634,6 +2633,37 @@ export class AutomobileComponent {
       //delimiter: [',', ';'],
       quoteChar: '"',
       complete: (result: any) => {
+        const requiredHeaders: string[] = [
+          "irif", "xcliente", "xrif_cliente", "xnombre", "xapellido", "icedula", "xcedula", "cmetodologiapago",
+          "cplan_rc", "xserialcarroceria", "xserialmotor", "xplaca", "xmarca", "xmodelo", "xversion", "cano", "xcolor",
+          "xcobertura", "msuma_aseg", "ptasa", "xdireccionfiscal", "xtelefono_emp",
+          "email", "fdesde_pol", "fhasta_pol", "ccorredor", "cestado", "cciudad", "xzona_postal"
+      ];
+
+      let csvHeaders: string[] = Object.keys(result.data[0]);
+      let error = "";
+
+      // Convertir todos los encabezados a minúsculas para hacer la comparación insensible a mayúsculas y minúsculas
+      const lowerCaseRequiredHeaders = requiredHeaders.map(header => header.toLowerCase());
+      const lowerCaseCsvHeaders = csvHeaders.map(header => header.toLowerCase());
+
+      // Verificar si todos los encabezados requeridos están presentes
+      const missingHeaders = lowerCaseRequiredHeaders.filter(header => !lowerCaseCsvHeaders.includes(header));
+      if (missingHeaders.length > 0) {
+          error = `Error: El archivo no incluye todos los atributos necesarios. Faltan los siguientes campos: ${missingHeaders.join(', ')}`;
+      }
+
+      // Verificar si hay encabezados adicionales en el archivo
+      const extraHeaders = lowerCaseCsvHeaders.filter(header => !lowerCaseRequiredHeaders.includes(header));
+      if (extraHeaders.length > 0) {
+          error = `Error: El archivo incluye atributos adicionales. Elimine los siguientes campos: ${extraHeaders.join(', ')}`;
+      }
+
+      if (error) {
+          window.alert(error)
+          location.reload()
+          return;
+      }
       
     this.dataList = result.data.slice(0, result.data.length - 1).map((item: CsvItem) => {
         const msuma_aseg = parseFloat(item.MSUMA_ASEG.replace(',', '.'));

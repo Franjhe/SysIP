@@ -71,6 +71,7 @@ export class PaymentCancellationComponent {
 
   totalPending : any
   totalNotificated : any
+  totalNotificatedExt: any
 
   messajeError : any
   error : boolean = false
@@ -106,20 +107,17 @@ export class PaymentCancellationComponent {
   lisDiferenceClient: any 
   listDetalle: any
   listSoport : any = []
-
-
   diference : boolean = false
 
   listReceipts  : any = []
   boollistReceipts: boolean = false
   GroupReceiptsBool : boolean = false
-
-  listpureba : any = []
-
-
   groupReceiptsForm = this._formBuilder.group({
     agrupado : this._formBuilder.array([])
   });
+
+  currentUser : any
+  token: any
 
   get agrupado() : FormArray {
     return this.groupReceiptsForm.get("agrupado") as FormArray
@@ -161,7 +159,11 @@ export class PaymentCancellationComponent {
 
   ngOnInit(){
 
-    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
+
+    this.token = localStorage.getItem('user');
+    this.currentUser = JSON.parse(this.token);
+
+    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv')
     .then((response) => response.json())
     .then(data => {
       this.bcv = data.monitors.usd.price
@@ -334,76 +336,57 @@ export class PaymentCancellationComponent {
     fetch(environment.apiUrl + '/api/v1/collection/search-notification' )
     .then((response) => response.json())
     .then(data => {
+        this.listReceipts = data.searchPaymentReport
 
-      this.listpureba = data.searchPaymentReport.searchDataNotifiqued.dataTransaction
+        const transformedData = Object.values(this.listReceipts.reduce((acc : any, curr: any) => {
+          
+            let dateNotification = new Date(curr.freporte);
+            let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
 
-      this.listpureba.forEach((item : any) => {
+            let idTrades = curr.cramo
+            let trades = this.tradesList
+            let filterTRades = trades.filter((data: { id: any; }) => data.id == idTrades)
+            const tradesValue = filterTRades[0].value
 
-        let dateNotification = new Date(item.transaccion.freporte);
-        let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
-
-        this.agrupado.push(this._formBuilder.group({
-            // Define tus controles aquí
-            id: [item.transaccion.id],
-            casegurado: [item.transaccion.casegurado],
-            freporte: [fechaISOHasta],
-            agrupador:false,
-            iestadorec : '',
-            xobservacion : '',
-            mdiferencia : '',
-            idiferencia : '',
-            cmoneda : '',
-            recibo: '',
-            ptasamon: [item.transaccion.ptasamon],
-            mpago: [item.transaccion.mpago],
-            mpagoext: [item.transaccion.mpagoext],
-            iestado_tran: [item.transaccion.iestado_tran],
-
-          detalle: this._formBuilder.array([]),
-          soporte: this._formBuilder.array([]),
-          diference: this._formBuilder.array([]),
-        }));
-  
-        // Obtén el FormArray de la transacción actual
-        const detalleArray = (this.agrupado.at(this.agrupado.length - 1) as FormGroup).get('detalle') as FormArray;
-        const soporteArray = (this.agrupado.at(this.agrupado.length - 1) as FormGroup).get('soporte') as FormArray;
-        const diferenceArray = (this.agrupado.at(this.agrupado.length - 1) as FormGroup).get('diference') as FormArray;
-  
-        // Itera sobre los detalles y agrega un FormGroup por cada elemento
-        item.detalle.forEach((detalleItem: any) => {
-
-          let idTrades = detalleItem.cramo
-          let trades = this.tradesList
-          let filterTRades = trades.filter((data: { id: any; }) => data.id == idTrades)
-          const tradesValue = filterTRades[0].value
-
-          detalleArray.push(this._formBuilder.group({
-            crecibo: [detalleItem.crecibo] ,
-            cpoliza: [detalleItem.cpoliza] ,
-            cramo: [tradesValue],
-            mprimabrutaext: [detalleItem.mprimabrutaext],
-            mprimabruta: [detalleItem.mprimabruta] ,
-            fhasta_rec: [detalleItem.fhasta_rec] ,
-       
-          }));
-        });
-  
-        // Itera sobre los soportes y agrega un FormGroup por cada elemento
-        item.soporte.forEach((soporteItem: any) => {
+          if (!acc[curr.ctransaccion]) {
+              acc[curr.ctransaccion] = {
+                  id: curr.ctransaccion,
+                  ctransaccion: curr.ctransaccion,
+                  iestadorec : '',
+                  xobservacion : '',
+                  mdiferencia : '',
+                  idiferencia : '',
+                  cmoneda : '',
+                  recibo: '',
+                  xcorreo:curr.xcorreo,
+                  freporte:fechaISOHasta,
+                  casegurado: curr.casegurado,
+                  xcliente: curr.xcliente,
+                  iestado: curr.iestado,
+                  iestado_tran: curr.iestado_tran,
+                  cdoccob: curr.cdoccob,
+                  monto_transaccion: curr.monto_transaccion,
+                  monto_transaccion_ext: curr.monto_transaccion_ext,
+                  ptasamon: curr.ptasamon,
+                  recibos: [],
+                  poliza: [],
+                  diferencia: []
+              };
+          }
 
           let bankValue : any
           let bankValueEmi : any
 
-          if(soporteItem.cmoneda == 'USD ' ){
+          if(curr.moneda_pago == 'USD ' ){
 
             //banco destino
-            let idBank = soporteItem.cbanco
+            let idBank = curr.cbanco
             let bank = this.bankInternational
             let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
             bankValue = filterBank[0]?.value
 
             //banco emisor
-            let idBankEmi = soporteItem.cbanco_destino
+            let idBankEmi = curr.cbanco_destino
             let bankEmi = this.bankInternational
             let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
             bankValueEmi = filterBankEmi[0]?.value
@@ -411,66 +394,136 @@ export class PaymentCancellationComponent {
           }else
           {
             //banco destino
-            let idBank = soporteItem.cbanco
+            let idBank = curr.cbanco
             let bank = this.bankNational
             let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
             bankValue = filterBank[0]?.value
 
             //banco emisor
-            let idBankEmi = soporteItem.cbanco_destino
+            let idBankEmi = curr.cbanco_destino
             let bankEmi = this.bankNational
             let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
             bankValueEmi = filterBankEmi[0]?.value
           }
 
-
-
-          const imageUrl = soporteItem.xruta;
+          const imageUrl = curr.xruta;
           const fullImageUrl = this.getImage(imageUrl);
 
           const safeImageUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullImageUrl);
+      
+          acc[curr.ctransaccion].recibos.push({
+              cmoneda: curr.cmoneda,
+              npago: curr.npago,
+              moneda_pago: curr.moneda_pago,
+              xreferencia: curr.xreferencia,
+              cbanco: bankValueEmi,
+              cbanco_destino: bankValue,
+              monto_declarado: curr.monto_declarado,
+              monto_declarado_ext: curr.monto_declarado_ext,
+              mpagoigtf: curr.mpagoigtf,
+              mpagoigtfext: curr.mpagoigtfext,
+              ximagen: safeImageUrl
 
-          soporteArray.push(this._formBuilder.group({
-            cbanco: [bankValue],
-            cbanco_destino: [bankValueEmi] ,
-            cmoneda:[soporteItem.cmoneda],
-            mpago: [soporteItem.mpago],
-            mpagoext: [soporteItem.mpagoext] ,
-            mpagoigtf: [soporteItem.mpagoigtf] ,
-            mpagoigtfext: [soporteItem.mpagoigtfext] ,
-            ptasamon: [soporteItem.ptasamon] ,
-            ptasaref: [soporteItem.ptasaref] ,
-            xreferencia: [soporteItem.xreferencia],
-            ximagen: safeImageUrl,
-         
-          }));
+          });
+      
+          acc[curr.ctransaccion].poliza.push({
+              crecibo: curr.crecibo,
+              cnrecibo:curr.cnrecibo,
+              cpoliza: curr.cpoliza,
+              cnpoliza: curr.cnpoliza,
+              mmontorec: curr.mmontorec,
+              mmontorecext: curr.mmontorecext,
+              cramo: tradesValue,
+              cplan: curr.cplan,
+              fdesde: curr.fdesde,
+              fhasta: curr.fhasta,
+          });
+
+          acc[curr.ctransaccion].diferencia.push({
+            mountdiferencia: curr.mdiferencia,
+            mdiferenciaext: curr.mdiferenciaext,
+            tasa_diferencia: curr.tasa_diferencia,
+            xobservacion_muestra: curr.xobservacion,
+            estado_diferencia: curr.estado_diferencia,
+            moneda_cobro_diferencia: curr.moneda_cobro_diferencia,
+          });
+        
+          return acc;
+        }, {}));
+        // Obtener la referencia al FormArray transactions
+        const transactionsArray = this.groupReceiptsForm.get("agrupado") as FormArray
+
+        // Iterar sobre los elementos de transformedData y agregarlos al FormArray
+        transformedData.forEach((transaction : any) => {
+
+          let dateNotification = new Date(transaction.freporte);
+          let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
+          const transactionGroup = this._formBuilder.group({
+            id: transaction.ctransaccion,
+            ctransaccion: transaction.ctransaccion,
+            iestadorec : '',
+            xobservacion : '',
+            mdiferencia : '',
+            idiferencia : '',
+            cmoneda : '',
+            recibo: '',
+            xcorreo:transaction.xcorreo,
+            freporte:fechaISOHasta,
+            casegurado: transaction.casegurado,
+            xcliente: transaction.xcliente,
+            iestado: transaction.iestado,
+            iestado_tran: transaction.iestado_tran,
+            cdoccob: transaction.cdoccob,
+            monto_transaccion: transaction.monto_transaccion,
+            monto_transaccion_ext: transaction.monto_transaccion_ext,
+            ptasamon: transaction.ptasamon,
+            recibos: this._formBuilder.array([]),
+            poliza:  this._formBuilder.array([]),
+            diferencia: this._formBuilder.array([])
+          });
+
+          // Obtener la referencia a los FormArrays banco y poliza
+          const receiptArray = transactionGroup.get('recibos') as FormArray;
+          const polizaArray = transactionGroup.get('poliza') as FormArray;
+          const diferenceArray = transactionGroup.get('diferencia') as FormArray;
+
+          // Iterar sobre los elementos de la propiedad banco y agregarlos al FormArray
+          transaction.recibos.forEach((reciboItem : any) => {
+            receiptArray.push(this._formBuilder.group(reciboItem));
+          });
+
+          // Iterar sobre los elementos de la propiedad poliza y agregarlos al FormArray
+          transaction.poliza.forEach((polizaItem : any) => {
+            polizaArray.push(this._formBuilder.group(polizaItem));
+          });
+
+          // Iterar sobre los elementos de la propiedad poliza y agregarlos al FormArray
+          transaction.diferencia.forEach((diferenceItem : any) => {
+            diferenceArray.push(this._formBuilder.group(diferenceItem));
+          });
+
+          // Agregar el FormGroup al FormArray transactions
+          transactionsArray.push(transactionGroup);
         });
-  
-        // Itera sobre las diferencias y agrega un FormGroup por cada elemento
-        item.diference.forEach((diferenceItem: any) => {
-          diferenceArray.push(this._formBuilder.group({
-            mdiferencia: [diferenceItem.mdiferencia],
-            xobservacion: [diferenceItem.xobservacion],
+      
+      const listNotificate = data.searchPaymentReport
 
-          }));
-        });
-      });
+      const sumaMpagoext = listNotificate.reduce((total: any, item: any ) => total + item.monto_declarado_ext, 0);
 
-      const listNotificate = data.searchPaymentReport.searchDataNotifiqued.dataTransaction
+      const sumaMpago = listNotificate.reduce((total: any, item: any ) => total + item.monto_declarado, 0);
 
-      const sumaMpagoext = listNotificate.reduce((total: any, item: any ) => total + item.transaccion.mpagoext, 0);
 
-      this.totalNotificated = sumaMpagoext.toFixed(2)
+      this.totalNotificated = sumaMpago.toFixed(2)
+      this.totalNotificatedExt = sumaMpagoext.toFixed(2)
 
     })
-
 
 
   }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.dataSource.filter = filterValue.toLowerCase();
   }
 
   getImage(imageUrl: string): string {
@@ -576,7 +629,7 @@ export class PaymentCancellationComponent {
       let data = {}
       
       if(creds.at(i).get('cmoneda')?.value == 'BS'){
-        let monto = creds.at(i).get('mdiferencia')?.value * this.bcv
+        let monto = creds.at(i).get('mdiferencia')?.value / this.bcv
         data = {
           transacccion : creds.at(i).get('id')?.value,
           xobservacion: creds.at(i).get('xobservacion')?.value,
@@ -585,22 +638,27 @@ export class PaymentCancellationComponent {
           iestadorec: creds.at(i).get('iestadorec')?.value,
           casegurado : creds.at(i).get('casegurado')?.value,
           recibo : creds.at(i).get('recibo')?.value,
+          correo : creds.at(i).get('xcorreo')?.value,
           cmoneda : creds.at(i).get('cmoneda')?.value,
           idiferencia : creds.at(i).get('idiferencia')?.value,
+          tasa : this.bcv
+
         }
 
       }else{
-        let monto = creds.at(i).get('mdiferencia')?.value / this.bcv
+        let monto = creds.at(i).get('mdiferencia')?.value * this.bcv
         data = {
           transacccion : creds.at(i).get('id')?.value,
           xobservacion: creds.at(i).get('xobservacion')?.value,
           mdiferenciaext: creds.at(i).get('mdiferencia')?.value,
           mdiferencia: monto,
+          correo : creds.at(i).get('xcorreo')?.value,
           iestadorec: creds.at(i).get('iestadorec')?.value,
           casegurado : creds.at(i).get('casegurado')?.value,
           recibo : creds.at(i).get('recibo')?.value,
           cmoneda : creds.at(i).get('cmoneda')?.value,
           idiferencia : creds.at(i).get('idiferencia')?.value,
+          tasa : this.bcv
         }
 
       }
@@ -617,7 +675,8 @@ export class PaymentCancellationComponent {
         transacccion : creds.at(i).get('id')?.value,
         iestadorec: creds.at(i).get('iestadorec')?.value,
         casegurado : creds.at(i).get('casegurado')?.value,
-        detalle : creds.at(i).get('detalle')?.value,
+        correo : creds.at(i).get('xcorreo')?.value,
+        detalle : creds.at(i).get('poliza')?.value,
       }
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt/', data ).subscribe((response: any) => {
         if(response.status){
@@ -653,9 +712,9 @@ export class PaymentCancellationComponent {
       ptasamon : this.bcv,
       freporte : fecha ,
       cprog : 'Cobranza web',
-      cusuario : 13,
       iestadorec : 'C',
       iestado : 1,
+      cusuario: this.currentUser,
       ifuente : 'Web_Sys',
     }
 
@@ -836,99 +895,6 @@ export class PaymentCancellationComponent {
 
   }
 
-  downloadExcel() {
-
-    // Filtra y renombra los campos que deseas exportar
-    const filteredData = this.listPending.map((item :any) => ({
-        'Poliza': item.cpoliza,
-        'Recibo': item.crecibo,
-        'Ramo': item.cramo,
-        'Cedula': item.cedula,
-        'Cliente' : item.XCLIENTE,
-        'Prima Bs': item.mprimabruta,
-        'Prima USD': item.mprimabrutaext,
-        'Fecha hasta recibo': item.fhasta,
-        'Correo' : item.xemail,
-        'Telefono' : item.xtelefono,
-        'Direccion' : item.XDIRECCIONFISCAL,
-        'Corredor' :item.CCORREDOR
-    }));
-  
-    const worksheet = XLSX.utils.json_to_sheet(filteredData);
-  
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
-  
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  
-    const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  
-    saveAs(excelData, `Reporte de recibos pendientes solicitados.xlsx`);
-  }
-
-  downloadExcelVencido() {
-    // Filtra y renombra los campos que deseas exportar
-    const filteredData = this.listVencido.map((item : any) => ({
-      'Poliza': item.cpoliza,
-      'Recibo': item.crecibo,
-      'Ramo': item.cramo,
-      'Cedula': item.cedula,
-      'Cliente' : item.XCLIENTE,
-      'Prima Bs': item.mprimabruta,
-      'Prima USD': item.mprimabrutaext,
-      'Fecha hasta recibo': item.fhasta,
-      'Correo' : item.xemail,
-      'Telefono' : item.xtelefono,
-      'Direccion' : item.XDIRECCIONFISCAL,
-      'Corredor' :item.CCORREDOR
-    }));
-  
-    const worksheet = XLSX.utils.json_to_sheet(filteredData);
-  
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
-  
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  
-    const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  
-    saveAs(excelData, `Reporte de recibos vencidos solicitados.xlsx`);
-  }
-
-  downloadExcelCollected() {
-    console.log(this.listCollectedReport)
-    // Filtra y renombra los campos que deseas exportar
-    const filteredData = this.listCollectedReport.map((item: any) => ({
-      'Poliza': item.Nro._Poliza,
-      'Recibo': item.Nro_Recibo,
-      'Prima Bs': item.Suma_asegurada,
-      'Prima USD': item.Suma_asegurada_Ext,
-      'Fecha hasta recibo': item.Fecha_hasta_Recibo,
-      'Cedula': item.CID,
-      'Cliente': item.Nombre_Asegurado,
-      'Telefono': item.XTELEFONO,
-      'Correo': item.XEMAIL,
-      'Direccion ': item.XDIRECCIONFISCAL,
-      'Banco emisor': item.cbanco,
-      'Banco destino': item.cbanco_destino,
-      'Ramo': item.CódigodelRamo,
-      'Total Bs': item.mtotal,
-      'Total $': item.mtotalext,
-      'Tasa': item.ptasamon,
-      'Referencia': item.xreferencia,
-    }));
-  
-    const worksheet = XLSX.utils.json_to_sheet(filteredData);
-  
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
-  
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  
-    const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  
-    saveAs(excelData, `Reporte de recibos cobrados solicitados.xlsx`);
-  }
 
   GroupReceipt(){
     const creds = this.groupReceiptsForm.controls.agrupado as FormArray;
