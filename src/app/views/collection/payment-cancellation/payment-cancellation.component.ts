@@ -116,6 +116,9 @@ export class PaymentCancellationComponent {
     agrupado : this._formBuilder.array([])
   });
 
+  currentUser : any
+  token: any
+
   get agrupado() : FormArray {
     return this.groupReceiptsForm.get("agrupado") as FormArray
   }
@@ -156,7 +159,11 @@ export class PaymentCancellationComponent {
 
   ngOnInit(){
 
-    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar/page?page=bcv')
+
+    this.token = localStorage.getItem('user');
+    this.currentUser = JSON.parse(this.token);
+
+    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv')
     .then((response) => response.json())
     .then(data => {
       this.bcv = data.monitors.usd.price
@@ -351,6 +358,7 @@ export class PaymentCancellationComponent {
                   idiferencia : '',
                   cmoneda : '',
                   recibo: '',
+                  xcorreo:curr.xcorreo,
                   freporte:fechaISOHasta,
                   casegurado: curr.casegurado,
                   xcliente: curr.xcliente,
@@ -365,11 +373,6 @@ export class PaymentCancellationComponent {
                   diferencia: []
               };
           }
-
-          const imageUrl = curr.xruta;
-          const fullImageUrl = this.getImage(imageUrl);
-
-          const safeImageUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullImageUrl);
 
           let bankValue : any
           let bankValueEmi : any
@@ -402,6 +405,11 @@ export class PaymentCancellationComponent {
             let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
             bankValueEmi = filterBankEmi[0]?.value
           }
+
+          const imageUrl = curr.xruta;
+          const fullImageUrl = this.getImage(imageUrl);
+
+          const safeImageUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullImageUrl);
       
           acc[curr.ctransaccion].recibos.push({
               cmoneda: curr.cmoneda,
@@ -452,12 +460,14 @@ export class PaymentCancellationComponent {
           let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
           const transactionGroup = this._formBuilder.group({
             id: transaction.ctransaccion,
+            ctransaccion: transaction.ctransaccion,
             iestadorec : '',
             xobservacion : '',
             mdiferencia : '',
             idiferencia : '',
             cmoneda : '',
             recibo: '',
+            xcorreo:transaction.xcorreo,
             freporte:fechaISOHasta,
             casegurado: transaction.casegurado,
             xcliente: transaction.xcliente,
@@ -628,6 +638,7 @@ export class PaymentCancellationComponent {
           iestadorec: creds.at(i).get('iestadorec')?.value,
           casegurado : creds.at(i).get('casegurado')?.value,
           recibo : creds.at(i).get('recibo')?.value,
+          correo : creds.at(i).get('xcorreo')?.value,
           cmoneda : creds.at(i).get('cmoneda')?.value,
           idiferencia : creds.at(i).get('idiferencia')?.value,
           tasa : this.bcv
@@ -641,6 +652,7 @@ export class PaymentCancellationComponent {
           xobservacion: creds.at(i).get('xobservacion')?.value,
           mdiferenciaext: creds.at(i).get('mdiferencia')?.value,
           mdiferencia: monto,
+          correo : creds.at(i).get('xcorreo')?.value,
           iestadorec: creds.at(i).get('iestadorec')?.value,
           casegurado : creds.at(i).get('casegurado')?.value,
           recibo : creds.at(i).get('recibo')?.value,
@@ -663,6 +675,7 @@ export class PaymentCancellationComponent {
         transacccion : creds.at(i).get('id')?.value,
         iestadorec: creds.at(i).get('iestadorec')?.value,
         casegurado : creds.at(i).get('casegurado')?.value,
+        correo : creds.at(i).get('xcorreo')?.value,
         detalle : creds.at(i).get('poliza')?.value,
       }
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt/', data ).subscribe((response: any) => {
@@ -699,9 +712,9 @@ export class PaymentCancellationComponent {
       ptasamon : this.bcv,
       freporte : fecha ,
       cprog : 'Cobranza web',
-      cusuario : 13,
       iestadorec : 'C',
       iestado : 1,
+      cusuario: this.currentUser,
       ifuente : 'Web_Sys',
     }
 
