@@ -54,7 +54,7 @@ export class CommissionsComponent {
 
   displayedColumns: string[] = ['select', 'cproductor', 'xnombre', 'mcomtot', 'mcomexttot', 'mcomtot2'];
   dataSource = new MatTableDataSource<any>;
-  displayedColumns2: string[] = ['select', '0', '1', '2', '3', '4', '5', '6'];
+  displayedColumns2: string[] = ['select', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
   tableCommisionPorProductor = new MatTableDataSource<any>;
   selection = new SelectionModel<any>(true, []);
   selection2 = new SelectionModel<any>(true, []);
@@ -164,14 +164,16 @@ export class CommissionsComponent {
 
     this.tableCommisionPorProductor.data.forEach(row => this.selection2.select(row));
     this.tableCommisionPorProductor.data.forEach(row => (
+      this.total_impuesto =+ row.mmovcomext,
 
       console.log(row),
       
-      this.total_movcom += row.mmovcom,
-      this.total_comision = this.total_movcom - this.total_impuesto,
+      // this.total_movcom += this.total_impuesto,
+      this.total_comision = row.mmovcom,
       this.total_cmoneda = row.cmoneda
-
-    ));
+      
+      ));
+      this.total_movcom = this.total_comision + this.total_impuesto;
 
     return this.dialog.open(this.InfoReceipt, config);
   }
@@ -334,8 +336,7 @@ export class CommissionsComponent {
 
     for (let i = 0; i < this.listPaymentRequest.length; i++) {
       const element = this.listPaymentRequest[i];
-      this.listPaymentRequest[i].xobservaciones = (<HTMLInputElement>document.getElementById(`observaciones${i}`)).value;
-      
+      this.listPaymentRequest[i].xobservaciones = (<HTMLInputElement>document.getElementById(`observaciones${i}`)).value;      
     }
 
     let data = {

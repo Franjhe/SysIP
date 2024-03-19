@@ -27,3 +27,13 @@ input[disabled] {
   border-top: 1px solid transparent;
   cursor: pointer;
 }
+
+#cdk-overlay-0 {
+  // position: relative;
+  z-index: 1031;
+  position: absolute;
+  background-color: black;
+  // top: 30%;
+  // left: 15%;
+  // right: 30%;
+}
