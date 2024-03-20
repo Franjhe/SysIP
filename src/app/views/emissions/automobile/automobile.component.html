@@ -24,34 +24,40 @@
                       </mat-form-field>
                 </div>
                 <div class="col-3">
-                    <mat-form-field>
+                    <mat-form-field class="example-full-width">
                         <mat-label>Identificación</mat-label>
-                        <input matInput placeholder="Cédula" formControlName="xrif_cliente" (change)="searchPropietary()" required>
+                        <input matInput placeholder="Identificación" formControlName="xrif_cliente" (change)="searchPropietary()" required>
                     </mat-form-field>
                 </div>
-                <div class="col-3">
-                    <mat-form-field>
+                <div class="col-3" *ngIf="activaNombreYapellido" >
+                    <mat-form-field class="example-full-width">
                         <mat-label>Nombre</mat-label>
                         <input matInput placeholder="Nombre" formControlName="xnombre" required>
                     </mat-form-field>
                 </div>
-                <div class="col-3">
-                    <mat-form-field>
+                <div class="col-3" *ngIf="activaNombreYapellido" >
+                    <mat-form-field class="example-full-width">
                         <mat-label>Apellido</mat-label>
-                        <input matInput placeholder="Apellido" formControlName="xapellido" required>
+                        <input matInput placeholder="Apellido" formControlName="xapellido">
                     </mat-form-field>
                 </div>
+                <div class="col-6" *ngIf="activaRepresentante" >
+                  <mat-form-field class="example-full-width">
+                      <mat-label>Nombre Representante</mat-label>
+                      <input matInput placeholder="Nombre Representante" formControlName="xnombre" >
+                  </mat-form-field>
+              </div>
             </div>
 
             <div class="row">
                 <div class="col-3">
-                    <mat-form-field>
+                    <mat-form-field class="example-full-width">
                         <mat-label>Teléfono</mat-label>
                         <input matInput placeholder="Teléfono" formControlName="xtelefono_emp" required>
                     </mat-form-field>
                 </div>
                 <div class="col-3">
-                    <mat-form-field>
+                    <mat-form-field class="example-full-width">
                         <mat-label>Correo</mat-label>
                         <input matInput placeholder="Correo" formControlName="email" required>
                     </mat-form-field>
@@ -112,15 +118,15 @@
               <div class="col-4">
                 <!-- <label class="form-label required" for="form3Examplev5">Fecha de Nacimiento</label>
                   <input type="date" formControlName="fnacimiento" class="form-control form-control-lg" (ngModelChange)="calculateYears($event)" /> -->
-                  <mat-form-field>
-                    <mat-label>Fecha de Nacimiento</mat-label>
+                  <mat-form-field class="example-full-width">
+                    <mat-label>{{fechas}}</mat-label>
                     <input matInput [matDatepicker]="picker" formControlName="fnacimiento" (dateChange)="calculateYears($event)">
                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
                   </mat-form-field>
               </div> 
-              <div class="col-4">
-                <mat-form-field>
+              <div class="col-4" *ngIf="activaSexoYEs">
+                <mat-form-field class="example-full-width">
                   <mat-label>Sexo</mat-label>
                   <mat-select formControlName="isexo">
                     <mat-option value="M">MASCULINO</mat-option>
@@ -128,8 +134,8 @@
                   </mat-select>
                 </mat-form-field>
               </div>
-              <div class="col-4">
-                <mat-form-field>
+              <div class="col-4" *ngIf="activaSexoYEs">
+                <mat-form-field class="example-full-width">
                   <mat-label>Estado Civil</mat-label>
                   <mat-select formControlName="iestado_civil">
                     <mat-option value="S">SOLTERO / A</mat-option>
@@ -142,10 +148,10 @@
             </div>
 
             <div class="row justify-content-center">
-              <div class="col-6">
+              <div class="col-8">
                   <mat-form-field class="example-full-width">
                       <mat-label>Dirección</mat-label>
-                      <input matInput placeholder="Direccion" formControlName="xdireccion" required>
+                      <textarea  matInput placeholder="Direccion" formControlName="xdireccion" required></textarea>
                   </mat-form-field>
               </div>
             </div>

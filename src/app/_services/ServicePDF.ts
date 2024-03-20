@@ -2391,6 +2391,29 @@ export class PdfGenerationService {
 					table: {
 					widths: ['*'],
 					body: [
+						[{text: `REQUISITOS PARA LA EMISIÓN DE PÓLIZA. DOCUMENTOS PARA LA EMISIÓN DE LA PÓLIZA
+						Solicitud de Seguros llena en todas sus partes, firmada y con huella dactilar por Asegurado.
+						Persona Natural:
+						Fotocopia Cédula de Identidad del Asegurado
+						Fotocopia Registro de Información Fiscal (Rif), Vigente.
+						Persona Jurídicos:
+						°	Fotocopia del Acta Constitución y estatus sociales de la empresa con sus correspondientes modificaciones
+						°	Fotocopia Registro de Información Fiscal (Rif), Vigente. 
+						°	Fotocopia Cédula de Identidad del representante legal.
+						°	Declaración Jurada de Origen de los Fondos.
+						Adicional:
+						°	Copia del documento que demuestre la propiedad o interés asegurable del bien Asegurar
+						°	Copia de recibo de servicio público
+						°	Referencia bancaria vigente
+						°	Copia de la última declaración del impuesto sobre la renta`, alignment: 'justify', border: [false, false, false, false]}]
+						]
+					}
+				},
+				{
+					style: 'data',
+					table: {
+					widths: ['*'],
+					body: [
 						[{text: 'Aprobado por la Superintendencia de la Actividad Aseguradora mediante Oficio N° FSAA-1-1-0363-2022 de fecha 05-08-2022.', alignment: 'justify', border: [false, false, false, false]}]
 						]
 					}

@@ -176,6 +176,46 @@ export class AutomobileQuotesComponent {
           this.getBroker();
         }
       });
+
+      // if (this.cusuario) {
+      //   let token = {
+      //     status: true,
+      //     message: "Usuario Autenticado",
+      //     data: {
+      //       bconsultar: false,
+      //       bcrear: true,
+      //       beliminar: false,
+      //       bmodificar: false,
+      //       ccorredor: parseInt(this.ccorredor),
+      //       cdepartamento: 4,
+      //       crol: 6,
+      //       cusuario: parseInt(this.cusuario),
+      //       token: this.tokenphp,
+      //       xcorredor: this.xcorredor,
+      //       cagencia: this.cagencia,
+      //       cproductor: this.cproductor,
+      //     }
+      //   }
+      //   let tokenString = JSON.stringify(token);
+      //   localStorage.setItem('user', tokenString);
+      
+      //   if(storedSession){
+      //     this.currentUser = JSON.parse(storedSession);
+      //   }else{
+      //     this.currentUser = JSON.parse(tokenString);
+      //   }
+      // } else {
+      //   if(storedSession){
+      //     this.currentUser = JSON.parse(storedSession);
+      //   }else{
+      //     this.token = localStorage.getItem('user');
+      //     this.currentUser = JSON.parse(this.token);
+      //   }
+      // }
+      // console.log(this.currentUser)
+      // if (this.currentUser) {
+      //   this.getBroker();
+      // }
   }
 
 
