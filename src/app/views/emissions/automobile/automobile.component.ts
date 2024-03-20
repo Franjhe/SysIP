@@ -237,6 +237,7 @@ export class AutomobileComponent {
   prima!: any ;
   messageCoti: boolean = false;
   fechas!: any ;
+  recargaInicial!: any ;
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -1380,8 +1381,8 @@ export class AutomobileComponent {
       if(response.status){
         if(!this.ccotizacion){
           let SumaAsegurada = this.sumaAsegurada
-          this.tasaCascoInicial = response.data.ptasa_casco
           if(this.vehicleFormGroup.get('xcobertura')?.value == 'Cobertura Amplia'){
+            this.tasaCascoInicial = response.data.ptasa_casco
             this.planFormGroup.get('pcasco')?.setValue(response.data.ptasa_casco);
             this.planFormGroup.get('pblindaje')?.setValue(response.data.ptasa_casco);
             if(this.vehicleFormGroup.get('xtipovehiculo')?.value == 'CARGA' || this.vehicleFormGroup.get('xtipovehiculo')?.value == 'Carga'){
@@ -1390,6 +1391,7 @@ export class AutomobileComponent {
               this.planFormGroup.get('paditamento')?.setValue(null);
             }
           }else{
+            this.tasaCascoInicial = response.data.pperdida_total;
             this.planFormGroup.get('pcasco')?.setValue(response.data.pperdida_total);
             this.planFormGroup.get('pblindaje')?.setValue(response.data.pperdida_total);
             if(this.vehicleFormGroup.get('xtipovehiculo')?.value == 'CARGA' || this.vehicleFormGroup.get('xtipovehiculo')?.value == 'Carga'){
@@ -1578,6 +1580,7 @@ export class AutomobileComponent {
       this.planFormGroup.get('pcasco')?.setValue(discount.toString())
       }
     }else{
+
       this.planFormGroup.get('pcasco')?.setValue(this.tasaCascoInicial);
       this.planFormGroup.get('mprima_casco_text')?.setValue(this.primaCascoInicial)
       this.planFormGroup.get('mprima_casco')?.setValue(this.primaBruta);
