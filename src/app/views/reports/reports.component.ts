@@ -224,7 +224,7 @@ makeExcel(){
           'Fecha_desde_Recibo' : item.Fecha_desde_Recibo,
           'Fecha_hasta_Recibo' : item.Fecha_hasta_Recibo,
           // 'Estado_del_Recibo' :item.Estado_del_Recibo,
-          'Descripcion_estado_rec' :item.Descripcion_estado_rec,
+          'Estatus_Recibo' :item.Descripcion_estado_rec,
           'Suma_asegurada': item.Suma_asegurada,
           'Suma_asegurada_Ext': item.Suma_asegurada_Ext,
           'Monto_Recibo' : item.Monto_Recibo,
