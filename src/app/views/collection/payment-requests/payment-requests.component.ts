@@ -1,14 +1,15 @@
-import { Component, TemplateRef, ViewChild } from '@angular/core';
+import { Component, TemplateRef, ViewChild, NgModule } from '@angular/core';
 import { FormBuilder, Validators, FormGroup, FormControl, FormArray } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { SelectionModel } from '@angular/cdk/collections';
 import { clear } from 'console';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
 
 export interface PaymentRequest {
   xtransaccion: string;
@@ -29,10 +30,12 @@ export interface PaymentRequest {
   cmoneda: any;
 }
 
+
+
 @Component({
   selector: 'app-payment-requests',
   templateUrl: './payment-requests.component.html',
-  styleUrls: ['./payment-requests.component.scss']
+  styleUrls: ['./payment-requests.component.scss'],
 })
 export class PaymentRequestsComponent {
   groupReceiptsForm = this._formBuilder.group({
@@ -46,11 +49,12 @@ export class PaymentRequestsComponent {
   @ViewChild('Alerta1') Alerta1!: TemplateRef<any>;
   @ViewChild('dialogPaymentRequest') dialogPaymentRequest!: TemplateRef<any>;
   @ViewChild('observaciones') observaciones!: TemplateRef<any>;
+  @ViewChild('detailReceipts') detailReceipts!: TemplateRef<any>;
 
   displayedColumns: string[] = ['0', '1', '2', '3', '4', '5', '6', '7'];
   dataSource = new MatTableDataSource<any>;
-  // displayedColumns2: string[] = ['select', '0', '1', '2', '3', '4', '5', '6'];
-  // tableCommisionPorProductor = new MatTableDataSource<any>;
+  displayedColumns2: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  tableDetailReceipts = new MatTableDataSource<any>;
   // selection = new SelectionModel<any>(true, []);
   // selection2 = new SelectionModel<any>(true, []);
 
@@ -66,13 +70,14 @@ export class PaymentRequestsComponent {
 
   listPaymentRequest: PaymentRequest[] = [];
   paymentRequest: any;
-  
+
   constructor(private _formBuilder: FormBuilder,
     private http: HttpClient,
     // private sanitizer: DomSanitizer,
     readonly dialog: MatDialog,
     private toast: MatSnackBar,
-    private _snackBar: MatSnackBar
+    private _snackBar: MatSnackBar,
+    private _liveAnnouncer: LiveAnnouncer
 
   ) {
   }
@@ -80,13 +85,10 @@ export class PaymentRequestsComponent {
   ngOnInit() {
     this.http.post(environment.apiUrl + '/api/v1/commissions/search-paymentRequests', '').subscribe((response: any) => {
       console.log(response);
-      
+
       this.dataSource = new MatTableDataSource(response.returnData.search);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-
-      
-
     })
 
   }
@@ -103,7 +105,11 @@ export class PaymentRequestsComponent {
   }
 
 
-  dataCorredor(csolpag: any, index: any) {
+  showDetailPaymentRequest(csolpag: any, index: any) {
+    // if (condition) {
+      
+    // }
+    // this.paymentRequest.clear;
     // alert(csolpag);
     // console.log(this.dataSource.data[csolpag]);
     // this.paymentRequest = this.dataSource.data[csolpag];
@@ -115,9 +121,22 @@ export class PaymentRequestsComponent {
       this.paymentRequest = response.returnData.search[0]
       console.log(this.paymentRequest);
 
+      this.tableDetailReceipts = new MatTableDataSource(response.returnData.search[0].recibos);
+      // this.tableDetailReceipts.paginator = this.paginator;
+      // this.tableDetailReceipts.sort = this.sort;
+
       return this.dialog.open(this.dialogPaymentRequest);
     });
-    
+
+  }
+
+  showDetailReceipts() {
+    return this.dialog.open(this.detailReceipts);
+  }
+
+  closeDialog() {
+    // this.detailReceipts.elementRef
+    return this.dialog.closeAll();
   }
 
 
@@ -143,7 +162,7 @@ export class PaymentRequestsComponent {
   }
 
   cancelPaymentRequests() {
-    this.paymentRequest.clear;
+    // this.paymentRequest.clear;
     return this.dialog.closeAll();
   }
 
@@ -159,4 +178,30 @@ export class PaymentRequestsComponent {
     return this.dialog.closeAll();
   }
 
+
+  /** Announce the change in sort state for assistive technology. */
+  announceSortChange(sortState: Sort) {
+    // This example uses English messages. If your application supports
+    // multiple language, you would internationalize these strings.
+    // Furthermore, you can customize the message to add additional
+    // details about the values being sorted.
+    if (sortState.direction) {
+      this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
+    } else {
+      this._liveAnnouncer.announce('Sorting cleared');
+    }
+  }
+  
+
 }
+
+@NgModule({
+  imports: [
+    MatSortModule
+  ],
+  // entryComponents: [PaymentRequestsComponent],
+  // declarations: [PaymentRequestsComponent],
+  bootstrap: [PaymentRequestsComponent],
+  providers: []
+})
+export class AppModule {}

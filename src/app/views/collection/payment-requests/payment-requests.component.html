@@ -9,9 +9,9 @@
         <mat-form-field>
             <mat-label>Buscar</mat-label>
             <input matInput (keyup)="applyFilter($event)" #input>
-          </mat-form-field>
+        </mat-form-field>
 
-        <table mat-table [dataSource]="dataSource" class="mat-elevation-z3" matSort>
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z3" matSort matSortDirection="asc" matSortDisableClear>
 
             <!--- Note that these columns can be defined in any order.
                 The actual rendered columns are set as a property on the row definition" -->
@@ -59,7 +59,7 @@
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <!-- <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr> -->
-            <tr mat-row (click)="dataCorredor(row.csolpag, i)" [class.demo-row-is-clicked]=""
+            <tr mat-row (click)="showDetailPaymentRequest(row.csolpag, i)" [class.demo-row-is-clicked]=""
                 *matRowDef="let row; columns: displayedColumns; let i = index">
             </tr>
             <tr class="mat-row" *matNoDataRow>
@@ -99,91 +99,94 @@
 
         <ng-template #dialogPaymentRequest style="width: 80%;">
             <!-- <mat-dialog-content style="width: 900px;"> -->
-            <mat-dialog-content >
+            <mat-dialog-content>
                 <!-- class="mat-elevation-z8" -->
 
                 <div class="text-center">
                     <h2>Resúmen solicitud de pago</h2>
                 </div>
 
-                <div class="row p-2" style="border: 1px solid black;" >
+                <div class="row p-2" style="border: 1px solid black;">
                     <!--  -->
                     <div class="col-2">
-                        <mat-form-field >
+                        <mat-form-field>
                             <mat-label>Nro. Solicitud:</mat-label>
-                            <input type="hidden" value="CM">
                             <input matInput type="text" value="{{paymentRequest.csolpag}}" disabled>
-                            <!-- <input matInput   matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input> -->
-                          </mat-form-field>
+                        </mat-form-field>
                     </div>
                     <div class="col-4">
-                        <mat-form-field >
+                        <mat-form-field>
                             <mat-label>Transacción</mat-label>
-                            <input type="hidden" value="CM">
                             <input matInput type="text" value="{{paymentRequest.xconcepto_1}}" disabled>
-                            <!-- <input matInput   matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input> -->
-                          </mat-form-field>
+                        </mat-form-field>
                     </div>
                     <div class="col-3">
-                        <mat-form-field >
+                        <mat-form-field>
                             <mat-label>Fecha orden:</mat-label>
-                            <!-- <input matInput type="text" value="13/10/1996" disabled> -->
-                            <input matInput type="text" value="{{paymentRequest.fsolicit | date: 'dd/MM/YYYY'}}" disabled>
-                            <!-- <input matInput   matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input> -->
-                          </mat-form-field>
+                            <input matInput type="text" value="{{paymentRequest.fsolicit | date: 'dd/MM/YYYY'}}"
+                                disabled>
+                        </mat-form-field>
                     </div>
                     <div class="col-3">
-                        <mat-form-field >
+                        <mat-form-field>
                             <mat-label>Estatus:</mat-label>
-                            <!-- <input matInput type="text" value="Pendiente" disabled> -->
                             <input matInput type="text" value="{{paymentRequest.xstatsol}}" disabled>
-                            <!-- <input matInput   matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input> -->
-                          </mat-form-field>
+                        </mat-form-field>
                     </div>
                     <!--  -->
                     <div class="col-3">
-                        <mat-form-field >
+                        <mat-form-field>
                             <mat-label>Págase a la orden de:</mat-label>
                             <input matInput type="text" value="{{paymentRequest.cid_ben}}" disabled>
-                          </mat-form-field>
+                        </mat-form-field>
                     </div>
                     <div class="col-9">
-                        <mat-form-field >
+                        <mat-form-field>
                             <mat-label>Nombre:</mat-label>
                             <input matInput type="text" value="{{paymentRequest.xbeneficiario}}" disabled>
-                          </mat-form-field>
+                        </mat-form-field>
                     </div>
                     <!-- <div class="col-3"></div> -->
                     <div class="col-3">
-                        <mat-form-field >
+                        <mat-form-field>
                             <mat-label>Concepto:</mat-label>
                             <input matInput type="text" value="{{paymentRequest.xconcepto_2}}" disabled>
-                          </mat-form-field>
+                        </mat-form-field>
                     </div>
                     <div class="col-9">
-                        <mat-form-field >
+                        <mat-form-field>
                             <mat-label>Corredor:</mat-label>
-                            <input matInput type="text" value="{{paymentRequest.cproductor}} - {{paymentRequest.xbeneficiario}}" disabled>
-                          </mat-form-field>
+                            <input matInput type="text"
+                                value="{{paymentRequest.cproductor}} - {{paymentRequest.xbeneficiario}}" disabled>
+                        </mat-form-field>
                     </div>
                     <div class="col-3">
-                        <mat-form-field >
+                        <mat-form-field>
                             <mat-label>Monto total:</mat-label>
-                            <input matInput type="text" value="{{paymentRequest.cmoneda}}{{paymentRequest.mpagosol}}" disabled>
-                          </mat-form-field>
+                            <input matInput type="text" value="{{paymentRequest.cmoneda}}{{paymentRequest.mpagosol}}"
+                                disabled>
+                        </mat-form-field>
                     </div>
                     <div class="col-9">
-                        <mat-form-field >
+                        <mat-form-field>
                             <mat-label>Observaciones:</mat-label>
-                            <input matInput type="text" #observaciones class="observaciones" value="{{paymentRequest.xobserva}}" disabled>
-                          </mat-form-field>
+                            <input matInput type="text" #observaciones class="observaciones"
+                                value="{{paymentRequest.xobserva}}" disabled>
+                        </mat-form-field>
                     </div>
 
                 </div>
                 <div class="row mt-4">
-                    <div class="col col-2 text-center"><button mat-raised-button (click)="cancelPaymentRequests()">Cancelar</button></div>
-                    <div class="col col-8"></div>
-                    <div class="col col-2 text-center"><button mat-raised-button (click)="proccessPaymentRequests(paymentRequest.csolpag)">Procesar Orden</button></div>
+                    <div class="col col-4 text-center"><button mat-raised-button
+                            (click)="cancelPaymentRequests()">Cancelar</button></div>
+                    <!-- <div class="col col-8"></div> -->
+                    <div class="col col-4 text-center">
+                        <button mat-raised-button (click)="showDetailReceipts()" >Ver Recibos</button>
+                    </div>
+                    <div class="col col-4 text-center">
+                        <button mat-raised-button (click)="proccessPaymentRequests(paymentRequest.csolpag)" [disabled]="paymentRequest.xstatsol == 'Cancelado'">Procesar
+                            Orden</button>
+                    </div>
                 </div>
 
             </mat-dialog-content>
@@ -191,6 +194,69 @@
 
 
     </form>
+
+
+
+    <ng-template #detailReceipts>
+        <mat-dialog-content>
+            <table mat-table [dataSource]="tableDetailReceipts" matSort>
+                <ng-container matColumnDef="0">
+                    <th mat-header-cell *matHeaderCellDef> Póliza </th>
+                    <td mat-cell *matCellDef="let row"> {{row.cnpoliza}} </td>
+                </ng-container>
+                <ng-container matColumnDef="1">
+                    <th mat-header-cell *matHeaderCellDef> Recibo/Préstamo </th>
+                    <td mat-cell *matCellDef="let row"> {{row.crecibo}} </td>
+                </ng-container>
+                <ng-container matColumnDef="2">
+                    <th mat-header-cell *matHeaderCellDef> Tipo Mov. </th>
+                    <td mat-cell *matCellDef="let row"> {{row.imovcom}} </td>
+                </ng-container>
+                <ng-container matColumnDef="3">
+                    <th mat-header-cell *matHeaderCellDef> Anexo </th>
+                    <td mat-cell *matCellDef="let row"> {{row.canexo}} </td>
+                </ng-container>
+                <ng-container matColumnDef="4">
+                    <th mat-header-cell *matHeaderCellDef> Fecha </th>
+                    <td mat-cell *matCellDef="let row"> {{row.femision | date: "dd/MM/YYYY"}} </td>
+                </ng-container>
+                <ng-container matColumnDef="5">
+                    <th mat-header-cell *matHeaderCellDef> Prima Bs. </th>
+                    <td mat-cell *matCellDef="let row"> Bs.{{row.mmontoapag}} </td>
+                </ng-container>
+                <ng-container matColumnDef="6">
+                    <th mat-header-cell *matHeaderCellDef> % Com. </th>
+                    <td mat-cell *matCellDef="let row"> {{row.pcomision}}% </td>
+                </ng-container>
+                <ng-container matColumnDef="7">
+                    <th mat-header-cell *matHeaderCellDef> Comisión Bs. </th>
+                    <td mat-cell *matCellDef="let row"> Bs.{{row.mmovcom}} </td>
+                </ng-container>
+                <ng-container matColumnDef="8">
+                    <th mat-header-cell *matHeaderCellDef> Tasa<br>Usd-Bcv. </th>
+                    <td mat-cell *matCellDef="let row"> {{row.ptasamon}} </td>
+                </ng-container>
+                <ng-container matColumnDef="9">
+                    <th mat-header-cell *matHeaderCellDef> Comisión Usd. </th>
+                    <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mmovcomext}} </td>
+                </ng-container>
+
+                <!-- Row shown when there is no matching data. -->
+                <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
+                <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell" colspan="10">No se encontraron recibos</td>
+                </tr>
+            </table>
+
+            <hr>
+
+            <div class="footer-table">
+                <button mat-raised-button (click)="closeDialog()">Cerrar</button>
+            </div>
+
+        </mat-dialog-content>
+    </ng-template>
 
 
 </div>

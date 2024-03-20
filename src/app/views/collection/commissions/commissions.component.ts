@@ -65,9 +65,9 @@ export class CommissionsComponent {
 
   dataSourceindex: any;
 
-  total_movcom = 0;
-  total_impuesto = 0;
   total_comision = 0;
+  total_impuesto = 0;
+  total_comisionext = 0;
   total_cmoneda = '';
 
   listPaymentRequest: PaymentRequest[] = [];
@@ -95,7 +95,7 @@ export class CommissionsComponent {
     this.http.post(environment.apiUrl + '/api/v1/commissions/search', '').subscribe((response: any) => {
       console.log(response);
 
-      
+
       // let contador = 0;
       // response.returnData.search.forEach((element: any) => {
       //   // this.http.post(environment.apiUrl + '/api/v1/commissions/search', '').subscribe((response: any) => {
@@ -105,12 +105,12 @@ export class CommissionsComponent {
       //     // response.returnData.search[contador] += data;
       //     Object.assign(response.returnData.search[contador], data);
       //     contador += 1;
-          
+
       //   // });
-        
+
       // });
       // console.log(response.returnData.search);
-      
+
       this.dataSource = new MatTableDataSource(response.returnData.search);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -135,9 +135,9 @@ export class CommissionsComponent {
   }
 
   clearData() {
-    this.total_movcom = 0;
-    this.total_impuesto = 0;
     this.total_comision = 0;
+    this.total_impuesto = 0;
+    this.total_comisionext = 0;
     this.total_cmoneda = '';
   }
 
@@ -163,19 +163,35 @@ export class CommissionsComponent {
     this.clearData();
 
     this.tableCommisionPorProductor.data.forEach(row => this.selection2.select(row));
-    this.tableCommisionPorProductor.data.forEach(row => (
-      this.total_impuesto =+ row.mmovcomext,
 
-      console.log(row),
-      
-      // this.total_movcom += this.total_impuesto,
-      this.total_comision = row.mmovcom,
-      this.total_cmoneda = row.cmoneda
-      
-      ));
-      this.total_movcom = this.total_comision + this.total_impuesto;
+    this.calculateTotalCommissions();
+    // this.tableCommisionPorProductor.data.forEach(row => (
+    //   // this.total_impuesto =+ row.mmovcomext,
+
+    //   console.log(row),
+
+    //   // this.total_comision += this.total_impuesto,
+    //   this.total_comision += row.mmovcom,
+    //   this.total_comisionext += row.mmovcomext,
+    //   this.total_cmoneda = row.cmoneda
+
+    //   ));
+
+    // this.total_comision = this.total_comisionext + this.total_impuesto;
 
     return this.dialog.open(this.InfoReceipt, config);
+  }
+
+  calculateTotalCommissions() {
+    this.clearData();
+
+    console.log(this.selection2);
+    this.selection2.selected.forEach(row => (
+      console.log(row),
+      this.total_comision += row.mmovcom,
+      this.total_comisionext += row.mmovcomext,
+      this.total_cmoneda = row.cmoneda
+    ));
   }
 
 
@@ -208,74 +224,53 @@ export class CommissionsComponent {
   masterToggle2() {
     if (this.isAllSelected2()) {
       this.selection2.clear();
-      // this.calculateMmovcom();
+      // this.calculateTotalCommissions();
 
     } else {
       this.tableCommisionPorProductor.data.forEach(row => this.selection2.select(row));
-      // this.calculateMmovcom();
+      // this.calculateTotalCommissions();
 
     }
-    this.calculateMmovcom();
+    this.calculateTotalCommissions();
 
   }
 
-  calculateMmovcom() {
-    var comision = 0;
-    
 
-    // this.total_movcom = 0;
-    // this.total_comision = 0;
-    this.clearData();
-    console.log(this.selection2);
-    
-    
-    this.selection2.selected.forEach(row => (
-      console.log(row),
-      
-
-      comision += row.mmovcom
-
-      // this.total_comision = this.total_comision - this.total_impuesto
-      
-    ));
-    this.total_comision = comision;
-
-  }
 
   logSelection2() {
-    // console.log(this.dataSource.data[0].mcomtot = this.total_comision);
+    // console.log(this.dataSource.data[0].mcomtot = this.total_comisionext);
     // this.selection2.selected.forEach(row => console.log(row.mmovcom));
     this.dialog.closeAll();
   }
 
   calculatePaymentCommissions() {
-    
-    this.calculateMmovcom();
-    this.dataSource.data[this.dataSourceindex].mcomtot = this.total_comision;
+
+    this.calculateTotalCommissions();
+    this.dataSource.data[this.dataSourceindex].mcomtot = this.total_comisionext;
     console.log('↓');
     this.dataSource.data[this.dataSourceindex].recibos = [];
     // console.log();
-    
+
     this.selection2.selected.forEach(element => {
       this.dataSource.data[this.dataSourceindex].recibos.push(element.crecibo);
     });
 
     console.log(this.dataSource.data);
     // ();
-    
+
     this.selection2.clear();
-    
+
     this.dialog.closeAll();
   }
 
   generatePaymentRequests() {
     this.rowsABuscar = [];
-    
+
     this.selection.selected.forEach(row => (
       this.rowsABuscar.push(row)
       // this.listPaymentReceipts.push(element.crecibo)
     ));
-    
+
     this.selection.clear();
     this.clearData();
     this.showDialogPaymentRequests();
@@ -285,18 +280,19 @@ export class CommissionsComponent {
     this.listPaymentRequest = [];
     this.listPaymentReceipts = [];
     // let observaciones = document.getElementsByClassName('.observaciones');
-    
-    
+
+
 
     this.rowsABuscar.forEach((element: any) => {
       // this.listPaymentReceipts.push(element.crecibo)
       console.log("--->>>>-----<<<<<<----");
       console.log(this.rowsABuscar);
-      
+
 
       this.http.post(environment.apiUrl + '/api/v1/commissions/search-data/' + element.cproductor, '').subscribe((response: any) => {
         console.log(element.cproductor);
-        
+
+          // this.listPaymentRequest.length
 
         response.returnData.search.forEach((e: any) => {
           var paymentRequest: PaymentRequest = {
@@ -305,11 +301,11 @@ export class CommissionsComponent {
             cstatus: '',
             xstatus: 'pendiente',
             cid: e.cid,
-            xbeneficiario: element.xnombre,
+            xbeneficiario: element.xnombre.trim(),
             cconcepto: '',
             xconcepto: 'Cierre de Caja',
             ccorredor: e.cci_rif,
-            xcorredor: e.xnombre,
+            xcorredor: e.xnombre.trim(),
             mmontototal: element.mcomtot,
             recibos: element.recibos,
             cmoneda: element.cmoneda,
@@ -317,12 +313,12 @@ export class CommissionsComponent {
           }
           this.listPaymentRequest.push(paymentRequest);
         });
-        
+
       });
       console.log(this.listPaymentRequest);
     });
 
-    
+
 
     return this.dialog.open(this.dialogPaymentRequest, config);
   }
@@ -334,25 +330,32 @@ export class CommissionsComponent {
 
   proccessPaymentRequests(config?: MatDialogConfig) {
 
-    for (let i = 0; i < this.listPaymentRequest.length; i++) {
-      const element = this.listPaymentRequest[i];
-      this.listPaymentRequest[i].xobservaciones = (<HTMLInputElement>document.getElementById(`observaciones${i}`)).value;      
+    if (window.confirm('¿Desea generar las órdenes de pago?')) {
+
+      for (let i = 0; i < this.listPaymentRequest.length; i++) {
+        const element = this.listPaymentRequest[i];
+        this.listPaymentRequest[i].xobservaciones = (<HTMLInputElement>document.getElementById(`observaciones${i}`)).value;
+      }
+
+      let data = {
+        list: this.listPaymentRequest
+      }
+
+      // console.log(this.observaciones);
+      // let observaciones = 
+      // console.log(observaciones);
+
+      // i = 0;
+      this.http.post(environment.apiUrl + '/api/v1/commissions/create-paymetRequests', data).subscribe((response: any) => {
+        alert(response.returnData.result.message);
+        location.reload();
+      });
+
+      return this.dialog.closeAll();
     }
+  }
 
-    let data = {
-      list: this.listPaymentRequest
-    }
-
-    // console.log(this.observaciones);
-    // let observaciones = 
-    // console.log(observaciones);
-    
-    // i = 0;
-    this.http.post(environment.apiUrl + '/api/v1/commissions/create-paymetRequests', data).subscribe((response: any) => {
-      alert(response.returnData.result.message);
-      location.reload();
-    });
-
+  closeDialog() {
     return this.dialog.closeAll();
   }
 

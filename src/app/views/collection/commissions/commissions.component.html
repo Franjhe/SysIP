@@ -100,7 +100,7 @@
                         </th>
                         <td mat-cell *matCellDef="let row">
                             <mat-checkbox (click)="$event.stopPropagation();"
-                                (change)="$event ? selection2.toggle(row) : null; calculateMmovcom();"
+                                (change)="$event ? selection2.toggle(row) : null; calculateTotalCommissions();"
                                 [checked]="selection2.isSelected(row)">
                             </mat-checkbox>
                         </td>
@@ -126,25 +126,24 @@
                         <td mat-cell *matCellDef="let row"> {{row.femision | date: "dd/MM/YYYY"}} </td>
                     </ng-container>
                     <ng-container matColumnDef="5">
-                        <th mat-header-cell *matHeaderCellDef> Tasa de Cambio </th>
-                        <td mat-cell *matCellDef="let row"> {{row.ptasamon}} </td>
+                        <th mat-header-cell *matHeaderCellDef> Prima Bs. </th>
+                        <td mat-cell *matCellDef="let row"> Bs.{{row.mmontoapag}} </td>
                     </ng-container>
                     <ng-container matColumnDef="6">
-                        <th mat-header-cell *matHeaderCellDef> Prima </th>
-                        <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mmontoapag}} </td>
+                        <th mat-header-cell *matHeaderCellDef> % Com. </th>
+                        <td mat-cell *matCellDef="let row"> {{row.pcomision}}% </td>
                     </ng-container>
                     <ng-container matColumnDef="7">
-                        <th mat-header-cell *matHeaderCellDef> Comisión </th>
-                        <td mat-cell *matCellDef="let row"> {{row.mmovcom + row.mmovcomext}} </td>
+                        <th mat-header-cell *matHeaderCellDef> Comisión Bs. </th>
+                        <td mat-cell *matCellDef="let row"> Bs.{{row.mmovcom}} </td>
                     </ng-container>
                     <ng-container matColumnDef="8">
-                        <th mat-header-cell *matHeaderCellDef> Impuesto </th>
-                        <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mmovcomext}} </td>
+                        <th mat-header-cell *matHeaderCellDef> Tasa<br>Usd-Bcv. </th>
+                        <td mat-cell *matCellDef="let row"> {{row.ptasamon}} </td>
                     </ng-container>
                     <ng-container matColumnDef="9">
-                        <th mat-header-cell *matHeaderCellDef> Total Comisión </th>
-                        <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mmovcom}} </td>
-
+                        <th mat-header-cell *matHeaderCellDef> Comisión Usd. </th>
+                        <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mmovcomext}} </td>
                     </ng-container>
                     <!-- Row shown when there is no matching data. -->
 
@@ -154,10 +153,11 @@
 
                 <hr>
                 <div class="footer-table">
+                    <button mat-raised-button (click)="closeDialog()">Cerrar</button>
                     <b>Total:</b>
-                    <span>Comision: {{total_cmoneda}}{{total_movcom}}</span>
-                    <span>Impuesto: {{total_cmoneda}}{{total_impuesto}}</span>
-                    <span>A pagar: {{total_cmoneda}}{{total_comision}}</span>
+                    <span>Comision Bs: {{total_comision.toFixed(2)}}</span>
+                    <!-- <span>Impuesto: {{total_cmoneda}}{{total_impuesto}}</span> -->
+                    <span>Comision Usd: {{total_cmoneda}}{{total_comisionext.toFixed(2)}}</span>
                     <button mat-raised-button (click)="calculatePaymentCommissions()">Seleccionar</button>
                 </div>
 
@@ -174,8 +174,13 @@
                     <h2>Resúmen solicitudes de pago</h2>
                 </div>
 
-                <div class="row p-2" style="border: 1px solid black;"
-                    *ngFor="let paymentRequest of listPaymentRequest; let i = index">
+                <div class="row p-2" style="border: 1px solid black;" 
+                    *ngFor="let paymentRequest of listPaymentRequest; let i = index" >
+                    <!-- <div class="col-12" [ngIf]="listPaymentRequest.length == 0">
+                        <mat-form-field>
+                            <input matInput type="text" value="No se encuentran órdenes de pago disponibles" disabled>
+                        </mat-form-field>
+                    </div> -->
                     <!--  -->
                     <div class="col-6">
                         <mat-form-field>
