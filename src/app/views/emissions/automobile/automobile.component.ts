@@ -200,6 +200,9 @@ export class AutomobileComponent {
   activateBrandList: boolean = true;
   activateBrandText: boolean = false;
   casco: boolean = false;
+  activaSexoYEs: boolean = true;
+  activaRepresentante: boolean = false;
+  activaNombreYapellido: boolean = true;
   primaBruta!: any;
   descuento!: any;
   sumaAsegurada!: any;
@@ -233,6 +236,8 @@ export class AutomobileComponent {
   suma_aseg!: any ;
   prima!: any ;
   messageCoti: boolean = false;
+  fechas!: any ;
+  recargaInicial!: any ;
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -417,7 +422,7 @@ export class AutomobileComponent {
     this.setDefaultDates();
     this.getTypeOfPay();
     this.getUtility();
-
+    this.fechas = 'Fecha de Nacimiento';
     fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv')
     .then((response) => response.json())
     .then(data => {
@@ -568,6 +573,33 @@ export class AutomobileComponent {
     if (selectedIdent) {
       this.personsFormGroup.get('icedula')?.setValue(selectedIdent)
     }
+
+    // Si selectedIdent es distinto de 'V', eliminar la validación de 'fnacimiento'
+    if (selectedIdent !== 'V') {
+      this.personsFormGroup.get('fnacimiento')?.clearValidators();
+      this.personsFormGroup.get('iestado_civil')?.clearValidators();
+      this.personsFormGroup.get('isexo')?.clearValidators();
+      this.personsFormGroup.get('xapellido')?.clearValidators();
+      this.activaSexoYEs = false;
+      this.activaNombreYapellido = false;
+      this.activaRepresentante = true;
+      this.fechas = 'Fecha de Registro';
+    } else { // Si selectedIdent es 'V', establecer la validación de 'fnacimiento'
+      this.personsFormGroup.get('fnacimiento')?.setValidators([Validators.required]);
+      this.personsFormGroup.get('iestado_civil')?.setValidators([Validators.required]);
+      this.personsFormGroup.get('isexo')?.setValidators([Validators.required]);
+      this.personsFormGroup.get('xapellido')?.setValidators([Validators.required]);
+      this.activaSexoYEs = true;
+      this.activaNombreYapellido = true;
+      this.activaRepresentante = false;
+      this.fechas = 'Fecha de Nacimiento';
+    }
+
+    // Actualizar los controles después de cambiar las validaciones
+    this.personsFormGroup.get('fnacimiento')?.updateValueAndValidity();
+    this.personsFormGroup.get('iestado_civil')?.updateValueAndValidity();
+    this.personsFormGroup.get('isexo')?.updateValueAndValidity();
+    this.personsFormGroup.get('xapellido')?.updateValueAndValidity();
   }
 
   getState(){
@@ -1302,6 +1334,12 @@ export class AutomobileComponent {
       }else{
         this.paymentButtonManual = true;
       }
+
+      if(this.ccotizacion){
+        this.messageCoti = false;
+      }else{
+        this.messageCoti = true;
+      }
       this.planFormGroup.get('mmotin')?.setValue('');
       this.planFormGroup.get('mcatastrofico')?.setValue('');
     }
@@ -1313,7 +1351,7 @@ export class AutomobileComponent {
         this.messageCoti = false;
       }else{
         this.helmet = true;
-        this.messageCoti = false;
+        this.messageCoti = true;
       }
       
       this.paymentButtons = false;
@@ -1343,8 +1381,8 @@ export class AutomobileComponent {
       if(response.status){
         if(!this.ccotizacion){
           let SumaAsegurada = this.sumaAsegurada
-          this.tasaCascoInicial = response.data.ptasa_casco
           if(this.vehicleFormGroup.get('xcobertura')?.value == 'Cobertura Amplia'){
+            this.tasaCascoInicial = response.data.ptasa_casco
             this.planFormGroup.get('pcasco')?.setValue(response.data.ptasa_casco);
             this.planFormGroup.get('pblindaje')?.setValue(response.data.ptasa_casco);
             if(this.vehicleFormGroup.get('xtipovehiculo')?.value == 'CARGA' || this.vehicleFormGroup.get('xtipovehiculo')?.value == 'Carga'){
@@ -1353,6 +1391,7 @@ export class AutomobileComponent {
               this.planFormGroup.get('paditamento')?.setValue(null);
             }
           }else{
+            this.tasaCascoInicial = response.data.pperdida_total;
             this.planFormGroup.get('pcasco')?.setValue(response.data.pperdida_total);
             this.planFormGroup.get('pblindaje')?.setValue(response.data.pperdida_total);
             if(this.vehicleFormGroup.get('xtipovehiculo')?.value == 'CARGA' || this.vehicleFormGroup.get('xtipovehiculo')?.value == 'Carga'){
@@ -1541,6 +1580,7 @@ export class AutomobileComponent {
       this.planFormGroup.get('pcasco')?.setValue(discount.toString())
       }
     }else{
+
       this.planFormGroup.get('pcasco')?.setValue(this.tasaCascoInicial);
       this.planFormGroup.get('mprima_casco_text')?.setValue(this.primaCascoInicial)
       this.planFormGroup.get('mprima_casco')?.setValue(this.primaBruta);
