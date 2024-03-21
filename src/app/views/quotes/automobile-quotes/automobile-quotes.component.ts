@@ -759,7 +759,7 @@ export class AutomobileQuotesComponent {
                 this.quotesForm.get('msuma_aseg')?.setValue(sum_aseg);
               }
             }
-            return this.sumaAseguradaInicial;
+            return sum_aseg;
         } else {
             return 0;
         }
@@ -797,9 +797,9 @@ export class AutomobileQuotesComponent {
               }
               this.quotesForm.get('pdescuento')?.disable();
             }
-            this.recargo = this.sumaAseguradaInicial
+            this.recargo = sum_aseg
             
-            return this.sumaAseguradaInicial;
+            return sum_aseg;
         } else {
             return 0;
         }
