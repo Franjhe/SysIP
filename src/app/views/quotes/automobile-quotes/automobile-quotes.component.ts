@@ -749,9 +749,14 @@ export class AutomobileQuotesComponent {
                 window.alert('No se puede hacer un descuento de más del 20%');
                 this.quotesForm.get('pdescuento')?.setValue('');
                 this.quotesForm.get('precarga')?.enable();
+                if (sum_aseg !== undefined) {
+                  this.quotesForm.get('msuma_aseg')?.setValue(sum_aseg);
+                }
               }else{
                 this.quotesForm.get('precarga')?.disable();
-                this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+                if (sum_aseg !== undefined) {
+                  this.quotesForm.get('msuma_aseg')?.setValue(sum_aseg);
+                }
               }
             }else{
               this.quotesForm.get('precarga')?.disable();
@@ -779,7 +784,7 @@ export class AutomobileQuotesComponent {
     if (recarga) {
         if (typeof recarga === 'number') {
             if(recarga == 0 || recarga == null){
-              this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+              this.quotesForm.get('msuma_aseg')?.setValue(sum_aseg)
             }
 
             if(this.currentUser.data.crol === 8){
@@ -787,8 +792,13 @@ export class AutomobileQuotesComponent {
                 window.alert('No se puede hacer una recarga de más del 20%');
                 this.quotesForm.get('precarga')?.setValue('');
                 this.quotesForm.get('pdescuento')?.enable();
+                if (sum_aseg !== undefined) {
+                  this.quotesForm.get('msuma_aseg')?.setValue(sum_aseg);
+                }
               }else{
-                this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+                if (sum_aseg !== undefined) {
+                  this.quotesForm.get('msuma_aseg')?.setValue(sum_aseg);
+                }
                 this.quotesForm.get('pdescuento')?.disable();
               }
             }else{
@@ -933,6 +943,9 @@ export class AutomobileQuotesComponent {
 
         if(this.bamplia || this.bperdida){
           if(this.currentUser.data.ccorredor){
+            window.alert('¡Se ha cotizado exitosamente!');
+            location.reload();
+          }else if(this.currentUser.data.crol == 8){
             window.alert('¡Se ha cotizado exitosamente!');
             location.reload();
           }else{
