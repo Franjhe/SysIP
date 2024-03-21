@@ -52,7 +52,7 @@ export class CommissionsComponent {
   @ViewChild('dialogPaymentRequest') dialogPaymentRequest!: TemplateRef<any>;
   @ViewChild('observaciones') observaciones!: TemplateRef<any>;
 
-  displayedColumns: string[] = ['select', 'cproductor', 'xnombre', 'mcomtot', 'mcomexttot', 'mcomtot2'];
+  displayedColumns: string[] = ['select', 'cproductor', 'xnombre', 'mcomtot', 'mcomexttot'];
   dataSource = new MatTableDataSource<any>;
   displayedColumns2: string[] = ['select', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
   tableCommisionPorProductor = new MatTableDataSource<any>;
@@ -246,7 +246,9 @@ export class CommissionsComponent {
   calculatePaymentCommissions() {
 
     this.calculateTotalCommissions();
-    this.dataSource.data[this.dataSourceindex].mcomtot = this.total_comisionext;
+    this.dataSource.data[this.dataSourceindex].mmovcom = this.total_comision;
+    this.dataSource.data[this.dataSourceindex].mcomtot = this.total_comision;
+    this.dataSource.data[this.dataSourceindex].mcomexttot = this.total_comisionext;
     console.log('↓');
     this.dataSource.data[this.dataSourceindex].recibos = [];
     // console.log();

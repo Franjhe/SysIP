@@ -39,20 +39,20 @@
 
             <!-- Weight Column -->
             <ng-container matColumnDef="mcomtot">
-                <th mat-header-cell *matHeaderCellDef> Comisión </th>
-                <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mmovcom}}</td>
+                <th mat-header-cell *matHeaderCellDef> Movimiento Bs. </th>
+                <td mat-cell *matCellDef="let row"> Bs.{{row.mmovcom}}</td>
             </ng-container>
+
+            <!-- Weight Column -->
+            <!-- <ng-container matColumnDef="mcomexttot">
+                <th mat-header-cell *matHeaderCellDef> Tasa<br>USD-BCV</th>
+                <td mat-cell *matCellDef="let row"> {{row.ptasamon}}</td>
+            </ng-container> -->
 
             <!-- Weight Column -->
             <ng-container matColumnDef="mcomexttot">
-                <th mat-header-cell *matHeaderCellDef> Impuesto </th>
+                <th mat-header-cell *matHeaderCellDef> Movimiento Usd. </th>
                 <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mcomexttot}}</td>
-            </ng-container>
-
-            <!-- Weight Column -->
-            <ng-container matColumnDef="mcomtot2">
-                <th mat-header-cell *matHeaderCellDef> A pagar </th>
-                <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mcomtot}}</td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
