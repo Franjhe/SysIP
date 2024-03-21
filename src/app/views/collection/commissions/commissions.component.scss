@@ -29,12 +29,14 @@ input[disabled] {
   cursor: pointer;
 }
 
-#cdk-overlay-0 {
-  // position: relative;
-  z-index: 1031;
-  position: absolute;
-  background-color: black;
-  // top: 30%;
-  // left: 15%;
-  // right: 30%;
+// .custom-dialog-container .mat-dialog-container {
+//   /* add your styles */
+//   position: fixed; 
+//   z-index: 2000;
+// }
+
+::ng-deep .cdk-overlay-container {
+  /* Do you changes here */
+  position: fixed; 
+  z-index: 2000;
 }

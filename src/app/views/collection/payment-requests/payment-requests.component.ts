@@ -53,6 +53,7 @@ export class PaymentRequestsComponent {
 
   displayedColumns: string[] = ['0', '1', '2', '3', '4', '5', '6', '7'];
   dataSource = new MatTableDataSource<any>;
+  defaultDataSource = new MatTableDataSource<any>;
   displayedColumns2: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
   tableDetailReceipts = new MatTableDataSource<any>;
   // selection = new SelectionModel<any>(true, []);
@@ -86,10 +87,11 @@ export class PaymentRequestsComponent {
     this.http.post(environment.apiUrl + '/api/v1/commissions/search-paymentRequests', '').subscribe((response: any) => {
       console.log(response);
 
+      this.defaultDataSource = new MatTableDataSource(response.returnData.search);
       this.dataSource = new MatTableDataSource(response.returnData.search);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-    })
+    });
 
   }
 
@@ -190,6 +192,33 @@ export class PaymentRequestsComponent {
     } else {
       this._liveAnnouncer.announce('Sorting cleared');
     }
+  }
+
+  sortData(sort: Sort) {
+    const data = this.dataSource.data.slice();
+    if (!sort.active || sort.direction === '') {
+      this.dataSource.data = this.defaultDataSource.data;
+      return;
+    }
+
+    this.dataSource.data = data.sort((a, b) => {
+      const isAsc = sort.direction === 'asc';
+      switch (sort.active) {
+        case '0': return this.compare(a.csolpag, b.csolpag, isAsc);
+        case '1': return this.compare(a.xconcepto_1, b.xconcepto_1, isAsc);
+        case '2': return this.compare(a.fmovim, b.fmovim, isAsc);
+        case '3': return this.compare(a.xstatsol, b.xstatsol, isAsc);
+        case '4': return this.compare(a.cid_ben, b.cid_ben, isAsc);
+        case '5': return this.compare(a.cben, b.cben, isAsc);
+        case '6': return this.compare(a.mpagosol, b.mpagosol, isAsc);
+        case '7': return this.compare(a.xobserva, b.xobserva, isAsc);
+        default: return 0;
+      }
+    });
+  }
+
+  compare(a: number | string, b: number | string, isAsc: boolean) {
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
   
 

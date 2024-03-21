@@ -11,7 +11,7 @@
             <input matInput (keyup)="applyFilter($event)" #input>
         </mat-form-field>
 
-        <table mat-table [dataSource]="dataSource" class="mat-elevation-z3" matSort matSortDirection="asc" matSortDisableClear>
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z3" matSort (matSortChange)="sortData($event)">
 
             <!--- Note that these columns can be defined in any order.
                 The actual rendered columns are set as a property on the row definition" -->

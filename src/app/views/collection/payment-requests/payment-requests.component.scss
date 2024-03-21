@@ -28,3 +28,9 @@
     border-top: 1px solid transparent;
     cursor: pointer;
   }
+
+  ::ng-deep .cdk-overlay-container {
+    /* Do you changes here */
+    position: fixed; 
+    z-index: 2000;
+  }

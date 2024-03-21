@@ -179,7 +179,7 @@ export class CommissionsComponent {
 
     // this.total_comision = this.total_comisionext + this.total_impuesto;
 
-    return this.dialog.open(this.InfoReceipt, config);
+    return this.dialog.open(this.InfoReceipt, { panelClass: 'custom-dialog-container' });
   }
 
   calculateTotalCommissions() {
@@ -252,7 +252,7 @@ export class CommissionsComponent {
     // console.log();
 
     this.selection2.selected.forEach(element => {
-      this.dataSource.data[this.dataSourceindex].recibos.push(element.crecibo);
+      this.dataSource.data[this.dataSourceindex].recibos.push(element);
     });
 
     console.log(this.dataSource.data);
@@ -297,6 +297,7 @@ export class CommissionsComponent {
         response.returnData.search.forEach((e: any) => {
           var paymentRequest: PaymentRequest = {
             xtransaccion: "Pago de Comisiones",
+            // xtransaccion: transaccion,
             ffacturacion: new Date().toLocaleDateString(),
             cstatus: '',
             xstatus: 'pendiente',
