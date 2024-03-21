@@ -524,6 +524,7 @@ export class AutomobileQuotesComponent {
         this.loading = false;
         this.quotesBoolean = true;
         this.quotesList = response.data.list.result;
+        console.log(this.quotesList)
         this.quotesList.sort((a, b) => a.xplan_rc > b.xplan_rc ? 1 : -1);
 
         this.nombreCompleto = data.xnombre + ' ' + data.xapellido;
@@ -647,10 +648,13 @@ export class AutomobileQuotesComponent {
           });
           this.updatePremiums()
         }else{
+          console.log(this.quotesList)
           this.quotesList.forEach(quote => {
             const mtotal_rcv = parseFloat(quote.mtotal_rcv);
             const tasa_amplia = parseFloat(quote.pcobertura_amplia);
             const tasa_perdida = parseFloat(quote.pperdida_total);
+            console.log(quote.pcobertura_amplia)
+            console.log(quote.pperdida_total)
 
             if(this.quotesForm.get('msuma_aseg')?.value == null || this.quotesForm.get('msuma_aseg')?.value == undefined){
               this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
@@ -675,10 +679,11 @@ export class AutomobileQuotesComponent {
               this.quotesForm.get('msuma_aseg')?.setValue(suma_aseg.toString());
               return
             }else{
+              console.log(tasa_amplia)
+              console.log(suma_aseg)
+
               const calculoCA = suma_aseg * tasa_amplia / 100;
               const calculoPE = suma_aseg * tasa_perdida / 100;
-
-              console.log(calculoCA)
   
               const sumaCA = calculoCA + mtotal_rcv;
               const sumaPE = calculoPE + mtotal_rcv;
@@ -750,7 +755,9 @@ export class AutomobileQuotesComponent {
               }
             }else{
               this.quotesForm.get('precarga')?.disable();
-              this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+              if (sum_aseg !== undefined) {
+                this.quotesForm.get('msuma_aseg')?.setValue(sum_aseg);
+              }
             }
             return this.sumaAseguradaInicial;
         } else {
@@ -758,7 +765,7 @@ export class AutomobileQuotesComponent {
         }
     } else {
         this.quotesForm.get('precarga')?.enable();
-        this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+        // this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
 
         return 0;
     }
@@ -785,7 +792,9 @@ export class AutomobileQuotesComponent {
                 this.quotesForm.get('pdescuento')?.disable();
               }
             }else{
-              this.quotesForm.get('msuma_aseg')?.setValue(sum_aseg.toString())
+              if (sum_aseg !== undefined) {
+                this.quotesForm.get('msuma_aseg')?.setValue(sum_aseg);
+              }
               this.quotesForm.get('pdescuento')?.disable();
             }
             this.recargo = this.sumaAseguradaInicial
@@ -796,7 +805,7 @@ export class AutomobileQuotesComponent {
         }
     } else {
         this.quotesForm.get('pdescuento')?.enable();
-        this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+        // this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
 
         return 0;
     }
