@@ -525,7 +525,6 @@ export class AutomobileQuotesComponent {
         this.quotesBoolean = true;
         this.quotesList = response.data.list.result;
         this.quotesList.sort((a, b) => a.xplan_rc > b.xplan_rc ? 1 : -1);
-        console.log(this.quotesList)
 
         this.nombreCompleto = data.xnombre + ' ' + data.xapellido;
         this.vehiculo = this.quotesForm.get('xmarca')?.value + ' ' + this.quotesForm.get('xmodelo')?.value;
