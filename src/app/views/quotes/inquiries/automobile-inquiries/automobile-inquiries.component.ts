@@ -222,11 +222,20 @@ export class AutomobileInquiriesComponent {
                           }
         };
 
-        if (window.confirm("¡Se ha cotizado exitosamente!... ¿Desea Emitir la Cotización?")) {
-          this.router.navigate(['/emissions/automobile'], navigationExtras);
-        } else {
+        if(this.currentUser.data.ccorredor){
+          window.alert('¡Se ha cotizado exitosamente!');
           location.reload();
+        }else if(this.currentUser.data.crol == 8){
+          window.alert('¡Se ha cotizado exitosamente!');
+          location.reload();
+        }else{
+          if (window.confirm("¡Se ha cotizado exitosamente!... ¿Desea Emitir la Cotización?")) {
+            this.router.navigate(['/emissions/automobile'], navigationExtras);
+          } else {
+            location.reload();
+          }
         }
+
       }
     })
   }
