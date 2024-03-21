@@ -2351,7 +2351,7 @@ export class PdfGenerationService {
 				},
 				{
 					style: 'data',
-					margin: [0, 0, 0, 2],
+					margin: [0, 0, 0, 1],
 					table: {
 					widths: ['*'],
 					body: [
@@ -2391,7 +2391,7 @@ export class PdfGenerationService {
 					table: {
 					widths: ['*'],
 					body: [
-						[{text: `REQUISITOS PARA LA EMISIÓN DE PÓLIZA. DOCUMENTOS PARA LA EMISIÓN DE LA PÓLIZA
+						[{text: `DOCUMENTOS PARA LA EMISIÓN DE LA PÓLIZA. 
 						Solicitud de Seguros llena en todas sus partes, firmada y con huella dactilar por Asegurado.
 						Persona Natural:
 						Fotocopia Cédula de Identidad del Asegurado
@@ -2439,7 +2439,7 @@ export class PdfGenerationService {
 			pdf.open();
 
 			const emailData = {
-				to: 'alenjhon9@gmail.com',
+				to: `${this.xcorreo}`,
 				subject: 'Cotización - La Mundial de Seguros',
 				text: 'Pruebaaaaaa',
 				user: this.xusuario,

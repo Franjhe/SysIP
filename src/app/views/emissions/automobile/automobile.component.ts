@@ -2548,6 +2548,7 @@ export class AutomobileComponent {
     let data;
 
     if(this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv'){
+      console.log('sisas')
       data = {
         icedula: this.personsFormGroup.get('icedula')?.value,
         xrif_cliente: this.personsFormGroup.get('xrif_cliente')?.value,
@@ -2625,6 +2626,7 @@ export class AutomobileComponent {
         mprima_aditamento: 0,
       }
     }else{
+      console.log('pasa por aqui y da error')
       data = {
         icedula: this.personsFormGroup.get('icedula')?.value,
         xrif_cliente: this.personsFormGroup.get('xrif_cliente')?.value,
