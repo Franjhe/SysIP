@@ -238,6 +238,7 @@ export class AutomobileComponent {
   messageCoti: boolean = false;
   fechas!: any ;
   recargaInicial!: any ;
+  ocultarRecarga: boolean = true;
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -370,6 +371,7 @@ export class AutomobileComponent {
                 });
 
                 if(this.ccotizacion){
+                  this.discount = false;
                   this.vehicleFormGroup.get('ccotizacion')?.setValue(this.ccotizacion);
                   this.vehicleFormGroup.get('fano')?.setValue(this.fano);
                   this.vehicleFormGroup.get('ctarifa_exceso')?.setValue(this.ctarifa);
