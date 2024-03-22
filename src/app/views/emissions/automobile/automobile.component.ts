@@ -1174,6 +1174,10 @@ export class AutomobileComponent {
             value: response.data.plan[i].xplan_rc,
           });
         }
+
+        if (this.currentUser.data.crol != 7) {
+          this.planList = this.planList.filter(plan => plan.id !== 14);
+        }
         
         if(this.ccotizacion){
           const selectedId = parseInt(this.cplan);
