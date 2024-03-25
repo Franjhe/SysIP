@@ -1317,6 +1317,10 @@ export class PdfGenerationService {
 			// Obtener las fechas de cada recibo
 			let fdesdeRecDate = new Date(receipt.fdesde_rec_s);
 			let fhastaRecDate = new Date(receipt.fhasta_rec_s);
+
+			console.log(fdesdeRecDate)
+			console.log(fhastaRecDate)
+			console.log(receipt.cestatus)
 	
 			// Verificar si la fecha de hoy está dentro del rango de fdesde_rec y fhasta_rec
 			if (fdesdeRecDate <= today && today <= fhastaRecDate) {
@@ -1331,6 +1335,11 @@ export class PdfGenerationService {
 					break; // Salir del bucle si se encuentra una marca de agua
 				} else if (receipt.cestatus == 3) {
 					watermarkBody = {text: 'PÓLIZA ANULADA', color: 'red', opacity: 0.3, bold: true, italics: false, fontSize: 50, angle: 70};
+					break; // Salir del bucle si se encuentra una marca de agua
+				}
+			}else{
+				if (receipt.cestatus == 13) {
+					watermarkBody = {text: 'PENDIENTE DE PAGO', color: 'red', opacity: 0.3, bold: true, italics: false, fontSize: 50, angle: 70};
 					break; // Salir del bucle si se encuentra una marca de agua
 				}
 			}
