@@ -2201,27 +2201,29 @@ export class AutomobileComponent {
   
     if (this.vehicleFormGroup.get('xcobertura')?.value === 'Rcv') {
       if(this.currentUser.data.crol == 5){
-        if (this.xmetodologia !== 'ANUAL') {
-          this.snackBar.open(`Lo sentimos, solo se puede colocar ${this.xmetodologia} cuando no sea RCV.`, '', {
-            duration: 3000,
-          });
-          this.receiptFormGroup.get('cmetodologiapago')?.setValue('');
-          this.methodOfPaymentControl.setValue('');
-          this.buttonEmissions = false;
-        } else {
-          this.buttonEmissions = true;
-        }
+        // if (this.xmetodologia !== 'ANUAL') {
+        //   this.snackBar.open(`Lo sentimos, solo se puede colocar ${this.xmetodologia} cuando no sea RCV.`, '', {
+        //     duration: 3000,
+        //   });
+        //   this.receiptFormGroup.get('cmetodologiapago')?.setValue('');
+        //   this.methodOfPaymentControl.setValue('');
+        //   this.buttonEmissions = false;
+        // } else {
+
+        // }
+                  this.buttonEmissions = true;
       } else {
-        if (this.xmetodologia !== 'ANUAL') {
-          this.snackBar.open(`Lo sentimos, solo se puede colocar ${this.xmetodologia} cuando no sea RCV.`, '', {
-            duration: 3000,
-          });
-          this.receiptFormGroup.get('cmetodologiapago')?.setValue('');
-          this.methodOfPaymentControl.setValue('');
-          this.buttonEmissions = false;
-        } else {
-          this.buttonEmissions = true;
-        }
+        // if (this.xmetodologia !== 'ANUAL') {
+        //   this.snackBar.open(`Lo sentimos, solo se puede colocar ${this.xmetodologia} cuando no sea RCV.`, '', {
+        //     duration: 3000,
+        //   });
+        //   this.receiptFormGroup.get('cmetodologiapago')?.setValue('');
+        //   this.methodOfPaymentControl.setValue('');
+        //   this.buttonEmissions = false;
+        // } else {
+
+        // }
+                  this.buttonEmissions = true;
 
         // this.buttonEmissions = false;
         // this.snackBar.open(`Lo sentimos, debe formalizar una modalidad de pago para emitir la póliza`, '', {
