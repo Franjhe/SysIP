@@ -918,7 +918,6 @@ export class PdfGenerationService {
 			this.xplancoberturas = response.data.xplancoberturas;
 			this.xplanservicios = response.data.xplanservicios;
 			this.mprimatotal = response.data.mprimatotal;
-			console.log(this.mprimatotal)
 			this.mprimaprorratatotal = response.data.mprimaprorratatotal;
 			this.xzona_postal_propietario = response.data.xzona_postal_propietario;
 			this.cestatusgeneral = response.data.cestatusgeneral;
@@ -927,8 +926,6 @@ export class PdfGenerationService {
 			this.xrecibo = response.data.xrecibo;
 			this.fdesde_rec = response.data.finiciorecibo;
 			this.fhasta_rec = response.data.fhastarecibo;
-			console.log('Fecha desde: ', this.fdesde_rec)
-			console.log('Fecha Hasta: ', this.fhasta_rec)
 			this.xgrua = response.data.xgrua
 			if(response.data.xtomador){
 				this.xtomador = response.data.xtomador
@@ -1318,8 +1315,8 @@ export class PdfGenerationService {
 			let receipt = this.receiptList[i];
 			
 			// Obtener las fechas de cada recibo
-			let fdesdeRecDate = new Date(receipt.fdesde_rec);
-			let fhastaRecDate = new Date(receipt.fhasta_rec);
+			let fdesdeRecDate = new Date(receipt.fdesde_rec_s);
+			let fhastaRecDate = new Date(receipt.fhasta_rec_s);
 	
 			// Verificar si la fecha de hoy está dentro del rango de fdesde_rec y fhasta_rec
 			if (fdesdeRecDate <= today && today <= fhastaRecDate) {
