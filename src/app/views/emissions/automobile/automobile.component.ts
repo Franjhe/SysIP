@@ -1950,43 +1950,44 @@ export class AutomobileComponent {
       const minStartDate = new Date(currentDate);
       minStartDate.setDate(minStartDate.getDate() - 5);
   
-      if (fdesde < minStartDate) {
-        this.snackBar.open('La Fecha Desde no puede ser menor a 5 días antes de la fecha actual.', '', {
-          duration: 3000,
-        });
+      // if (fdesde < minStartDate) {
+      //   this.snackBar.open('La Fecha Desde no puede ser menor a 5 días antes de la fecha actual.', '', {
+      //     duration: 3000,
+      //   });
   
-        const formattedCurrentDate = format(currentDate, 'yyyy-MM-dd');
-        this.receiptFormGroup.get('fdesde')?.setValue(formattedCurrentDate);
-        this.cdr.detectChanges();
+      //   const formattedCurrentDate = format(currentDate, 'yyyy-MM-dd');
+      //   this.receiptFormGroup.get('fdesde')?.setValue(formattedCurrentDate);
+      //   this.cdr.detectChanges();
   
-        const nextYearDate = addYears(currentDate, 1);
-        const formattedNextYearDate = format(nextYearDate, 'yyyy-MM-dd');
-        this.receiptFormGroup.get('fhasta')?.setValue(formattedNextYearDate);
+      //   const nextYearDate = addYears(currentDate, 1);
+      //   const formattedNextYearDate = format(nextYearDate, 'yyyy-MM-dd');
+      //   this.receiptFormGroup.get('fhasta')?.setValue(formattedNextYearDate);
   
-        return;
-      }
+      //   return;
+      // }
   
       const fhasta = new Date(fdesde);
       const daysToAdd = 30;
   
-      if (fdesde < currentDate && fdesde.getDate() + 6 <= currentDate.getDate()) {
-        this.snackBar.open('Requiere autorización si la Fecha Desde es menor que la fecha actual en 6 días o más.', '', {
-          duration: 3000,
-        });
-      }
+      // if (fdesde < currentDate && fdesde.getDate() + 6 <= currentDate.getDate()) {
+      //   this.snackBar.open('Requiere autorización si la Fecha Desde es menor que la fecha actual en 6 días o más.', '', {
+      //     duration: 3000,
+      //   });
+      // }
+
   
       fhasta.setDate(fhasta.getDate() + daysToAdd);
   
       const maxEndDate = new Date(fdesde);
       maxEndDate.setDate(maxEndDate.getDate() + 366);
   
-      if (fhasta > maxEndDate) {
-        this.snackBar.open('La Fecha Hasta no puede ser mayor a 365 días desde la Fecha Desde.', '', {
-          duration: 3000,
-        });
-        console.error('La Fecha Hasta no puede ser mayor a 365 días desde la Fecha Desde');
-        return;
-      }
+      // if (fhasta > maxEndDate) {
+      //   this.snackBar.open('La Fecha Hasta no puede ser mayor a 365 días desde la Fecha Desde.', '', {
+      //     duration: 3000,
+      //   });
+      //   console.error('La Fecha Hasta no puede ser mayor a 365 días desde la Fecha Desde');
+      //   return;
+      // }
       
       const nextYearDate = addYears(fdesde, 1);
       const formattedNextYearDate = format(nextYearDate, 'yyyy-MM-dd');
@@ -1997,39 +1998,39 @@ export class AutomobileComponent {
   prueba() {
     const fhastaControl = this.receiptFormGroup.get('fhasta');
   
-    if (fhastaControl?.value) {
-      const fdesdeValue = this.receiptFormGroup.get('fdesde')?.value;
+    // if (fhastaControl?.value) {
+    //   const fdesdeValue = this.receiptFormGroup.get('fdesde')?.value;
   
-      if (fdesdeValue) {
-        const fdesde = new Date(fdesdeValue as string);
-        const currentDate = new Date();
-        const maxEndDate = new Date(fdesde);
-        maxEndDate.setDate(maxEndDate.getDate() + 366);
-        const minEndDate = new Date(fdesde);
-        minEndDate.setDate(minEndDate.getDate() + 30);
+    //   if (fdesdeValue) {
+    //     const fdesde = new Date(fdesdeValue as string);
+    //     const currentDate = new Date();
+    //     const maxEndDate = new Date(fdesde);
+    //     maxEndDate.setDate(maxEndDate.getDate() + 366);
+    //     const minEndDate = new Date(fdesde);
+    //     minEndDate.setDate(minEndDate.getDate() + 30);
   
-        const selectedDate = new Date(fhastaControl.value as string);
+    //     const selectedDate = new Date(fhastaControl.value as string);
   
-        if (selectedDate < minEndDate) {
-          console.error('La Fecha Hasta debe ser mayor a la Fecha Desde más 30 días');
-          this.snackBar.open('La Fecha Hasta debe ser mayor a la Fecha Desde más 30 días.', '', {
-            duration: 3000,
-          });
-          this.receiptFormGroup.get('fhasta')?.setValue(currentDate.toISOString());
-          return;
-        }
+    //     if (selectedDate < minEndDate) {
+    //       console.error('La Fecha Hasta debe ser mayor a la Fecha Desde más 30 días');
+    //       this.snackBar.open('La Fecha Hasta debe ser mayor a la Fecha Desde más 30 días.', '', {
+    //         duration: 3000,
+    //       });
+    //       this.receiptFormGroup.get('fhasta')?.setValue(currentDate.toISOString());
+    //       return;
+    //     }
   
-        if (selectedDate > maxEndDate) {
-          this.snackBar.open('La Fecha Hasta no puede ser mayor a 365 días desde la Fecha Desde.', '', {
-            duration: 3000,
-          });
+    //     if (selectedDate > maxEndDate) {
+    //       this.snackBar.open('La Fecha Hasta no puede ser mayor a 365 días desde la Fecha Desde.', '', {
+    //         duration: 3000,
+    //       });
           
-          const nextYearDate = addYears(fdesde, 1);
-          const formattedNextYearDate = format(nextYearDate, 'yyyy-MM-dd');
-          this.receiptFormGroup.get('fhasta')?.setValue(formattedNextYearDate);
-        }
-      }
-    }
+    //       const nextYearDate = addYears(fdesde, 1);
+    //       const formattedNextYearDate = format(nextYearDate, 'yyyy-MM-dd');
+    //       this.receiptFormGroup.get('fhasta')?.setValue(formattedNextYearDate);
+    //     }
+    //   }
+    // }
   }
 
   configurationCollectionDate(newValue: string){
