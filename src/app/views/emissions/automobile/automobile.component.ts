@@ -2366,7 +2366,7 @@ export class AutomobileComponent {
           concept: "COMPRA",
           principal: "ds",
           clientId:"f2514eda-610b-11ed-8e56-000c29b62ba1",
-          orderId: '1'
+          orderId: orden
         },
         this.callbackFn.bind(this),
         {
@@ -2395,6 +2395,9 @@ export class AutomobileComponent {
           email: this.personsFormGroup.get('email')?.value?.toUpperCase(),
           cestado: this.personsFormGroup.get('cestado')?.value,
           cciudad: this.personsFormGroup.get('cciudad')?.value,
+          fnacimiento: this.personsFormGroup.get('fnacimiento')?.value,
+          iestado_civil: this.personsFormGroup.get('iestado_civil')?.value,
+          isexo: this.personsFormGroup.get('isexo')?.value,
           xdireccion: this.personsFormGroup.get('xdireccion')?.value?.toUpperCase(),
           xplaca: this.vehicleFormGroup.get('xplaca')?.value?.toUpperCase(),
           xmarca: this.vehicleFormGroup.get('xmarca')?.value,
@@ -2443,18 +2446,30 @@ export class AutomobileComponent {
           id_inma: this.vehicleFormGroup.get('id_inma')?.value,
           cuso: this.vehicleFormGroup.get('cuso')?.value,
           xuso: this.vehicleFormGroup.get('xuso')?.value,
+          cpais: 58,
+          cusuario: this.currentUser.data.cusuario,
+          ctipopago: this.receiptFormGroup.get('ctipopago')?.value,
+          cbanco: this.receiptFormGroup.get('cbanco')?.value,
+          cbanco_destino: this.receiptFormGroup.get('cbanco_destino')?.value,
+          fcobro: this.receiptFormGroup.get('fcobro')?.value,
+          xreferencia: this.receiptFormGroup.get('xreferencia')?.value,
+          mpagado: this.receiptFormGroup.get('mpagado')?.value,
+          mprima_pagada: this.receiptFormGroup.get('mprima_pagada')?.value,
+          mprima_accesorio: this.receiptFormGroup.get('mprima_accesorio')?.value,
           npesovacio: this.vehicleFormGroup.get('npesovacio')?.value,
           ncapcarga: this.vehicleFormGroup.get('ncapcarga')?.value,
           paditamento: this.planFormGroup.get('paditamento')?.value,
           msuma_aditamento: this.planFormGroup.get('msuma_aditamento')?.value,
           mprima_aditamento: this.planFormGroup.get('mprima_aditamento')?.value,
-          cpais: 58,
-          cusuario: this.currentUser.data.cusuario,
         }) 
       });
       let res = await response.json();
+      console.log(res)
       if (res.data) {
         this.ccontratoflota = res.data.ccontratoflota;
+        this.buttonEmissions = false;
+      }else{
+        this.buttonEmissions = true;
       }
   }
 
