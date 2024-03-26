@@ -30,7 +30,6 @@ import {
 
 export class ReportsComponent {
   
-  report_form!: FormGroup;
   consulta_reporte!: FormGroup;
   submitted = false;
   name?: string;
@@ -66,44 +65,59 @@ availableColors = [
 ngOnInit() {
   this.showButton = false
 
-  this.report_form = this.formBuilder.group({
-    bprima: [''],
-    fdesde: [''],
-    fhasta: ['']
-  });
 
   this.consulta_reporte = this.formBuilder.group({
-    estatus: [''],
+    estado: [''],
+    fdesde_pol: [''],
+    fhasta_pol: [''],
     correo: ['', [Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]]
   });
 }
 
 saveSelection(opcion: string) {
   this.selectedOption = opcion;
-  this.report_form.get('bprima')?.setValue(this.selectedOption);
+  this.consulta_reporte.get('bprima')?.setValue(this.selectedOption);
 }
 
 onSubmit(){
   let data = {
-    bprima: this.report_form.get('bprima')?.value,
-    fdesde: this.report_form.get('fdesde')?.value,
-    estado: this.report_form.get('fhasta')?.value,
+    estado: this.consulta_reporte.get('estado')?.value,
+    fdesde_pol: this.consulta_reporte.get('fdesde_pol')?.value,
+    fhasta_pol: this.consulta_reporte.get('fhasta_pol')?.value,
   };
-  let estado = this.report_form.get('fhasta')?.value
-  this.http.get(environment.apiUrl_reporte + '/recibos/'+ estado).subscribe((response: any) => {
-    if (response.data.list) {
-      this.dataSource.data = response.data.list;
-    }
+  // let estado = this.consulta_reporte.get('fhasta')?.value
+  this.http.post(environment.apiUrl_reporte + '/single_receipts/', data).subscribe((response: any) => {
+    // if (response.data.list) {
+    //   this.dataSource.data = response.data.list;
+    // }
   });
 }
-
 buscarReporte(){
+  // window.open(environment.apiUrl_prod + '/single_receipts/', '_blank');
+  let data = {
+    estado: this.consulta_reporte.get('estado')?.value,
+    fdesde_pol: this.consulta_reporte.get('fdesde_pol')?.value,
+    fhasta_pol: this.consulta_reporte.get('fhasta_pol')?.value,
+  };
 
-  let estado = this.consulta_reporte.get('estatus')?.value
-  let url = environment.apiUrl_reporte + '/recibos/'+ estado + '/'
-  // let url = environment.apiUrl_reporte + '/lamundialapi/recibos/'+ estado + '/'
-  window.open(url, '_blank');
-
+  // var form = document.getElementById("formato");
+  // document.body.appendChild(this.consulta_reporte.value);
+  //   window.open('', 'view');
+  //   form?.click;
+  
+    
+  var mediaType = 'application/pdf';
+  try {
+    this.http.post(environment.apiUrl_prod + '/single_receipts/', JSON.stringify(data), { responseType: 'blob' }).subscribe(
+      (response) => {
+          var blob = new Blob([response], { type: mediaType });
+          saveAs(blob, 'reporte.pdf');
+        },
+        // e => { throwError(e); }
+    );
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 activateSendButton(){
@@ -119,7 +133,7 @@ activateSendButton(){
 }
 
 dataReport(){
-  let estado = this.consulta_reporte.get('estatus')?.value
+  let estado = this.consulta_reporte.get('estado')?.value
   this.showButton = true
   // if(estado == 'C'){
 
@@ -130,15 +144,12 @@ dataReport(){
   //   })
 
   // }else{
-
     fetch(environment.apiUrl + '/api/v1/collection/search-collected/'+ estado )
     .then((response) => response.json())
     .then(data => {
 
       this.listPending = []
-      for(let i = 0; i < data.searchPaymentCollected.recibo.length; i++){
-
-       
+      for(let i = 0; i < data.searchPaymentCollected.recibo.length; i++){   
         //fecha emisión Recibo
         let dateEReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_Emision_Rec );
         let fechaEmRec = dateEReceipt.toISOString().substring(0, 10);
@@ -185,15 +196,12 @@ dataReport(){
           // Descripcion_Corta_Sucursal: data.searchPaymentCollected.recibo[i].Descripcion_Corta_Sucursal,
           // cproductor: data.searchPaymentCollected.recibo[i].cproductor,
           Intermediario: data.searchPaymentCollected.recibo[i].Intermediario
-
         })
-
       }
 
     })
 
-  } // }
-
+  }
 makeExcel(){
   let fecha = new Date()
   let day = fecha.getDate()
@@ -295,7 +303,7 @@ makeExcel(){
 // } 
 
 sendMail(){
-  let estado = this.consulta_reporte.get('estatus')?.value
+  let estado = this.consulta_reporte.get('estado')?.value
   let variable = (<HTMLInputElement>document.getElementById("prueba1")).value;
   this.http.get(environment.apiUrl + '/api/v1/report/email/'+ estado).subscribe((response: any) => {
     console.log(response, this.correo)
