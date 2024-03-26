@@ -176,6 +176,46 @@ export class AutomobileQuotesComponent {
           this.getBroker();
         }
       });
+
+      // if (this.cusuario) {
+      //   let token = {
+      //     status: true,
+      //     message: "Usuario Autenticado",
+      //     data: {
+      //       bconsultar: false,
+      //       bcrear: true,
+      //       beliminar: false,
+      //       bmodificar: false,
+      //       ccorredor: parseInt(this.ccorredor),
+      //       cdepartamento: 4,
+      //       crol: 6,
+      //       cusuario: parseInt(this.cusuario),
+      //       token: this.tokenphp,
+      //       xcorredor: this.xcorredor,
+      //       cagencia: this.cagencia,
+      //       cproductor: this.cproductor,
+      //     }
+      //   }
+      //   let tokenString = JSON.stringify(token);
+      //   localStorage.setItem('user', tokenString);
+      
+      //   if(storedSession){
+      //     this.currentUser = JSON.parse(storedSession);
+      //   }else{
+      //     this.currentUser = JSON.parse(tokenString);
+      //   }
+      // } else {
+      //   if(storedSession){
+      //     this.currentUser = JSON.parse(storedSession);
+      //   }else{
+      //     this.token = localStorage.getItem('user');
+      //     this.currentUser = JSON.parse(this.token);
+      //   }
+      // }
+      // console.log(this.currentUser)
+      // if (this.currentUser) {
+      //   this.getBroker();
+      // }
   }
 
 
@@ -484,8 +524,8 @@ export class AutomobileQuotesComponent {
         this.loading = false;
         this.quotesBoolean = true;
         this.quotesList = response.data.list.result;
-        this.quotesList.sort((a, b) => a.xplan_rc > b.xplan_rc ? 1 : -1);
         console.log(this.quotesList)
+        this.quotesList.sort((a, b) => a.xplan_rc > b.xplan_rc ? 1 : -1);
 
         this.nombreCompleto = data.xnombre + ' ' + data.xapellido;
         this.vehiculo = this.quotesForm.get('xmarca')?.value + ' ' + this.quotesForm.get('xmodelo')?.value;
@@ -608,10 +648,13 @@ export class AutomobileQuotesComponent {
           });
           this.updatePremiums()
         }else{
+          console.log(this.quotesList)
           this.quotesList.forEach(quote => {
             const mtotal_rcv = parseFloat(quote.mtotal_rcv);
             const tasa_amplia = parseFloat(quote.pcobertura_amplia);
             const tasa_perdida = parseFloat(quote.pperdida_total);
+            console.log(quote.pcobertura_amplia)
+            console.log(quote.pperdida_total)
 
             if(this.quotesForm.get('msuma_aseg')?.value == null || this.quotesForm.get('msuma_aseg')?.value == undefined){
               this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
@@ -636,10 +679,11 @@ export class AutomobileQuotesComponent {
               this.quotesForm.get('msuma_aseg')?.setValue(suma_aseg.toString());
               return
             }else{
+              console.log(tasa_amplia)
+              console.log(suma_aseg)
+
               const calculoCA = suma_aseg * tasa_amplia / 100;
               const calculoPE = suma_aseg * tasa_perdida / 100;
-
-              console.log(calculoCA)
   
               const sumaCA = calculoCA + mtotal_rcv;
               const sumaPE = calculoPE + mtotal_rcv;
@@ -705,21 +749,28 @@ export class AutomobileQuotesComponent {
                 window.alert('No se puede hacer un descuento de más del 20%');
                 this.quotesForm.get('pdescuento')?.setValue('');
                 this.quotesForm.get('precarga')?.enable();
+                if (sum_aseg !== undefined) {
+                  this.quotesForm.get('msuma_aseg')?.setValue(sum_aseg);
+                }
               }else{
                 this.quotesForm.get('precarga')?.disable();
-                this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+                if (sum_aseg !== undefined) {
+                  this.quotesForm.get('msuma_aseg')?.setValue(sum_aseg);
+                }
               }
             }else{
               this.quotesForm.get('precarga')?.disable();
-              this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+              if (sum_aseg !== undefined) {
+                this.quotesForm.get('msuma_aseg')?.setValue(sum_aseg);
+              }
             }
-            return this.sumaAseguradaInicial;
+            return sum_aseg;
         } else {
             return 0;
         }
     } else {
         this.quotesForm.get('precarga')?.enable();
-        this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+        // this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
 
         return 0;
     }
@@ -733,7 +784,7 @@ export class AutomobileQuotesComponent {
     if (recarga) {
         if (typeof recarga === 'number') {
             if(recarga == 0 || recarga == null){
-              this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+              this.quotesForm.get('msuma_aseg')?.setValue(sum_aseg)
             }
 
             if(this.currentUser.data.crol === 8){
@@ -741,23 +792,30 @@ export class AutomobileQuotesComponent {
                 window.alert('No se puede hacer una recarga de más del 20%');
                 this.quotesForm.get('precarga')?.setValue('');
                 this.quotesForm.get('pdescuento')?.enable();
+                if (sum_aseg !== undefined) {
+                  this.quotesForm.get('msuma_aseg')?.setValue(sum_aseg);
+                }
               }else{
-                this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+                if (sum_aseg !== undefined) {
+                  this.quotesForm.get('msuma_aseg')?.setValue(sum_aseg);
+                }
                 this.quotesForm.get('pdescuento')?.disable();
               }
             }else{
-              this.quotesForm.get('msuma_aseg')?.setValue(sum_aseg.toString())
+              if (sum_aseg !== undefined) {
+                this.quotesForm.get('msuma_aseg')?.setValue(sum_aseg);
+              }
               this.quotesForm.get('pdescuento')?.disable();
             }
-            this.recargo = this.sumaAseguradaInicial
+            this.recargo = sum_aseg
             
-            return this.sumaAseguradaInicial;
+            return sum_aseg;
         } else {
             return 0;
         }
     } else {
         this.quotesForm.get('pdescuento')?.enable();
-        this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+        // this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
 
         return 0;
     }
@@ -885,6 +943,9 @@ export class AutomobileQuotesComponent {
 
         if(this.bamplia || this.bperdida){
           if(this.currentUser.data.ccorredor){
+            window.alert('¡Se ha cotizado exitosamente!');
+            location.reload();
+          }else if(this.currentUser.data.crol == 8){
             window.alert('¡Se ha cotizado exitosamente!');
             location.reload();
           }else{
