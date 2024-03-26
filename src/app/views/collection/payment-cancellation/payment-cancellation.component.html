@@ -49,13 +49,13 @@
                         <div class="col" *ngFor="let poliza of group.value.poliza;let i=index" >
                           <h2>Detalles del recibo Pagado</h2>
                             <strong>Poliza</strong>  {{poliza.cpoliza}}<br>
-                            <strong>Reciboo</strong> {{poliza.crecibo}}<br>
+                            <strong>Recibo</strong> {{poliza.crecibo}}<br>
                             <strong>Ramo</strong>  {{poliza.cramo}}<br>
                             <strong>Monto Bs</strong> {{poliza.mmontorec}}<br>
                             <strong>Monto $</strong>  {{poliza.mmontorecext}}<br>
                         </div>
 
-                        <div class="col" *ngFor="let recibos of group.value.recibos;let i=index">
+                        <div  class="col" *ngFor="let recibos of group.value.recibos;let i=index">
                           <h2>Detalles del Soporte de pago</h2>
                             <strong>Banco remitente</strong>  {{recibos.cbanco}}<br>
                             <strong>Banco Receptor</strong> {{recibos.cbanco_destino}}<br>
@@ -89,54 +89,52 @@
   
                         </div>
 
+                        <div class="col">
 
-                          <div>
 
+                          <mat-form-field>
+                            <mat-label>Estado de recibo</mat-label>
+                            <mat-select (selectionChange)="validateMov(i)" formControlName="iestadorec" >
+                              <mat-option value="C">Cobrado</mat-option>
+                              <mat-option value="ER">En revision</mat-option>
+                            </mat-select>
+                          </mat-form-field>
+      
+                          <mat-form-field *ngIf="revision">
+                            <mat-label>Diferencia</mat-label>
+                            <input matInput formControlName="mdiferencia" type="number" placeholder="Ingrese la diferencia del recibo" #input>
+                          </mat-form-field>
 
-                            <mat-form-field>
-                              <mat-label>Estado de recibo</mat-label>
-                              <mat-select (selectionChange)="validateMov(i)" formControlName="iestadorec" >
-                                <mat-option value="C">Cobrado</mat-option>
-                                <mat-option value="ER">En revision</mat-option>
-                              </mat-select>
-                            </mat-form-field>
-        
-                            <mat-form-field *ngIf="revision">
-                              <mat-label>Diferencia</mat-label>
-                              <input matInput formControlName="mdiferencia" type="number" placeholder="Ingrese la diferencia del recibo" #input>
-                            </mat-form-field>
+                          <mat-form-field *ngIf="revision">
+                            <mat-label>Tipo de Diferencia</mat-label>
+                            <mat-select formControlName="idiferencia">
+                              <mat-option value="D">En contra</mat-option>
+                              <mat-option value="H">A favor</mat-option>
+                            </mat-select>
+                          </mat-form-field>
 
-                            <mat-form-field *ngIf="revision">
-                              <mat-label>Tipo de Diferencia</mat-label>
-                              <mat-select formControlName="idiferencia">
-                                <mat-option value="D">En contra</mat-option>
-                                <mat-option value="H">A favor</mat-option>
-                              </mat-select>
-                            </mat-form-field>
+                          <mat-form-field *ngIf="revision">
+                            <mat-label>Moneda de cobro de diferencia</mat-label>
+                            <mat-select formControlName="cmoneda">
+                              <mat-option value="BS">BS</mat-option>
+                              <mat-option value="USD">USD</mat-option>
+                            </mat-select>
+                          </mat-form-field>
 
-                            <mat-form-field *ngIf="revision">
-                              <mat-label>Moneda de cobro de diferencia</mat-label>
-                              <mat-select formControlName="cmoneda">
-                                <mat-option value="BS">BS</mat-option>
-                                <mat-option value="USD">USD</mat-option>
-                              </mat-select>
-                            </mat-form-field>
-
-                            <mat-form-field *ngIf="revision">
-                              <mat-label>Seleccione el Recibo con diferencia</mat-label>
-                              <mat-select formControlName="recibo">
-                                <mat-option *ngFor="let recibo of group.value.poliza"  value="{{ recibo.crecibo }}">{{ recibo.crecibo }}</mat-option>
-                              </mat-select>
-                            </mat-form-field>
-        
-                            <mat-form-field *ngIf="revision">
-                              <mat-label>Observacion</mat-label>
-                              <textarea matInput placeholder="Observacion" formControlName="xobservacion"></textarea>
-                            </mat-form-field>
-        
-                          </div>
+                          <mat-form-field *ngIf="revision">
+                            <mat-label>Seleccione el Recibo con diferencia</mat-label>
+                            <mat-select formControlName="recibo">
+                              <mat-option *ngFor="let recibo of group.value.poliza"  value="{{ recibo.crecibo }}">{{ recibo.crecibo }}</mat-option>
+                            </mat-select>
+                          </mat-form-field>
+      
+                          <mat-form-field *ngIf="revision">
+                            <mat-label>Observacion</mat-label>
+                            <textarea matInput placeholder="Observacion" formControlName="xobservacion"></textarea>
+                          </mat-form-field>
+      
+                        </div>
                     
-
                         <div class="text-center">
                           <button class="btn-primary" mat-button (click)="updateReceiptNotificated(i)">Actualizar recibo</button>
                         </div>
