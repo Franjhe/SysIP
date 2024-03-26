@@ -1177,6 +1177,8 @@ export class AutomobileComponent {
 
         if (this.currentUser.data.crol != 7) {
           this.planList = this.planList.filter(plan => plan.id !== 14);
+          this.planList = this.planList.filter(plan => plan.id !== 15);
+          this.planList = this.planList.filter(plan => plan.id !== 16);
         }
         
         if(this.ccotizacion){
