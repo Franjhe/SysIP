@@ -61,8 +61,8 @@
               </div>
             </div>
 
-            <div formArrayName="receipt" >
-              <table class="table border">
+            <div formArrayName="receipt">
+              <table class="table table-bordered">
                 <thead>
                   <tr>
                     <th>N° Poliza</th>
@@ -70,11 +70,9 @@
                     <th>N° Cuota</th>
                     <th>Ramo</th>
                     <th style="color:red">Fecha tope de pago</th>
-                    <th >Recibo notificado</th>
-                    <th *ngIf="viewData" style=" background-color: red;color: white;font-weight: 100; ">Diferencia</th>
-                    <th *ngIf="viewData" style=" background-color: red;color: white;font-weight: 100; "></th>
+                    <th>Recibo notificado</th>
                     <th>Total del recibo</th>
-                    <th>Seleccione los recibos a pagar </th>
+                    <th>Seleccione los recibos a pagar</th>
                   </tr>
                 </thead>
                 <tbody *ngFor="let creds of receipt.value let i=index">
@@ -88,14 +86,21 @@
                       <div *ngIf="creds.cdoccob > 0"><mat-icon style="color:green">check</mat-icon></div>
                       <div *ngIf="creds.cdoccob == 0"><mat-icon style="color:red">close</mat-icon></div>
                     </td>
-                    <td *ngIf="viewData" style=" background-color: #ff7272;color: white;"> {{creds.mdiferencia}} Bs - {{creds.mdiferenciaext}} $</td>
-                    <td *ngIf="viewData" style=" background-color: #ff7272;color: white; ">{{creds.idiferencia}}</td>
-                    <td >{{creds.mprimabrutaext}} {{creds.cmoneda}}</td>
+                    <td >
+                      <div class="row">
+                        <div class="col">
+                          {{creds.mprimabrutaext}} {{creds.cmoneda}}
+                        </div>
+                        <div *ngIf="creds.mdiferencia > 0" style=" background-color: #ff7272;color: white;">
+                          Diferencia {{creds.idiferencia}} : <br>
+                          {{creds.mdiferencia}} Bs - {{creds.mdiferenciaext}} $
+                        </div>
+                      </div>
+            
+                    </td>
                     <td>
-                      <div *ngIf="creds.cdoccob > 0 && !viewData"></div>
-                      <div *ngIf="creds.cdoccob == 0 && !viewData"> <mat-checkbox formControlName="seleccionado" (change)="calculateMount(i)"> </mat-checkbox></div>
-                      <div *ngIf="creds.cdoccob > 0 && viewData"> <mat-checkbox formControlName="seleccionado" (change)="calculateMountDiferent(i)"> </mat-checkbox></div>
-
+                      <div *ngIf="creds.cdoccob > 0 "></div> 
+                      <div *ngIf="creds.cdoccob == 0 || creds.mdiferencia > 0 "> <mat-checkbox formControlName="seleccionado" (change)="calculateMount(i)"> </mat-checkbox></div>
                     </td>
                   </tr>
                 </tbody>
@@ -267,9 +272,8 @@
     
                     </div>
                     <div class="mt-5" >
-                      <button *ngIf="viewData" mat-button [disabled]="Submit" class="bg-success text-light" (click)="onSubmitDiferent()">Registrar Pago</button>
                       
-                      <button *ngIf="!viewData"  mat-button [disabled]="Submit" class="bg-success text-light" (click)="onSubmit()">Registrar Pago</button>
+                      <button mat-button [disabled]="Submit" class="bg-success text-light" (click)="onSubmit()">Registrar Pago</button>
 
 
                     </div>

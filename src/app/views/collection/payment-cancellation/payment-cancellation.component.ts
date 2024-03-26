@@ -324,15 +324,6 @@ export class PaymentCancellationComponent {
     })
 
 
-    fetch(environment.apiUrl + '/api/v1/collection/search-collected' )
-    .then((response) => response.json())
-    .then(data => {
-
-      this.listCollectedReport = data.searchPaymentCollected.recibo
-
-    })
-
-
     fetch(environment.apiUrl + '/api/v1/collection/search-notification' )
     .then((response) => response.json())
     .then(data => {
@@ -348,6 +339,7 @@ export class PaymentCancellationComponent {
             let filterTRades = trades.filter((data: { id: any; }) => data.id == idTrades)
             const tradesValue = filterTRades[0].value
 
+          
           if (!acc[curr.ctransaccion]) {
               acc[curr.ctransaccion] = {
                   id: curr.ctransaccion,
@@ -410,7 +402,21 @@ export class PaymentCancellationComponent {
           const fullImageUrl = this.getImage(imageUrl);
 
           const safeImageUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullImageUrl);
-      
+
+   
+          acc[curr.ctransaccion].poliza.push({
+              crecibo: curr.crecibo,
+              cnrecibo:curr.cnrecibo,
+              cpoliza: curr.cpoliza,
+              cnpoliza: curr.cnpoliza,
+              mmontorec: curr.mmontorec,
+              mmontorecext: curr.mmontorecext,
+              cramo: tradesValue,
+              cplan: curr.cplan,
+              fdesde: curr.fdesde,
+              fhasta: curr.fhasta,
+          });
+          
           acc[curr.ctransaccion].recibos.push({
               cmoneda: curr.cmoneda,
               npago: curr.npago,
@@ -426,19 +432,6 @@ export class PaymentCancellationComponent {
 
           });
       
-          acc[curr.ctransaccion].poliza.push({
-              crecibo: curr.crecibo,
-              cnrecibo:curr.cnrecibo,
-              cpoliza: curr.cpoliza,
-              cnpoliza: curr.cnpoliza,
-              mmontorec: curr.mmontorec,
-              mmontorecext: curr.mmontorecext,
-              cramo: tradesValue,
-              cplan: curr.cplan,
-              fdesde: curr.fdesde,
-              fhasta: curr.fhasta,
-          });
-
           acc[curr.ctransaccion].diferencia.push({
             mountdiferencia: curr.mdiferencia,
             mdiferenciaext: curr.mdiferenciaext,
