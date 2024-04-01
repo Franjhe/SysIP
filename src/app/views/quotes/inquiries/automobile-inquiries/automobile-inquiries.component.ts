@@ -41,6 +41,7 @@ export class AutomobileInquiriesComponent {
   montoRCV!: any ;
   montoAmplia!: any ;
   montoPerdida!: any ;
+  suma_aseg!: any ;
   planPdf!: any ;
   correo!: any ;
   dataVehicle!: {}
@@ -59,7 +60,9 @@ export class AutomobileInquiriesComponent {
 	xcorreocorredor!: any ;
   xcorredor!: any ;
   currentUser!: any
+  primaTotal!: any
   token!: any
+  ctarifa_exceso!: any
 
   constructor(private router: Router,
               private http: HttpClient,
@@ -121,6 +124,35 @@ export class AutomobileInquiriesComponent {
         this.xcorredor = response.data.xcorredor;
         this.xcorreocorredor = response.data.xcorreocorredor;
         this.xtelefonocorredor = response.data.xtelefonocorredor;
+        this.suma_aseg = response.data.msuma_aseg;
+        this.ctarifa_exceso = response.data.ctarifa_exceso;
+
+        for(let i = 0; i < response.data.list.length; i++){
+          let brcv = response.data.list[i].brcv;
+          let bamplia = response.data.list[i].bamplia;
+          let bperdida = response.data.list[i].bperdida;
+          let cplan = response.data.list[i].cplan_rc;
+          let primarcv = response.data.list[i].mtotal_rcv;
+          let primaamplia = response.data.list[i].mtotal_amplia;
+          let primaperdida = response.data.list[i].mtotal_perdida;
+  
+          if(brcv == 1){
+            let cobertura = 'Rcv';
+            let plan = cplan
+            this.primaTotal = primarcv;
+            this.onToggle(cobertura, plan);
+          }else if(bamplia == 1){
+            let cobertura = 'Cobertura Amplia';
+            let plan = cplan
+            this.primaTotal = primaamplia;
+            this.onToggle(cobertura, plan);
+          }else if(bperdida == 1){
+            let cobertura = 'Perdida Total';
+            let plan = cplan
+            this.primaTotal = primaperdida;
+            this.onToggle(cobertura, plan);
+          }
+        }
 
         const fanoValue = this.fano;
         this.isYearValid = fanoValue !== null && fanoValue !== undefined && parseInt(fanoValue, 10) >= 2007;
@@ -219,22 +251,35 @@ export class AutomobileInquiriesComponent {
           queryParams: { cotizacion: this.cotizacion, 
                          fano: this.fano,
                          cplan: this.plan,
+                         suma_aseg: this.suma_aseg,
+                         prima: this.primaTotal,
+                         ctarifa_exceso: this.ctarifa_exceso,
                           }
         };
 
-        if(this.currentUser.data.ccorredor){
-          window.alert('¡Se ha cotizado exitosamente!');
-          location.reload();
-        }else if(this.currentUser.data.crol == 8){
-          window.alert('¡Se ha cotizado exitosamente!');
-          location.reload();
-        }else{
+        if(this.brcv){
           if (window.confirm("¡Se ha cotizado exitosamente!... ¿Desea Emitir la Cotización?")) {
             this.router.navigate(['/emissions/automobile'], navigationExtras);
           } else {
             location.reload();
           }
+        }else{
+          if(this.currentUser.data.ccorredor){
+            window.alert('¡Se ha cotizado exitosamente!');
+            location.reload();
+          }else if(this.currentUser.data.crol == 8){
+            window.alert('¡Se ha cotizado exitosamente!');
+            location.reload();
+          }else{
+            if (window.confirm("¡Se ha cotizado exitosamente!... ¿Desea Emitir la Cotización?")) {
+              this.router.navigate(['/emissions/automobile'], navigationExtras);
+            } else {
+              location.reload();
+            }
+          }
         }
+
+
 
       }
     })

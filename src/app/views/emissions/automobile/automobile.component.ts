@@ -238,6 +238,7 @@ export class AutomobileComponent {
   messageCoti: boolean = false;
   fechas!: any ;
   recargaInicial!: any ;
+  ocultarRecarga: boolean = true;
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -370,6 +371,7 @@ export class AutomobileComponent {
                 });
 
                 if(this.ccotizacion){
+                  this.discount = false;
                   this.vehicleFormGroup.get('ccotizacion')?.setValue(this.ccotizacion);
                   this.vehicleFormGroup.get('fano')?.setValue(this.fano);
                   this.vehicleFormGroup.get('ctarifa_exceso')?.setValue(this.ctarifa);
@@ -1172,6 +1174,12 @@ export class AutomobileComponent {
             value: response.data.plan[i].xplan_rc,
           });
         }
+
+        if (this.currentUser.data.crol != 7) {
+          this.planList = this.planList.filter(plan => plan.id !== 14);
+          this.planList = this.planList.filter(plan => plan.id !== 15);
+          this.planList = this.planList.filter(plan => plan.id !== 16);
+        }
         
         if(this.ccotizacion){
           const selectedId = parseInt(this.cplan);
@@ -1944,43 +1952,44 @@ export class AutomobileComponent {
       const minStartDate = new Date(currentDate);
       minStartDate.setDate(minStartDate.getDate() - 5);
   
-      if (fdesde < minStartDate) {
-        this.snackBar.open('La Fecha Desde no puede ser menor a 5 días antes de la fecha actual.', '', {
-          duration: 3000,
-        });
+      // if (fdesde < minStartDate) {
+      //   this.snackBar.open('La Fecha Desde no puede ser menor a 5 días antes de la fecha actual.', '', {
+      //     duration: 3000,
+      //   });
   
-        const formattedCurrentDate = format(currentDate, 'yyyy-MM-dd');
-        this.receiptFormGroup.get('fdesde')?.setValue(formattedCurrentDate);
-        this.cdr.detectChanges();
+      //   const formattedCurrentDate = format(currentDate, 'yyyy-MM-dd');
+      //   this.receiptFormGroup.get('fdesde')?.setValue(formattedCurrentDate);
+      //   this.cdr.detectChanges();
   
-        const nextYearDate = addYears(currentDate, 1);
-        const formattedNextYearDate = format(nextYearDate, 'yyyy-MM-dd');
-        this.receiptFormGroup.get('fhasta')?.setValue(formattedNextYearDate);
+      //   const nextYearDate = addYears(currentDate, 1);
+      //   const formattedNextYearDate = format(nextYearDate, 'yyyy-MM-dd');
+      //   this.receiptFormGroup.get('fhasta')?.setValue(formattedNextYearDate);
   
-        return;
-      }
+      //   return;
+      // }
   
       const fhasta = new Date(fdesde);
       const daysToAdd = 30;
   
-      if (fdesde < currentDate && fdesde.getDate() + 6 <= currentDate.getDate()) {
-        this.snackBar.open('Requiere autorización si la Fecha Desde es menor que la fecha actual en 6 días o más.', '', {
-          duration: 3000,
-        });
-      }
+      // if (fdesde < currentDate && fdesde.getDate() + 6 <= currentDate.getDate()) {
+      //   this.snackBar.open('Requiere autorización si la Fecha Desde es menor que la fecha actual en 6 días o más.', '', {
+      //     duration: 3000,
+      //   });
+      // }
+
   
       fhasta.setDate(fhasta.getDate() + daysToAdd);
   
       const maxEndDate = new Date(fdesde);
       maxEndDate.setDate(maxEndDate.getDate() + 366);
   
-      if (fhasta > maxEndDate) {
-        this.snackBar.open('La Fecha Hasta no puede ser mayor a 365 días desde la Fecha Desde.', '', {
-          duration: 3000,
-        });
-        console.error('La Fecha Hasta no puede ser mayor a 365 días desde la Fecha Desde');
-        return;
-      }
+      // if (fhasta > maxEndDate) {
+      //   this.snackBar.open('La Fecha Hasta no puede ser mayor a 365 días desde la Fecha Desde.', '', {
+      //     duration: 3000,
+      //   });
+      //   console.error('La Fecha Hasta no puede ser mayor a 365 días desde la Fecha Desde');
+      //   return;
+      // }
       
       const nextYearDate = addYears(fdesde, 1);
       const formattedNextYearDate = format(nextYearDate, 'yyyy-MM-dd');
@@ -1991,39 +2000,39 @@ export class AutomobileComponent {
   prueba() {
     const fhastaControl = this.receiptFormGroup.get('fhasta');
   
-    if (fhastaControl?.value) {
-      const fdesdeValue = this.receiptFormGroup.get('fdesde')?.value;
+    // if (fhastaControl?.value) {
+    //   const fdesdeValue = this.receiptFormGroup.get('fdesde')?.value;
   
-      if (fdesdeValue) {
-        const fdesde = new Date(fdesdeValue as string);
-        const currentDate = new Date();
-        const maxEndDate = new Date(fdesde);
-        maxEndDate.setDate(maxEndDate.getDate() + 366);
-        const minEndDate = new Date(fdesde);
-        minEndDate.setDate(minEndDate.getDate() + 30);
+    //   if (fdesdeValue) {
+    //     const fdesde = new Date(fdesdeValue as string);
+    //     const currentDate = new Date();
+    //     const maxEndDate = new Date(fdesde);
+    //     maxEndDate.setDate(maxEndDate.getDate() + 366);
+    //     const minEndDate = new Date(fdesde);
+    //     minEndDate.setDate(minEndDate.getDate() + 30);
   
-        const selectedDate = new Date(fhastaControl.value as string);
+    //     const selectedDate = new Date(fhastaControl.value as string);
   
-        if (selectedDate < minEndDate) {
-          console.error('La Fecha Hasta debe ser mayor a la Fecha Desde más 30 días');
-          this.snackBar.open('La Fecha Hasta debe ser mayor a la Fecha Desde más 30 días.', '', {
-            duration: 3000,
-          });
-          this.receiptFormGroup.get('fhasta')?.setValue(currentDate.toISOString());
-          return;
-        }
+    //     if (selectedDate < minEndDate) {
+    //       console.error('La Fecha Hasta debe ser mayor a la Fecha Desde más 30 días');
+    //       this.snackBar.open('La Fecha Hasta debe ser mayor a la Fecha Desde más 30 días.', '', {
+    //         duration: 3000,
+    //       });
+    //       this.receiptFormGroup.get('fhasta')?.setValue(currentDate.toISOString());
+    //       return;
+    //     }
   
-        if (selectedDate > maxEndDate) {
-          this.snackBar.open('La Fecha Hasta no puede ser mayor a 365 días desde la Fecha Desde.', '', {
-            duration: 3000,
-          });
+    //     if (selectedDate > maxEndDate) {
+    //       this.snackBar.open('La Fecha Hasta no puede ser mayor a 365 días desde la Fecha Desde.', '', {
+    //         duration: 3000,
+    //       });
           
-          const nextYearDate = addYears(fdesde, 1);
-          const formattedNextYearDate = format(nextYearDate, 'yyyy-MM-dd');
-          this.receiptFormGroup.get('fhasta')?.setValue(formattedNextYearDate);
-        }
-      }
-    }
+    //       const nextYearDate = addYears(fdesde, 1);
+    //       const formattedNextYearDate = format(nextYearDate, 'yyyy-MM-dd');
+    //       this.receiptFormGroup.get('fhasta')?.setValue(formattedNextYearDate);
+    //     }
+    //   }
+    // }
   }
 
   configurationCollectionDate(newValue: string){
@@ -2194,27 +2203,29 @@ export class AutomobileComponent {
   
     if (this.vehicleFormGroup.get('xcobertura')?.value === 'Rcv') {
       if(this.currentUser.data.crol == 5){
-        if (this.xmetodologia !== 'ANUAL') {
-          this.snackBar.open(`Lo sentimos, solo se puede colocar ${this.xmetodologia} cuando no sea RCV.`, '', {
-            duration: 3000,
-          });
-          this.receiptFormGroup.get('cmetodologiapago')?.setValue('');
-          this.methodOfPaymentControl.setValue('');
-          this.buttonEmissions = false;
-        } else {
-          this.buttonEmissions = true;
-        }
+        // if (this.xmetodologia !== 'ANUAL') {
+        //   this.snackBar.open(`Lo sentimos, solo se puede colocar ${this.xmetodologia} cuando no sea RCV.`, '', {
+        //     duration: 3000,
+        //   });
+        //   this.receiptFormGroup.get('cmetodologiapago')?.setValue('');
+        //   this.methodOfPaymentControl.setValue('');
+        //   this.buttonEmissions = false;
+        // } else {
+
+        // }
+                  this.buttonEmissions = true;
       } else {
-        if (this.xmetodologia !== 'ANUAL') {
-          this.snackBar.open(`Lo sentimos, solo se puede colocar ${this.xmetodologia} cuando no sea RCV.`, '', {
-            duration: 3000,
-          });
-          this.receiptFormGroup.get('cmetodologiapago')?.setValue('');
-          this.methodOfPaymentControl.setValue('');
-          this.buttonEmissions = false;
-        } else {
-          this.buttonEmissions = true;
-        }
+        // if (this.xmetodologia !== 'ANUAL') {
+        //   this.snackBar.open(`Lo sentimos, solo se puede colocar ${this.xmetodologia} cuando no sea RCV.`, '', {
+        //     duration: 3000,
+        //   });
+        //   this.receiptFormGroup.get('cmetodologiapago')?.setValue('');
+        //   this.methodOfPaymentControl.setValue('');
+        //   this.buttonEmissions = false;
+        // } else {
+
+        // }
+                  this.buttonEmissions = true;
 
         // this.buttonEmissions = false;
         // this.snackBar.open(`Lo sentimos, debe formalizar una modalidad de pago para emitir la póliza`, '', {
@@ -2357,7 +2368,7 @@ export class AutomobileComponent {
           concept: "COMPRA",
           principal: "ds",
           clientId:"f2514eda-610b-11ed-8e56-000c29b62ba1",
-          orderId: '1'
+          orderId: orden
         },
         this.callbackFn.bind(this),
         {
@@ -2386,6 +2397,9 @@ export class AutomobileComponent {
           email: this.personsFormGroup.get('email')?.value?.toUpperCase(),
           cestado: this.personsFormGroup.get('cestado')?.value,
           cciudad: this.personsFormGroup.get('cciudad')?.value,
+          fnacimiento: this.personsFormGroup.get('fnacimiento')?.value,
+          iestado_civil: this.personsFormGroup.get('iestado_civil')?.value,
+          isexo: this.personsFormGroup.get('isexo')?.value,
           xdireccion: this.personsFormGroup.get('xdireccion')?.value?.toUpperCase(),
           xplaca: this.vehicleFormGroup.get('xplaca')?.value?.toUpperCase(),
           xmarca: this.vehicleFormGroup.get('xmarca')?.value,
@@ -2434,18 +2448,30 @@ export class AutomobileComponent {
           id_inma: this.vehicleFormGroup.get('id_inma')?.value,
           cuso: this.vehicleFormGroup.get('cuso')?.value,
           xuso: this.vehicleFormGroup.get('xuso')?.value,
+          cpais: 58,
+          cusuario: this.currentUser.data.cusuario,
+          ctipopago: this.receiptFormGroup.get('ctipopago')?.value,
+          cbanco: this.receiptFormGroup.get('cbanco')?.value,
+          cbanco_destino: this.receiptFormGroup.get('cbanco_destino')?.value,
+          fcobro: this.receiptFormGroup.get('fcobro')?.value,
+          xreferencia: this.receiptFormGroup.get('xreferencia')?.value,
+          mpagado: this.receiptFormGroup.get('mpagado')?.value,
+          mprima_pagada: this.receiptFormGroup.get('mprima_pagada')?.value,
+          mprima_accesorio: this.receiptFormGroup.get('mprima_accesorio')?.value,
           npesovacio: this.vehicleFormGroup.get('npesovacio')?.value,
           ncapcarga: this.vehicleFormGroup.get('ncapcarga')?.value,
           paditamento: this.planFormGroup.get('paditamento')?.value,
           msuma_aditamento: this.planFormGroup.get('msuma_aditamento')?.value,
           mprima_aditamento: this.planFormGroup.get('mprima_aditamento')?.value,
-          cpais: 58,
-          cusuario: this.currentUser.data.cusuario,
         }) 
       });
       let res = await response.json();
+      console.log(res)
       if (res.data) {
         this.ccontratoflota = res.data.ccontratoflota;
+        this.buttonEmissions = false;
+      }else{
+        this.buttonEmissions = true;
       }
   }
 
