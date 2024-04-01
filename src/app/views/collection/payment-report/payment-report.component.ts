@@ -28,7 +28,8 @@ export class PaymentReportComponent {
   currentFile?: File;
 
   idTrans : any
-  
+  diference : boolean = false
+
   viewData : boolean = false
   viewBank : boolean = false
   paymentMix : boolean = false
@@ -300,6 +301,7 @@ export class PaymentReportComponent {
       }
 
       this.viewData = false;
+      this.diference = false
 
       if(response.searchReceipt.receipt.length > 0){
         for(let i = 0; i < response.searchReceipt.receipt.length; i++){
@@ -309,6 +311,7 @@ export class PaymentReportComponent {
           // Verificar si mdiferencia es diferente de nulo
           if (currentReceipt.mdiferencia !== null) {
             this.viewData = true; // Cambiar el estado del booleano si se encuentra un valor diferente de nulo
+            this.diference = true
           }
 
           this.cliente = response.searchReceipt.receipt[i].xcliente
@@ -355,8 +358,8 @@ export class PaymentReportComponent {
               fhasta_pol: ISOFhastaPol,
               fdesde_rec: ISOFdesdeP,
               fhasta_rec: ISOFhastaP,
-              mprimabruta: response.searchReceipt.receipt[i].mmontorec,
-              mprimabrutaext: response.searchReceipt.receipt[i].mmontorecext,
+              mprimabruta: response.searchReceipt.receipt[i].mmontorec ,
+              mprimabrutaext: response.searchReceipt.receipt[i].mmontorecext ,
               ptasamon: response.searchReceipt.receipt[i].ptasamon,
               seleccionado : false,
               mdiferenciaext: response.searchReceipt.receipt[i].mdiferenciaext,
@@ -409,38 +412,12 @@ export class PaymentReportComponent {
   calculateMount(i :any){
     const creds = this.searchReceipt.get("receipt") as FormArray
 
-    const sumaTotal = creds.value.reduce((acumulador: any, recibo: { seleccionado: any; mprimabrutaext: any; }) => {
-      if (recibo.seleccionado) {
+    const sumaTotal = creds.value.reduce((acumulador: any, recibo: { seleccionado: any; mdiferenciaext: any; mprimabrutaext: any; }) => {
+      if (recibo.seleccionado && recibo.mdiferenciaext == null) {
           acumulador += recibo.mprimabrutaext;
       }
-      return acumulador;
-    }, 0);
-
-    this.mount = sumaTotal //suma de los dolares brutos
-
-    const operation = this.mount * this.bcv
-    this.mountBs = operation.toFixed(2)  //dolares brutos convertidos en bolivares 
-
-    const mountIGTF = this.mount + ((3/100)*this.mount) 
-    this.mountIGTF = mountIGTF.toFixed(2) //dolares netos
-
-    const mountBs = this.mountIGTF*this.bcv
-    this.mountBsExt = mountBs.toFixed(2) //bolivares netos
-
-    const porcentajeBs = this.bcv * ((3/100)*this.mount) 
-    this.mountBsP = porcentajeBs.toFixed(2) //porcentaje del igtf en bolivares 
-
-    const porcentaje = (3/100)*this.mount
-    this.mountP = porcentaje.toFixed(2) //porcentaje del igtf en dolares  
-
-  }
-
-  calculateMountDiferent(i :any){
-    const creds = this.searchReceipt.get("receipt") as FormArray
-
-    const sumaTotal = creds.value.reduce((acumulador: any, recibo: { seleccionado: any; mdiferenciaext: any; }) => {
-      if (recibo.seleccionado) {
-          acumulador += recibo.mdiferenciaext;
+      if(recibo.seleccionado && recibo.mdiferenciaext !== 0){
+        acumulador += recibo.mdiferenciaext;
       }
       return acumulador;
     }, 0);
@@ -540,7 +517,6 @@ export class PaymentReportComponent {
   
           });
         }else{
-
           this.receiptList.push({
             cnpoliza: receipt.value[i].cnpoliza,
             cnrecibo: receipt.value[i].cnrecibo,
@@ -632,62 +608,66 @@ export class PaymentReportComponent {
     const fecha = new Date()
     let fechaTran = fecha.toISOString().substring(0, 10);
 
-    const savePaymentTrans = {
-      ctransaccion : this.idTrans,
-      receipt : this.receiptList,
-      report: this.transferList,
-      casegurado: asegurado,
-      mpago : this.mountBs,
-      mpagoext : this.mountIGTF,
-      ptasamon : this.bcv,
-      freporte : fecha ,
-      cprog : 'Reporte de pago web',
-      cusuario : 13,
-      iestadorec : 'N',
-      ifuente : 'Web_Sys',
-      iestado : 0,
-      ccategoria : this.searchReceipt.get('ccategoria')?.value,
-      diference: false
+    if(this.diference){
 
-    }
-    // primero llenamos el recipo y la tabla de transacciones 
-    this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
-      if (response.status) {
-        this.uploadFile()
-      }
-    })   
-
-    setTimeout(() => {
-      location.reload();
-    }, 3000);
-  }
-
-  async onSubmitDiferent(){
-
-    await this.llenarlistas()
-    this.Submit = true
-
-    const reporData = {
-      report : this.transferList,
-      ctransaccion : this.idTrans,
-      casegurado: this.searchReceipt.get('xcedula')?.value,
-      diference : true
-
-    }
-
-    this.http.post(environment.apiUrl + '/api/v1/collection/create-report', reporData).subscribe( (response: any) => {
-      if (response.status) {
-        this.uploadFile()
+      const reporData = {
+        report : this.transferList,
+        ctransaccion : this.idTrans,
+        casegurado: this.searchReceipt.get('xcedula')?.value,
+        diference : this.diference,
+        receipt : this.receiptList,
+        mpago : this.mountBs,
+        mpagoext : this.mountIGTF,
+        ptasamon : this.bcv,
+        freporte : fecha ,
       }
 
-    })
-          
-    setTimeout(() => {
-      location.reload();
-    }, 3000);
-      
+      this.http.post(environment.apiUrl + '/api/v1/collection/create-report-diference', reporData).subscribe( (response: any) => {
+        if (response.status) {
+          this.uploadFile()
+        }
+  
+      })
+            
+      setTimeout(() => {
+        location.reload();
+      }, 3000);
+
+    }else{
+      const savePaymentTrans = {
+        ctransaccion : this.idTrans,
+        receipt : this.receiptList,
+        report: this.transferList,
+        casegurado: asegurado,
+        mpago : this.mountBs,
+        mpagoext : this.mountIGTF,
+        ptasamon : this.bcv,
+        freporte : fecha ,
+        cprog : 'Reporte de pago web',
+        cusuario : 13,
+        iestadorec : 'N',
+        ifuente : 'Web_Sys',
+        iestado : 0,
+        ccategoria : this.searchReceipt.get('ccategoria')?.value,
+        diference: this.diference
+
+      }
+
+      //primero llenamos el recipo y la tabla de transacciones 
+      this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
+        if (response.status) {
+          this.uploadFile()
+        }
+      })   
+  
+      setTimeout(() => {
+        location.reload();
+      }, 3000);
+    }
+
 
   }
+
 
   uploadFile(){
 
