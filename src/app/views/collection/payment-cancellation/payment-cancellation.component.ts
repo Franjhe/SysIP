@@ -334,12 +334,7 @@ export class PaymentCancellationComponent {
             let dateNotification = new Date(curr.freporte);
             let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
 
-            let idTrades = curr.cramo
-            let trades = this.tradesList
-            let filterTRades = trades.filter((data: { id: any; }) => data.id == idTrades)
-            const tradesValue = filterTRades[0].value
 
-          
           if (!acc[curr.ctransaccion]) {
               acc[curr.ctransaccion] = {
                   id: curr.ctransaccion,
@@ -366,37 +361,6 @@ export class PaymentCancellationComponent {
               };
           }
 
-          let bankValue : any
-          let bankValueEmi : any
-
-          if(curr.moneda_pago == 'USD ' ){
-
-            //banco destino
-            let idBank = curr.cbanco
-            let bank = this.bankInternational
-            let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
-            bankValue = filterBank[0]?.value
-
-            //banco emisor
-            let idBankEmi = curr.cbanco_destino
-            let bankEmi = this.bankInternational
-            let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
-            bankValueEmi = filterBankEmi[0]?.value
-
-          }else
-          {
-            //banco destino
-            let idBank = curr.cbanco
-            let bank = this.bankNational
-            let filterBank = bank.filter((data: { id: any; }) => data.id == idBank)
-            bankValue = filterBank[0]?.value
-
-            //banco emisor
-            let idBankEmi = curr.cbanco_destino
-            let bankEmi = this.bankNational
-            let filterBankEmi = bankEmi.filter((data: { id: any; }) => data.id == idBankEmi)
-            bankValueEmi = filterBankEmi[0]?.value
-          }
 
           const imageUrl = curr.xruta;
           const fullImageUrl = this.getImage(imageUrl);
@@ -411,7 +375,7 @@ export class PaymentCancellationComponent {
               cnpoliza: curr.cnpoliza,
               mmontorec: curr.mmontorec,
               mmontorecext: curr.mmontorecext,
-              cramo: tradesValue,
+              cramo: curr.cramo,
               cplan: curr.cplan,
               fdesde: curr.fdesde,
               fhasta: curr.fhasta,
@@ -422,8 +386,8 @@ export class PaymentCancellationComponent {
               npago: curr.npago,
               moneda_pago: curr.moneda_pago,
               xreferencia: curr.xreferencia,
-              cbanco: bankValueEmi,
-              cbanco_destino: bankValue,
+              cbanco: curr.cbanco,
+              cbanco_destino: curr.cbanco_dest,
               monto_declarado: curr.monto_declarado,
               monto_declarado_ext: curr.monto_declarado_ext,
               mpagoigtf: curr.mpagoigtf,

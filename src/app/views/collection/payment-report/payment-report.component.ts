@@ -34,6 +34,7 @@ export class PaymentReportComponent {
   viewBank : boolean = false
   paymentMix : boolean = false
   Submit : boolean = false 
+  puedeAvanzar: boolean = false 
 
   usd : boolean = false
   pmovil : boolean = false
@@ -407,6 +408,30 @@ export class PaymentReportComponent {
 
 
 
+  }
+
+  determinarSiPuedeAvanzar(){
+    if(this.diference){
+      const creds = this.searchReceipt.get("receipt") as FormArray
+ 
+      const sumaTotal = creds.value.reduce((acumulador: any, recibo: { seleccionado: any; mdiferenciaext: any; mprimabrutaext: any; }) => {
+        if (recibo.seleccionado && recibo.mdiferenciaext == null) {
+          this.puedeAvanzar = false
+          this.toast.open('Necesita pagar sus recibos que poseen diferencia para poder avanzar', '', {
+            duration: 5000,
+            verticalPosition: 'top',
+            panelClass: ['error-toast']
+          }); 
+        }
+        if(recibo.seleccionado && recibo.mdiferenciaext !== 0){
+          this.puedeAvanzar = true
+        }
+        return acumulador;
+      }, 0);
+
+    }else {
+      this.puedeAvanzar = true
+    }
   }
 
   calculateMount(i :any){

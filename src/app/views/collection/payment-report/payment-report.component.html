@@ -113,7 +113,7 @@
 
             <div class="mt-5 text-center">
               <button mat-button matStepperPrevious class="bg-warning text-light p-3">Atras</button>
-              <button mat-button matStepperNext class="bg-primary text-light">Siguiente</button>
+              <button mat-button matStepperNext  (click)="determinarSiPuedeAvanzar()" [disabled]="!puedeAvanzar" class="bg-primary text-light">Siguiente</button>
             </div>
 
           </form>
