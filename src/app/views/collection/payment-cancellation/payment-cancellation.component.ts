@@ -533,7 +533,7 @@ export class PaymentCancellationComponent {
       if(creds.at(i).get('cmoneda')?.value == 'BS'){
         let monto = creds.at(i).get('mdiferencia')?.value / this.bcv
         data = {
-          transacccion : creds.at(i).get('id')?.value,
+          transaccion : creds.at(i).get('id')?.value,
           xobservacion: creds.at(i).get('xobservacion')?.value,
           mdiferencia: creds.at(i).get('mdiferencia')?.value,
           mdiferenciaext: monto,
@@ -550,7 +550,7 @@ export class PaymentCancellationComponent {
       }else{
         let monto = creds.at(i).get('mdiferencia')?.value * this.bcv
         data = {
-          transacccion : creds.at(i).get('id')?.value,
+          transaccion : creds.at(i).get('id')?.value,
           xobservacion: creds.at(i).get('xobservacion')?.value,
           mdiferenciaext: creds.at(i).get('mdiferencia')?.value,
           mdiferencia: monto,
@@ -574,26 +574,27 @@ export class PaymentCancellationComponent {
 
     }
     else if(creds.at(i).get('iestadorec')?.value == 'CS' ){
-      const data = {
-        transacccion : creds.at(i).get('id')?.value,
-        iestadorec: creds.at(i).get('iestadorec')?.value,
+      let data = {
+        transaccion : creds.at(i).get('id')?.value,
+        iestadorec: 'C',
         casegurado : creds.at(i).get('casegurado')?.value,
-        mdiferencia: creds.at(i).get('mdiferencia')?.value,
-        cmoneda: creds.at(i).get('cmoneda')?.value,
+        msaldodif: creds.at(i).get('mdiferencia')?.value,
+        cmoneda_dif: creds.at(i).get('cmoneda')?.value,
         correo : creds.at(i).get('xcorreo')?.value,
         idiferencia : "H",
         detalle : creds.at(i).get('poliza')?.value,
+        ptasamon : this.bcv
       }
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt-positive-balance', data ).subscribe((response: any) => {
-        if(response.status){
-          location.reload()
-        }
+        // if(response.status){
+        //   location.reload()
+        // }
   
       })
     }
     else if(creds.at(i).get('iestadorec')?.value == 'C' ){
       const data = {
-        transacccion : creds.at(i).get('id')?.value,
+        transaccion : creds.at(i).get('id')?.value,
         iestadorec: creds.at(i).get('iestadorec')?.value,
         casegurado : creds.at(i).get('casegurado')?.value,
         correo : creds.at(i).get('xcorreo')?.value,

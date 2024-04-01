@@ -75,6 +75,8 @@ export class PaymentReportComponent {
   diferenceBool :boolean = false;
   messageDiference : any = []
 
+  PositiveBalance : any
+
   constructor( private _formBuilder: FormBuilder,
     private http: HttpClient,
     readonly dialog: MatDialog,
@@ -300,6 +302,22 @@ export class PaymentReportComponent {
       }else{
         this.idTrans = response.searchReceipt.transaccion
       }
+
+
+      let sumaBS = 0;
+      let sumaUSD = 0;
+
+      response.searchReceipt.saldo.forEach((item: any) => {
+        if (item.cmoneda_dif === 'BS') {
+          sumaBS += item.msaldodif;
+        } else if (item.cmoneda_dif === 'USD') {
+          sumaUSD += item.msaldodif;
+        }
+      });
+
+      this.PositiveBalance = 'Saldo en Bs ' + sumaBS + '/' + 'Saldo  en USD ' + sumaUSD
+      
+
 
       this.viewData = false;
       this.diference = false
