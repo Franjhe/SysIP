@@ -76,6 +76,8 @@ export class PaymentCancellationComponent {
   messajeError : any
   error : boolean = false
   revision : boolean = false
+  cobradoSAF : boolean = false
+
 
   mount : any //monto de la suma de los recibos 
   mountIGTF : any //monto con el calculo igtf 
@@ -109,7 +111,6 @@ export class PaymentCancellationComponent {
   listSoport : any = []
   diference : boolean = false
 
-  listReceipts  : any = []
   boollistReceipts: boolean = false
   GroupReceiptsBool : boolean = false
   groupReceiptsForm = this._formBuilder.group({
@@ -230,7 +231,6 @@ export class PaymentCancellationComponent {
 
     })
 
-
     //bancos pago movil
     let bankReceptorPM = {
       ctipopago: 3
@@ -327,94 +327,13 @@ export class PaymentCancellationComponent {
     fetch(environment.apiUrl + '/api/v1/collection/search-notification' )
     .then((response) => response.json())
     .then(data => {
-        this.listReceipts = data.searchPaymentReport
-
-        const transformedData = Object.values(this.listReceipts.reduce((acc : any, curr: any) => {
-          
-            let dateNotification = new Date(curr.freporte);
-            let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
-
-
-          if (!acc[curr.ctransaccion]) {
-              acc[curr.ctransaccion] = {
-                  id: curr.ctransaccion,
-                  ctransaccion: curr.ctransaccion,
-                  iestadorec : '',
-                  xobservacion : '',
-                  mdiferencia : '',
-                  idiferencia : '',
-                  cmoneda : '',
-                  recibo: '',
-                  xcorreo:curr.xcorreo,
-                  freporte:fechaISOHasta,
-                  casegurado: curr.casegurado,
-                  xcliente: curr.xcliente,
-                  iestado: curr.iestado,
-                  iestado_tran: curr.iestado_tran,
-                  cdoccob: curr.cdoccob,
-                  monto_transaccion: curr.monto_transaccion,
-                  monto_transaccion_ext: curr.monto_transaccion_ext,
-                  ptasamon: curr.ptasamon,
-                  recibos: [],
-                  poliza: [],
-                  diferencia: []
-              };
-          }
-
-
-          const imageUrl = curr.xruta;
-          const fullImageUrl = this.getImage(imageUrl);
-
-          const safeImageUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullImageUrl);
-
-   
-          acc[curr.ctransaccion].poliza.push({
-              crecibo: curr.crecibo,
-              cnrecibo:curr.cnrecibo,
-              cpoliza: curr.cpoliza,
-              cnpoliza: curr.cnpoliza,
-              mmontorec: curr.mmontorec,
-              mmontorecext: curr.mmontorecext,
-              cramo: curr.cramo,
-              cplan: curr.cplan,
-              fdesde: curr.fdesde,
-              fhasta: curr.fhasta,
-          });
-          
-          acc[curr.ctransaccion].recibos.push({
-              cmoneda: curr.cmoneda,
-              npago: curr.npago,
-              moneda_pago: curr.moneda_pago,
-              xreferencia: curr.xreferencia,
-              cbanco: curr.cbanco,
-              cbanco_destino: curr.cbanco_dest,
-              monto_declarado: curr.monto_declarado,
-              monto_declarado_ext: curr.monto_declarado_ext,
-              mpagoigtf: curr.mpagoigtf,
-              mpagoigtfext: curr.mpagoigtfext,
-              ximagen: safeImageUrl
-
-          });
-      
-          acc[curr.ctransaccion].diferencia.push({
-            mountdiferencia: curr.mdiferencia,
-            mdiferenciaext: curr.mdiferenciaext,
-            tasa_diferencia: curr.tasa_diferencia,
-            xobservacion_muestra: curr.xobservacion,
-            estado_diferencia: curr.estado_diferencia,
-            moneda_cobro_diferencia: curr.moneda_cobro_diferencia,
-          });
-        
-          return acc;
-        }, {}));
         // Obtener la referencia al FormArray transactions
         const transactionsArray = this.groupReceiptsForm.get("agrupado") as FormArray
-
-        // Iterar sobre los elementos de transformedData y agregarlos al FormArray
-        transformedData.forEach((transaction : any) => {
-
+        
+        data.searchPaymentReport.forEach((transaction: any) => {
           let dateNotification = new Date(transaction.freporte);
           let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
+
           const transactionGroup = this._formBuilder.group({
             id: transaction.ctransaccion,
             ctransaccion: transaction.ctransaccion,
@@ -434,44 +353,70 @@ export class PaymentCancellationComponent {
             monto_transaccion: transaction.monto_transaccion,
             monto_transaccion_ext: transaction.monto_transaccion_ext,
             ptasamon: transaction.ptasamon,
-            recibos: this._formBuilder.array([]),
-            poliza:  this._formBuilder.array([]),
-            diferencia: this._formBuilder.array([])
+            poliza: this._formBuilder.array([]),
+            recibos: this._formBuilder.array([])
           });
 
-          // Obtener la referencia a los FormArrays banco y poliza
-          const receiptArray = transactionGroup.get('recibos') as FormArray;
           const polizaArray = transactionGroup.get('poliza') as FormArray;
-          const diferenceArray = transactionGroup.get('diferencia') as FormArray;
+          transaction.poliza.forEach((poliza:any) => {
+            polizaArray.push(this._formBuilder.group({
+              crecibo: poliza.crecibo,
+              cnrecibo: poliza.cnrecibo,
+              cpoliza: poliza.cpoliza,
+              cnpoliza: poliza.cnpoliza,
+              mmontorec: poliza.mmontorec,
+              mmontorecext: poliza.mmontorecext,
+              iestadorec: poliza.iestadorec,
+              cramo: poliza.cramo, 
+              cplan: poliza.cplan,
+              codigo_corredor : poliza.codigo_corredor,
+              corredor : poliza.corredor,
+              mdiferencia: poliza.mdiferencia,
+              mdiferenciaext: poliza.mdiferenciaext,
+              idiferencia: poliza.idiferencia,
+              tasa_diferencia: poliza.tasa_diferencia,
+              xobservacion: poliza.xobservacion,
+              estado_diferencia: poliza.estado_diferencia,
+              freport_pago: poliza.freport_pago,
+              moneda_cobro_diferencia: poliza.moneda_cobro_diferencia,               // Agrega los demás campos de la póliza aquí
+            }));
+          });
+      
+          // Llenar la sección 'recibos' del formulario
+          const recibosArray = transactionGroup.get('recibos') as FormArray;
+          transaction.recibos.forEach((recibo:any) => {
 
-          // Iterar sobre los elementos de la propiedad banco y agregarlos al FormArray
-          transaction.recibos.forEach((reciboItem : any) => {
-            receiptArray.push(this._formBuilder.group(reciboItem));
+            const imageUrl = recibo.xruta;
+            const fullImageUrl = this.getImage(imageUrl);
+            const safeImageUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullImageUrl);
+
+            recibosArray.push(this._formBuilder.group({
+              ctransaccion: recibo.ctransaccion,
+              cbanco_destino: recibo.cbanco_destino,
+              cbanco_origen: recibo.cbanco_origen,
+              npago: recibo.npago,
+              cmoneda: recibo.cmoneda,
+              ptasamon: recibo.ptasamon,
+              monto_declarado: recibo.mpago,
+              monto_declarado_ext: recibo.mpagoext, 
+              mpagoigtf: recibo.mpagoigtf,
+              mpagoigtfext : recibo.mpagoigtfext,
+              xreferencia : recibo.xreferencia,
+              xruta: safeImageUrl,
+            }));
+
+            const sumaMpagoext = transaction.recibos.reduce((total: any, item: any ) => total + item.mpagoext, 0);
+
+            const sumaMpago = transaction.recibos.reduce((total: any, item: any ) => total + item.mpago, 0);
+      
+      
+            this.totalNotificated = sumaMpago.toFixed(2)
+            this.totalNotificatedExt = sumaMpagoext.toFixed(2)
           });
 
-          // Iterar sobre los elementos de la propiedad poliza y agregarlos al FormArray
-          transaction.poliza.forEach((polizaItem : any) => {
-            polizaArray.push(this._formBuilder.group(polizaItem));
-          });
-
-          // Iterar sobre los elementos de la propiedad poliza y agregarlos al FormArray
-          transaction.diferencia.forEach((diferenceItem : any) => {
-            diferenceArray.push(this._formBuilder.group(diferenceItem));
-          });
-
-          // Agregar el FormGroup al FormArray transactions
+          // Agregar el FormGroup principal al FormArray transactions
           transactionsArray.push(transactionGroup);
         });
-      
-      const listNotificate = data.searchPaymentReport
-
-      const sumaMpagoext = listNotificate.reduce((total: any, item: any ) => total + item.monto_declarado_ext, 0);
-
-      const sumaMpago = listNotificate.reduce((total: any, item: any ) => total + item.monto_declarado, 0);
-
-
-      this.totalNotificated = sumaMpago.toFixed(2)
-      this.totalNotificatedExt = sumaMpagoext.toFixed(2)
 
     })
 
@@ -627,7 +572,26 @@ export class PaymentCancellationComponent {
   
       })
 
-    }else if(creds.at(i).get('iestadorec')?.value !== 'ER' ){
+    }
+    else if(creds.at(i).get('iestadorec')?.value == 'CS' ){
+      const data = {
+        transacccion : creds.at(i).get('id')?.value,
+        iestadorec: creds.at(i).get('iestadorec')?.value,
+        casegurado : creds.at(i).get('casegurado')?.value,
+        mdiferencia: creds.at(i).get('mdiferencia')?.value,
+        cmoneda: creds.at(i).get('cmoneda')?.value,
+        correo : creds.at(i).get('xcorreo')?.value,
+        idiferencia : "H",
+        detalle : creds.at(i).get('poliza')?.value,
+      }
+      this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt-positive-balance', data ).subscribe((response: any) => {
+        if(response.status){
+          location.reload()
+        }
+  
+      })
+    }
+    else if(creds.at(i).get('iestadorec')?.value == 'C' ){
       const data = {
         transacccion : creds.at(i).get('id')?.value,
         iestadorec: creds.at(i).get('iestadorec')?.value,
@@ -651,7 +615,11 @@ export class PaymentCancellationComponent {
 
     if(creds.at(i).get('iestadorec')?.value == 'ER'){
       this.revision = true
-    }else{
+    }
+    else if(creds.at(i).get('iestadorec')?.value == 'CS'){
+      this.cobradoSAF = true
+    }
+    else{
       this.revision = false
 
     }

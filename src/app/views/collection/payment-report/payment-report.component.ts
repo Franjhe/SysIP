@@ -406,28 +406,27 @@ export class PaymentReportComponent {
 
     });
 
-
-
   }
 
   determinarSiPuedeAvanzar(){
     if(this.diference){
+
       const creds = this.searchReceipt.get("receipt") as FormArray
- 
-      const sumaTotal = creds.value.reduce((acumulador: any, recibo: { seleccionado: any; mdiferenciaext: any; mprimabrutaext: any; }) => {
-        if (recibo.seleccionado && recibo.mdiferenciaext == null) {
-          this.puedeAvanzar = false
+
+      creds.value.forEach((recibo:any) => {
+
+        if(recibo.seleccionado && recibo.mdiferenciaext > 0){
+          this.puedeAvanzar = true
+        }
+        else if(recibo.seleccionado && recibo.mdiferenciaext == null) {
           this.toast.open('Necesita pagar sus recibos que poseen diferencia para poder avanzar', '', {
             duration: 5000,
             verticalPosition: 'top',
             panelClass: ['error-toast']
           }); 
         }
-        if(recibo.seleccionado && recibo.mdiferenciaext !== 0){
-          this.puedeAvanzar = true
-        }
-        return acumulador;
-      }, 0);
+
+      })
 
     }else {
       this.puedeAvanzar = true
@@ -446,6 +445,8 @@ export class PaymentReportComponent {
       }
       return acumulador;
     }, 0);
+
+    this.determinarSiPuedeAvanzar()
 
     this.mount = sumaTotal //suma de los dolares brutos
 
