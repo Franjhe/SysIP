@@ -56,6 +56,12 @@
                 <th mat-header-cell *matHeaderCellDef mat-sort-header> Observaciones </th>
                 <td mat-cell *matCellDef="let row"> {{row.xobserva}}</td>
             </ng-container>
+            <ng-container matColumnDef="8">
+                <th mat-header-cell *matHeaderCellDef> </th>
+                <td mat-cell *matCellDef="let row">
+                    <button mat-raised-button color="primary">Detalles</button>
+                </td>
+            </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <!-- <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr> -->
@@ -181,7 +187,7 @@
                             (click)="cancelPaymentRequests()">Cancelar</button></div>
                     <!-- <div class="col col-8"></div> -->
                     <div class="col col-4 text-center">
-                        <button mat-raised-button (click)="showDetailReceipts()" >Ver Recibos</button>
+                        <button mat-raised-button (click)="showDetailReceipts()" color="primary">Ver Recibos</button>
                     </div>
                     <div class="col col-4 text-center">
                         <button mat-raised-button (click)="proccessPaymentRequests(paymentRequest.csolpag)" [disabled]="paymentRequest.xstatsol == 'Cancelado'">Procesar

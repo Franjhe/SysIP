@@ -51,7 +51,7 @@ export class PaymentRequestsComponent {
   @ViewChild('observaciones') observaciones!: TemplateRef<any>;
   @ViewChild('detailReceipts') detailReceipts!: TemplateRef<any>;
 
-  displayedColumns: string[] = ['0', '1', '2', '3', '4', '5', '6', '7'];
+  displayedColumns: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8'];
   dataSource = new MatTableDataSource<any>;
   defaultDataSource = new MatTableDataSource<any>;
   displayedColumns2: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
