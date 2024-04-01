@@ -183,13 +183,16 @@
 
                 </div>
                 <div class="row mt-4">
-                    <div class="col col-4 text-center"><button mat-raised-button
+                    <div class="col col-3 text-center"><button mat-raised-button
                             (click)="cancelPaymentRequests()">Cancelar</button></div>
                     <!-- <div class="col col-8"></div> -->
-                    <div class="col col-4 text-center">
+                    <div class="col col-3 text-center">
                         <button mat-raised-button (click)="showDetailReceipts()" color="primary">Ver Recibos</button>
                     </div>
-                    <div class="col col-4 text-center">
+                    <div class="col col-3 text-center">
+                        <button mat-raised-button (click)="printPaymentRequest(paymentRequest.csolpag)" color="accent">Imprimir</button>
+                    </div>
+                    <div class="col col-3 text-center">
                         <button mat-raised-button (click)="proccessPaymentRequests(paymentRequest.csolpag)" [disabled]="paymentRequest.xstatsol == 'Cancelado'">Procesar
                             Orden</button>
                     </div>

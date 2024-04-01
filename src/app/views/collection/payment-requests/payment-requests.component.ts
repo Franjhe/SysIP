@@ -7,6 +7,9 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { PdfGenerationService } from '../../../_services/ServicePDF';
+import { from, Observable } from 'rxjs';
+// 
 import { SelectionModel } from '@angular/cdk/collections';
 import { clear } from 'console';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
@@ -78,8 +81,8 @@ export class PaymentRequestsComponent {
     readonly dialog: MatDialog,
     private toast: MatSnackBar,
     private _snackBar: MatSnackBar,
-    private _liveAnnouncer: LiveAnnouncer
-
+    private _liveAnnouncer: LiveAnnouncer,
+    private pdfGenerationService: PdfGenerationService,
   ) {
   }
 
@@ -109,7 +112,7 @@ export class PaymentRequestsComponent {
 
   showDetailPaymentRequest(csolpag: any, index: any) {
     // if (condition) {
-      
+
     // }
     // this.paymentRequest.clear;
     // alert(csolpag);
@@ -180,18 +183,19 @@ export class PaymentRequestsComponent {
     return this.dialog.closeAll();
   }
 
+  printPaymentRequest(csolpag: any) {
+    const observable = from(this.pdfGenerationService.CreatePaymentRequestPDF(this.paymentRequest));
 
-  /** Announce the change in sort state for assistive technology. */
-  announceSortChange(sortState: Sort) {
-    // This example uses English messages. If your application supports
-    // multiple language, you would internationalize these strings.
-    // Furthermore, you can customize the message to add additional
-    // details about the values being sorted.
-    if (sortState.direction) {
-      this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
-    } else {
-      this._liveAnnouncer.announce('Sorting cleared');
-    }
+    observable.subscribe(
+      (data) => {
+        // this.check = true;
+        // this.loadingPdf = false
+      },
+      (error) => {
+      }
+    );
+
+    return this.dialog.closeAll();
   }
 
   sortData(sort: Sort) {
@@ -220,7 +224,7 @@ export class PaymentRequestsComponent {
   compare(a: number | string, b: number | string, isAsc: boolean) {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
-  
+
 
 }
 
@@ -233,4 +237,4 @@ export class PaymentRequestsComponent {
   bootstrap: [PaymentRequestsComponent],
   providers: []
 })
-export class AppModule {}
+export class AppModule { }
