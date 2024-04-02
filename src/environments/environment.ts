@@ -6,6 +6,7 @@ export const environment = {
   production: false,
      apiUrl : " http://localhost:5253",
      apiUrl_reporte : "https://localhost",
+     apiUrl_prod : "https://api.lamundialdeseguros.com"
 
 };
 
