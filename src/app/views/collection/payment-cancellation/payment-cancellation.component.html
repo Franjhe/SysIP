@@ -22,7 +22,7 @@
                     [formGroupName]="i" 
                     [id]="'pannel'+i">
                     <ng-template ngbPanelHeader let-opened="opened"  >
-                      <div class="row p-3  bg-info bg-gradient" [class.bg-danger]="group.value.iestado_tran == 'ER' ">
+                      <div class="row p-3 button bg-info bg-gradient" [class.bg-danger]="group.value.iestado_tran == 'ER' ">
 
                         <div class="col-4 text-light" style="font-size: medium;">
                           Asegurado {{group.value.casegurado}} {{group.value.xcliente}}<br>
@@ -33,6 +33,12 @@
                         <div class="col-4 text-light" style="font-size: medium;">
                           Pago Bs {{group.value.monto_transaccion}}<br>
                           Pago $  {{group.value.monto_transaccion_ext}}<br>
+                        </div>
+
+                        <div *ngIf="group.value.msaldodif > 0" class="col-4 text-light" style="font-size: medium;">
+                          Saldo a favor de {{group.value.msaldodif}} {{group.value.cmoneda_dif}}<br>
+                          Tasa del día {{group.value.tasa_saldo}}<br>
+
                         </div>
 
                         <div class="col-2">
@@ -53,18 +59,30 @@
                             <strong>Ramo</strong>  {{poliza.cramo}}<br>
                             <strong>Monto Bs</strong> {{poliza.mmontorec}}<br>
                             <strong>Monto $</strong>  {{poliza.mmontorecext}}<br>
+                            <strong>Productor</strong> {{poliza.codigo_corredor}} - {{poliza.corredor}}
+
+                            <div class="row bg-danger " *ngIf="poliza.mdiferenciaext > 1">
+                              <h2 class="text-light">Recibo con diferencia</h2>
+                                <h4 class="text-light">
+                                  <strong>Diferencia de :</strong> {{poliza.mdiferencia}} Bs /{{poliza.mdiferenciaext}} USD <br/>
+                                  <strong>Moneda de cobro de diferencia : </strong>{{poliza.moneda_cobro_diferencia}} <br/>
+                                  <strong>Observacion : </strong>"{{poliza.xobservacion}}" <br/>
+                                  <strong>Tasa de cobro de diferencia: </strong>{{poliza.tasa_diferencia}}
+                                </h4> 
+                            </div> 
                         </div>
 
                         <div  class="col" *ngFor="let recibos of group.value.recibos;let i=index">
-                          <h2>Detalles del Soporte de pago</h2>
-                            <strong>Banco remitente</strong>  {{recibos.cbanco}}<br>
+                          <h2>Detalles del Soporte de pago, Número {{i + 1}}</h2> 
+
+                            <strong>Banco remitente</strong>  {{recibos.cbanco_origen}}<br>
                             <strong>Banco Receptor</strong> {{recibos.cbanco_destino}}<br>
-                            <div *ngIf="recibos.moneda_pago == 'Bs  ' ">
-                              <strong> Monto Pagado</strong>  {{recibos.monto_declarado}} {{recibos.moneda_pago}}<br>
+                            <div *ngIf="recibos.cmoneda == 'Bs  ' ">
+                              <strong> Monto Pagado</strong>  {{recibos.monto_declarado}} {{recibos.cmoneda}}<br>
                             </div>
 
-                            <div *ngIf="recibos.moneda_pago == 'USD ' ">
-                              <strong> Monto Pagado</strong>  {{recibos.monto_declarado_ext}} {{recibos.moneda_pago}}<br>
+                            <div *ngIf="recibos.cmoneda == 'USD ' ">
+                              <strong> Monto Pagado</strong>  {{recibos.monto_declarado_ext}} {{recibos.cmoneda}}<br>
                               <strong> IGTF</strong> {{recibos.mpagoigtfext}}$ - {{recibos.mpagoigtf}} Bs<br>
                             </div>
 
@@ -72,21 +90,8 @@
                             <strong> Referencia</strong> {{recibos.xreferencia}}<br>
                             
                             <div class="col-3">
-                              <img  [src]="recibos.ximagen"  alt="" class="img-fluid">
+                              <a class="btn btn-primary" [href]="recibos.xruta" target="_blank" role="button">Visualizar Soporte</a>
                             </div>
-                        </div>
-
-                        <div class="col" *ngFor="let diferencia of group.value.diferencia;let i=index">
-                          <div class="row p-3 bg-danger " *ngIf="diferencia.mountdiferencia > 1">
-                            <h2 class="text-light">Transaccion con diferencia</h2>
-  
-                              <strong class="text-light">
-                                Diferencia de {{diferencia.mountdiferencia}} {{diferencia.moneda_cobro_diferencia}} <br/>
-                                Observacion : "{{diferencia.xobservacion_muestra}}" 
-                              </strong> 
-                        
-                          </div> 
-  
                         </div>
 
                         <div class="col">
@@ -97,10 +102,11 @@
                             <mat-select (selectionChange)="validateMov(i)" formControlName="iestadorec" >
                               <mat-option value="C">Cobrado</mat-option>
                               <mat-option value="ER">En revision</mat-option>
+                              <mat-option value="CS">Cobrado con saldo a favor</mat-option>
                             </mat-select>
                           </mat-form-field>
       
-                          <mat-form-field *ngIf="revision">
+                          <mat-form-field *ngIf="revision || cobradoSAF">
                             <mat-label>Diferencia</mat-label>
                             <input matInput formControlName="mdiferencia" type="number" placeholder="Ingrese la diferencia del recibo" #input>
                           </mat-form-field>
@@ -121,12 +127,21 @@
                             </mat-select>
                           </mat-form-field>
 
+                          <mat-form-field *ngIf="cobradoSAF">
+                            <mat-label>Moneda de saldo a favor</mat-label>
+                            <mat-select formControlName="cmoneda">
+                              <mat-option value="BS">BS</mat-option>
+                              <mat-option value="USD">USD</mat-option>
+                            </mat-select>
+                          </mat-form-field>
+
                           <mat-form-field *ngIf="revision">
-                            <mat-label>Seleccione el Recibo con diferencia</mat-label>
+                            <mat-label>Seleccione el recibo con diferencia</mat-label>
                             <mat-select formControlName="recibo">
                               <mat-option *ngFor="let recibo of group.value.poliza"  value="{{ recibo.crecibo }}">{{ recibo.crecibo }}</mat-option>
                             </mat-select>
                           </mat-form-field>
+
       
                           <mat-form-field *ngIf="revision">
                             <mat-label>Observacion</mat-label>
@@ -152,7 +167,7 @@
             
           </mat-tab>
 
-          <mat-tab class="bg-info text-light" label="Recibos Pendientes y reportes "> 
+          <mat-tab class="bg-info text-light" label="Recibos Pendientes"> 
 
             <div class="p-4">
               <h2>Total Pendiente {{totalPending}} $</h2>

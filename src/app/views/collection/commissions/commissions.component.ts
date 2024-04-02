@@ -201,21 +201,25 @@ export class CommissionsComponent {
   isAllSelected() {
     const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.data.length;
+    // alert(numSelected);
+    // alert(numRows);
     return numSelected === numRows;
     // this.varable1 = 100;
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
-    this.isAllSelected() ?
-      this.selection.clear() :
-      this.tableCommisionPorProductor.data.forEach(row => this.selection.select(row));
+  if (this.isAllSelected()) {
+      this.selection.clear();
+    } else {
+      this.dataSource.data.forEach(row => this.selection.select(row));
+    }
   }
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected2() {
     const numSelected = this.selection2.selected.length;
-    const numRows = this.dataSource.data.length;
+    const numRows = this.tableCommisionPorProductor.data.length;    
     return numSelected === numRows;
     // this.varable1 = 100;
   }
