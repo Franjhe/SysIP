@@ -403,7 +403,7 @@ export class PaymentCancellationComponent {
               cmoneda: recibo.cmoneda,
               ptasamon: recibo.ptasamon,
               monto_declarado: recibo.mpago,
-              monto_declarado_ext: recibo.mpagoext, 
+              monto_declarado_ext: recibo.monto_declarado_ext, 
               mpagoigtf: recibo.mpagoigtf,
               mpagoigtfext : recibo.mpagoigtfext,
               xreferencia : recibo.xreferencia,
@@ -413,6 +413,10 @@ export class PaymentCancellationComponent {
             const sumaMpagoext = transaction.recibos.reduce((total: any, item: any ) => total + item.mpagoext, 0);
 
             const sumaMpago = transaction.recibos.reduce((total: any, item: any ) => total + item.mpago, 0);
+
+            console.log(sumaMpagoext)
+            console.log(sumaMpago)
+
       
       
             this.totalNotificated = sumaMpago.toFixed(2)
