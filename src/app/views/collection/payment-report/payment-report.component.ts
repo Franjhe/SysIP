@@ -76,6 +76,9 @@ export class PaymentReportComponent {
   messageDiference : any = []
 
   PositiveBalance : any
+  PositiveBalanceBool :boolean = false;
+
+
 
   constructor( private _formBuilder: FormBuilder,
     private http: HttpClient,
@@ -303,7 +306,6 @@ export class PaymentReportComponent {
         this.idTrans = response.searchReceipt.transaccion
       }
 
-
       let sumaBS = 0;
       let sumaUSD = 0;
 
@@ -312,13 +314,15 @@ export class PaymentReportComponent {
           sumaBS += item.msaldodif;
         } else if (item.cmoneda_dif === 'USD') {
           sumaUSD += item.msaldodif;
+
+        }
+        if (item.cmoneda_dif !== null) {
+          this.PositiveBalanceBool = true
         }
       });
 
-      this.PositiveBalance = 'Saldo en Bs ' + sumaBS + '/' + 'Saldo  en USD ' + sumaUSD
-      
 
-
+      this.PositiveBalance = 'Saldo a favor en Bs ' + sumaBS + '/' + 'Saldo  en USD ' + sumaUSD
       this.viewData = false;
       this.diference = false
 
@@ -385,7 +389,9 @@ export class PaymentReportComponent {
               mdiferencia: response.searchReceipt.receipt[i].mdiferencia,
               xobservacion: response.searchReceipt.receipt[i].xobservacion,
               idiferencia: messaje,
-              cdoccob: response.searchReceipt.receipt[i].cdoccob
+              cdoccob: response.searchReceipt.receipt[i].cdoccob,
+              sumaBS  : sumaBS,
+              sumaUSD : sumaUSD
             })
           )
 
@@ -454,33 +460,50 @@ export class PaymentReportComponent {
   calculateMount(i :any){
     const creds = this.searchReceipt.get("receipt") as FormArray
 
-    const sumaTotal = creds.value.reduce((acumulador: any, recibo: { seleccionado: any; mdiferenciaext: any; mprimabrutaext: any; }) => {
+    const sumaTotal = creds.value.reduce((acumulador: any, 
+      recibo: 
+      { seleccionado: any; 
+        mdiferenciaext: any; 
+        mprimabrutaext: any; 
+        sumaBS: any; 
+        sumaUSD: any; 
+      }) => {
+
       if (recibo.seleccionado && recibo.mdiferenciaext == null) {
           acumulador += recibo.mprimabrutaext;
       }
       if(recibo.seleccionado && recibo.mdiferenciaext !== 0){
         acumulador += recibo.mdiferenciaext;
       }
+
+      if(recibo.seleccionado && recibo.sumaBS !== 0){
+        let montoBolivares = recibo.sumaBS / this.bcv
+        acumulador -= montoBolivares;
+      }
+      if(recibo.seleccionado && recibo.sumaUSD !== 0){
+        acumulador -= recibo.sumaUSD;
+      }
       return acumulador;
     }, 0);
 
     this.determinarSiPuedeAvanzar()
+    let mount = sumaTotal
 
-    this.mount = sumaTotal //suma de los dolares brutos
+    this.mount = sumaTotal.toFixed(2) //suma de los dolares brutos
 
-    const operation = this.mount * this.bcv
+    const operation = mount * this.bcv
     this.mountBs = operation.toFixed(2)  //dolares brutos convertidos en bolivares 
 
-    const mountIGTF = this.mount + ((3/100)*this.mount) 
+    const mountIGTF = mount + ((3/100)*mount) 
     this.mountIGTF = mountIGTF.toFixed(2) //dolares netos
 
     const mountBs = this.mountIGTF*this.bcv
     this.mountBsExt = mountBs.toFixed(2) //bolivares netos
 
-    const porcentajeBs = this.bcv * ((3/100)*this.mount) 
+    const porcentajeBs = this.bcv * ((3/100)*mount) 
     this.mountBsP = porcentajeBs.toFixed(2) //porcentaje del igtf en bolivares 
 
-    const porcentaje = (3/100)*this.mount
+    const porcentaje = (3/100)*mount
     this.mountP = porcentaje.toFixed(2) //porcentaje del igtf en dolares  
 
   }
@@ -650,7 +673,6 @@ export class PaymentReportComponent {
 
     let asegurado = this.searchReceipt.get('xcedula')?.value || ''
     const fecha = new Date()
-    let fechaTran = fecha.toISOString().substring(0, 10);
 
     if(this.diference){
 
@@ -664,6 +686,7 @@ export class PaymentReportComponent {
         mpagoext : this.mountIGTF,
         ptasamon : this.bcv,
         freporte : fecha ,
+        positiveBalance : this.PositiveBalanceBool
       }
 
       this.http.post(environment.apiUrl + '/api/v1/collection/create-report-diference', reporData).subscribe( (response: any) => {
@@ -693,7 +716,8 @@ export class PaymentReportComponent {
         ifuente : 'Web_Sys',
         iestado : 0,
         ccategoria : this.searchReceipt.get('ccategoria')?.value,
-        diference: this.diference
+        diference: this.diference,
+        positiveBalance : this.PositiveBalanceBool
 
       }
 

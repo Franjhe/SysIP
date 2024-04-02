@@ -35,6 +35,12 @@
                           Pago $  {{group.value.monto_transaccion_ext}}<br>
                         </div>
 
+                        <div *ngIf="group.value.msaldodif > 0" class="col-4 text-light" style="font-size: medium;">
+                          Saldo a favor de {{group.value.msaldodif}} {{group.value.cmoneda_dif}}<br>
+                          Tasa del día {{group.value.tasa_saldo}}<br>
+
+                        </div>
+
                         <div class="col-2">
                           <button ngbPanelToggle class="btn btn-light">Visualizar detalle de la transacción </button>
                         </div>
@@ -84,7 +90,7 @@
                             <strong> Referencia</strong> {{recibos.xreferencia}}<br>
                             
                             <div class="col-3">
-                              <img  [src]="recibos.xruta"  alt="" class="img-fluid">
+                              <a class="btn btn-primary" [href]="recibos.xruta" target="_blank" role="button">Visualizar Soporte</a>
                             </div>
                         </div>
 

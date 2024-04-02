@@ -51,14 +51,22 @@
           <form [formGroup]="searchReceipt">
             <ng-template matStepLabel>Seleccione los recibos pendientes que desea cancelar</ng-template>
 
-            <h1> Estimado </h1>
-            <h1><strong>{{cliente}}</strong></h1>
-            <h1> Sus recibos pendientes </h1>
-            <h1>{{PositiveBalance}}</h1>
+            <div class="row">
+              <div class="col-lg-8">
+                <h1> Estimado </h1>
+                <h1><strong>{{cliente}}</strong></h1>
+                <h1> Sus recibos pendientes </h1>
 
-            <div *ngIf="viewData">
-              <div *ngFor="let message of messageDiference" >
-                <h1  class="{{message.class_text}}" > {{message.messaje}}</h1>
+              </div>
+              <div class="col-lg-4">
+                <h1 class="text-success" style=" font-weight: 500;" *ngIf="PositiveBalanceBool">
+                   {{PositiveBalance}}
+                </h1>
+                <div *ngIf="viewData">
+                  <div *ngFor="let message of messageDiference" >
+                    <h1  class="{{message.class_text}}" > {{message.messaje}}</h1>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -131,10 +139,10 @@
             </strong>  
 
             <div class="d-grid gap-2 col-6 mx-auto">
-              <button class="btn btn-primary" type="button" (click)="modalTransfer()">Transferencia</button>
-              <button class="btn btn-primary" type="button" (click)="modalDeposit()">Deposito cuenta custodia</button>
-              <button class="btn btn-primary" type="button" (click)="modalPagoMovil()">Pago Movil</button>
-              <button class="btn btn-primary" type="button" (click)="modalDepositoUSD()">Transferencia USD</button>
+              <button class="btn btn-primary" type="button" (click)="modalTransfer()" [class.bg-secondary]="trans">Transferencia</button>
+              <button class="btn btn-primary" type="button" (click)="modalDeposit()" [class.bg-secondary]="depositoUSD">Deposito cuenta custodia</button>
+              <button class="btn btn-primary" type="button" (click)="modalPagoMovil()" [class.bg-secondary]="pmovil">Pago Movil</button>
+              <button class="btn btn-primary" type="button" (click)="modalDepositoUSD()" [class.bg-secondary]="usd">Transferencia USD</button>
             </div>
 
           </div>

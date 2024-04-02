@@ -352,6 +352,10 @@ export class PaymentCancellationComponent {
             cdoccob: transaction.cdoccob,
             monto_transaccion: transaction.monto_transaccion,
             monto_transaccion_ext: transaction.monto_transaccion_ext,
+            diferencia_saldo:transaction.diferencia_saldo,
+            msaldodif:transaction.msaldodif,
+            tasa_saldo:transaction.tasa_saldo,
+            cmoneda_dif:transaction.cmoneda_dif,   
             ptasamon: transaction.ptasamon,
             poliza: this._formBuilder.array([]),
             recibos: this._formBuilder.array([])
@@ -378,7 +382,8 @@ export class PaymentCancellationComponent {
               xobservacion: poliza.xobservacion,
               estado_diferencia: poliza.estado_diferencia,
               freport_pago: poliza.freport_pago,
-              moneda_cobro_diferencia: poliza.moneda_cobro_diferencia,               // Agrega los demás campos de la póliza aquí
+              moneda_cobro_diferencia: poliza.moneda_cobro_diferencia, 
+
             }));
           });
       
@@ -539,6 +544,7 @@ export class PaymentCancellationComponent {
           mdiferenciaext: monto,
           iestadorec: creds.at(i).get('iestadorec')?.value,
           casegurado : creds.at(i).get('casegurado')?.value,
+          cliente : creds.at(i).get('xcliente')?.value,
           recibo : creds.at(i).get('recibo')?.value,
           correo : creds.at(i).get('xcorreo')?.value,
           cmoneda : creds.at(i).get('cmoneda')?.value,
@@ -557,6 +563,7 @@ export class PaymentCancellationComponent {
           correo : creds.at(i).get('xcorreo')?.value,
           iestadorec: creds.at(i).get('iestadorec')?.value,
           casegurado : creds.at(i).get('casegurado')?.value,
+          cliente : creds.at(i).get('xcliente')?.value,
           recibo : creds.at(i).get('recibo')?.value,
           cmoneda : creds.at(i).get('cmoneda')?.value,
           idiferencia : creds.at(i).get('idiferencia')?.value,
@@ -580,15 +587,16 @@ export class PaymentCancellationComponent {
         casegurado : creds.at(i).get('casegurado')?.value,
         msaldodif: creds.at(i).get('mdiferencia')?.value,
         cmoneda_dif: creds.at(i).get('cmoneda')?.value,
+        cliente : creds.at(i).get('xcliente')?.value,
         correo : creds.at(i).get('xcorreo')?.value,
         idiferencia : "H",
         detalle : creds.at(i).get('poliza')?.value,
         ptasamon : this.bcv
       }
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt-positive-balance', data ).subscribe((response: any) => {
-        // if(response.status){
-        //   location.reload()
-        // }
+        if(response.status){
+          location.reload()
+        }
   
       })
     }
@@ -598,6 +606,8 @@ export class PaymentCancellationComponent {
         iestadorec: creds.at(i).get('iestadorec')?.value,
         casegurado : creds.at(i).get('casegurado')?.value,
         correo : creds.at(i).get('xcorreo')?.value,
+        cliente : creds.at(i).get('xcliente')?.value,
+        fpago : creds.at(i).get('freporte')?.value,
         detalle : creds.at(i).get('poliza')?.value,
       }
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt/', data ).subscribe((response: any) => {
@@ -818,100 +828,6 @@ export class PaymentCancellationComponent {
 
     const porcentaje = (3/100)*this.mount
     this.mountP = porcentaje.toFixed(2) //porcentaje del igtf en dolares  
-
-  }
-
-
-  GroupReceipt(){
-    const creds = this.groupReceiptsForm.controls.agrupado as FormArray;
-
-    for(let i = 0; i < creds.length; i++){
-
-      const controlesConAgrupadorTrue = creds.controls.filter(control => control.get('agrupador')?.value === true);
-
-      const cantidadConAgrupadorTrue = controlesConAgrupadorTrue.length;
-
-      if(cantidadConAgrupadorTrue >= 2){
-        this.GroupReceiptsBool = true
-      }else{
-        this.GroupReceiptsBool = false
-
-      }
-      
-    }
-
-  }
-
-  updateDifferenceNotification(){
-
-    const creds = this.groupReceiptsForm.controls.agrupado as FormArray;
-
-    const listUpdateDiferenceReceipt: any[] = []
-
-    for (let i = 0; i < creds.length; i++) {
-      const controlesConAgrupadorTrue = creds.controls.filter(
-        (control) => control.get('agrupador')?.value === true
-      );
-    
-      controlesConAgrupadorTrue.forEach((control) => {
-        const transaccionId = control.get('id')?.value;
-        const detalle = control.get('detalle')?.value;
-    
-        const transaccionExistente = listUpdateDiferenceReceipt.find(
-          (item) => item.transaccion === transaccionId
-        );
-    
-        if (!transaccionExistente) {
-          listUpdateDiferenceReceipt.push({
-            transaccion: transaccionId,
-            recibo: detalle,
-          });
-        }
-      });
-    }
-    
-    function tieneRepetidos(array: string | any[]) {
-      let conjuntoDeRecibos = new Set();
-    
-      for (let i = 0; i < array.length; i++) {
-        let recibos = array[i].recibo;
-    
-        for (let j = 0; j < recibos.length; j++) {
-          let reciboActual = recibos[j];
-    
-          let reciboCadena = JSON.stringify(reciboActual);
-    
-          if (conjuntoDeRecibos.has(reciboCadena)) {
-            return true;
-          }
-    
-          conjuntoDeRecibos.add(reciboCadena);
-        }
-      }
-    
-      return false;
-    }
-    
-    let hayRepetidos = tieneRepetidos(listUpdateDiferenceReceipt);
-
-    if(hayRepetidos) {
-    this.http.patch(environment.apiUrl + '/api/v1/collection/update-difference-of-notification', listUpdateDiferenceReceipt).subscribe((response: any) => {
-    
-      this.toast.open(response.message, '', {
-        duration: 5000,
-        verticalPosition: 'top',
-        panelClass: ['success-toast']
-      });  
-
-      if(response.status){
-        location.reload()
-      }
-
-    })  
-    }else{
-        this.alerUpdateReceipt()
-    }
-    
 
   }
 
