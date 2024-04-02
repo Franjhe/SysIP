@@ -306,7 +306,7 @@ export class CommissionsComponent {
             cid: e.cid,
             xbeneficiario: element.xnombre.trim(),
             cconcepto: '',
-            xconcepto: 'Cierre de Caja',
+            xconcepto: 'Pago Comisión Agente',
             ccorredor: e.cci_rif,
             xcorredor: e.xnombre.trim(),
             mmontototal: element.mcomtot,
