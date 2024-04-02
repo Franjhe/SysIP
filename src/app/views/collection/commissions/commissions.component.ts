@@ -298,7 +298,7 @@ export class CommissionsComponent {
 
         response.returnData.search.forEach((e: any) => {
           var paymentRequest: PaymentRequest = {
-            xtransaccion: "Pago de Comisiones",
+            xtransaccion: "Pago Comisión Agente",
             // xtransaccion: transaccion,
             ffacturacion: new Date().toLocaleDateString(),
             cstatus: '',

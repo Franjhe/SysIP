@@ -7,23 +7,24 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { PdfGenerationService } from '../../../_services/ServicePDF';
+import { from, Observable } from 'rxjs';
+// 
 import { SelectionModel } from '@angular/cdk/collections';
 import { clear } from 'console';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 
 export interface PaymentRequest {
+  csolpag: string
   xtransaccion: string;
+  xstatsol: string;
   csucursal?: string;
   xsucursal?: string;
-  ffacturacion: string;
-  cstatus: string;
-  xstatus: string;
-  cid: string;
+  fsolicit: string;
+  cid_ben: string;
+  cproductor: string;
   xbeneficiario: string;
-  cconcepto: string;
   xconcepto: string;
-  ccorredor: string;
-  xcorredor: string;
   mmontototal: any;
   xobservaciones?: any;
   recibos: any;
@@ -78,8 +79,8 @@ export class PaymentRequestsComponent {
     readonly dialog: MatDialog,
     private toast: MatSnackBar,
     private _snackBar: MatSnackBar,
-    private _liveAnnouncer: LiveAnnouncer
-
+    private _liveAnnouncer: LiveAnnouncer,
+    private pdfGenerationService: PdfGenerationService,
   ) {
   }
 
@@ -109,7 +110,7 @@ export class PaymentRequestsComponent {
 
   showDetailPaymentRequest(csolpag: any, index: any) {
     // if (condition) {
-      
+
     // }
     // this.paymentRequest.clear;
     // alert(csolpag);
@@ -180,18 +181,45 @@ export class PaymentRequestsComponent {
     return this.dialog.closeAll();
   }
 
+  printPaymentRequest() {
+		// Crear un objeto Date con la fecha original
+		const fecha = new Date(this.paymentRequest.fsolicit);
 
-  /** Announce the change in sort state for assistive technology. */
-  announceSortChange(sortState: Sort) {
-    // This example uses English messages. If your application supports
-    // multiple language, you would internationalize these strings.
-    // Furthermore, you can customize the message to add additional
-    // details about the values being sorted.
-    if (sortState.direction) {
-      this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
-    } else {
-      this._liveAnnouncer.announce('Sorting cleared');
+		// Obtener los componentes de la fecha (día, mes, año)
+		const dia = fecha.getDate();
+		const mes = fecha.getMonth() + 1; // Nota: JavaScript cuenta los meses desde 0
+		const anio = fecha.getFullYear();
+
+		// Formatear la fecha en el formato "día mes año"
+		const fsolicit = `${dia < 10 ? '0' : ''}${dia}-${mes < 10 ? '0' : ''}${mes}-${anio}`;
+
+    var paymentRequest: PaymentRequest = {
+      csolpag: this.paymentRequest.csolpag,
+      xtransaccion: this.paymentRequest.xconcepto_1.trim(),
+      xstatsol: this.paymentRequest.xstatsol.trim(),
+      fsolicit: fsolicit,
+      cid_ben: this.paymentRequest.cid_ben.trim(),
+      cproductor: this.paymentRequest.cproductor,
+      xbeneficiario: this.paymentRequest.xbeneficiario.trim(),
+      xconcepto: this.paymentRequest.xconcepto_2.trim(),
+      mmontototal: this.paymentRequest.mpagosol.toFixed(2),
+      recibos: this.paymentRequest.recibos,
+      cmoneda: this.paymentRequest.cmoneda.trim(),
+      xobservaciones: this.paymentRequest.xobserva.trim(),
     }
+
+    const observable = from(this.pdfGenerationService.CreatePaymentRequestPDF(paymentRequest));
+
+    observable.subscribe(
+      (data) => {
+        // this.check = true;
+        // this.loadingPdf = false
+      },
+      (error) => {
+      }
+    );
+
+    return this.dialog.closeAll();
   }
 
   sortData(sort: Sort) {
@@ -220,7 +248,7 @@ export class PaymentRequestsComponent {
   compare(a: number | string, b: number | string, isAsc: boolean) {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
-  
+
 
 }
 
@@ -233,4 +261,4 @@ export class PaymentRequestsComponent {
   bootstrap: [PaymentRequestsComponent],
   providers: []
 })
-export class AppModule {}
+export class AppModule { }
