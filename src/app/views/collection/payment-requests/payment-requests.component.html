@@ -190,7 +190,7 @@
                         <button mat-raised-button (click)="showDetailReceipts()" color="primary">Ver Recibos</button>
                     </div>
                     <div class="col col-3 text-center">
-                        <button mat-raised-button (click)="printPaymentRequest(paymentRequest.csolpag)" color="accent">Imprimir</button>
+                        <button mat-raised-button (click)="printPaymentRequest()" color="accent">Imprimir</button>
                     </div>
                     <div class="col col-3 text-center">
                         <button mat-raised-button (click)="proccessPaymentRequests(paymentRequest.csolpag)" [disabled]="paymentRequest.xstatsol == 'Cancelado'">Procesar

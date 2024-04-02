@@ -2506,29 +2506,96 @@ export class PdfGenerationService {
 	}
 
 	async CreatePaymentRequestPDF(paymentRequest: any) {
+		console.log('pago pago');
+		console.log(paymentRequest.csolpag);
 
 		this.PaymentRequestPDF(paymentRequest);
 
 	}
 
 	PaymentRequestPDF(paymentRequest: any) {
+		console.log('pago pago');
+		console.log(paymentRequest);
+
+		// Creamos la varabile para el body de los recibos
+		const movimientos = [];
+
+		// Insertamos los objetos correspondientes al header
+		movimientos.push(
+			[
+				{ text: 'POLIZA:', bold: true, border: [false, false, false, false] },
+				{ text: 'RECIBO:', bold: true, border: [false, false, false, false] },
+				{ text: 'TIPO MOV.:', bold: true, border: [false, false, false, false] },
+				{ text: 'FECHA:', bold: true, border: [false, false, false, false] },
+				{ text: 'PRIMA BS.:', bold: true, border: [false, false, false, false] },
+				{ text: '% COM.:', bold: true, border: [false, false, false, false] },
+				{ text: 'COMISIÓN BS.:', bold: true, border: [false, false, false, false] },
+				{ text: 'TASA BCV:', bold: true, border: [false, false, false, false] },
+				{ text: 'COMISIÓN EXT', bold: true, border: [false, false, false, false] },
+				{ text: 'MONEDA', bold: true, border: [false, false, false, false] },
+			]
+		);
+
+		paymentRequest.recibos.forEach((recibo: any) => {
+			movimientos.push(
+				[
+					{ text: recibo.cnpoliza, border: [false, false, false, false] },
+					{ text: recibo.crecibo, border: [false, false, false, false] },
+					{ text: recibo.imovcom, border: [false, false, false, false] },
+					{ text: '02-02-2020', border: [false, false, false, false] },
+					{ text: 'Bs.' + recibo.mmontoapag, border: [false, false, false, false] },
+					{ text: recibo.pcomision + '%', border: [false, false, false, false] },
+					{ text: 'Bs.' + recibo.mmovcom, border: [false, false, false, false] },
+					{ text: recibo.ptasamon, border: [false, false, false, false] },
+					{ text: '$.' + recibo.mmovcomext, border: [false, false, false, false] },
+					{ text: recibo.cmoneda, border: [false, false, false, false] },
+				]
+			)
+		});
+
+		// const fecha = paymentRequest.fsolicit;
+
+		// // Crear un objeto Date con la fecha de cotización
+		// const fechaObj = new Date(fecha);
+
+		// // Obtener los componentes de la fecha (día, mes, año)
+		// const dia = fechaObj.getDate();
+		// const mes = fechaObj.getMonth() + 1; // Nota: JavaScript cuenta los meses desde 0
+		// const anio = fechaObj.getFullYear();
+
+		// // Formatear la fecha en el formato "día mes año"
+		// const fsolicit = `${dia < 10 ? '0' : ''}${dia}-${mes < 10 ? '0' : ''}${mes}-${anio}`;
+
+		// this.fcotizacion = fechaFormateada,
 		try {
 			const pdfDefinition: any = {
+				pageSize: 'A5',
+				pageOrientation: 'landscape',
+				
 				info: {
-					title: `Cotización N° ${this.ncotizacion}`,
-					subject: `Cotización N° ${this.ncotizacion}`
+					title: `Solicitud de pago N° ${paymentRequest.csolpag}`,
+					subject: `Solicitud de pago N° ${paymentRequest.csolpag}`
 				},
 				footer: function (currentPage: any, pageCount: any) {
 					return {
 						table: {
 							widths: ['*'],
 							body: [
-								[{ text: 'Página ' + currentPage.toString() + ' de ' + pageCount, fontSize: 7, alignment: 'center', border: [false, false, false, false] }]
+								[
+									{ text: ' ', fontSize: 6, alignment: 'center', border: [false, true, false, false], margin: [50, 0, 50, 0] }
+								],
+								[
+									{ text: 'Telefono: +582122839619 | email: info@lamundialdeseguros.com | web: https://lamundialdeseguros.com/', fontSize: 7, alignment: 'center', border: [false, false, false, false] }
+								],
+								// [
+								// 	{ text: 'Página ' + currentPage.toString() + ' de ' + pageCount, fontSize: 7, alignment: 'center', border: [false, false, false, false] }
+								// ],
 							]
 						}
 					}
 				},
 				content: [
+					
 					{
 						style: 'data',
 						table: {
@@ -2549,9 +2616,9 @@ export class PdfGenerationService {
 					{
 						alignment: 'center',
 						style: 'title',
-						margin: [0, 0, 0, 2],
+						margin: [0, 0, 0, 20],
 						text: [
-							{ text: '\n Solicitud de Pago N° ', bold: true }
+							{ text: '\n Solicitud de Pago N° ' + paymentRequest.csolpag, bold: true }
 						]
 					},
 					{
@@ -2559,7 +2626,7 @@ export class PdfGenerationService {
 						table: {
 							widths: ['*'],
 							body: [
-								[{ text: 'DATOS DEL TOMADOR', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false] }]
+								[{ text: 'PAGO COMISIÓN AGENTE', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false] }]
 							]
 						}
 					},
@@ -2567,27 +2634,18 @@ export class PdfGenerationService {
 						style: 'data',
 						margin: [0, 0, 0, 3],
 						table: {
-							widths: [60, 100, 40, 100, 40, '*'],
+							widths: [55, 70, '*', '*', '*', '*', '*', '*'],
 							body: [
-								[{ text: 'N° COTIZACIÓN:', bold: true, border: [false, false, false, false] }, { text: this.ncotizacion, border: [false, false, false, false] }, { text: 'CLIENTE:', bold: true, border: [false, false, false, false] }, { text: this.xusuario, border: [false, false, false, false] }, { text: 'EMAIL:', bold: true, border: [false, false, false, false] }, { text: this.xcorreo, border: [false, false, false, false] }]
-							]
-						}
-					},
-					{
-						style: 'data',
-						table: {
-							widths: ['*'],
-							body: [
-								[{ text: 'DATOS DEL VEHICULO', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false] }]
-							]
-						}
-					},
-					{
-						style: 'data',
-						table: {
-							widths: [40, 100, 40, 100, 40, '*'],
-							body: [
-								[{ text: 'MARCA:', bold: true, border: [false, false, false, false] }, { text: this.xmarca, border: [false, false, false, false] }, { text: 'MODELO:', bold: true, border: [false, false, false, false] }, { text: this.xmodelo, border: [false, false, false, false] }, { text: 'VERSION:', bold: true, border: [false, false, false, false] }, { text: this.xversion, border: [false, false, false, false] }]
+								[
+									{ text: `TRANSACCIÓN:`, bold: true, border: [false, false, false, false] },
+									{ text: paymentRequest.xtransaccion, border: [false, false, false, false] },
+									{ text: 'CONCEPTO:', bold: true, border: [false, false, false, false] },
+									{ text: paymentRequest.xconcepto, border: [false, false, false, false] },
+									{ text: 'ESTATUS:', bold: true, border: [false, false, false, false] },
+									{ text: paymentRequest.xstatsol, border: [false, false, false, false] },
+									{ text: 'FECHA ORDEN:', bold: true, border: [false, false, false, false], alignment: 'right' },
+									{ text: paymentRequest.fsolicit, border: [false, false, false, false], alignment: 'right' }
+								]
 							]
 						}
 					},
@@ -2595,9 +2653,29 @@ export class PdfGenerationService {
 						style: 'data',
 						margin: [0, 0, 0, 3],
 						table: {
-							widths: [30, 110, 50, 5],
+							widths: [90, '*', 42, '*'],
 							body: [
-								[{ text: 'AÑO:', bold: true, border: [false, false, false, false] }, { text: this.fano, border: [false, false, false, false] }, { text: 'PASAJEROS:', bold: true, alignment: 'left', border: [false, false, false, false] }, { text: this.ncapacidadpasajerosvehiculo, border: [false, false, false, false] }]
+								[
+									{ text: `PÁGUESE A LA ORDEN DE:`, bold: true, border: [false, false, false, false] },
+									{ text: paymentRequest.cid_ben + ' - ' + paymentRequest.xbeneficiario, border: [false, false, false, false], alignment: 'left' },
+									{ text: 'CORREDOR:', bold: true, border: [false, false, false, false] },
+									{ text: paymentRequest.cproductor + ' - ' + paymentRequest.xbeneficiario, border: [false, false, false, false], alignment: 'left' },
+								]
+							]
+						}
+					},
+					{
+						style: 'data',
+						margin: [0, 0, 0, 3],
+						table: {
+							widths: [62, 300, 62, '*'],
+							body: [
+								[
+									{ text: 'OBSERVACIONES:', bold: true, border: [false, false, false, false] },
+									{ text: paymentRequest.xobservaciones, border: [false, false, false, false], alignment: 'left' },
+									{ text: `MONTO A PAGAR: `, bold: true, border: [false, false, false, false], alignment: 'right' },
+									{ text: paymentRequest.cmoneda + '.' + paymentRequest.mmontototal, border: [false, false, false, false], alignment: 'right' },
+								]
 							]
 						}
 					},
@@ -2606,151 +2684,20 @@ export class PdfGenerationService {
 						table: {
 							widths: ['*'],
 							body: [
-								[{ text: 'INTERMEDIRARIO', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false] }]
+								[{ text: 'MOVIMIENTOS', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false] }]
 							]
 						}
 					},
 					{
-						style: 'data',
+						style: 'mini',
+						margin: [0, 0, 0, 3],
 						table: {
-							widths: [40, 150, 40, 90, 50, '*'],
-							body: [
-								[{ text: 'Corredor', alignment: 'left', bold: true, border: [false, false, false, false] }, { text: this.xcorredor, alignment: 'left', border: [false, false, false, false] }, { text: 'Correo', alignment: 'center', bold: true, border: [false, false, false, false] }, { text: this.xcorreocorredor, alignment: 'center', border: [false, false, false, false] }, { text: 'Telefono', alignment: 'center', bold: true, border: [false, false, false, false] }, { text: this.xtelefonocorredor, alignment: 'center', border: [false, false, false, false] }]
-							]
+							headerRows: 1,
+							widths: ['*', '*', '*', '*', '*', '*', '*', '*', '*', '*'],
+							body: movimientos
 						}
 					},
-					{
-						style: 'data',
-						table: {
-							widths: [500, '*'],
-							body: [
-								[{ text: 'SUMAS ASEGURADAS', margin: [5, 0, 0, 0], alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false] }, { text: 'MONEDA: DÓLARES', margin: [-100, 0, 0, 0], alignment: 'left', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false] }]
-							]
-						}
-					},
-					{
-						style: 'data',
-						table: {
-							widths: [150, 110, 110, 90],
-							body: [
-								[{ text: 'DETALLE DE COBERTURAS', margin: [5, 0, 0, 0], alignment: 'center', bold: true, border: [false, false, false, false] }, { text: 'R.C.V', margin: [22, 0, 0, 0], alignment: 'center', bold: true, border: [false, false, false, false] }, { text: 'COBERTURA AMPLIA', alignment: 'center', bold: true, border: [false, false, false, false] }, { text: 'PÉRDIDA TOTAL', alignment: 'center', bold: true, border: [false, false, false, false] }]
-							]
-						}
-					},
-					{
-						style: 'data',
-						margin: [0, 0, 0, 2],
-						table: {
-							widths: [125, 100, 100, 100],
-							body: this.buildCoveragesQuotesBody()
-						}
-					},
-					{
-						style: 'data',
-						table: {
-							widths: [500, '*'],
-							body: [
-								[{ text: 'FRECUENCIA DE PAGOS', margin: [5, 0, 0, 0], alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false] }, { text: 'MONEDA: DÓLARES', margin: [-100, 0, 0, 0], alignment: 'left', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false] }]
-							]
-						}
-					},
-					{
-						style: 'data',
-						table: {
-							widths: [150, 110, 110, 90],
-							body: [
-								[{ text: 'FORMA DE PAGO', margin: [5, 0, 0, 0], alignment: 'center', bold: true, border: [false, false, false, false] }, { text: 'RCV', margin: [22, 0, 0, 0], alignment: 'center', bold: true, border: [false, false, false, false] }, { text: 'COBERTURA AMPLIA', alignment: 'center', bold: true, border: [false, false, false, false] }, { text: 'PÉRDIDA TOTAL', alignment: 'center', bold: true, border: [false, false, false, false] }]
-							]
-						}
-					},
-					{
-						style: 'data',
-						margin: [0, 0, 0, 2],
-						table: {
-							widths: [125, 100, 100, 100],
-							body: this.buildMetodologyQuotesBody()
-						}
-					},
-					{
-						style: 'data',
-						table: {
-							widths: ['*'],
-							body: [
-								[{ text: 'NOTAS', margin: [5, 0, 0, 0], alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false] }]
-							]
-						}
-					},
-					{
-						style: 'data',
-						margin: [0, 0, 0, 1],
-						table: {
-							widths: ['*'],
-							body: [
-								[{ text: 'La prima de la presente cotización no incluye el impuesto del 3% de IGFT.', alignment: 'center', bold: true, fontSize: 9.5, border: [false, false, false, false] }]
-							]
-						}
-					},
-					{
-						style: 'data',
-						table: {
-							widths: ['*'],
-							body: [
-								[{ text: `La presente cotización de seguro se mantendrá en vigencia durante un plazo máximo de quince (15) días continuos contados a partir del ${this.fcotizacion}, lo que ocurra primero, siempre y no se hayan modificado las condiciones del riesgo o no se haya evidenciado reticencia o declaraciones falsas del solicitante. Esta Cotización no implica la aceptación del riesgo por parte de la compañía.`, alignment: 'justify', border: [false, false, false, false] }]
-							]
-						}
-					},
-					{
-						style: 'data',
-						table: {
-							widths: ['*'],
-							body: [
-								[{ text: `Forma de Pagos: Cobertura Amplia y Pérdida Total -> Divisas en efectivo - Cuenta custodia en USD`, alignment: 'justify', border: [false, false, false, false] }]
-							]
-						}
-					},
-					{
-						style: 'data',
-						table: {
-							widths: ['*'],
-							body: [
-								[{ text: 'Para las inspecciones debe de solicitarla a la siguiente dirección de correo solicitudinspeccionauto@lamundialdeseguros.com con la siguiente información: Nombre, Apellido, C.I y N° de teléfono del asegurado o de la persona contacto, indicar Marca-Modelo-Placa del vehículo a inspeccionar, Lugar donde se encuentra el vehículo asegurar.', alignment: 'justify', border: [false, false, false, false] }]
-							]
-						}
-					},
-					{
-						style: 'data',
-						table: {
-							widths: ['*'],
-							body: [
-								[{
-									text: `DOCUMENTOS PARA LA EMISIÓN DE LA PÓLIZA. 
-						Solicitud de Seguros llena en todas sus partes, firmada y con huella dactilar por Asegurado.
-						Persona Natural:
-						Fotocopia Cédula de Identidad del Asegurado
-						Fotocopia Registro de Información Fiscal (Rif), Vigente.
-						Persona Jurídicos:
-						°	Fotocopia del Acta Constitución y estatus sociales de la empresa con sus correspondientes modificaciones
-						°	Fotocopia Registro de Información Fiscal (Rif), Vigente. 
-						°	Fotocopia Cédula de Identidad del representante legal.
-						°	Declaración Jurada de Origen de los Fondos.
-						Adicional:
-						°	Copia del documento que demuestre la propiedad o interés asegurable del bien Asegurar
-						°	Copia de recibo de servicio público
-						°	Referencia bancaria vigente
-						°	Copia de la última declaración del impuesto sobre la renta`, alignment: 'justify', border: [false, false, false, false]
-								}]
-							]
-						}
-					},
-					{
-						style: 'data',
-						table: {
-							widths: ['*'],
-							body: [
-								[{ text: 'Aprobado por la Superintendencia de la Actividad Aseguradora mediante Oficio N° FSAA-1-1-0363-2022 de fecha 05-08-2022.', alignment: 'justify', border: [false, false, false, false] }]
-							]
-						}
-					},
+
 				],
 				styles: {
 					title: {
@@ -2765,7 +2712,12 @@ export class PdfGenerationService {
 					data: {
 						fontSize: 7.5
 					},
+					mini: {
+						fontSize: 6
+					}
+					
 				}
+				
 			}
 			let pdf = pdfMake.createPdf(pdfDefinition);
 			// pdf.download(`Cotización`);

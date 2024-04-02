@@ -15,18 +15,16 @@ import { clear } from 'console';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 
 export interface PaymentRequest {
+  csolpag: string
   xtransaccion: string;
+  xstatsol: string;
   csucursal?: string;
   xsucursal?: string;
-  ffacturacion: string;
-  cstatus: string;
-  xstatus: string;
-  cid: string;
+  fsolicit: string;
+  cid_ben: string;
+  cproductor: string;
   xbeneficiario: string;
-  cconcepto: string;
   xconcepto: string;
-  ccorredor: string;
-  xcorredor: string;
   mmontototal: any;
   xobservaciones?: any;
   recibos: any;
@@ -183,8 +181,34 @@ export class PaymentRequestsComponent {
     return this.dialog.closeAll();
   }
 
-  printPaymentRequest(csolpag: any) {
-    const observable = from(this.pdfGenerationService.CreatePaymentRequestPDF(this.paymentRequest));
+  printPaymentRequest() {
+		// Crear un objeto Date con la fecha original
+		const fecha = new Date(this.paymentRequest.fsolicit);
+
+		// Obtener los componentes de la fecha (día, mes, año)
+		const dia = fecha.getDate();
+		const mes = fecha.getMonth() + 1; // Nota: JavaScript cuenta los meses desde 0
+		const anio = fecha.getFullYear();
+
+		// Formatear la fecha en el formato "día mes año"
+		const fsolicit = `${dia < 10 ? '0' : ''}${dia}-${mes < 10 ? '0' : ''}${mes}-${anio}`;
+
+    var paymentRequest: PaymentRequest = {
+      csolpag: this.paymentRequest.csolpag,
+      xtransaccion: this.paymentRequest.xconcepto_1.trim(),
+      xstatsol: this.paymentRequest.xstatsol.trim(),
+      fsolicit: fsolicit,
+      cid_ben: this.paymentRequest.cid_ben.trim(),
+      cproductor: this.paymentRequest.cproductor,
+      xbeneficiario: this.paymentRequest.xbeneficiario.trim(),
+      xconcepto: this.paymentRequest.xconcepto_2.trim(),
+      mmontototal: this.paymentRequest.mpagosol.toFixed(2),
+      recibos: this.paymentRequest.recibos,
+      cmoneda: this.paymentRequest.cmoneda.trim(),
+      xobservaciones: this.paymentRequest.xobserva.trim(),
+    }
+
+    const observable = from(this.pdfGenerationService.CreatePaymentRequestPDF(paymentRequest));
 
     observable.subscribe(
       (data) => {
