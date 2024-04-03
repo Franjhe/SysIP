@@ -116,7 +116,8 @@ export class PaymentAdministrationComponent {
 
   PositiveBalance : any
   PositiveBalanceBool :boolean = false;
-
+  asegurado : any
+  correo : any
 
 
   constructor( private _formBuilder: FormBuilder,
@@ -328,10 +329,14 @@ export class PaymentAdministrationComponent {
 
   }
   
-  searchDataReceipt(casegurado : any){
+  searchDataReceipt(casegurado : any,correo  : any){
     const client = {
       cedula: casegurado
     }
+
+    this.asegurado = casegurado
+    this.correo = correo
+
 
     const receipt = this.searchReceipt.get("receipt") as FormArray
 
@@ -700,47 +705,26 @@ export class PaymentAdministrationComponent {
     let asegurado = this.searchReceipt.get('xcedula')?.value || ''
     const fecha = new Date()
 
-    if(this.diference){
 
-      const reporData = {
-        report : this.transferList,
-        ctransaccion : this.idTrans,
-        casegurado: this.searchReceipt.get('xcedula')?.value,
-        diference : this.diference,
-        receipt : this.receiptList,
-        mpago : this.mountBs,
-        mpagoext : this.mountIGTF,
-        ptasamon : this.bcv,
-        freporte : fecha ,
-        positiveBalance : this.PositiveBalanceBool
-      }
-
-      this.http.post(environment.apiUrl + '/api/v1/collection/create-report-diference', reporData).subscribe( (response: any) => {
-        if (response.status) {
-          this.uploadFile()
-        }
-  
-      })
-            
-      setTimeout(() => {
-        location.reload();
-      }, 3000);
-
-    }else{
       const savePaymentTrans = {
         ctransaccion : this.idTrans,
         receipt : this.receiptList,
         report: this.transferList,
-        casegurado: asegurado,
+        casegurado: this.asegurado,
         mpago : this.mountBs,
         mpagoext : this.mountIGTF,
         ptasamon : this.bcv,
         freporte : fecha ,
-        cprog : 'Reporte de pago web',
+        cprog : 'Reporte administracion',
         cusuario : 13,
-        iestadorec : 'N',
+        iestadorec : 'C',
         ifuente : 'Web_Sys',
         iestado : 0,
+        detalle : this.receiptList,
+        fpago : fecha,
+        cliente : this.cliente,
+        transaccion : this.idTrans,
+        correo : this.correo ,
         ccategoria : this.searchReceipt.get('ccategoria')?.value,
         diference: this.diference,
         positiveBalance : this.PositiveBalanceBool
@@ -748,16 +732,13 @@ export class PaymentAdministrationComponent {
       }
 
       //primero llenamos el recipo y la tabla de transacciones 
-      this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
+      this.http.post(environment.apiUrl + '/api/v1/collection/collect-receipt',savePaymentTrans).subscribe( (response: any) => {
         if (response.status) {
           this.uploadFile()
         }
       })   
-  
-      setTimeout(() => {
-        location.reload();
-      }, 3000);
-    }
+
+    
 
 
   }
