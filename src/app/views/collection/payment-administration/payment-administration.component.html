@@ -6,16 +6,41 @@
 
     <mat-step [stepControl]="searchReceipt" >
       <form [formGroup]="searchReceipt">
-        <ng-template matStepLabel>Consulta de recibos pendientes</ng-template>
+        <ng-template matStepLabel>Buscar asegurado</ng-template>
           <div class="container row">
-            <div class="col-lg-4 p-5 mt-5">
-              <mat-form-field>
-                <mat-label>Cedula</mat-label>
-                <input matInput type="number"  formControlName="xcedula" placeholder="Ingrese su numero de cedula o rif " required>
-              </mat-form-field> 
+            <div class="mat-elevation-z8">
+
+              <div class="text-center">
+                <mat-form-field>
+                  <mat-label>Buscar</mat-label>
+                  <input matInput (keyup)="applyFilter($event)" #input>
+                </mat-form-field>
+              </div>
+
+              <table mat-table [dataSource]="dataSource" matSort class="table table-hover">           
+            
+                <ng-container matColumnDef="progress">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Cédula </th>
+                  <td mat-cell *matCellDef="let row" (click)="searchDataReceipt(row.casegurado)"> {{row.casegurado}} </td>
+                </ng-container>
+            
+                <ng-container matColumnDef="fruit">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Cliente </th>
+                  <td mat-cell *matCellDef="let row" (click)="searchDataReceipt(row.casegurado)"> {{row.cliente}} </td>
+                </ng-container>
+            
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+                </tr>
+              </table>
+            
+              <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
             </div>
 
-            <button class="bg-primary text-light" mat-button matStepperNext (click)="searchDataReceipt()">Siguiente</button>
+            <button class="bg-primary text-light" mat-button matStepperNext >Siguiente</button>
 
           </div>
         <div>
@@ -45,7 +70,7 @@
         </div>
 
         <div formArrayName="receipt">
-          <table class="table table-bordered">
+          <table class="table table-bordered table-hover">
             <thead>
               <tr>
                 <th>N° Poliza</th>
@@ -125,17 +150,27 @@
                     <div class="form-outline">                        
                       <label class="form-label" for="form3Examplev3" >Moneda</label>
                       <select formControlName="cmoneda" class="form-control form-control-lg colorgris" (change)="validationBank(i)">
-                        <option value="Bs">BOLÍVARES</option>
-                        <option value="Ds">DÓLARES</option>
+                        <option value="Bs">Bolivares</option>
+                        <option value="Ds">Dolares</option>
                       </select>                         
                     </div>
 
-                    <div class="form-outline">
+                    <div class="form-outline" *ngIf="!usd">
                       <label class="form-label required" for="form3Examplev3" >Tipo de Pago</label>
                       <select formControlName="ctipopago" class="form-control form-control-lg colorgris" (change)="getTargetBank(i)">
-                        <option></option>
-                        <option *ngFor="let type of typeOfPayList" value="{{ type.id }}">{{ type.value }}</option>
-                      </select>                     
+                        <option value="2" >Tranferencias</option>
+                        <option value="3" >Pago Movil</option>
+                        <option value="9" >Efectivo</option>
+                      </select>                      
+                    </div>
+
+                    <div class="form-outline" *ngIf="usd">
+                      <label class="form-label required" for="form3Examplev3" >Tipo de Pago</label>
+                      <select formControlName="ctipopago" class="form-control form-control-lg colorgris" (change)="getTargetBank(i)">
+                        <option value="1" >Tranferencias USD</option> 
+                        <option value="7" >Cuenta custodia</option>
+                        <option value="9" >Efectivo</option>
+                      </select>                      
                     </div>
 
                     <div class="form-outline">

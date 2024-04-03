@@ -75,6 +75,18 @@ export class PaymentReportComponent {
   diferenceBool :boolean = false;
   messageDiference : any = []
 
+  listCollection : any = []
+
+
+  itipo!: any ;
+  amountDollar!: any ;
+  amountBs!: any ;
+  montoTotal!: any ;
+  montoDollar!: any ;
+  montoBs!: any ;
+  typeOfPayList : any = []
+
+
   PositiveBalance : any
   PositiveBalanceBool :boolean = false;
 
@@ -95,20 +107,6 @@ export class PaymentReportComponent {
     return this.searchReceipt.get("transfer") as FormArray
   }
 
-  newTransfer(): FormGroup {
-    return this._formBuilder.group({
-      cmoneda : '',
-      cbanco : '',
-      cbanco_destino : '',
-      mpago : '',
-      mpagoext : '',
-      ptasamon : '',
-      ptasaref : '',
-      freporte : '',
-      xreferencia : '',
-      ximagen :'',
-     })
-  }
 
   ngOnInit(){
 
@@ -243,6 +241,9 @@ export class PaymentReportComponent {
 
   newPayment(): FormGroup {
     return this._formBuilder.group({
+      itipo : '',
+      ctipopago : '',
+      formapago : '',
       cmoneda:'',
       cbanco: 0,
       cbanco_destino: '',
@@ -320,6 +321,8 @@ export class PaymentReportComponent {
           this.PositiveBalanceBool = true
         }
       });
+
+      this.listCollection = response.searchReceipt.cobrados
 
 
       this.PositiveBalance = 'Saldo a favor en Bs ' + sumaBS + '/' + 'Saldo  en USD ' + sumaUSD
@@ -521,27 +524,23 @@ export class PaymentReportComponent {
   }
 
   modalTransfer(config?: MatDialogConfig) {
-    this.changeStatusTrans()
+    this.trans = true
     return this.dialog.open(this.Transfer, config);
-
   }
 
   modalDeposit(config?: MatDialogConfig) {
-    this.changeStatusTransCustodia()
+    this.depositoUSD = true
     return this.dialog.open(this.Deposit, config);
-
   }
 
   modalPagoMovil(config?: MatDialogConfig) {
-    this.changeStatusPm()
+    this.pmovil = true
     return this.dialog.open(this.PagoMovil, config);
-
   }
 
   modalDepositoUSD(config?: MatDialogConfig) {
-    this.changeStatusUSD()
+    this.usd = true
     return this.dialog.open(this.DepositoUSD, config);
-
   }
 
   onFileSelect(event : any , i : number){
@@ -761,73 +760,68 @@ export class PaymentReportComponent {
     }
   }
 
-  changeStatusPm(){
-    if(this.pmovil == false){
-      this.pmovil = true
+  getTargetBank(i : any){
+    const trasnfer = this.searchReceipt.get("transfer") as FormArray
+
+    if(trasnfer.at(i).get('ctipopago')?.value == '2' ){
+      this.bankList = this.bankReceptorNational
+      trasnfer.at(i).get('cbanco')?.setValue('')
+      trasnfer.at(i).get('cbanco')?.enable();
+
+      trasnfer.at(i).get('cbanco_destino')?.setValue('')
+    }
+    if(trasnfer.at(i).get('ctipopago')?.value == '1' ){
+      this.bankList = this.bankReceptorInternational
+      trasnfer.at(i).get('cbanco')?.setValue('')
+      trasnfer.at(i).get('cbanco')?.enable();
+
+      trasnfer.at(i).get('cbanco_destino')?.setValue('')
+    }
+    if(trasnfer.at(i).get('ctipopago')?.value == '3' ){
+      this.bankList = this.bankReceptorPM
+      trasnfer.at(i).get('cbanco')?.enable();
+      trasnfer.at(i).get('cbanco')?.setValue('')
+      trasnfer.at(i).get('cbanco_destino')?.setValue('')
+    }    
+    if(trasnfer.at(i).get('ctipopago')?.value == '7' ){
+      this.bankList = this.bankReceptorCustodia
+      trasnfer.at(i).get('cbanco')?.disable();
+      trasnfer.at(i).get('cbanco')?.setValue('')
+      trasnfer.at(i).get('cbanco_destino')?.setValue('')
+    }
+  }
+
+  validationBank(i : any){
+    const trasnfer = this.searchReceipt.get("transfer") as FormArray
+
+
+    if( trasnfer.at(i).get('cmoneda')?.value == 'Bs'){
+      trasnfer.at(i).get('itipo')?.setValue('V')
+      this.getBank(i);
     }else{
-      this.pmovil = false
+      trasnfer.at(i).get('itipo')?.setValue('E')
+      this.getBank(i);
     }
 
-    if(this.usd == true){
-      this.usd = false
-    }
-    if(this.depositoUSD == true){
-      this.depositoUSD = false
-    }
-    if(this.trans == true){
-      this.trans = false
-    }
-    
+
   }
 
-  changeStatusTrans(){
-    if(this.pmovil == true){
-      this.pmovil = false
-    }
-    if(this.usd == true){
-      this.usd = false
-    }
-    if(this.depositoUSD == true){
-      this.depositoUSD = false
-    }
-    if(this.trans == false){
-      this.trans = true
-    }
-    
-  }
 
-  changeStatusTransCustodia(){
-    if(this.pmovil == true){
-      this.pmovil = false
-    }
-    if(this.usd == true){
-      this.usd = false
-    }
-    if(this.depositoUSD == false){
-      this.depositoUSD = true
-    }
-    if(this.trans == true){
-      this.trans = false
-    }
-    
-  }
+  getBank(i : any){
+    const trasnfer = this.searchReceipt.get("transfer") as FormArray
 
-  changeStatusUSD(){
-    if(this.usd == false){
+    if(trasnfer.at(i).get('cmoneda')?.value == 'Bs' ){
+      this.targetBankList = this.bankNational
+      this.usd = false
+
+    }
+    if(trasnfer.at(i).get('cmoneda')?.value == 'Ds' ){
+      this.targetBankList = this.bankInternational
       this.usd = true
-    }else{
-      this.usd = false
+
+
     }
 
-    if(this.pmovil == true){
-      this.pmovil = false
-    }
-    if(this.depositoUSD == true){
-      this.depositoUSD = false
-    }
-    if(this.trans == true){
-      this.trans = false
-    }
   }
 
 

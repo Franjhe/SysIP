@@ -291,39 +291,6 @@ export class PaymentCancellationComponent {
     })
 
 
-    fetch(environment.apiUrl + '/api/v1/collection/search-pending' )
-    .then((response) => response.json())
-    .then(data => {
-      this.listPending = data.searchPaymentPendingData.recibo
-      this.dataSource = new MatTableDataSource(data.searchPaymentPendingData.recibo);
-
-      const listPending = data.searchPaymentPendingData.recibo
-
-      const sumaTotal = listPending.reduce((acumulador: any, recibo: { mprimabrutaext: any; }) => {
- 
-        acumulador += recibo.mprimabrutaext;
-        
-        return acumulador;
-      }, 0);
-
-      this.totalPending = sumaTotal.toFixed(2)
-
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-
-
-    })
-
-
-    fetch(environment.apiUrl + '/api/v1/collection/search-vencido' )
-    .then((response) => response.json())
-    .then(data => {
-      this.listVencido = data.searchPaymentData.recibo
-
-      
-    })
-
-
     fetch(environment.apiUrl + '/api/v1/collection/search-notification' )
     .then((response) => response.json())
     .then(data => {
@@ -410,22 +377,36 @@ export class PaymentCancellationComponent {
               xruta: safeImageUrl,
             }));
 
-            const sumaMpagoext = transaction.recibos.reduce((total: any, item: any ) => total + item.mpagoext, 0);
-
-            const sumaMpago = transaction.recibos.reduce((total: any, item: any ) => total + item.mpago, 0);
-
-            console.log(sumaMpagoext)
-            console.log(sumaMpago)
-
-      
-      
-            this.totalNotificated = sumaMpago.toFixed(2)
-            this.totalNotificatedExt = sumaMpagoext.toFixed(2)
           });
 
           // Agregar el FormGroup principal al FormArray transactions
           transactionsArray.push(transactionGroup);
+
+
         });
+
+        let sumaMpago = 0;
+        let sumaMpagoExt = 0;
+
+        // Iterar sobre cada objeto en el array
+        data.searchPaymentReport.forEach((objeto:any) => {
+            // Iterar sobre los recibos de cada objeto
+            objeto.recibos.forEach((recibo:any) => {
+                // Sumar el valor de mpago al total
+                sumaMpago += recibo.mpago;
+            });
+        });
+
+        data.searchPaymentReport.forEach((objeto:any) => {
+          // Iterar sobre los recibos de cada objeto
+          objeto.recibos.forEach((recibo:any) => {
+              // Sumar el valor de mpago al total
+              sumaMpagoExt += recibo.monto_declarado_ext;
+          });
+      });
+
+      this.totalNotificated = sumaMpago
+      this.totalNotificatedExt = sumaMpagoExt
 
     })
 
