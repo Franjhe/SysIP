@@ -27,6 +27,7 @@ export class PaymentAdministrationComponent {
   targetBankList : any = []
   selectedFiles?: FileList;
   currentFile?: File;
+  typeOfPayList : any = []
 
   idTrans : any
   diference : boolean = false
@@ -73,6 +74,30 @@ export class PaymentAdministrationComponent {
     xcedula: ['', Validators.required],
   });
 
+  receiptFormGroup = this._formBuilder.group({
+    xpago: [''],
+    femision: [''],
+    fdesde: ['', Validators.required],
+    fhasta: ['', Validators.required],
+    cmetodologiapago: ['', Validators.required],
+    ctipopago: [''],
+    cbanco: [''],
+    cbanco_destino: [''],
+    fcobro: [''],
+    xreferencia: [''],
+    mprima_pagada: [''],
+    mpagado: [''],
+    xmoneda: [''],
+    mprima_accesorio: [''],
+    irecibo: ['']
+  });
+  itipo!: any ;
+  amountDollar!: any ;
+  amountBs!: any ;
+  montoTotal!: any ;
+  montoDollar!: any ;
+  montoBs!: any ;
+  
   diferenceBool :boolean = false;
   messageDiference : any = []
 
@@ -94,22 +119,6 @@ export class PaymentAdministrationComponent {
 
   get transfer() : FormArray {
     return this.searchReceipt.get("transfer") as FormArray
-  }
-
-  newTransfer(): FormGroup {
-    return this._formBuilder.group({
-      formapago : '',
-      cmoneda : '',
-      cbanco : '',
-      cbanco_destino : '',
-      mpago : '',
-      mpagoext : '',
-      ptasamon : '',
-      ptasaref : '',
-      freporte : '',
-      xreferencia : '',
-      ximagen :'',
-     })
   }
 
   ngOnInit(){
@@ -256,6 +265,7 @@ export class PaymentAdministrationComponent {
       freporte: '',
       xreferencia: '',
       ximagen: '',
+      ctipopago: '',
     })
   }
   
@@ -523,30 +533,6 @@ export class PaymentAdministrationComponent {
 
   }
 
-  modalTransfer(config?: MatDialogConfig) {
-    this.changeStatusTrans()
-    return this.dialog.open(this.Transfer, config);
-
-  }
-
-  modalDeposit(config?: MatDialogConfig) {
-    this.changeStatusTransCustodia()
-    return this.dialog.open(this.Deposit, config);
-
-  }
-
-  modalPagoMovil(config?: MatDialogConfig) {
-    this.changeStatusPm()
-    return this.dialog.open(this.PagoMovil, config);
-
-  }
-
-  modalDepositoUSD(config?: MatDialogConfig) {
-    this.changeStatusUSD()
-    return this.dialog.open(this.DepositoUSD, config);
-
-  }
-
   onFileSelect(event : any , i : number){
 
     const file = event.target.files[0]
@@ -739,7 +725,6 @@ export class PaymentAdministrationComponent {
 
   }
 
-
   uploadFile(){
 
     const transfer = this.searchReceipt.get("transfer") as FormArray
@@ -765,113 +750,80 @@ export class PaymentAdministrationComponent {
   }
 
 
-  changeList(i : any){
+
+  getTargetBank(i : any){
     const trasnfer = this.searchReceipt.get("transfer") as FormArray
 
-    if(trasnfer.at(i).get('formapago')?.value == 'PM'){
-      trasnfer.at(i).get('cbanco')?.enable()
-      trasnfer.at(i).get('cbanco_destino')?.enable()
-      trasnfer.at(i).get('xreferencia')?.enable()
-      trasnfer.at(i).get('ximagen')?.enable()
-      this.changeStatusPm()
+    if(trasnfer.at(i).get('ctipopago')?.value == '5' ){
+      trasnfer.at(i).get('cbanco_destino')?.disable();
+      trasnfer.at(i).get('cbanco')?.disable();
+      trasnfer.at(i).get('cbanco')?.setValue('')
+      trasnfer.at(i).get('cbanco_destino')?.setValue('')
     }
-    if(trasnfer.at(i).get('formapago')?.value == 'TR'){
-      trasnfer.at(i).get('cbanco')?.enable()
-      trasnfer.at(i).get('cbanco_destino')?.enable()
-      trasnfer.at(i).get('xreferencia')?.enable()
-      trasnfer.at(i).get('ximagen')?.enable()
-      this.changeStatusTrans()
+    else{
+      trasnfer.at(i).get('cbanco_destino')?.enable();
+      trasnfer.at(i).get('cbanco')?.enable();
+      let data = {
+        ctipopago: trasnfer.at(i).get('ctipopago')?.value
+      }
+      this.http.post(environment.apiUrl + '/api/v1/valrep/target-bank', data).subscribe((response: any) => {
+        if (response.data.targetBank) {
+          this.targetBankList = []
+          for (let i = 0; i < response.data.targetBank.length; i++) {
+            this.targetBankList.push({
+              id: response.data.targetBank[i].cbanco_destino,
+              value: response.data.targetBank[i].xbanco,
+            });
+          }
+        }
+      });
     }
-    if(trasnfer.at(i).get('formapago')?.value == 'EF'){
-      trasnfer.at(i).get('cbanco')?.disable()
-      trasnfer.at(i).get('cbanco_destino')?.disable()
-      trasnfer.at(i).get('xreferencia')?.disable()
-      trasnfer.at(i).get('ximagen')?.disable()
-    }
-    if(trasnfer.at(i).get('formapago')?.value == 'ER'){
-      trasnfer.at(i).get('cbanco')?.enable()
-      trasnfer.at(i).get('cbanco_destino')?.enable()
-      trasnfer.at(i).get('xreferencia')?.enable()
-      trasnfer.at(i).get('ximagen')?.enable()
-      this.changeStatusTransCustodia()
-    }
-    if(trasnfer.at(i).get('formapago')?.value == 'TUSD'){
-      trasnfer.at(i).get('cbanco')?.enable()
-      trasnfer.at(i).get('cbanco_destino')?.enable()
-      trasnfer.at(i).get('xreferencia')?.enable()
-      trasnfer.at(i).get('ximagen')?.enable()
-      this.changeStatusUSD()
-    }
+  }
+
+  validationBank(i : any){
+    const trasnfer = this.searchReceipt.get("transfer") as FormArray
+
+    this.getBank();
+    this.getTypeOfPay()
 
 
   }
-  changeStatusPm(){
-    if(this.pmovil == false){
-      this.pmovil = true
-    }else{
-      this.pmovil = false
-    }
 
-    if(this.usd == true){
-      this.usd = false
+  getTypeOfPay(){
+    let data = {
+      itipo: this.itipo
     }
-    if(this.depositoUSD == true){
-      this.depositoUSD = false
-    }
-    if(this.trans == true){
-      this.trans = false
-    }
-    
+    this.http.post(environment.apiUrl + '/api/v1/valrep/type-of-payment', data).subscribe((response: any) => {
+      if (response.data.typePayment) {
+        this.typeOfPayList = [];
+        for (let i = 0; i < response.data.typePayment.length; i++) {
+          if(response.data.typePayment[i].ctipopago !== 7){
+
+            this.typeOfPayList.push({
+              id: response.data.typePayment[i].ctipopago,
+              value: response.data.typePayment[i].xtipopago,
+            });
+          }
+        }
+      }
+    });
   }
 
-  changeStatusTrans(){
-    if(this.pmovil == true){
-      this.pmovil = false
+  getBank(){
+    let data = {
+      itipo: this.itipo
     }
-    if(this.usd == true){
-      this.usd = false
-    }
-    if(this.depositoUSD == true){
-      this.depositoUSD = false
-    }
-    if(this.trans == false){
-      this.trans = true
-    }
-    
-  }
-
-  changeStatusTransCustodia(){
-    if(this.pmovil == true){
-      this.pmovil = false
-    }
-    if(this.usd == true){
-      this.usd = false
-    }
-    if(this.depositoUSD == false){
-      this.depositoUSD = true
-    }
-    if(this.trans == true){
-      this.trans = false
-    }
-    
-  }
-
-  changeStatusUSD(){
-    if(this.usd == false){
-      this.usd = true
-    }else{
-      this.usd = false
-    }
-
-    if(this.pmovil == true){
-      this.pmovil = false
-    }
-    if(this.depositoUSD == true){
-      this.depositoUSD = false
-    }
-    if(this.trans == true){
-      this.trans = false
-    }
+    this.http.post(environment.apiUrl + '/api/v1/valrep/bank', data).subscribe((response: any) => {
+      if (response.data.bank) {
+        this.bankList = [];
+        for (let i = 0; i < response.data.bank.length; i++) {
+          this.bankList.push({
+            id: response.data.bank[i].cbanco,
+            value: response.data.bank[i].xbanco,
+          });
+        }
+      }
+    });
   }
 
 

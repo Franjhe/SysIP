@@ -122,94 +122,38 @@
                   <div class="col-lg-4">
 
 
-                    <div class="form-outline" ><!-- pagos en bolivares -->
-                      <label class="form-label required">Forma de pago</label>
-                      <select formControlName="formapago" class="form-control rounded-input form-control-lg " (change)="changeList(i)">
-                        <option  value="PM">Pago movil</option>
-                        <option  value="TR">Transferencia</option>
-                        <option  value="EF">Efectivo</option>
-                        <option  value="DUSD">Deposito cuenta custodia</option>
-                        <option  value="TUSD">Tranferencia USD</option>
+                    <div class="form-outline">                        
+                      <label class="form-label" for="form3Examplev3" >Moneda</label>
+                      <select formControlName="cmoneda" class="form-control form-control-lg colorgris" (change)="validationBank(i)">
+                        <option value="Bs">BOLÍVARES</option>
+                        <option value="Ds">DÓLARES</option>
+                      </select>                         
+                    </div>
+
+                    <div class="form-outline">
+                      <label class="form-label required" for="form3Examplev3" >Tipo de Pago</label>
+                      <select formControlName="ctipopago" class="form-control form-control-lg colorgris" (change)="getTargetBank(i)">
+                        <option></option>
+                        <option *ngFor="let type of typeOfPayList" value="{{ type.id }}">{{ type.value }}</option>
                       </select>                     
                     </div>
 
-                    <!-- Moneda -->
-                      <div class="form-outline" *ngIf="usd"><!-- pagos en dolares  -->
-                        <label class="form-label required">Moneda</label>
-                        <select formControlName="cmoneda" class="form-control rounded-input form-control-lg " >
-                          <!-- <option  value="BS">BS</option> -->
-                          <option  value="USD">USD</option>
-                        </select>                     
-                      </div>
+                    <div class="form-outline">
+                      <label class="form-label required" for="form3Examplev3" >Banco</label>
+                      <select formControlName="cbanco" class="form-control form-control-lg colorgris">
+                        <option></option>
+                        <option *ngFor="let bank of bankList" value="{{ bank.id }}">{{ bank.value }}</option>
+                      </select>                     
+                    </div>
 
-                      <div class="form-outline"  *ngIf="!usd  && !depositoUSD"><!-- pagos en bolivares -->
-                        <label class="form-label required">Moneda</label>
-                        <select formControlName="cmoneda" class="form-control rounded-input form-control-lg ">
-                          <option  value="Bs">Bs</option>
-                        </select>                     
-                      </div>
-
-                      <div class="form-outline"  *ngIf="!usd && depositoUSD"><!-- pagos en bolivares -->
-                        <label class="form-label required">Moneda</label>
-                        <select formControlName="cmoneda" class="form-control rounded-input form-control-lg ">
-                          <option  value="USD">USD</option>
-                        </select>                     
-                      </div>
+                    <div class="form-outline">
+                      <label class="form-label required" for="form3Examplev3" >Banco Destino</label>
+                      <select formControlName="cbanco_destino" class="form-control form-control-lg colorgris">
+                        <option></option>
+                        <option *ngFor="let target of targetBankList" value="{{ target.id }}">{{ target.value }}</option>
+                      </select>                     
+                    </div>
                       
-                      <!-- Bancos de emision -->
-                      <div class="form-outline mt-3" *ngIf="!usd && !depositoUSD"><!-- lista de bancos emisores nacionales -->
-                        <label class="form-label ">Banco de emision</label>
-                        <select formControlName="cbanco" class="form-control rounded-input form-control-lg " >
-                          <option disabled>Seleccione el banco de emision</option>
-                          <option *ngFor="let backE of bankNational" value="{{ backE.id }}">{{ backE.value }}</option>
-                        </select>
-                      </div>
-
-                      <div class="form-outline mt-3" *ngIf="usd"><!-- lista de bancos emisores internacionales  -->
-                        <label class="form-label ">Banco de emision</label>
-                        <select formControlName="cbanco" class="form-control rounded-input form-control-lg " >
-                          <option disabled>Seleccione el banco de emision</option>
-                          <option *ngFor="let backE of bankInternational" value="{{ backE.id }}">{{ backE.value }}</option>
-                        </select>
-                      </div>
-
-                      <!-- Bancos destino -->
-
-                      <div class="form-outline mt-3" *ngIf="usd"><!-- lista de bancos receptores internacionales -->
-                        <label class="form-label ">Banco receptor</label>
-                        <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg " >
-                          <option disabled>Seleccione el banco receptor</option>
-                          <option *ngFor="let backE of bankReceptorInternational" value="{{ backE.id }}">{{ backE.value }}</option>
-                        </select>                     
-                      </div>
-
-
-                      <div class="form-outline mt-3" *ngIf="!usd && !pmovil && !depositoUSD && trans"><!-- lista de bancos receptores nacionales transferencia-->
-                        <label class="form-label ">Banco receptor</label>
-                        <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg " >
-                          <option disabled>Seleccione el banco receptor</option>
-                          <option *ngFor="let backE of bankReceptorNational" value="{{ backE.id }}">{{ backE.value }}</option>
-                        </select>                     
-                      </div>
-
-                      <div class="form-outline mt-3" *ngIf="!usd && pmovil && !depositoUSD && !trans"><!--  lista de bancos receptores nacionales pago movil -->
-                        <label class="form-label ">Banco receptor</label>
-                        <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg " >
-                          <option disabled>Seleccione el banco receptor</option>
-                          <option *ngFor="let backE of bankReceptorPM" value="{{ backE.id }}">{{ backE.value }}</option>
-                        </select>                     
-                      </div>
-
-                      <div class="form-outline mt-3" *ngIf=" !pmovil && depositoUSD && !trans"><!--  lista de bancos receptores nacionales cuenta custodia -->
-                        <label class="form-label ">Banco receptor</label>
-                        <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg " >
-                          <option disabled>Seleccione el banco receptor</option>
-                          <option *ngFor="let backE of bankReceptorCustodia" value="{{ backE.id }}">{{ backE.value }}</option>
-                        </select>                     
-                      </div>
-
-
-
                   </div>
 
                   <div class="col-lg-4">
@@ -246,7 +190,6 @@
                 </div>
               </div>
             </div>
-
 
           </div>
 
