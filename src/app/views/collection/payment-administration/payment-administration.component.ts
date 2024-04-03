@@ -4,17 +4,31 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort , MatSortModule } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
+
+import {MatStepperModule} from '@angular/material/stepper';
+
 
 
 @Component({
-  selector: 'app-payment-report',
-  templateUrl: './payment-report.component.html',
-  styleUrls: ['./payment-report.component.scss']
+  selector: 'app-payment-administration',
+  templateUrl: './payment-administration.component.html',
+  styleUrls: ['./payment-administration.component.scss']
 })
-export class PaymentReportComponent {
+export class PaymentAdministrationComponent {
 
+  
   @ViewChild('Alerta') Alerta!: TemplateRef<any>;
   @ViewChild('NotFound') NotFound!: TemplateRef<any>;
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
+
+  displayedColumns: string[] = ['progress', 'fruit'];
+  dataSource = new MatTableDataSource<any> ;
 
   //modales de tipos de pago
   @ViewChild('Transfer') Transfer!: TemplateRef<any>;
@@ -26,6 +40,7 @@ export class PaymentReportComponent {
   targetBankList : any = []
   selectedFiles?: FileList;
   currentFile?: File;
+  typeOfPayList : any = []
 
   idTrans : any
   diference : boolean = false
@@ -69,23 +84,35 @@ export class PaymentReportComponent {
   searchReceipt = this._formBuilder.group({
     receipt :  this._formBuilder.array([]),
     transfer : this._formBuilder.array([]),
-    xcedula: ['', Validators.required],
+    xcedula: [''],
   });
 
-  diferenceBool :boolean = false;
-  messageDiference : any = []
-
-  listCollection : any = []
-
-
+  receiptFormGroup = this._formBuilder.group({
+    xpago: [''],
+    femision: [''],
+    fdesde: ['', Validators.required],
+    fhasta: ['', Validators.required],
+    cmetodologiapago: ['', Validators.required],
+    ctipopago: [''],
+    cbanco: [''],
+    cbanco_destino: [''],
+    fcobro: [''],
+    xreferencia: [''],
+    mprima_pagada: [''],
+    mpagado: [''],
+    xmoneda: [''],
+    mprima_accesorio: [''],
+    irecibo: ['']
+  });
   itipo!: any ;
   amountDollar!: any ;
   amountBs!: any ;
   montoTotal!: any ;
   montoDollar!: any ;
   montoBs!: any ;
-  typeOfPayList : any = []
-
+  
+  diferenceBool :boolean = false;
+  messageDiference : any = []
 
   PositiveBalance : any
   PositiveBalanceBool :boolean = false;
@@ -96,6 +123,7 @@ export class PaymentReportComponent {
     private http: HttpClient,
     readonly dialog: MatDialog,
     private toast: MatSnackBar,
+    private _stepper: MatStepperModule
     ) {
    }
    
@@ -106,7 +134,6 @@ export class PaymentReportComponent {
   get transfer() : FormArray {
     return this.searchReceipt.get("transfer") as FormArray
   }
-
 
   ngOnInit(){
 
@@ -237,12 +264,30 @@ export class PaymentReportComponent {
       }
     })
 
+    fetch(environment.apiUrl + '/api/v1/collection/search-pending' )
+    .then((response) => response.json())
+    .then(data => {
+      this.dataSource = new MatTableDataSource(data.searchPaymentPendingData.recibo);
+
+      const listPending = data.searchPaymentPendingData.recibo
+
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+
+
+    })
+
+  }
+
+  
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.toLowerCase();
   }
 
   newPayment(): FormGroup {
     return this._formBuilder.group({
-      itipo : '',
-      ctipopago : '',
       formapago : '',
       cmoneda:'',
       cbanco: 0,
@@ -254,6 +299,7 @@ export class PaymentReportComponent {
       freporte: '',
       xreferencia: '',
       ximagen: '',
+      ctipopago: '',
     })
   }
   
@@ -282,9 +328,9 @@ export class PaymentReportComponent {
 
   }
   
-  searchDataReceipt(){
+  searchDataReceipt(casegurado : any){
     const client = {
-      cedula: this.searchReceipt.get('xcedula')?.value 
+      cedula: casegurado
     }
 
     const receipt = this.searchReceipt.get("receipt") as FormArray
@@ -322,14 +368,13 @@ export class PaymentReportComponent {
         }
       });
 
-      this.listCollection = response.searchReceipt.cobrados
-
 
       this.PositiveBalance = 'Saldo a favor en Bs ' + sumaBS + '/' + 'Saldo  en USD ' + sumaUSD
       this.viewData = false;
       this.diference = false
 
       if(response.searchReceipt.receipt.length > 0){
+
         for(let i = 0; i < response.searchReceipt.receipt.length; i++){
 
           const currentReceipt = response.searchReceipt.receipt[i];
@@ -410,6 +455,8 @@ export class PaymentReportComponent {
               messaje: 'El cliente ' + messajeCliente + 
               response.searchReceipt.receipt[i].mdiferencia + 'Bs /' + response.searchReceipt.receipt[i].mdiferenciaext +'USD'
             })
+
+            this._stepper;
             
           }else if(response.searchReceipt.receipt[i].idiferencia == 'H'){
             messajeCliente = 'tiene un saldo a favor de '
@@ -521,26 +568,6 @@ export class PaymentReportComponent {
 
     return this.dialog.open(this.NotFound, config);
 
-  }
-
-  modalTransfer(config?: MatDialogConfig) {
-    this.trans = true
-    return this.dialog.open(this.Transfer, config);
-  }
-
-  modalDeposit(config?: MatDialogConfig) {
-    this.depositoUSD = true
-    return this.dialog.open(this.Deposit, config);
-  }
-
-  modalPagoMovil(config?: MatDialogConfig) {
-    this.pmovil = true
-    return this.dialog.open(this.PagoMovil, config);
-  }
-
-  modalDepositoUSD(config?: MatDialogConfig) {
-    this.usd = true
-    return this.dialog.open(this.DepositoUSD, config);
   }
 
   onFileSelect(event : any , i : number){
@@ -735,7 +762,6 @@ export class PaymentReportComponent {
 
   }
 
-
   uploadFile(){
 
     const transfer = this.searchReceipt.get("transfer") as FormArray
@@ -767,27 +793,35 @@ export class PaymentReportComponent {
       this.bankList = this.bankReceptorNational
       trasnfer.at(i).get('cbanco')?.setValue('')
       trasnfer.at(i).get('cbanco')?.enable();
-
+      trasnfer.at(i).get('cbanco_destino')?.enable()
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
     }
     if(trasnfer.at(i).get('ctipopago')?.value == '1' ){
       this.bankList = this.bankReceptorInternational
       trasnfer.at(i).get('cbanco')?.setValue('')
       trasnfer.at(i).get('cbanco')?.enable();
-
+      trasnfer.at(i).get('cbanco_destino')?.enable()
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
     }
     if(trasnfer.at(i).get('ctipopago')?.value == '3' ){
       this.bankList = this.bankReceptorPM
       trasnfer.at(i).get('cbanco')?.enable();
       trasnfer.at(i).get('cbanco')?.setValue('')
+      trasnfer.at(i).get('cbanco_destino')?.enable()
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
     }    
     if(trasnfer.at(i).get('ctipopago')?.value == '7' ){
       this.bankList = this.bankReceptorCustodia
       trasnfer.at(i).get('cbanco')?.disable();
       trasnfer.at(i).get('cbanco')?.setValue('')
+      trasnfer.at(i).get('cbanco_destino')?.enable()
+
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
+    }
+    if(trasnfer.at(i).get('ctipopago')?.value == '9' ){
+      this.bankList = this.bankReceptorCustodia
+      trasnfer.at(i).get('cbanco')?.disable();
+      trasnfer.at(i).get('cbanco_destino')?.disable()
     }
   }
 
@@ -805,6 +839,7 @@ export class PaymentReportComponent {
 
 
   }
+
 
 
   getBank(i : any){

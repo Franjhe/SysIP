@@ -1,0 +1,399 @@
+
+
+<div class="card container col-lg-12" style="margin-top: -7.5rem">
+
+  <mat-stepper linear #stepper>
+
+    <mat-step [stepControl]="searchReceipt" >
+      <form [formGroup]="searchReceipt">
+        <ng-template matStepLabel>Buscar asegurado</ng-template>
+          <div class="container row">
+            <div class="mat-elevation-z8">
+
+              <div class="text-center">
+                <mat-form-field>
+                  <mat-label>Buscar</mat-label>
+                  <input matInput (keyup)="applyFilter($event)" #input>
+                </mat-form-field>
+              </div>
+
+              <table mat-table [dataSource]="dataSource" matSort class="table table-hover">           
+            
+                <ng-container matColumnDef="progress">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Cédula </th>
+                  <td mat-cell *matCellDef="let row" (click)="searchDataReceipt(row.casegurado)"> {{row.casegurado}} </td>
+                </ng-container>
+            
+                <ng-container matColumnDef="fruit">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Cliente </th>
+                  <td mat-cell *matCellDef="let row" (click)="searchDataReceipt(row.casegurado)"> {{row.cliente}} </td>
+                </ng-container>
+            
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+                </tr>
+              </table>
+            
+              <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+            </div>
+
+            <button class="bg-primary text-light" mat-button matStepperNext >Siguiente</button>
+
+          </div>
+        <div>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="searchReceipt" >
+      <form [formGroup]="searchReceipt">
+        <ng-template matStepLabel>Seleccione los recibos pendientes a cancelar</ng-template>
+
+        <div class="row">
+          <div class="col-lg-8">
+            <h1> Cliente </h1>
+            <h1><strong>{{cliente}}</strong></h1>
+          </div>
+          <div class="col-lg-4">
+            <h1 class="text-success" style=" font-weight: 500;" *ngIf="PositiveBalanceBool">
+               {{PositiveBalance}}
+            </h1>
+            <div *ngIf="viewData">
+              <div *ngFor="let message of messageDiference" >
+                <h1  class="{{message.class_text}}" > {{message.messaje}}</h1>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div formArrayName="receipt">
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th>N° Poliza</th>
+                <th>N° Recibo</th>
+                <th>N° Cuota</th>
+                <th>Ramo</th>
+                <th style="color:red">Fecha tope de pago</th>
+                <th>Recibo notificado</th>
+                <th>Total del recibo</th>
+                <th>Seleccione los recibos a pagar</th>
+              </tr>
+            </thead>
+            <tbody *ngFor="let creds of receipt.value let i=index">
+              <tr [formGroupName]="i">
+                <td >{{creds.cpoliza}}</td>
+                <td >{{creds.crecibo}}</td>
+                <td >{{creds.qcuotas}}</td>
+                <td >{{creds.xramo}}</td>
+                <td > {{creds.fhasta_rec}}</td>
+                <td >
+                  <div *ngIf="creds.cdoccob > 0"><mat-icon style="color:green">check</mat-icon></div>
+                  <div *ngIf="creds.cdoccob == 0"><mat-icon style="color:red">close</mat-icon></div>
+                </td>
+                <td >
+                  <div class="row">
+                    <div class="col">
+                      {{creds.mprimabrutaext}} {{creds.cmoneda}}
+                    </div>
+                    <div *ngIf="creds.mdiferencia > 0" style=" background-color: #ff7272;color: white;">
+                      Diferencia {{creds.idiferencia}} : <br>
+                      {{creds.mdiferencia}} Bs - {{creds.mdiferenciaext}} $
+                    </div>
+                  </div>
+        
+                </td>
+                <td>
+                  <div *ngIf="creds.cdoccob > 0 "></div> 
+                  <div *ngIf="creds.cdoccob == 0 || creds.mdiferencia > 0 "> <mat-checkbox formControlName="seleccionado" (change)="calculateMount(i)"> </mat-checkbox></div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="container text-center">
+            <h2>Tasa de cobro {{bcv}} Bs</h2> 
+            <h2 >Total a Pagar {{mount}} $  -- {{mountBs}} Bs</h2>
+        </div>
+
+        <div class="mt-5 text-center">
+          <button mat-button matStepperPrevious class="bg-warning text-light p-3">Atras</button>
+          <button mat-button matStepperNext   [disabled]="!puedeAvanzar" class="bg-primary text-light">Siguiente</button>
+        </div>
+
+      </form>
+    </mat-step>
+
+
+    <mat-step [stepControl]="searchReceipt" >
+      <form [formGroup]="searchReceipt">
+
+        <ng-template matStepLabel>Confirmación</ng-template>
+        <div class="text-center container">
+          <strong >
+            <h1 class="bold mt-4" style="font-size:2.5rem" >{{mountIGTF}} $   --- {{mountBs}} Bs</h1> 
+            <h1 class="bold mt-4" >Tasa de calculo {{bcv}} Bs</h1>
+          </strong> 
+          <div class="form-group mb-3 row" style="place-content: space-around;">
+
+            <!-- array con datos de las transferencias  -->
+            <div formArrayName="transfer" >
+              <div *ngFor="let creds of transfer.controls let i=index">
+                <div [formGroupName]="i" class="row justify-content-center">
+
+                  <div class="col-lg-4">
+
+
+                    <div class="form-outline">                        
+                      <label class="form-label" for="form3Examplev3" >Moneda</label>
+                      <select formControlName="cmoneda" class="form-control form-control-lg colorgris" (change)="validationBank(i)">
+                        <option value="Bs">Bolivares</option>
+                        <option value="Ds">Dolares</option>
+                      </select>                         
+                    </div>
+
+                    <div class="form-outline" *ngIf="!usd">
+                      <label class="form-label required" for="form3Examplev3" >Tipo de Pago</label>
+                      <select formControlName="ctipopago" class="form-control form-control-lg colorgris" (change)="getTargetBank(i)">
+                        <option value="2" >Tranferencias</option>
+                        <option value="3" >Pago Movil</option>
+                        <option value="9" >Efectivo</option>
+                      </select>                      
+                    </div>
+
+                    <div class="form-outline" *ngIf="usd">
+                      <label class="form-label required" for="form3Examplev3" >Tipo de Pago</label>
+                      <select formControlName="ctipopago" class="form-control form-control-lg colorgris" (change)="getTargetBank(i)">
+                        <option value="1" >Tranferencias USD</option> 
+                        <option value="7" >Cuenta custodia</option>
+                        <option value="9" >Efectivo</option>
+                      </select>                      
+                    </div>
+
+                    <div class="form-outline">
+                      <label class="form-label required" for="form3Examplev3" >Banco</label>
+                      <select formControlName="cbanco" class="form-control form-control-lg colorgris">
+                        <option></option>
+                        <option *ngFor="let bank of bankList" value="{{ bank.id }}">{{ bank.value }}</option>
+                      </select>                     
+                    </div>
+
+                    <div class="form-outline">
+                      <label class="form-label required" for="form3Examplev3" >Banco Destino</label>
+                      <select formControlName="cbanco_destino" class="form-control form-control-lg colorgris">
+                        <option></option>
+                        <option *ngFor="let target of targetBankList" value="{{ target.id }}">{{ target.value }}</option>
+                      </select>                     
+                    </div>
+                      
+                  </div>
+
+                  <div class="col-lg-4">
+
+                      <div class="form-outline" >
+                        <label class="form-label required">Monto</label>
+                        <input  type="text"  class="form-control rounded-input " placeholder="Ingresar monto" formControlName="mpago">
+                      </div>
+
+                      <div class="form-outline" >
+                        <label class="form-label required">Referencia</label>
+                        <input  type="text"  class="form-control rounded-input " placeholder="Ingrese la referencia" formControlName="xreferencia" maxlength="7">
+                      </div>
+
+                      <div class="form-outline" >
+                        <label class="form-label required">Comprobante</label>
+                        <input type="file"  accept="image/png, image/jpeg, image/jpg" class="form-control rounded-input" name="ximagen" formControlName="ximagen" (change)="onFileSelect($event ,i)" #Ximagen>
+                      </div>
+
+                  </div>
+
+                  <div class="mt-3" >
+                    <button mat-button [disabled]="Submit" class="bg-warning text-light m-2" (click)="addPayment()">Anadir movimiento</button>
+                    <button mat-button [disabled]="Submit" class="bg-danger text-light m-2" (click)="removePayment(i)">Eliminar movimiento</button>
+                  </div> 
+
+
+                </div>
+                <div class="mt-5" >
+                  
+                  <button mat-button [disabled]="Submit" class="bg-success text-light" (click)="onSubmit()">Registrar Pago</button>
+
+
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </form >
+    </mat-step>
+
+  </mat-stepper>
+
+    <ng-template #Alerta >
+      <mat-dialog-content  >
+        
+        <div class="card">
+          <div class="header">
+            <div class="image">
+              <svg viewbox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g id="SVGRepo_iconCarrier">
+                <path d="M20 7L9.00004 18L3.99994 13" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="8.5"></path>
+              </g></svg>
+            </div>
+            <div class="content">
+              <h2 class="title">Pago registrado</h2>
+              <h4>Valide todos los campos antes de registrar el anticipo</h4>
+
+            </div>
+          </div>
+        </div>
+
+
+      </mat-dialog-content>
+    </ng-template>
+
+    <ng-template #NotFound >
+      <mat-dialog-content  >
+          <div class="header">
+            <div class="content">
+              <h2 class="title">Cliente no encontrado</h2>
+              <h4>Valide sus datos</h4>
+            </div>
+          </div>
+      </mat-dialog-content>
+    </ng-template>
+
+    <ng-template #Transfer >
+      <mat-dialog-content >
+          <div class="header">
+            <div class="container">
+              <div class="row">
+                <div>
+                  <strong class="title" *ngIf="!diferenceBool">Monto VES {{mountBs}}</strong>
+                  <button mat-icon-button color="primary" ngxClipboard [cbContent]="mountBs">
+                    <mat-icon>file_copy</mat-icon>
+                  </button>
+                </div>
+                <div>
+                  <strong class="title">Rif J-00084644-8</strong>
+                  <button mat-icon-button color="primary" ngxClipboard [cbContent]="'000846448'">
+                    <mat-icon>file_copy</mat-icon>
+                  </button>
+                </div>
+
+                <div style="background-color: azure;" class="mt-2">
+                  <strong>Bancos disponibles para esta transaccion</strong> <br>
+                  <strong>BCN </strong>0191 0098 73 2198370018  <button mat-icon-button color="primary" ngxClipboard [cbContent]="'01910098732198370018'"><mat-icon>file_copy</mat-icon></button><br>
+                  <strong>BANESCO </strong>0134 0371 61 3711015662  <button mat-icon-button color="primary" ngxClipboard [cbContent]="'01340371613711015662'"><mat-icon>file_copy</mat-icon></button><br>
+                  <strong>BANPLUS </strong>0174 0131 96 1314500040  <button mat-icon-button color="primary" ngxClipboard [cbContent]="'01740131961314500040'"><mat-icon>file_copy</mat-icon></button><br>
+                  <strong>BANCAMIGA </strong>0172 0111 53 1118494549  <button mat-icon-button color="primary" ngxClipboard [cbContent]="'01720111531118494549'"><mat-icon>file_copy</mat-icon> </button><br>
+                  <strong>BANCO DE VENEZUELA </strong>0102 0762 21 0000100104 <button mat-icon-button color="primary" ngxClipboard [cbContent]="'01020762210000100104'"><mat-icon>file_copy</mat-icon> </button><br>
+                  <strong>BANCO PLAZA</strong> 0138 0040 59 0400012987  <button mat-icon-button color="primary" ngxClipboard [cbContent]="'01380040590400012987'"><mat-icon>file_copy</mat-icon></button>
+                </div>
+              </div>
+
+
+            </div>
+          </div>
+      </mat-dialog-content>
+    </ng-template>
+
+    <ng-template #Deposit >
+      <mat-dialog-content  >
+        <div class="header">
+          <div class="container">
+            <div class="row">
+              <div>
+                <strong class="title" *ngIf="!diferenceBool">Monto {{mountIGTF}} $</strong>
+                <button mat-icon-button color="primary" ngxClipboard [cbContent]="mountIGTF">
+                  <mat-icon>file_copy</mat-icon>
+                </button>
+              </div>
+              <div>
+                <strong class="title">Rif J-00084644-8</strong>
+                <button mat-icon-button color="primary" ngxClipboard [cbContent]="'000846448'">
+                  <mat-icon>file_copy</mat-icon>
+                </button>
+              </div>
+
+              <div style="background-color: azure;" class="mt-2">
+                <strong>Bancos disponibles para esta transaccion</strong> <br>
+                <strong>BANPLUS CUENTA CUSTODIA </strong>0174 0720 10 7205218220 <button mat-icon-button color="primary" ngxClipboard [cbContent]="'01740720107205218220'"><mat-icon>file_copy</mat-icon></button><br>
+                <strong>BANCAMIGA CASH USD </strong>0172 0111 53 1118486404  <button mat-icon-button color="primary" ngxClipboard [cbContent]="'01720111531118486404'"><mat-icon>file_copy</mat-icon></button><br>
+                <strong>BANESCO USD </strong>RIF J-000846448 <button mat-icon-button color="primary" ngxClipboard [cbContent]="'000846448'"><mat-icon>file_copy</mat-icon></button><br>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </mat-dialog-content>
+    </ng-template>
+
+    <ng-template #PagoMovil >
+      <mat-dialog-content  >
+        <div class="header">
+          <div class="container">
+            <div class="row">
+              <div>
+                <strong class="title" *ngIf="!diferenceBool">Monto VES {{mountBs}}</strong>
+                <button mat-icon-button color="primary" ngxClipboard [cbContent]="mountBs">
+                  <mat-icon>file_copy</mat-icon>
+                </button>
+              </div>
+              <div>
+                <strong class="title">Rif J-00084644-8</strong>
+                <button mat-icon-button color="primary" ngxClipboard [cbContent]="'000846448'">
+                  <mat-icon>file_copy</mat-icon>
+                </button>
+              </div>
+
+              <div style="background-color: azure;" class="mt-2">
+                <strong>Bancos disponibles para esta transaccion</strong> <br>
+                <strong>BANESCO </strong> <strong>04143966962</strong> <button mat-icon-button color="primary" ngxClipboard [cbContent]="'04143966962'"><mat-icon>file_copy</mat-icon></button><br>
+                <strong>BANCAMIGA </strong> <strong>04128176856</strong> <button mat-icon-button color="primary" ngxClipboard [cbContent]="'04128176856'"><mat-icon>file_copy</mat-icon></button><br>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </mat-dialog-content>
+    </ng-template>
+
+    <ng-template #DepositoUSD >
+      <mat-dialog-content >
+          <div class="header">
+            <div class="container">
+              <div class="">
+                  <strong class="title" *ngIf="!diferenceBool">Monto {{mountIGTF}} $</strong><button mat-icon-button color="primary" ngxClipboard [cbContent]="mountIGTF"><mat-icon>file_copy</mat-icon></button>
+                  <br><strong class="title">Rif J-00084644-8</strong><button mat-icon-button color="primary" ngxClipboard [cbContent]="'000846448'"><mat-icon>file_copy</mat-icon></button>
+                <div>
+                  <p class="text-start mt-3">
+                    <strong>Beneficiary</strong>     Bee Insurance Managemen LLC <br>
+                    <strong>Bank </strong>           Well Fargo <br>
+                    <strong>Address</strong>         1110 Brickell Ave Suite 406 Miami Fl 33131-3135 <br>
+                    <strong>Account</strong>         3814894881 <br>
+                    <strong>Routing Number</strong>  063107513 <br>
+                    <strong>Swift </strong>          WFBIUS6SXXX <br>
+                    <strong>Zelle </strong>          paymentslamundial@gmail.com
+                  </p>
+                </div>
+
+              </div>
+
+
+            </div>
+          </div>
+      </mat-dialog-content>
+    </ng-template>
+
+</div>

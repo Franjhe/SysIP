@@ -6,6 +6,7 @@
   
   .mat-mdc-row:hover .mat-mdc-cell {
     border-color: currentColor;
+    background-color: rgb(245, 245, 245);
   }
   
   .footer-table {
@@ -26,4 +27,10 @@
     border-bottom: 1px solid transparent;
     border-top: 1px solid transparent;
     cursor: pointer;
+  }
+
+  ::ng-deep .cdk-overlay-container {
+    /* Do you changes here */
+    position: fixed; 
+    z-index: 2000;
   }
