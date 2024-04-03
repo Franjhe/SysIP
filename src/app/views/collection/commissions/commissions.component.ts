@@ -11,10 +11,6 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { clear } from 'console';
 
 export interface PaymentRequest {
-  // name: string;
-  // position: number;
-  // weight: number;
-  // symbol: string;
   xtransaccion: string;
   csucursal?: string;
   xsucursal?: string;
@@ -39,11 +35,6 @@ export interface PaymentRequest {
   styleUrls: ['./commissions.component.scss']
 })
 export class CommissionsComponent {
-
-  groupReceiptsForm = this._formBuilder.group({
-    agrupado: this._formBuilder.array([])
-  });
-
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -93,7 +84,7 @@ export class CommissionsComponent {
     // })
 
     this.http.post(environment.apiUrl + '/api/v1/commissions/search', '').subscribe((response: any) => {
-      console.log(response);
+      // console.log(response);
 
 
       // let contador = 0;
@@ -112,11 +103,11 @@ export class CommissionsComponent {
       // console.log(response.returnData.search);
 
       this.dataSource = new MatTableDataSource(response.returnData.search);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
+      // this.dataSource.paginator = this.paginator;
+      // this.dataSource.sort = this.sort;
 
-      this.tableCommisionPorProductor.paginator = this.paginator;
-      this.tableCommisionPorProductor.sort = this.sort;
+      // this.tableCommisionPorProductor.paginator = this.paginator;
+      // this.tableCommisionPorProductor.sort = this.sort;
       // // console.log(response);
 
       // for(let i = 0; i < response.data.bank.length; i++){
@@ -153,7 +144,9 @@ export class CommissionsComponent {
     }
     this.http.post(environment.apiUrl + '/api/v1/commissions/search-insurerCommissions/', data).subscribe((response: any) => {
       // this.tableCommisionPorProductor = new MatTableDataSource<any>;
+      // console.log(response.returnData.search);
       this.tableCommisionPorProductor = new MatTableDataSource(response.returnData.search);
+      // console.log(this.tableCommisionPorProductor.data);
       this.showInsurerComissions();
     });
   }
@@ -185,9 +178,9 @@ export class CommissionsComponent {
   calculateTotalCommissions() {
     this.clearData();
 
-    console.log(this.selection2);
+    // console.log(this.selection2);
     this.selection2.selected.forEach(row => (
-      console.log(row),
+      // console.log(row),
       this.total_comision += row.mmovcom,
       this.total_comisionext += row.mmovcomext,
       this.total_cmoneda = row.cmoneda
@@ -201,21 +194,25 @@ export class CommissionsComponent {
   isAllSelected() {
     const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.data.length;
+    // alert(numSelected);
+    // alert(numRows);
     return numSelected === numRows;
     // this.varable1 = 100;
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
-    this.isAllSelected() ?
-      this.selection.clear() :
-      this.tableCommisionPorProductor.data.forEach(row => this.selection.select(row));
+  if (this.isAllSelected()) {
+      this.selection.clear();
+    } else {
+      this.dataSource.data.forEach(row => this.selection.select(row));
+    }
   }
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected2() {
     const numSelected = this.selection2.selected.length;
-    const numRows = this.dataSource.data.length;
+    const numRows = this.tableCommisionPorProductor.data.length;    
     return numSelected === numRows;
     // this.varable1 = 100;
   }
@@ -249,7 +246,7 @@ export class CommissionsComponent {
     this.dataSource.data[this.dataSourceindex].mmovcom = this.total_comision;
     this.dataSource.data[this.dataSourceindex].mcomtot = this.total_comision;
     this.dataSource.data[this.dataSourceindex].mcomexttot = this.total_comisionext;
-    console.log('↓');
+    // console.log('↓');
     this.dataSource.data[this.dataSourceindex].recibos = [];
     // console.log();
 
@@ -257,7 +254,7 @@ export class CommissionsComponent {
       this.dataSource.data[this.dataSourceindex].recibos.push(element);
     });
 
-    console.log(this.dataSource.data);
+    // console.log(this.dataSource.data);
     // ();
 
     this.selection2.clear();
@@ -349,7 +346,7 @@ export class CommissionsComponent {
       // console.log(observaciones);
 
       // i = 0;
-      this.http.post(environment.apiUrl + '/api/v1/commissions/create-paymetRequests', data).subscribe((response: any) => {
+      this.http.post(environment.apiUrl + '/api/v1/commissions/create-paymentRequests', data).subscribe((response: any) => {
         alert(response.returnData.result.message);
         location.reload();
       });
