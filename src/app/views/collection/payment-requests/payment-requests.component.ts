@@ -173,7 +173,7 @@ export class PaymentRequestsComponent {
     let data = {
       csolpag: csolpag
     }
-    this.http.post(environment.apiUrl + '/api/v1/commissions/pay-paymetRequests', data).subscribe((response: any) => {
+    this.http.post(environment.apiUrl + '/api/v1/commissions/pay-paymentRequests', data).subscribe((response: any) => {
       alert(response.returnData.result.message);
       location.reload();
     });

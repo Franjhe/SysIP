@@ -346,7 +346,7 @@ export class CommissionsComponent {
       // console.log(observaciones);
 
       // i = 0;
-      this.http.post(environment.apiUrl + '/api/v1/commissions/create-paymetRequests', data).subscribe((response: any) => {
+      this.http.post(environment.apiUrl + '/api/v1/commissions/create-paymentRequests', data).subscribe((response: any) => {
         alert(response.returnData.result.message);
         location.reload();
       });
