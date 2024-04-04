@@ -89,8 +89,8 @@
                     </thead>
                     <tbody *ngFor="let creds of receipt.value let i=index">
                       <tr [formGroupName]="i">
-                        <td >{{creds.cpoliza}}</td>
-                        <td >{{creds.crecibo}}</td>
+                        <td >{{creds.cnpoliza}}</td>
+                        <td >{{creds.cnrecibo}}</td>
                         <td >{{creds.qcuotas}}</td>
                         <td >{{creds.xramo}}</td>
                         <td > {{creds.fhasta_rec}}</td>
@@ -144,8 +144,8 @@
                 </thead>
                 <tbody *ngFor="let creds of listCollection let i=index">
                   <tr >
-                    <td >{{creds.cpoliza}}</td>
-                    <td >{{creds.crecibo}}</td>
+                    <td >{{creds.cnpoliza}}</td>
+                    <td >{{creds.cnrecibo}}</td>
                     <td >{{creds.qcuotas}}</td>
                     <td >
                       <div *ngIf="creds.cdoccob > 0"><mat-icon style="color:green">check</mat-icon></div>
@@ -280,10 +280,10 @@
     
                       </div>
     
-                      <div class="mt-3" >
+                      <!-- <div class="mt-3" >
                         <button mat-button [disabled]="Submit" class="bg-warning text-light m-2" (click)="addPayment()">Anadir movimiento</button>
                         <button mat-button [disabled]="Submit" class="bg-danger text-light m-2" (click)="removePayment(i)">Eliminar movimiento</button>
-                      </div> 
+                      </div>  -->
     
     
                     </div>
