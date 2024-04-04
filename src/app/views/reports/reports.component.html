@@ -34,78 +34,76 @@
                    </mat-form-field>
                </div>  -->
             <!-- Desde y hasta Antiguo -->
-            <div class="registration-form">
-                <div class="row d-flex justify-content-center">
-                  <div class="col-6">
-                    <div class="form-group mb-3">
-                      <label for="fdesde_pol" class="label-opaque">Fecha Desde</label>
-                      <input class="label-opaque" type="date" id="fdesde_pol"
-                        formControlName="fdesde_pol"
-                        class="form-control rounded-input"
-                        [ngClass]="{ 'is-invalid': submitted && consulta_reporte.controls['fdesde_pol'].errors }">
-                      <div class="invalid-feedback"
-                        *ngIf="submitted && consulta_reporte.controls['fdesde_pol'].errors">Error
-                        en el nombre</div>
-                    </div>
-                  </div>
-                  <div class="col-6">
-                    <div class="form-group mb-3">
-                      <label for="fhasta_pol" class="label-opaque">Fecha Hasta</label>
-                      <input class="label-opaque" type="date" id="fhasta_pol"
-                        formControlName="fhasta_pol"
-                        class="form-control rounded-input"
-                        [ngClass]="{ 'is-invalid': submitted && consulta_reporte.controls['fhasta_pol'].errors }"
-                        >
-                      <div class="invalid-feedback"
-                        *ngIf="submitted && consulta_reporte.controls['fhasta_pol'].errors">Error
-                        en el nombre</div>
-                    </div>
-                  </div>
-                </div>
-              
+      <div class="registration-form">
+        <div class="row d-flex justify-content-center">
+          <div class="col-6">
+            <div class="form-group mb-3">
+              <label for="fdesde_pol" class="label-opaque">Fecha Desde</label>
+              <input class="label-opaque" type="date" id="fdesde_pol"
+              formControlName="fdesde_pol"
+              class="form-control rounded-input"
+              [ngClass]="{ 'is-invalid': submitted && consulta_reporte.controls['fdesde_pol'].errors }">
+              <div class="invalid-feedback"
+              *ngIf="submitted && consulta_reporte.controls['fdesde_pol'].errors">Erroren el nombre</div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="form-group mb-3">
+                <label for="fhasta_pol" class="label-opaque">Fecha Hasta</label>
+                <input class="label-opaque" type="date" id="fhasta_pol"
+                  formControlName="fhasta_pol"
+                  class="form-control rounded-input"
+                  [ngClass]="{ 'is-invalid': submitted && consulta_reporte.controls['fhasta_pol'].errors }"
+                  >
+                <div class="invalid-feedback"
+                  *ngIf="submitted && consulta_reporte.controls['fhasta_pol'].errors">Error
+                  en el nombre</div>
+              </div>
             </div>
           </div>
-          <div class="example-button-row">
-            <button *ngIf="!showButton" (click)="makeExcel()"
-              [disabled]="!showButton"
-              mat-raised-button class="mat-raised-button"
-              style="color: #fff; background-color: #adadadfb;">
+      </div>
+    </div>
+    <div class="example-button-row">
+              <button *ngIf="!showButton" (click)="makeExcel()"
+               [disabled]="!showButton"
+               mat-raised-button class="mat-raised-button"
+               style="color: #fff; background-color: #adadadfb;">
               <img class="izquierda_op"
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/1101px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png"
                 width="20px" height="20px" margin-right="2px">Excel
-            </button>
-            <button *ngIf="showButton" (click)="makeExcel()"
-              mat-raised-button class="mat-raised-button"
-              style="color: #fff; background-color: #13ad34fb;">
-              <img class="izquierda"
+               </button>
+               <button *ngIf="showButton" (click)="makeExcel()"
+               mat-raised-button class="mat-raised-button"
+               style="color: #fff; background-color: #13ad34fb;">
+               <img class="izquierda"
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/1101px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png"
                 width="20px" height="20px" margin-right="2px">Excel
-            </button>
-            <button *ngIf="!showButton" (click)="buscarReporte()"
-              [disabled]="!showButton" mat-raised-button
-              class="mat-raised-button"
-              style="color: #fff; background-color: #adadadfb;">
-              <img class="izquierda_op"
+                </button>
+                <button *ngIf="!showButton" (click)="buscarReporte()"
+                [disabled]="!showButton" mat-raised-button
+                class="mat-raised-button"
+                style="color: #fff; background-color: #adadadfb;">
+                <img class="izquierda_op"
                 src="https://www.islahospitalmenorca.org/wp-content/uploads/2015/12/adobe-pdf-file-icon-logo-vector.png"
                 width="21px" height="20px" margin-right="2px"> PDF
-            </button>
-            <button *ngIf="showButton" (click)="buscarReporte()"
-              [disabled]="!showButton" mat-raised-button
-              class="mat-raised-button"
-              style="color: #fff; background-color: #db1313fb;">
-              <img class="izquierda"
+                </button>
+                <button *ngIf="showButton" (click)="buscarReporte()"
+                [disabled]="!showButton" mat-raised-button
+                class="mat-raised-button"
+                style="color: #fff; background-color: #db1313fb;">
+                <img class="izquierda"
                 src="https://www.islahospitalmenorca.org/wp-content/uploads/2015/12/adobe-pdf-file-icon-logo-vector.png"
                 width="21px" height="20px" margin-right="2px"> PDF
-            </button>
-            <button (click)="sendMail()" mat-raised-button class="mat-enviar"
-              id="prueba1" color="primary" *ngIf="sendButton">
-              <img class
+                </button>
+                <button (click)="sendMail()" mat-raised-button class="mat-enviar"
+                id="prueba1" color="primary" *ngIf="sendButton">
+                <img class
                 src="https://cdn-icons-png.flaticon.com/512/1034/1034313.png"
                 width="23px" height="20px" margin-right="2px"> Enviar
-            </button>
+                </button>
             <!-- <div class="col-6" *ngIf="buttonQuotes">
-  <button mat-raised-button color="primary" (click)="onSubmit()" style="width: 42%; margin-top: -150px; margin-left: 630px;"><mat-icon>send</mat-icon>Cotizar</button>
-</div> -->
+            <button mat-raised-button color="primary" (click)="onSubmit()" style="width: 42%; margin-top: -150px; margin-left: 630px;"><mat-icon>send</mat-icon>Cotizar</button>
+            </div> -->
           </div>
         </section>
         <div class="card-body" *ngIf="!showButton">
@@ -190,26 +188,6 @@
                 [for]="picker2"></mat-datepicker-toggle>
               <mat-datepicker #picker2></mat-datepicker>
             </mat-form-field>
-            <!-- <div class="registration-form" *ngIf="showTable">
-                                    <form [formGroup]="consulta_reporte">
-                                        <div class="row d-flex justify-content-center">
-                                            <div class="col-6">
-                                                <div class="form-group mb-3">
-                                                  <label for="fdesde" class="label-opaque">Fecha Desde</label>
-                                                  <input class="label-opaque" type="date" id="fdesde" formControlName="fdesde" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && consulta_reporte.controls['fdesde'].errors }">
-                                                  <div class="invalid-feedback" *ngIf="submitted && consulta_reporte.controls['fdesde'].errors">Error en el nombre</div>
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="form-group mb-3">
-                                                  <label for="fhasta" class="label-opaque">Fecha Hasta</label>
-                                                  <input class="label-opaque" type="date" id="fhasta" formControlName="fhasta" class="form-control rounded-input" [ngClass]="{ 'is-invalid': submitted && consulta_reporte.controls['fhasta'].errors }" (change)="onSubmit()">
-                                                  <div class="invalid-feedback" *ngIf="submitted && consulta_reporte.controls['fhasta'].errors">Error en el nombre</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div> -->
           </div>
         </div>
         <br>
