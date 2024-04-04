@@ -727,9 +727,9 @@ export class PaymentReportComponent {
         }
       })   
   
-      // setTimeout(() => {
-      //   location.reload();
-      // }, 3000);
+      setTimeout(() => {
+        location.reload();
+      }, 3000);
     }
 
 
@@ -755,7 +755,7 @@ export class PaymentReportComponent {
       formData.append('image', transfer.at(i).get('ximagen')?.value!, nombre);
   
       //cargamos las imagenes con el codigo de transaccion
-      this.http.post('https://api.lamundialdeseguros.com/reposiory/upload/', formData).subscribe((image: any) => {})
+      this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {})
 
     }
   }

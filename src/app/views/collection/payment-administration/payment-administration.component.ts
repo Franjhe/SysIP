@@ -715,7 +715,7 @@ export class PaymentAdministrationComponent {
         mpagoext : this.mountIGTF,
         ptasamon : this.bcv,
         freporte : fecha ,
-        cprog : 'Reporte administracion',
+        cprog : 'Pg_admin',
         cusuario : 13,
         iestadorec : 'C',
         ifuente : 'Web_Sys',
@@ -737,7 +737,9 @@ export class PaymentAdministrationComponent {
           this.uploadFile()
         }
       })   
-
+      setTimeout(() => {
+        location.reload();
+      }, 3000);
     
 
 
