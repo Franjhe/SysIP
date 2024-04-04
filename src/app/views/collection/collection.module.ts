@@ -12,13 +12,15 @@ import { PaymentCancellationComponent } from './payment-cancellation/payment-can
 import { ClipboardModule } from 'ngx-clipboard';
 import { CommissionsComponent } from './commissions/commissions.component';
 import { PaymentRequestsComponent } from './payment-requests/payment-requests.component';
+import { PaymentAdministrationComponent } from './payment-administration/payment-administration.component';
 
 @NgModule({
   declarations: [
     PaymentReportComponent,
     PaymentCancellationComponent,
     CommissionsComponent,
-    PaymentRequestsComponent
+    PaymentRequestsComponent,
+    PaymentAdministrationComponent
   ],
   imports: [
     CommonModule,

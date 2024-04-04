@@ -140,72 +140,77 @@ activateSendButton(){
 
 dataReport(){
   let estado = this.consulta_reporte.get('estado')?.value
-  this.showButton = true
-  // if(estado == 'C'){
+  if(estado !== 'CD'){
+    this.showButton = true
+    // if(estado == 'C'){
+  
+    //   fetch(environment.apiUrl + '/api/v1/collection/search-collected/'+ estado )
+    //   .then((response) => response.json())
+    //   .then(data => {
+    //     this.listCollection = data.searchPaymentCollected.recibo
+    //   })
+  
+    // }else{
+      fetch(environment.apiUrl + '/api/v1/collection/search-collected/'+ estado )
+      .then((response) => response.json())
+      .then(data => {
+  
+        this.listPending = []
+        for(let i = 0; i < data.searchPaymentCollected.recibo.length; i++){   
+          //fecha emisión Recibo
+          let dateEReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_Emision_Rec );
+          let fechaEmRec = dateEReceipt.toISOString().substring(0, 10);
+           //fecha desde recibo
+           let dateDePol = new Date(data.searchPaymentCollected.recibo[i].Fecha_desde_Pol );
+           let fechaDePol = dateDePol.toISOString().substring(0, 10);
+           //fecha hasta Poliza
+           let dateHPol = new Date(data.searchPaymentCollected.recibo[i].Fecha_hasta_Pol );
+           let fechaHaPol = dateHPol.toISOString().substring(0, 10);
+           //fecha desde recibo
+           let dateDeReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_desde_Recibo );
+           let fechaDeReceipt = dateDeReceipt.toISOString().substring(0, 10);
+           //fecha hasta Recibo
+           let dateHaReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_hasta_Recibo );
+           let fechaHaReceipt = dateHaReceipt.toISOString().substring(0, 10);
+   
+           this.listPending.push({
+            Poliza: data.searchPaymentCollected.recibo[i].Nro_Poliza,
+            // Codigo_Ramo: data.searchPaymentCollected.recibo[i].Codigo_Ramo,
+            Descripcion_Ramo:data.searchPaymentCollected.recibo[i].Descripcion_Ramo,
+            Fecha_Emision_Rec: fechaEmRec,
+            Fecha_desde_Pol : fechaDePol,
+            Fecha_hasta_Pol: fechaHaPol,
+            CID: data.searchPaymentCollected.recibo[i].CID,
+            Nombre_del_Tomador: data.searchPaymentCollected.recibo[i].Nombre_del_Tomador,
+            Id_Asegurado: data.searchPaymentCollected.recibo[i].Id_Asegurado,
+            Nombre_Asegurado: data.searchPaymentCollected.recibo[i].Nombre_Asegurado,
+            // Cedula_Beneficiario: data.searchPaymentCollected.recibo[i].Id_del_Beneficiario,
+            // Nombre_Beneficiario: data.searchPaymentCollected.recibo[i].Nombre_Beneficiario,
+            // Codigo_Moneda: data.searchPaymentCollected.recibo[i].Codigo_Moneda,
+            Moneda: data.searchPaymentCollected.recibo[i].Moneda,
+            Nro_Recibo: data.searchPaymentCollected.recibo[i].Nro_Recibo,
+            Fecha_desde_Recibo: fechaDeReceipt,
+            Fecha_hasta_Recibo: fechaHaReceipt,
+            // Estado_del_Recibo: data.searchPaymentCollected.recibo[i].Estado_del_Recibo,
+            Descripcion_estado_rec: data.searchPaymentCollected.recibo[i].Descripcion_estado_rec,
+            Suma_asegurada: data.searchPaymentCollected.recibo[i].Suma_asegurada,
+            Suma_asegurada_Ext: data.searchPaymentCollected.recibo[i].Suma_asegurada_Ext,
+            Monto_Recibo: data.searchPaymentCollected.recibo[i].Monto_Recibo,
+            Monto_Recibo_Ext: data.searchPaymentCollected.recibo[i].Monto_Recibo_Ext,
+            Tasa_Cambio: data.searchPaymentCollected.recibo[i].Tasa_Cambio,
+            Dias_de_vigencia: data.searchPaymentCollected.recibo[i].Dias_de_vigencia,
+            Sucursal: data.searchPaymentCollected.recibo[i].Sucursal,
+            // Descripcion_Corta_Sucursal: data.searchPaymentCollected.recibo[i].Descripcion_Corta_Sucursal,
+            // cproductor: data.searchPaymentCollected.recibo[i].cproductor,
+            Intermediario: data.searchPaymentCollected.recibo[i].Intermediario
+          })
+        }
+  
+      })
+  }else{
+    window.open('https://api.lamundialdeseguros.com/sis2000/cobranza/', '_blank');
 
-  //   fetch(environment.apiUrl + '/api/v1/collection/search-collected/'+ estado )
-  //   .then((response) => response.json())
-  //   .then(data => {
-  //     this.listCollection = data.searchPaymentCollected.recibo
-  //   })
-
-  // }else{
-    fetch(environment.apiUrl + '/api/v1/collection/search-collected/'+ estado )
-    .then((response) => response.json())
-    .then(data => {
-
-      this.listPending = []
-      for(let i = 0; i < data.searchPaymentCollected.recibo.length; i++){   
-        //fecha emisión Recibo
-        let dateEReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_Emision_Rec );
-        let fechaEmRec = dateEReceipt.toISOString().substring(0, 10);
-         //fecha desde recibo
-         let dateDePol = new Date(data.searchPaymentCollected.recibo[i].Fecha_desde_Pol );
-         let fechaDePol = dateDePol.toISOString().substring(0, 10);
-         //fecha hasta Poliza
-         let dateHPol = new Date(data.searchPaymentCollected.recibo[i].Fecha_hasta_Pol );
-         let fechaHaPol = dateHPol.toISOString().substring(0, 10);
-         //fecha desde recibo
-         let dateDeReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_desde_Recibo );
-         let fechaDeReceipt = dateDeReceipt.toISOString().substring(0, 10);
-         //fecha hasta Recibo
-         let dateHaReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_hasta_Recibo );
-         let fechaHaReceipt = dateHaReceipt.toISOString().substring(0, 10);
- 
-         this.listPending.push({
-          Poliza: data.searchPaymentCollected.recibo[i].Nro_Poliza,
-          // Codigo_Ramo: data.searchPaymentCollected.recibo[i].Codigo_Ramo,
-          Descripcion_Ramo:data.searchPaymentCollected.recibo[i].Descripcion_Ramo,
-          Fecha_Emision_Rec: fechaEmRec,
-          Fecha_desde_Pol : fechaDePol,
-          Fecha_hasta_Pol: fechaHaPol,
-          CID: data.searchPaymentCollected.recibo[i].CID,
-          Nombre_del_Tomador: data.searchPaymentCollected.recibo[i].Nombre_del_Tomador,
-          Id_Asegurado: data.searchPaymentCollected.recibo[i].Id_Asegurado,
-          Nombre_Asegurado: data.searchPaymentCollected.recibo[i].Nombre_Asegurado,
-          // Cedula_Beneficiario: data.searchPaymentCollected.recibo[i].Id_del_Beneficiario,
-          // Nombre_Beneficiario: data.searchPaymentCollected.recibo[i].Nombre_Beneficiario,
-          // Codigo_Moneda: data.searchPaymentCollected.recibo[i].Codigo_Moneda,
-          Moneda: data.searchPaymentCollected.recibo[i].Moneda,
-          Nro_Recibo: data.searchPaymentCollected.recibo[i].Nro_Recibo,
-          Fecha_desde_Recibo: fechaDeReceipt,
-          Fecha_hasta_Recibo: fechaHaReceipt,
-          // Estado_del_Recibo: data.searchPaymentCollected.recibo[i].Estado_del_Recibo,
-          Descripcion_estado_rec: data.searchPaymentCollected.recibo[i].Descripcion_estado_rec,
-          Suma_asegurada: data.searchPaymentCollected.recibo[i].Suma_asegurada,
-          Suma_asegurada_Ext: data.searchPaymentCollected.recibo[i].Suma_asegurada_Ext,
-          Monto_Recibo: data.searchPaymentCollected.recibo[i].Monto_Recibo,
-          Monto_Recibo_Ext: data.searchPaymentCollected.recibo[i].Monto_Recibo_Ext,
-          Tasa_Cambio: data.searchPaymentCollected.recibo[i].Tasa_Cambio,
-          Dias_de_vigencia: data.searchPaymentCollected.recibo[i].Dias_de_vigencia,
-          Sucursal: data.searchPaymentCollected.recibo[i].Sucursal,
-          // Descripcion_Corta_Sucursal: data.searchPaymentCollected.recibo[i].Descripcion_Corta_Sucursal,
-          // cproductor: data.searchPaymentCollected.recibo[i].cproductor,
-          Intermediario: data.searchPaymentCollected.recibo[i].Intermediario
-        })
-      }
-
-    })
+  }
 
   }
 makeExcel(){

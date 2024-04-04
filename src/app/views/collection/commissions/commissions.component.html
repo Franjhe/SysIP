@@ -1,245 +1,264 @@
 <div class="card container-fluid">
-    <form [formGroup]="groupReceiptsForm">
-        <div class="text-center">
-            <h1>Gestión de Comisiones</h1>
-        </div>
-        <div class="text-center">
-            <h3>Comisiones pendientes por corredor</h3>
-        </div>
 
-        <table mat-table [dataSource]="dataSource" class="mat-elevation-z2">
+    <div class="text-center">
+        <h1>Gestión de Comisiones</h1>
+    </div>
+    <div class="text-center">
+        <h3>Comisiones pendientes por corredor</h3>
+    </div>
 
-            <!--- Note that these columns can be defined in any order.
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z2">
+
+        <!--- Note that these columns can be defined in any order.
                 The actual rendered columns are set as a property on the row definition" -->
 
-            <ng-container matColumnDef="select">
-                <th mat-header-cell *matHeaderCellDef>
-                    <mat-checkbox (change)="$event ? masterToggle() : null"
-                        [checked]="selection.hasValue() && isAllSelected()"
-                        [indeterminate]="selection.hasValue() && !isAllSelected()">
-                    </mat-checkbox>
-                </th>
-                <td mat-cell *matCellDef="let row">
-                    <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
-                        [checked]="selection.isSelected(row)">
-                    </mat-checkbox>
-                </td>
-            </ng-container>
-            <!-- Position Column -->
-            <ng-container matColumnDef="cproductor">
-                <th mat-header-cell *matHeaderCellDef> C. Corredor </th>
-                <td mat-cell *matCellDef="let row"> {{row.cproductor}} </td>
-            </ng-container>
+        <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+                <mat-checkbox (change)="$event ? masterToggle() : null"
+                    [checked]="selection.hasValue() && isAllSelected()"
+                    [indeterminate]="selection.hasValue() && !isAllSelected()">
+                </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let row">
+                <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                    [checked]="selection.isSelected(row)">
+                </mat-checkbox>
+            </td>
+        </ng-container>
+        <!-- Position Column -->
+        <ng-container matColumnDef="cproductor">
+            <th mat-header-cell *matHeaderCellDef> C. Corredor </th>
+            <td mat-cell *matCellDef="let row"> {{row.cproductor}} </td>
+        </ng-container>
 
-            <!-- Name Column -->
-            <ng-container matColumnDef="xnombre">
-                <th mat-header-cell *matHeaderCellDef> Nombre/Denominación </th>
-                <td mat-cell *matCellDef="let row"> {{row.xnombre}} </td>
-            </ng-container>
+        <!-- Name Column -->
+        <ng-container matColumnDef="xnombre">
+            <th mat-header-cell *matHeaderCellDef> Nombre/Denominación </th>
+            <td mat-cell *matCellDef="let row"> {{row.xnombre}} </td>
+        </ng-container>
 
-            <!-- Weight Column -->
-            <ng-container matColumnDef="mcomtot">
-                <th mat-header-cell *matHeaderCellDef> Comisión </th>
-                <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mmovcom}}</td>
-            </ng-container>
+        <!-- Weight Column -->
+        <ng-container matColumnDef="mcomtot">
+            <th mat-header-cell *matHeaderCellDef> Movimiento Bs. </th>
+            <td mat-cell *matCellDef="let row"> Bs.{{row.mmovcom}}</td>
+        </ng-container>
 
-            <!-- Weight Column -->
-            <ng-container matColumnDef="mcomexttot">
-                <th mat-header-cell *matHeaderCellDef> Impuesto </th>
-                <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mcomexttot}}</td>
-            </ng-container>
+        <!-- Weight Column -->
+        <!-- <ng-container matColumnDef="mcomexttot">
+                <th mat-header-cell *matHeaderCellDef> Tasa<br>USD-BCV</th>
+                <td mat-cell *matCellDef="let row"> {{row.ptasamon}}</td>
+            </ng-container> -->
 
-            <!-- Weight Column -->
-            <ng-container matColumnDef="mcomtot2">
-                <th mat-header-cell *matHeaderCellDef> A pagar </th>
-                <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mcomtot}}</td>
-            </ng-container>
+        <!-- Weight Column -->
+        <ng-container matColumnDef="mcomexttot">
+            <th mat-header-cell *matHeaderCellDef> Movimiento Usd. </th>
+            <td mat-cell *matCellDef="let row"> $.{{row.mcomexttot}}</td>
+        </ng-container>
+        <ng-container matColumnDef="detail">
+            <th mat-header-cell *matHeaderCellDef> </th>
+            <td mat-cell *matCellDef="let row">
+                <button mat-raised-button color="primary">Detalles</button>
+            </td>
+        </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <!-- <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr> -->
-            <tr mat-row (click)="dataCorredor(row.cproductor, row.cmoneda, i)" [class.demo-row-is-clicked]=""
-                *matRowDef="let row; columns: displayedColumns; let i = index"></tr>
-        </table>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <!-- <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr> -->
+        <tr mat-row (click)="dataCorredor(row.cproductor, row.cmoneda, i)" [class.demo-row-is-clicked]=""
+            *matRowDef="let row; columns: displayedColumns; let i = index"></tr>
+    </table>
 
-        <div class="text-center mt-5">
-            <button mat-raised-button (click)="generatePaymentRequests()">Procesar solicitudes de pago</button>
-        </div>
-        <!-- <div class="text-center mt-2">
+    <div class="text-center mt-5">
+        <button mat-raised-button (click)="generatePaymentRequests()">Procesar solicitudes de pago</button>
+    </div>
+    <!-- <div class="text-center mt-2">
             <button mat-raised-button >Ver solicitudes de pago</button>
         </div> -->
 
 
 
-        <!-- <ng-template #Alerta >
+    <!-- <ng-template #Alerta >
           
         </ng-template> -->
 
-        <!-- <ng-template #Alerta>
+    <!-- <ng-template #Alerta>
             <mat-dialog-content style="width: 85%;">
                 <h1>
                     dadadata
                 </h1>
             </mat-dialog-content>
         </ng-template> -->
-        <ng-template #Alerta>
-            <mat-dialog-content>
-                <!-- class="mat-elevation-z8" -->
-                <table mat-table [dataSource]="tableCommisionPorProductor">
+    <ng-template #Alerta>
+        <mat-dialog-content class="xd">
+            <!-- class="mat-elevation-z8" -->
+            <table mat-table [dataSource]="tableCommisionPorProductor" matSort matSortActive="2">
 
-                    <!--- Note that these columns can be defined in any order.
+                <!--- Note that these columns can be defined in any order.
                         The actual rendered columns are set as a property on the row definition" -->
 
-                    <!-- Weight Column -->
-                    <ng-container matColumnDef="select">
-                        <th mat-header-cell *matHeaderCellDef>
-                            <!-- <mat-checkbox (change)="$event ? masterToggle2() : null" -->
-                            <mat-checkbox (change)="masterToggle2()"
-                                [checked]="selection2.hasValue() && isAllSelected2()"
-                                [indeterminate]="selection2.hasValue() && !isAllSelected2()">
-                            </mat-checkbox>
-                        </th>
-                        <td mat-cell *matCellDef="let row">
-                            <mat-checkbox (click)="$event.stopPropagation();"
-                                (change)="$event ? selection2.toggle(row) : null; calculateMmovcom();" 
-                                [checked]="selection2.isSelected(row)">
-                            </mat-checkbox>
-                        </td>
-                    </ng-container>
-                    <ng-container matColumnDef="0">
-                        <th mat-header-cell *matHeaderCellDef> Póliza </th>
-                        <td mat-cell *matCellDef="let row"> {{row.cnpoliza}} </td>
+                <!-- Weight Column -->
+                <ng-container matColumnDef="select">
+                    <th mat-header-cell *matHeaderCellDef>
+                        <!-- <mat-checkbox (change)="$event ? masterToggle2() : null" -->
+                        <mat-checkbox (change)="masterToggle2()" [checked]="selection2.hasValue() && isAllSelected2()"
+                            [indeterminate]="selection2.hasValue() && !isAllSelected2()">
+                        </mat-checkbox>
+                    </th>
+                    <td mat-cell *matCellDef="let row">
+                        <mat-checkbox (click)="$event.stopPropagation();"
+                            (change)="$event ? selection2.toggle(row) : null; calculateTotalCommissions();"
+                            [checked]="selection2.isSelected(row)">
+                        </mat-checkbox>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="0">
+                    <th mat-header-cell *matHeaderCellDef> Póliza </th>
+                    <td mat-cell *matCellDef="let row"> {{row.cnpoliza}} </td>
+                </ng-container>
+                <ng-container matColumnDef="1">
+                    <th mat-header-cell *matHeaderCellDef> Recibo/Préstamo </th>
+                    <td mat-cell *matCellDef="let row"> {{row.crecibo}} </td>
+                </ng-container>
+                <ng-container matColumnDef="2">
+                    <th mat-header-cell *matHeaderCellDef> Tipo Mov. </th>
+                    <td mat-cell *matCellDef="let row"> {{row.imovcom}} </td>
+                </ng-container>
+                <ng-container matColumnDef="3">
+                    <th mat-header-cell *matHeaderCellDef> Anexo </th>
+                    <td mat-cell *matCellDef="let row"> {{row.canexo}} </td>
+                </ng-container>
+                <ng-container matColumnDef="4">
+                    <th mat-header-cell *matHeaderCellDef> Fecha </th>
+                    <td mat-cell *matCellDef="let row"> {{row.femision | date: "dd/MM/YYYY"}} </td>
+                </ng-container>
+                <ng-container matColumnDef="5">
+                    <th mat-header-cell *matHeaderCellDef> Prima Bs. </th>
+                    <td mat-cell *matCellDef="let row"> Bs.{{row.mmontoapag}} </td>
+                </ng-container>
+                <ng-container matColumnDef="6">
+                    <th mat-header-cell *matHeaderCellDef> % Com. </th>
+                    <td mat-cell *matCellDef="let row"> {{row.pcomision}}% </td>
+                </ng-container>
+                <ng-container matColumnDef="7">
+                    <th mat-header-cell *matHeaderCellDef> Monto Tipo<br>Mov. Bs. </th>
+                    <td mat-cell *matCellDef="let row"> Bs.{{row.mmovcom}} </td>
+                </ng-container>
+                <ng-container matColumnDef="8">
+                    <th mat-header-cell *matHeaderCellDef> Tasa<br>Usd-Bcv. </th>
+                    <td mat-cell *matCellDef="let row"> {{row.ptasamon}} </td>
+                </ng-container>
+                <ng-container matColumnDef="9">
+                    <th mat-header-cell *matHeaderCellDef> Monto Tipo<br>Mov. Usd. </th>
+                    <td mat-cell *matCellDef="let row"> $.{{row.mmovcomext}} </td>
+                </ng-container>
+                <!-- Row shown when there is no matching data. -->
 
-                    </ng-container>
-                    <ng-container matColumnDef="1">
-                        <th mat-header-cell *matHeaderCellDef> Recibo/Préstamo </th>
-                        <td mat-cell *matCellDef="let row"> {{row.crecibo}} </td>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
+            </table>
 
-                    </ng-container>
-                    <ng-container matColumnDef="2">
-                        <th mat-header-cell *matHeaderCellDef> Tipo Movimiento </th>
-                        <td mat-cell *matCellDef="let row"> {{row.imovcom}} </td>
+            <hr>
+            <div class="footer-table">
+                <button mat-raised-button (click)="closeDialog()">Cerrar</button>
+                <b>Total:</b>
+                <span>Movimiento Bs: {{total_comision.toFixed(2)}}</span>
+                <!-- <span>Impuesto: {{total_cmoneda}}{{total_impuesto}}</span> -->
+                <span>Movimiento Usd: {{total_comisionext.toFixed(2)}}</span>
+                <button mat-raised-button (click)="calculatePaymentCommissions()">Seleccionar</button>
+            </div>
 
-                    </ng-container>
-                    <ng-container matColumnDef="3">
-                        <th mat-header-cell *matHeaderCellDef> Anexo </th>
-                        <td mat-cell *matCellDef="let row"> {{row.canexo}} </td>
+        </mat-dialog-content>
+    </ng-template>
 
-                    </ng-container>
-                    <ng-container matColumnDef="4">
-                        <th mat-header-cell *matHeaderCellDef> Fecha </th>
-                        <td mat-cell *matCellDef="let row"> {{row.femision | date: "dd/MM/YYYY"}} </td>
 
-                    </ng-container>
-                    <ng-container matColumnDef="5">
-                        <th mat-header-cell *matHeaderCellDef> Monto de la Prima </th>
-                        <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mmontoapag}} </td>
+    <ng-template #dialogPaymentRequest style="width: 80%;">
+        <!-- <mat-dialog-content style="width: 900px;"> -->
+        <mat-dialog-content>
+            <!-- class="mat-elevation-z8" -->
 
-                    </ng-container>
-                    <ng-container matColumnDef="6">
-                        <th mat-header-cell *matHeaderCellDef> Monto del Movimiento </th>
-                        <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mmovcom}} </td>
+            <div class="text-center">
+                <h2>Resúmen solicitudes de pago</h2>
+            </div>
 
-                    </ng-container>
-                    <!-- Row shown when there is no matching data. -->
-
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
-                </table>
-
-                <hr>
-                <div class="footer-table">
-                    <b>Montos:</b>
-                    <!-- <span>Comision: {{total_movcom}}</span>
-                    <span>Impuesto: {{total_impuesto}}</span> -->
-                    <span>A pagar: {{total_cmoneda}}{{total_comision}}</span>
-                    <button mat-raised-button (click)="calculatePaymentCommissions()">Seleccionar</button>
+            <div class="row p-2" style="border: 1px solid black;"
+                *ngFor="let paymentRequest of listPaymentRequest; let i = index">
+                <!-- <div class="col-12" [ngIf]="listPaymentRequest.length == 0">
+                        <mat-form-field>
+                            <input matInput type="text" value="No se encuentran órdenes de pago disponibles" disabled>
+                        </mat-form-field>
+                    </div> -->
+                <!--  -->
+                <div class="col-6">
+                    <mat-form-field>
+                        <mat-label>Transacción</mat-label>
+                        <input type="hidden" value="CM">
+                        <input matInput type="text" value="{{paymentRequest.xtransaccion}}" disabled>
+                        <!-- <input matInput   matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input> -->
+                    </mat-form-field>
                 </div>
-
-            </mat-dialog-content>
-        </ng-template>
-
-
-        <ng-template #dialogPaymentRequest style="width: 80%;">
-            <!-- <mat-dialog-content style="width: 900px;"> -->
-            <mat-dialog-content >
-                <!-- class="mat-elevation-z8" -->
-
-                <div class="text-center">
-                    <h2>Resúmen solicitudes de pago</h2>
-                </div>
-
-                <div class="row p-2" style="border: 1px solid black;" *ngFor="let paymentRequest of listPaymentRequest; let i = index">
-                    <!--  -->
-                    <div class="col-6">
-                        <mat-form-field >
-                            <mat-label>Transacción</mat-label>
-                            <input type="hidden" value="CM">
-                            <input matInput type="text" value="{{paymentRequest.xtransaccion}}" disabled>
-                            <!-- <input matInput   matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input> -->
-                          </mat-form-field>
-                    </div>
-                    <!-- <div class="col-3">
+                <!-- <div class="col-3">
                         <mat-form-field >
                             <mat-label>Sucursal</mat-label>
                             <input matInput type="text" value="{{paymentRequest.xsucursal}}" disabled>
                           </mat-form-field>
                     </div> -->
-                    <div class="col-3">
-                        <mat-form-field >
-                            <mat-label>Facturación</mat-label>
-                            <!-- <input matInput type="text" value="13/10/1996" disabled> -->
-                            <input matInput type="text" value="{{paymentRequest.ffacturacion}}" disabled>
-                            <!-- <input matInput   matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input> -->
-                          </mat-form-field>
-                    </div>
-                    <div class="col-3">
-                        <mat-form-field >
-                            <mat-label>Status</mat-label>
-                            <!-- <input matInput type="text" value="Pendiente" disabled> -->
-                            <input matInput type="text" value="{{paymentRequest.xstatus}}" disabled>
-                            <!-- <input matInput   matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input> -->
-                          </mat-form-field>
-                    </div>
-                    <!--  -->
-                    <div class="col-3">
-                        <mat-form-field >
-                            <mat-label>Págase a la orden de:</mat-label>
-                            <input matInput type="text" value="{{paymentRequest.cid}}" disabled>
-                          </mat-form-field>
-                    </div>
-                    <div class="col-9">
-                        <mat-form-field >
-                            <mat-label>Nombre:</mat-label>
-                            <input matInput type="text" value="{{paymentRequest.xbeneficiario}}" disabled>
-                          </mat-form-field>
-                    </div>
-                    <!-- <div class="col-3"></div> -->
-                    <div class="col-3">
-                        <mat-form-field >
-                            <mat-label>Concepto:</mat-label>
-                            <input matInput type="text" value="{{paymentRequest.xconcepto}}" disabled>
-                          </mat-form-field>
-                    </div>
-                    <div class="col-9">
-                        <mat-form-field >
-                            <mat-label>Corredor:</mat-label>
-                            <input matInput type="text" value="{{paymentRequest.ccorredor}} - {{paymentRequest.xcorredor}}" disabled>
-                          </mat-form-field>
-                    </div>
-                    <div class="col-3">
-                        <mat-form-field >
-                            <mat-label>Monto total:</mat-label>
-                            <input matInput type="text" value="{{paymentRequest.cmoneda}}{{paymentRequest.mmontototal}}" disabled>
-                          </mat-form-field>
-                    </div>
-                    <div class="col-9">
-                        <mat-form-field >
-                            <mat-label>Observaciones:</mat-label>
-                            <input matInput type="text" #observaciones class="observaciones" id="observaciones{{i}}">
-                          </mat-form-field>
-                    </div>
-             
-                    <!-- <div class="col-3">1</div>
+                <div class="col-3">
+                    <mat-form-field>
+                        <mat-label>Facturación</mat-label>
+                        <!-- <input matInput type="text" value="13/10/1996" disabled> -->
+                        <input matInput type="text" value="{{paymentRequest.ffacturacion}}" disabled>
+                        <!-- <input matInput   matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input> -->
+                    </mat-form-field>
+                </div>
+                <div class="col-3">
+                    <mat-form-field>
+                        <mat-label>Status</mat-label>
+                        <!-- <input matInput type="text" value="Pendiente" disabled> -->
+                        <input matInput type="text" value="{{paymentRequest.xstatus}}" disabled>
+                        <!-- <input matInput   matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input> -->
+                    </mat-form-field>
+                </div>
+                <!--  -->
+                <div class="col-3">
+                    <mat-form-field>
+                        <mat-label>Págase a la orden de:</mat-label>
+                        <input matInput type="text" value="{{paymentRequest.cid}}" disabled>
+                    </mat-form-field>
+                </div>
+                <div class="col-9">
+                    <mat-form-field>
+                        <mat-label>Nombre:</mat-label>
+                        <input matInput type="text" value="{{paymentRequest.xbeneficiario}}" disabled>
+                    </mat-form-field>
+                </div>
+                <!-- <div class="col-3"></div> -->
+                <div class="col-3">
+                    <mat-form-field>
+                        <mat-label>Concepto:</mat-label>
+                        <input matInput type="text" value="{{paymentRequest.xconcepto}}" disabled>
+                    </mat-form-field>
+                </div>
+                <div class="col-9">
+                    <mat-form-field>
+                        <mat-label>Corredor:</mat-label>
+                        <input matInput type="text" value="{{paymentRequest.ccorredor}} - {{paymentRequest.xcorredor}}"
+                            disabled>
+                    </mat-form-field>
+                </div>
+                <div class="col-3">
+                    <mat-form-field>
+                        <mat-label>Monto total:</mat-label>
+                        <input matInput type="text" value="{{paymentRequest.cmoneda}}{{paymentRequest.mmontototal}}"
+                            disabled>
+                    </mat-form-field>
+                </div>
+                <div class="col-9">
+                    <mat-form-field>
+                        <mat-label>Observaciones:</mat-label>
+                        <input matInput type="text" #observaciones class="observaciones" id="observaciones{{i}}">
+                    </mat-form-field>
+                </div>
+
+                <!-- <div class="col-3">1</div>
                     <div class="col-3">2</div>
                     <div class="col-3">3</div>
                     <div class="col-3">4</div>
@@ -250,15 +269,17 @@
                           <mat-option value="ER">En revision</mat-option>
                         </mat-select>
                       </mat-form-field> -->
-                </div>
-                <div class="row mt-4">
-                    <div class="col col-2 text-center"><button mat-raised-button (click)="cancelPaymentRequests()">Cancelar</button></div>
-                    <div class="col col-8"></div>
-                    <div class="col col-2 text-center"><button mat-raised-button (click)="proccessPaymentRequests()">Generar Orden</button></div>
-                </div>
-                
-                
-                <!-- <div class="footer-table">
+            </div>
+            <div class="row mt-4">
+                <div class="col col-2 text-center"><button mat-raised-button
+                        (click)="cancelPaymentRequests()">Cancelar</button></div>
+                <div class="col col-8"></div>
+                <div class="col col-2 text-center"><button mat-raised-button (click)="proccessPaymentRequests()">Generar
+                        Orden</button></div>
+            </div>
+
+
+            <!-- <div class="footer-table">
                     <b>Montos:</b>
                     <span>Comision: {{total_movcom}}</span>
                     <span>Impuesto: {{total_impuesto}}</span>
@@ -266,11 +287,7 @@
                     <button mat-raised-button (click)="logSelection2()">Seleccionar</button>
                 </div> -->
 
-            </mat-dialog-content>
-        </ng-template>
-
-
-    </form>
-
+        </mat-dialog-content>
+    </ng-template>
 
 </div>
