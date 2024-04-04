@@ -6,6 +6,8 @@ import { ThemePalette } from '@angular/material/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import {MatButtonModule} from '@angular/material/button';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { userInfo } from 'os';
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as  pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -38,6 +40,7 @@ export class ReportsComponent {
   sendButton: boolean = false;
   selectedOption: string = '';
   correo: string = '';
+ 
 
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
   columnsToDisplay: string[] = ['cedula', 'nombApell', 'correo', 'nrofac', 'hora_emision', 'cantidad_tickes', 'mcosto_ext', 'fingreso'];
@@ -93,6 +96,9 @@ onSubmit(){
   });
 }
 buscarReporte(){
+  this.snackBar.open("Reporte en PDF descargado con Éxito", "Cerrar", {
+    duration: 3000,
+  });
   // window.open(environment.apiUrl_prod + '/single_receipts/', '_blank');
   let data = {
     estado: this.consulta_reporte.get('estado')?.value,
@@ -157,17 +163,17 @@ dataReport(){
            //fecha desde recibo
            let dateDePol = new Date(data.searchPaymentCollected.recibo[i].Fecha_desde_Pol );
            let fechaDePol = dateDePol.toISOString().substring(0, 10);
-          //fecha hasta Poliza
-          let dateHPol = new Date(data.searchPaymentCollected.recibo[i].Fecha_hasta_Pol );
-          let fechaHaPol = dateHPol.toISOString().substring(0, 10);
-          //fecha desde recibo
-          let dateDeReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_desde_Recibo );
-          let fechaDeReceipt = dateDeReceipt.toISOString().substring(0, 10);
-          //fecha hasta Recibo
-          let dateHaReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_hasta_Recibo );
-          let fechaHaReceipt = dateHaReceipt.toISOString().substring(0, 10);
-  
-          this.listPending.push({
+           //fecha hasta Poliza
+           let dateHPol = new Date(data.searchPaymentCollected.recibo[i].Fecha_hasta_Pol );
+           let fechaHaPol = dateHPol.toISOString().substring(0, 10);
+           //fecha desde recibo
+           let dateDeReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_desde_Recibo );
+           let fechaDeReceipt = dateDeReceipt.toISOString().substring(0, 10);
+           //fecha hasta Recibo
+           let dateHaReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_hasta_Recibo );
+           let fechaHaReceipt = dateHaReceipt.toISOString().substring(0, 10);
+   
+           this.listPending.push({
             Poliza: data.searchPaymentCollected.recibo[i].Nro_Poliza,
             // Codigo_Ramo: data.searchPaymentCollected.recibo[i].Codigo_Ramo,
             Descripcion_Ramo:data.searchPaymentCollected.recibo[i].Descripcion_Ramo,
@@ -208,6 +214,10 @@ dataReport(){
 
   }
 makeExcel(){
+  this.snackBar.open("Reporte en Excel descargado con Éxito", "Cerrar", {
+    duration: 3000,
+    panelClass: ['blue-snackbar'],  
+  });
   let fecha = new Date()
   let day = fecha.getDate()
   let month = fecha.getMonth() + 1
@@ -218,9 +228,7 @@ makeExcel(){
     // }
     // else{
         const filteredData = this.listPending.map((item :any) => ({
-
           'Poliza': item.Poliza,
-          // 'Código_Ramo': item.Codigo_Ramo,
           'Descripción_Ramo': item.Descripcion_Ramo,
           'Fecha_Emision_Rec': item.Fecha_Emision_Rec,
           'Fecha_desde_Pol' : item.Fecha_desde_Pol,
@@ -229,26 +237,19 @@ makeExcel(){
           'Nombre_del_Tomador': item.Nombre_del_Tomador,
           'Cedula_Asegurado' : item.Id_Asegurado,
           'Nombre_Asegurado' : item.Nombre_Asegurado,
-          // 'C.I./Beneficiario' : item.Id_del_Beneficiario,
-          // 'Nombre_Beneficiario,' :item.Nombre_Beneficiario,
-          // 'Codigo_Moneda,': item.Codigo_Moneda,
           'Moneda': item.Moneda,
           'Nro_Recibo' : item.Nro_Recibo,
           'Fecha_desde_Recibo' : item.Fecha_desde_Recibo,
           'Fecha_hasta_Recibo' : item.Fecha_hasta_Recibo,
-          // 'Estado_del_Recibo' :item.Estado_del_Recibo,
           'Estatus_Recibo' :item.Descripcion_estado_rec,
-          'Suma_asegurada': item.Suma_asegurada,
-          'Suma_asegurada_Ext': item.Suma_asegurada_Ext,
+          'Suma_asegurada': item.Suma_asegurada ? item.Suma_asegurada.toFixed(2) : 0.00,
+          'Suma_asegurada_Ext': item.Suma_asegurada_Ext ? item.Suma_asegurada_Ext.toFixed(2) : 0.00,
           'Monto_Recibo' : item.Monto_Recibo,
           'Monto_Recibo_Ext' : item.Monto_Recibo_Ext,
           'Tasa_Cambio' : item.Tasa_Cambio,
           'Dias_de_vigencia' : item.Dias_de_vigencia,
           'Sucursal' :item.Sucursal,
-          // 'Descripcion_Corta_Sucursal' :item.Descripcion_Corta_Sucursal,
-          // 'cproductor' :item.cproductor,
           'Intermediario' :item.Intermediario,
-
     }));
       const worksheet = XLSX.utils.json_to_sheet(filteredData);
       const workbook = XLSX.utils.book_new();
