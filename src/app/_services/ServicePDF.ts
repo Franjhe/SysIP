@@ -1340,6 +1340,9 @@ export class PdfGenerationService {
 				if (receipt.cestatus == 13) {
 					watermarkBody = { text: 'PENDIENTE DE PAGO', color: 'red', opacity: 0.3, bold: true, italics: false, fontSize: 50, angle: 70 };
 					break; // Salir del bucle si se encuentra una marca de agua
+				}else if (receipt.cestatus == 3) {
+					watermarkBody = { text: 'PÓLIZA ANULADA', color: 'red', opacity: 0.3, bold: true, italics: false, fontSize: 50, angle: 70 };
+					break; // Salir del bucle si se encuentra una marca de agua
 				}
 			}
 		}
