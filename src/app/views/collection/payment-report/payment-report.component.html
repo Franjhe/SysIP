@@ -51,84 +51,86 @@
 
           <mat-tab-group>
             <mat-tab label="Sus recibos pendientes"> 
-              <form [formGroup]="searchReceipt">
-                <ng-template matStepLabel>Seleccione los recibos pendientes que desea cancelar</ng-template>
-    
-                <div class="row">
-                  <div class="col-lg-8">
-                    <h1> Estimado </h1>
-                    <h1><strong>{{cliente}}</strong></h1>
-                    <h1> Sus recibos pendientes </h1>
-    
-                  </div>
-                  <div class="col-lg-4">
-                    <h1 class="text-success" style=" font-weight: 500;" *ngIf="PositiveBalanceBool">
-                       {{PositiveBalance}}
-                    </h1>
-                    <div *ngIf="viewData">
-                      <div *ngFor="let message of messageDiference" >
-                        <h1  class="{{message.class_text}}" > {{message.messaje}}</h1>
+            
+                <form [formGroup]="searchReceipt">
+                  <ng-template matStepLabel>Seleccione los recibos pendientes que desea cancelar</ng-template>
+      
+                  <div class="row">
+                    <div class="col-lg-6 mt-4">
+                      <h1> Estimado </h1>
+                      <h1><strong>{{cliente}}</strong></h1>
+                      <h1> Sus recibos pendientes </h1>
+      
+                    </div>
+                    <div class="col-lg-5 mt-4">
+                      <h1 class="text-success" style=" font-weight: 500;" *ngIf="PositiveBalanceBool">
+                         {{PositiveBalance}}
+                      </h1>
+                      <div *ngIf="viewData">
+                        <div *ngFor="let message of messageDiference" >
+                          <h1  class="{{message.class_text}}" > {{message.messaje}}</h1>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-    
-                <div formArrayName="receipt">
-                  <table class="table table-bordered table-hover" >
-                    <thead>
-                      <tr>
-                        <th>N° Poliza</th>
-                        <th>N° Recibo</th>
-                        <th>N° Cuota</th>
-                        <th>Ramo</th>
-                        <th style="color:red">Fecha tope de pago</th>
-                        <th>Recibo notificado</th>
-                        <th>Total del recibo</th>
-                        <th>Seleccione los recibos a pagar</th>
-                      </tr>
-                    </thead>
-                    <tbody *ngFor="let creds of receipt.value let i=index">
-                      <tr [formGroupName]="i">
-                        <td >{{creds.cnpoliza}}</td>
-                        <td >{{creds.cnrecibo}}</td>
-                        <td >{{creds.qcuotas}}</td>
-                        <td >{{creds.xramo}}</td>
-                        <td > {{creds.fhasta_rec}}</td>
-                        <td >
-                          <div *ngIf="creds.cdoccob > 0"><mat-icon style="color:green">check</mat-icon></div>
-                          <div *ngIf="creds.cdoccob == 0"><mat-icon style="color:red">close</mat-icon></div>
-                        </td>
-                        <td >
-                          <div class="row">
-                            <div class="col">
-                              {{creds.mprimabrutaext}} {{creds.cmoneda}}
+      
+                  <div formArrayName="receipt">
+                    <table class="table table-bordered table-hover" >
+                      <thead>
+                        <tr>
+                          <th>N° Poliza</th>
+                          <th>N° Recibo</th>
+                          <th>N° Cuota</th>
+                          <th>Ramo</th>
+                          <th style="color:red">Fecha tope de pago</th>
+                          <th>Recibo notificado</th>
+                          <th>Total del recibo</th>
+                          <th>Seleccione los recibos a pagar</th>
+                        </tr>
+                      </thead>
+                      <tbody *ngFor="let creds of receipt.value let i=index">
+                        <tr [formGroupName]="i">
+                          <td >{{creds.cnpoliza}}</td>
+                          <td >{{creds.cnrecibo}}</td>
+                          <td >{{creds.qcuotas}}</td>
+                          <td >{{creds.xramo}}</td>
+                          <td > {{creds.fhasta_rec}}</td>
+                          <td >
+                            <div *ngIf="creds.cdoccob > 0"><mat-icon style="color:green">check</mat-icon></div>
+                            <div *ngIf="creds.cdoccob == 0"><mat-icon style="color:red">close</mat-icon></div>
+                          </td>
+                          <td >
+                            <div class="row">
+                              <div class="col">
+                                {{creds.mprimabrutaext}} {{creds.cmoneda}}
+                              </div>
+                              <div *ngIf="creds.mdiferencia > 0" style=" background-color: #ff7272;color: white;">
+                                Diferencia {{creds.idiferencia}} : <br>
+                                {{creds.mdiferencia}} Bs - {{creds.mdiferenciaext}} $
+                              </div>
                             </div>
-                            <div *ngIf="creds.mdiferencia > 0" style=" background-color: #ff7272;color: white;">
-                              Diferencia {{creds.idiferencia}} : <br>
-                              {{creds.mdiferencia}} Bs - {{creds.mdiferenciaext}} $
-                            </div>
-                          </div>
-                
-                        </td>
-                        <td>
-                          <div *ngIf="creds.cdoccob > 0 "></div> 
-                          <div *ngIf="creds.cdoccob == 0 || creds.mdiferencia > 0 "> <mat-checkbox formControlName="seleccionado" (change)="calculateMount(i)"> </mat-checkbox></div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div class="container text-center">
-                    <h2>Tasa de cobro {{bcv}} Bs</h2> 
-                    <h2 >Total a Pagar {{mount}} $  -- {{mountBs}} Bs</h2>
-                </div>
-    
-                <div class="mt-5 text-center">
-                  <button mat-button matStepperPrevious class="bg-warning text-light p-3">Atras</button>
-                  <button mat-button matStepperNext   [disabled]="!puedeAvanzar" class="bg-primary text-light">Siguiente</button>
-                </div>
-    
-              </form>
+                  
+                          </td>
+                          <td>
+                            <div *ngIf="creds.cdoccob > 0 "></div> 
+                            <div *ngIf="creds.cdoccob == 0 || creds.mdiferencia > 0 "> <mat-checkbox formControlName="seleccionado" (change)="calculateMount(i)"> </mat-checkbox></div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="container text-center">
+                      <h2>Tasa de cobro {{bcv}} Bs</h2> 
+                      <h2 >Total a Pagar {{mount}} $  -- {{mountBs}} Bs</h2>
+                  </div>
+      
+                  <div class="mt-5 text-center">
+                    <button mat-button matStepperPrevious class="bg-warning text-light p-3">Atras</button>
+                    <button mat-button matStepperNext   [disabled]="!puedeAvanzar" class="bg-primary text-light">Siguiente</button>
+                  </div>
+      
+                </form>
+            
             </mat-tab>
             <mat-tab label="Sus recibos cobrados">      
 
@@ -223,7 +225,7 @@
                           <label class="form-label" for="form3Examplev3" >Moneda</label>
                           <select formControlName="cmoneda" class="form-control form-control-lg colorgris" (change)="validationBank(i)">
                             <option value="Bs">Bolivares</option>
-                            <option value="Ds">Dolares</option>
+                            <option value="USD">USD</option>
                           </select>                         
                         </div>
     
@@ -319,31 +321,6 @@
           <h2>La Mundial de Seguros</h2> 
         </div>
 
-        <ng-template #Alerta >
-          <mat-dialog-content  >
-            
-            <div class="card">
-              <div class="header">
-                <div class="image">
-                  <svg viewbox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
-                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                  <g id="SVGRepo_iconCarrier">
-                    <path d="M20 7L9.00004 18L3.99994 13" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="8.5"></path>
-                  </g></svg>
-                </div>
-                <div class="content">
-                  <h2 class="title">Pago registrado</h2>
-                  <h4>Valide todos los campos antes de registrar el anticipo</h4>
-    
-                </div>
-              </div>
-            </div>
-    
-    
-          </mat-dialog-content>
-        </ng-template>
-
         <ng-template #NotFound >
           <mat-dialog-content  >
               <div class="header">
@@ -358,6 +335,9 @@
         <ng-template #Transfer >
           <mat-dialog-content >
               <div class="header">
+                <div class="text-center">
+                  <button mat-dialog-close class="btn-close position-absolute top-0 start-100 translate-middle" aria-label="Close"></button>
+                </div>
                 <div class="container">
                   <div class="row">
                     <div>
@@ -393,6 +373,9 @@
         <ng-template #Deposit >
           <mat-dialog-content  >
             <div class="header">
+              <div class="text-center">
+                <button mat-dialog-close class="btn-close position-absolute top-0 start-100 translate-middle" aria-label="Close"></button>
+              </div>
               <div class="container">
                 <div class="row">
                   <div>
@@ -425,6 +408,9 @@
         <ng-template #PagoMovil >
           <mat-dialog-content  >
             <div class="header">
+              <div class="text-center">
+                <button mat-dialog-close class="btn-close position-absolute top-0 start-100 translate-middle" aria-label="Close"></button>
+              </div>
               <div class="container">
                 <div class="row">
                   <div>
@@ -456,6 +442,10 @@
         <ng-template #DepositoUSD >
           <mat-dialog-content >
               <div class="header">
+                <div class="text-center">
+                  <button mat-dialog-close class="btn-close position-absolute top-0 start-100 translate-middle" aria-label="Close"></button>
+                </div>
+
                 <div class="container">
                   <div class="">
                       <strong class="title" *ngIf="!diferenceBool">Monto {{mountIGTF}} $</strong><button mat-icon-button color="primary" ngxClipboard [cbContent]="mountIGTF"><mat-icon>file_copy</mat-icon></button>
@@ -474,7 +464,7 @@
 
                   </div>
 
-
+                  
                 </div>
               </div>
           </mat-dialog-content>

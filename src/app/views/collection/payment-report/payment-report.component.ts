@@ -626,7 +626,7 @@ export class PaymentReportComponent {
         this.transferList.push({
           cmoneda: transfer.value[i].cmoneda,
           cbanco: transfer.value[i]?.cbanco,
-          cbanco_destino: transfer.value[i].cbanco_destino,
+          cbanco_destino: transfer.value[i]?.cbanco_destino,
           mpago: 0,
           mpagoext: transfer.value[i].mpago,
           mpagoigtf: this.mountBsP,
@@ -644,7 +644,7 @@ export class PaymentReportComponent {
         this.transferList.push({
           cmoneda: transfer.value[i].cmoneda,
           cbanco: transfer.value[i]?.cbanco,
-          cbanco_destino: transfer.value[i].cbanco_destino,
+          cbanco_destino: transfer.value[i]?.cbanco_destino,
           mpago: transfer.value[i].mpago,
           mpagoext: 0,
           mpagoigtf: 0,
@@ -723,6 +723,11 @@ export class PaymentReportComponent {
       //primero llenamos el recipo y la tabla de transacciones 
       this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
         if (response.status) {
+
+          this.toast.open("Registro de pago éxitoso", "Cerrar", {
+            duration: 3000,
+          });
+
           this.uploadFile()
         }
       })   
@@ -771,7 +776,7 @@ export class PaymentReportComponent {
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
     }
     if(trasnfer.at(i).get('ctipopago')?.value == '1' ){
-      this.bankList = this.bankReceptorInternational
+      this.bankList = this.bankInternational
       trasnfer.at(i).get('cbanco')?.setValue('')
       trasnfer.at(i).get('cbanco')?.enable();
 
@@ -815,8 +820,8 @@ export class PaymentReportComponent {
       this.usd = false
 
     }
-    if(trasnfer.at(i).get('cmoneda')?.value == 'Ds' ){
-      this.targetBankList = this.bankInternational
+    if(trasnfer.at(i).get('cmoneda')?.value == 'USD' ){
+      this.targetBankList = this.bankReceptorInternational
       this.usd = true
 
 
