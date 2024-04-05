@@ -39,6 +39,8 @@ export class ReceiptsComponent {
   availableColors = [
     {name: 'Recibos Pendientes', color: 'primary'},
     {name: 'Recibos Cobrados', color: 'warn'},
+    {name: 'Recibos Anulados', color: 'accent'},
+    {name: 'Recibos Notificados', color: 'secondary'},
   ];
 
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
@@ -108,9 +110,7 @@ export class ReceiptsComponent {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  refresh(){
-    location.reload();
-  }
+
 
   downloadExcel() {
     // Define un objeto de mapeo para cambiar los nombres de las columnas

@@ -60,15 +60,16 @@ export class ReportsComponent {
     private snackBar: MatSnackBar,
       ) {
      }
-
-availableColors = [
-{name: 'Primas Pendientes', color: 'primary'},
-{name: 'Primas Cobradas', color: 'warn'},
-];
+     availableColors = [
+      {name: 'Recibos Pendientes', color: 'primary', valor : 'P'},
+      {name: 'Recibos Cobrados', color: 'warn', valor : 'C'},
+      {name: 'Detalle de Cobrados', color: 'secondary', valor : 'CD'},
+      {name: 'Recibos Anulados', color: 'accent', valor : 'A'},
+      {name: 'Recibos Notificados', color: 'warn', valor : 'N'},
+    ];
+  
 ngOnInit() {
   this.showButton = false
-
-
   this.consulta_reporte = this.formBuilder.group({
     estado: [''],
     fdesde_pol: [''],
@@ -79,7 +80,8 @@ ngOnInit() {
 
 saveSelection(opcion: string) {
   this.selectedOption = opcion;
-  this.consulta_reporte.get('bprima')?.setValue(this.selectedOption);
+  this.consulta_reporte.get('estado')?.setValue(this.selectedOption);
+  this.dataReport();
 }
 
 onSubmit(){
