@@ -9,6 +9,10 @@
   background-color: rgb(245, 245, 245);
 }
 
+.mdc-data-table__cell, .mdc-data-table__header-cell {
+  padding: 0 4px 0 4px;
+}
+
 .footer-table {
   display: flex;
   flex-direction: row;

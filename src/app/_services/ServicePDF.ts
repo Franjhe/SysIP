@@ -2553,20 +2553,6 @@ export class PdfGenerationService {
 			)
 		});
 
-		// const fecha = paymentRequest.fsolicit;
-
-		// // Crear un objeto Date con la fecha de cotización
-		// const fechaObj = new Date(fecha);
-
-		// // Obtener los componentes de la fecha (día, mes, año)
-		// const dia = fechaObj.getDate();
-		// const mes = fechaObj.getMonth() + 1; // Nota: JavaScript cuenta los meses desde 0
-		// const anio = fechaObj.getFullYear();
-
-		// // Formatear la fecha en el formato "día mes año"
-		// const fsolicit = `${dia < 10 ? '0' : ''}${dia}-${mes < 10 ? '0' : ''}${mes}-${anio}`;
-
-		// this.fcotizacion = fechaFormateada,
 		try {
 			const pdfDefinition: any = {
 				pageSize: 'A5',
