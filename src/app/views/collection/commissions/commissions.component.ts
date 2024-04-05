@@ -47,7 +47,7 @@ export class CommissionsComponent {
   @ViewChild('dialogPaymentRequest') dialogPaymentRequest!: TemplateRef<any>;
   @ViewChild('observaciones') observaciones!: TemplateRef<any>;
 
-  displayedColumns: string[] = ['select', 'cproductor', 'xnombre', 'mcomtot', 'mcomexttot', 'detail'];
+  displayedColumns: string[] = ['select', 'cproductor', 'xnombre', 'mcomtot', 'mcomexttot', 'moneda', 'detail'];
   dataSource = new MatTableDataSource<any>;
   defaultDataSource = new MatTableDataSource<any>;
 
@@ -319,11 +319,11 @@ export class CommissionsComponent {
             cstatus: '',
             xstatus: 'pendiente',
             cid: e.cid,
-            xbeneficiario: element.xnombre.trim(),
+            xbeneficiario: element.xcliente.trim(),
             cconcepto: '',
             xconcepto: 'Pago Comisión Agente',
             ccorredor: e.cci_rif,
-            xcorredor: e.xnombre.trim(),
+            xcorredor: e.xcliente.trim(),
             mpago: element.mmovcomtot,
             mpagoext: element.mmovcomexttot,
             mmontototal: element.mmovcomexttot,
@@ -391,7 +391,7 @@ export class CommissionsComponent {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
         case '0': return this.compare(a.cproductor, b.cproductor, isAsc);
-        case '1': return this.compare(a.xnombre, b.xnombre, isAsc);
+        case '1': return this.compare(a.xcliente, b.xcliente, isAsc);
         case '2': return this.compare(a.mmovcom, b.mmovcom, isAsc);
         case '3': return this.compare(a.mcomexttot, b.mcomexttot, isAsc);
         default: return 0;

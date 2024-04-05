@@ -45,6 +45,25 @@ export class PaymentRequestsComponent {
     agrupado: this._formBuilder.array([])
   });
 
+  paymentRequestFormGroup = this._formBuilder.group({
+    // xpago: [''],
+    // femision: [''],
+    // fdesde: ['', Validators.required],
+    // fhasta: ['', Validators.required],
+    // cmetodologiapago: ['', Validators.required],
+    // ctipopago: [''],
+    // cbanco: [''],
+    // cbanco_destino: [''],
+    // fcobro: [''],
+    // xreferencia: [''],
+    // mprima_pagada: [''],
+    mpago: ['', Validators.required],
+    mpagoext: ['', Validators.required],
+    xmoneda: ['', Validators.required],
+    // mprima_accesorio: [''],
+    // irecibo: ['']
+  });
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator2!: MatPaginator;
@@ -71,9 +90,14 @@ export class PaymentRequestsComponent {
 
   dataSourceindex: any;
 
-  total_movcom = 0;
-  total_impuesto = 0;
-  total_comision = 0;
+  total_movcom_pr = 0;
+  total_movcomext_pr = 0;
+  total_movcom_bo = 0;
+  total_movcomext_bo = 0;
+
+  mpagosol_bs = true;
+  mpagosol_ext = false;
+  mpagosol_mix = false;
 
   listPaymentRequest: PaymentRequest[] = [];
   paymentRequest: any;
@@ -111,21 +135,15 @@ export class PaymentRequestsComponent {
   }
 
   clearData() {
-    this.total_movcom = 0;
-    this.total_impuesto = 0;
-    this.total_comision = 0;
+    this.total_movcom_pr = 0;
+    this.total_movcomext_pr = 0;
+    this.total_movcom_bo = 0;
+    this.total_movcomext_bo = 0;
   }
 
 
   showDetailPaymentRequest(csolpag: any, index: any) {
-    // if (condition) {
 
-    // }
-    // this.paymentRequest.clear;
-    // alert(csolpag);
-    // console.log(this.dataSource.data[csolpag]);
-    // this.paymentRequest = this.dataSource.data[csolpag];
-    // alert(csolpag);
     let data = {
       csolpag: csolpag
     }
@@ -133,9 +151,26 @@ export class PaymentRequestsComponent {
       this.paymentRequest = response.returnData.search[0]
       console.log(this.paymentRequest);
 
+      this.paymentRequestFormGroup.get('mpago')?.setValue(this.paymentRequest.mpago);
+      this.paymentRequestFormGroup.get('mpagoext')?.setValue(this.paymentRequest.mpagoext);
+
       this.defaultTableDetailReceipts = new MatTableDataSource(response.returnData.search[0].recibos);
       this.tableDetailReceipts = new MatTableDataSource(response.returnData.search[0].recibos);
       this.tableDetailReceipts.paginator = this.paginator2;
+
+      this.clearData()
+
+      this.tableDetailReceipts.data.forEach(element => {
+        if (element.imovcom == 'BO') {
+          this.total_movcom_bo += element.mmovcom,
+            this.total_movcomext_bo += element.mmovcomext
+        } else {
+          this.total_movcom_pr += element.mmovcom,
+            this.total_movcomext_pr += element.mmovcomext
+        }
+      }
+
+      );
       // this.tableDetailReceipts.sort = this.sort;
 
       return this.dialog.open(this.dialogPaymentRequest);
@@ -145,6 +180,52 @@ export class PaymentRequestsComponent {
 
   showDetailReceipts() {
     return this.dialog.open(this.detailReceipts);
+  }
+
+  reset_moneda_pago() {
+    this.mpagosol_bs = false;
+    this.mpagosol_ext = false;
+    this.mpagosol_mix = false;
+  }
+
+  changeMonedaPago() {
+    
+    this.reset_moneda_pago();
+    let xmoneda = this.paymentRequestFormGroup.get('xmoneda')?.value;
+    // let mmpago = (<HTMLInputElement>document.getElementById(`mmpago`)).value;
+    console.log(xmoneda);
+    // alert(xmoneda);
+    // let mpago_bs = (<HTMLInputElement>document.getElementById(`mpago`)).value;
+    if (xmoneda == 'Bs') {
+      this.mpagosol_bs = true;
+      this.paymentRequestFormGroup.get('mpago')?.setValue(this.paymentRequest.mpago);
+    }
+    if (xmoneda == '$') {
+      this.paymentRequestFormGroup.get('mpagoext')?.setValue(this.paymentRequest.mpagoext);
+      this.mpagosol_ext = true;
+    }
+    if (xmoneda == 'M') {
+      this.paymentRequestFormGroup.get('mpago')?.setValue('0.00');
+      this.paymentRequestFormGroup.get('mpagoext')?.setValue('0.00');
+      this.mpagosol_mix = true;
+    }
+    // console.log(this.paymentRequestFormGroup.get('mpago')?.value);
+    
+  }
+
+  calcMixBs() {
+    let mpago: any = this.paymentRequestFormGroup.get('mpago')?.value;
+    let usd: any = (mpago / this.paymentRequest.ptasamon).toFixed(2);
+    let mpagoext = (this.paymentRequest.mpagoext - usd).toFixed(2);
+    this.paymentRequestFormGroup.get('mpagoext')?.setValue(mpagoext);
+    console.log(mpagoext);
+  }
+  calcMixUsd() {
+    let mpagoext: any = this.paymentRequestFormGroup.get('mpagoext')?.value;
+    let bs: any = (mpagoext * this.paymentRequest.ptasamon).toFixed(2);
+    let mpago = (this.paymentRequest.mpago - bs).toFixed(2);
+    this.paymentRequestFormGroup.get('mpago')?.setValue(mpago);
+    console.log(mpago);
   }
 
   closeDialog() {
@@ -193,16 +274,16 @@ export class PaymentRequestsComponent {
   }
 
   printPaymentRequest() {
-		// Crear un objeto Date con la fecha original
-		const fecha = new Date(this.paymentRequest.fsolicit);
+    // Crear un objeto Date con la fecha original
+    const fecha = new Date(this.paymentRequest.fsolicit);
 
-		// Obtener los componentes de la fecha (día, mes, año)
-		const dia = fecha.getDate();
-		const mes = fecha.getMonth() + 1; // Nota: JavaScript cuenta los meses desde 0
-		const anio = fecha.getFullYear();
+    // Obtener los componentes de la fecha (día, mes, año)
+    const dia = fecha.getDate();
+    const mes = fecha.getMonth() + 1; // Nota: JavaScript cuenta los meses desde 0
+    const anio = fecha.getFullYear();
 
-		// Formatear la fecha en el formato "día mes año"
-		const fsolicit = `${dia < 10 ? '0' : ''}${dia}-${mes < 10 ? '0' : ''}${mes}-${anio}`;
+    // Formatear la fecha en el formato "día mes año"
+    const fsolicit = `${dia < 10 ? '0' : ''}${dia}-${mes < 10 ? '0' : ''}${mes}-${anio}`;
 
     var paymentRequest: PaymentRequest = {
       csolpag: this.paymentRequest.csolpag,
