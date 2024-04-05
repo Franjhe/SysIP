@@ -780,7 +780,7 @@ export class PaymentAdministrationComponent {
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
     }
     if(trasnfer.at(i).get('ctipopago')?.value == '1' ){
-      this.bankList = this.bankReceptorInternational
+      this.bankList = this.bankInternational
       trasnfer.at(i).get('cbanco')?.setValue('')
       trasnfer.at(i).get('cbanco')?.enable();
       trasnfer.at(i).get('cbanco_destino')?.enable()
@@ -833,8 +833,8 @@ export class PaymentAdministrationComponent {
       this.usd = false
 
     }
-    if(trasnfer.at(i).get('cmoneda')?.value == 'Ds' ){
-      this.targetBankList = this.bankInternational
+    if(trasnfer.at(i).get('cmoneda')?.value == 'USD' ){
+      this.targetBankList = this.bankReceptorInternational
       this.usd = true
 
 
