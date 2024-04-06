@@ -39,7 +39,7 @@ export interface PaymentRequest {
 export class CommissionsComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-  @ViewChild(MatPaginator) paginator2!: MatPaginator;
+  @ViewChild('paginator2') paginator2!: MatPaginator;
   @ViewChild(MatSort) sort2!: MatSort;
 
   @ViewChild('Alerta') InfoReceipt!: TemplateRef<any>;
