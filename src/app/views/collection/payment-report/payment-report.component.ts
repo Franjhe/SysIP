@@ -690,7 +690,12 @@ export class PaymentReportComponent {
 
       this.http.post(environment.apiUrl + '/api/v1/collection/create-report-diference', reporData).subscribe( (response: any) => {
         if (response.status) {
-          this.uploadFile()
+
+          this.toast.open("Registro de pago éxitoso", "Cerrar", {
+            duration: 3000,
+          });
+
+          //this.uploadFile()
         }
   
       })
@@ -728,7 +733,7 @@ export class PaymentReportComponent {
             duration: 3000,
           });
 
-          this.uploadFile()
+          //this.uploadFile()
         }
       })   
   

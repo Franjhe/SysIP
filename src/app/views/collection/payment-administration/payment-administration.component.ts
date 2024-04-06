@@ -734,7 +734,11 @@ export class PaymentAdministrationComponent {
       //primero llenamos el recipo y la tabla de transacciones 
       this.http.post(environment.apiUrl + '/api/v1/collection/collect-receipt',savePaymentTrans).subscribe( (response: any) => {
         if (response.status) {
-          this.uploadFile()
+          this.toast.open("Registro de pago éxitoso", "Cerrar", {
+            duration: 3000,
+          });
+
+          //this.uploadFile()
         }
       })   
       setTimeout(() => {
