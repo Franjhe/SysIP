@@ -171,6 +171,14 @@ export class PaymentRequestsComponent {
       }
 
       );
+
+      this.paymentRequestFormGroup.controls["mpago"].addValidators(
+        [Validators.minLength(0), Validators.maxLength(this.paymentRequest.mpago)]
+      );
+      this.paymentRequestFormGroup.controls["mpagoext"].addValidators(
+        [Validators.minLength(0), Validators.maxLength(this.paymentRequest.mpagoext)]
+      );
+
       // this.tableDetailReceipts.sort = this.sort;
 
       return this.dialog.open(this.dialogPaymentRequest);
@@ -189,7 +197,7 @@ export class PaymentRequestsComponent {
   }
 
   changeMonedaPago() {
-    
+
     this.reset_moneda_pago();
     let xmoneda = this.paymentRequestFormGroup.get('xmoneda')?.value;
     // let mmpago = (<HTMLInputElement>document.getElementById(`mmpago`)).value;
@@ -210,7 +218,7 @@ export class PaymentRequestsComponent {
       this.mpagosol_mix = true;
     }
     // console.log(this.paymentRequestFormGroup.get('mpago')?.value);
-    
+
   }
 
   calcMixBs() {

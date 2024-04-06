@@ -191,7 +191,7 @@
                             </mat-form-field>
                         </div>
 
-                        <div class="col-3">
+                        <!-- <div class="col-3">
                             <mat-form-field class="example-full-width">
                                 <mat-label>Moneda de pago</mat-label>
                                 <mat-select (selectionChange)="changeMonedaPago()" formControlName="xmoneda" requires>
@@ -203,14 +203,14 @@
                         </div>
                         <div class="col-3" *ngIf="mpagosol_mix">
                             <mat-form-field>
-                                <mat-label>Monto Bs:</mat-label>
-                                <input matInput type="number" formControlName="mpago" (keyup)="calcMixBs()">
+                                <mat-label>A pagar en Bs.:</mat-label>
+                                <input matInput type="number" formControlName="mpago" (keyup)="calcMixBs()"  max="{{paymentRequest.mpago}}">
                             </mat-form-field>
                         </div>
                         <div class="col-3" *ngIf="mpagosol_mix">
                             <mat-form-field>
-                                <mat-label>Diferencia USD:</mat-label>
-                                <input matInput type="number" formControlName="mpagoext" (keyup)="calcMixUsd()">
+                                <mat-label>A pagar en USD:</mat-label>
+                                <input matInput type="number" formControlName="mpagoext" (keyup)="calcMixUsd()" max="{{paymentRequest.mpagoext}}">
                             </mat-form-field>
                         </div>
                         <div class="col-3" *ngIf="mpagosol_mix">
@@ -218,7 +218,7 @@
                                 <mat-label>Tasa Orden:</mat-label>
                                 <input matInput type="text" value="{{paymentRequest.ptasamon}}" disabled>
                             </mat-form-field>
-                        </div>
+                        </div> -->
 
                     </div>
                     <div class="row mt-4">

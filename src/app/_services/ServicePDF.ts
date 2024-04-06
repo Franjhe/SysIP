@@ -2668,7 +2668,7 @@ export class PdfGenerationService {
 						margin: [0, 0, 0, 3],
 						table: {
 							headerRows: 1,
-							widths: ['*', '*', '*', '*', '*', '*', '*', '*', '*', '*'],
+							widths: [35, '*', 20, 35, '*', '*', '*', '*', '*', '*'],
 							body: movimientos
 						}
 					},
