@@ -142,6 +142,7 @@ export class SelfManagementComponent {
   isLinear = true;
   check = false;
   helmet: boolean = false;
+  trans: boolean = true;
   discount: boolean = false;
   enableInfo: boolean = false;
   amountTotalRcv: boolean = false;
@@ -208,6 +209,9 @@ export class SelfManagementComponent {
   fechas!: any ;
   recargaInicial!: any ;
   ocultarRecarga: boolean = true;
+  activateCard: boolean = false;
+  xnombrePlan!: any
+  planCoverage: any[] = [];
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -1113,6 +1117,20 @@ export class SelfManagementComponent {
     const selectedPlan = this.planList.find(plan => plan.value === selectedValue);
     if (selectedPlan) {
       this.planFormGroup.get('cplan')?.setValue(selectedPlan.id);
+      let plan = {
+        cplan: selectedPlan.id
+      }
+      this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/coverages-plan', plan).subscribe((response: any) => {
+        console.log(response.data.coverages)
+        this.planCoverage = response.data.coverages.map((item: any) => {
+          this.trans = false;
+          return {
+            name: item.cobertura,
+            sum: item.suma.toFixed(2)   
+          };
+        });
+      })
+      this.xnombrePlan = selectedPlan.value;
       this.getAmount();
     }
   }
@@ -1319,6 +1337,7 @@ export class SelfManagementComponent {
     }
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/premium-amount', data).subscribe((response: any) => {
       if (response.status) {
+        this.activateCard = true;
         this.montoTotal = response.data.mprima
         this.ubii = response.data.ccubii
         if(this.montoTotal){
@@ -1571,7 +1590,7 @@ export class SelfManagementComponent {
           accesorios: this.planFormGroup.controls.accesorios.value,
           xpago: this.receiptFormGroup.get('xpago')?.value,
           femision: this.receiptFormGroup.get('femision')?.value,
-          cmetodologiapago: this.receiptFormGroup.get('cmetodologiapago')?.value,
+          cmetodologiapago: 5,
           id_inma: this.vehicleFormGroup.get('id_inma')?.value,
           cuso: this.vehicleFormGroup.get('cuso')?.value,
           xuso: this.vehicleFormGroup.get('xuso')?.value,
@@ -1821,7 +1840,7 @@ export class SelfManagementComponent {
       pcasco: this.planFormGroup.get('pcasco')?.value,
       xpago: this.receiptFormGroup.get('xpago')?.value,
       femision: this.receiptFormGroup.get('femision')?.value,
-      cmetodologiapago: this.receiptFormGroup.get('cmetodologiapago')?.value,
+      cmetodologiapago: 5,
       id_inma: this.vehicleFormGroup.get('id_inma')?.value,
       cuso: this.vehicleFormGroup.get('cuso')?.value,
       xuso: this.vehicleFormGroup.get('xuso')?.value,
