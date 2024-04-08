@@ -286,9 +286,11 @@ export class PaymentReportComponent {
   
   searchDataReceipt(){
     let cedula = this.searchReceipt.get('tipo_cedula')?.value + '-' +  this.searchReceipt.get('xcedula')?.value 
+    let aseguradoNumber = this.searchReceipt.get('xcedula')?.value 
+
     const client = {
       cedula: cedula ,
-      asegurado : this.searchReceipt.get('xcedula')?.value 
+      asegurado : Number(aseguradoNumber)
     }
 
     const receipt = this.searchReceipt.get("receipt") as FormArray
@@ -699,7 +701,7 @@ export class PaymentReportComponent {
             duration: 3000,
           });
 
-          //this.uploadFile()
+          this.uploadFile()
         }
   
       })
@@ -737,7 +739,7 @@ export class PaymentReportComponent {
             duration: 3000,
           });
 
-          //this.uploadFile()
+          this.uploadFile()
         }
       })   
   
@@ -778,7 +780,8 @@ export class PaymentReportComponent {
     const trasnfer = this.searchReceipt.get("transfer") as FormArray
 
     if(trasnfer.at(i).get('ctipopago')?.value == '2' ){
-      this.bankList = this.bankReceptorNational
+      this.bankList = this.bankNational
+      this.targetBankList = this.bankReceptorNational
       trasnfer.at(i).get('cbanco')?.setValue('')
       trasnfer.at(i).get('cbanco')?.enable();
 
@@ -793,7 +796,8 @@ export class PaymentReportComponent {
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
     }
     if(trasnfer.at(i).get('ctipopago')?.value == '3' ){
-      this.bankList = this.bankReceptorPM
+      this.bankList =  this.bankNational
+      this.targetBankList = this.bankReceptorPM
       trasnfer.at(i).get('cbanco')?.enable();
       trasnfer.at(i).get('cbanco')?.setValue('')
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
@@ -825,17 +829,18 @@ export class PaymentReportComponent {
   getBank(i : any){
     //bancos emision
     const trasnfer = this.searchReceipt.get("transfer") as FormArray
-
     if(trasnfer.at(i).get('cmoneda')?.value == 'Bs' ){
-      this.targetBankList = this.bankNational
       this.usd = false
+      trasnfer.at(i).get('cbanco')?.setValue('')
+      trasnfer.at(i).get('cbanco_destino')?.setValue('')
+      trasnfer.at(i).get('ctipopago')?.setValue('')
 
     }
     if(trasnfer.at(i).get('cmoneda')?.value == 'USD' ){
-      this.targetBankList = this.bankInternational
       this.usd = true
-
-
+      trasnfer.at(i).get('cbanco')?.setValue('')
+      trasnfer.at(i).get('cbanco_destino')?.setValue('')
+      trasnfer.at(i).get('ctipopago')?.setValue('')
     }
 
   }
