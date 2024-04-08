@@ -7,7 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort , MatSortModule } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
-
+import { SelectionModel } from '@angular/cdk/collections';
 import {MatStepperModule} from '@angular/material/stepper';
 
 
@@ -25,9 +25,9 @@ export class PaymentAdministrationComponent {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  selection = new SelectionModel<any>(true, []);
 
-
-  displayedColumns: string[] = ['progress', 'fruit'];
+  displayedColumns: string[] = ['select','progress', 'fruit'];
   dataSource = new MatTableDataSource<any> ;
 
   //modales de tipos de pago
@@ -269,6 +269,7 @@ export class PaymentAdministrationComponent {
     .then((response) => response.json())
     .then(data => {
       this.dataSource = new MatTableDataSource(data.searchPaymentPendingData.recibo);
+      
 
       const listPending = data.searchPaymentPendingData.recibo
 
@@ -784,6 +785,7 @@ export class PaymentAdministrationComponent {
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
     }
     if(trasnfer.at(i).get('ctipopago')?.value == '1' ){
+      this.targetBankList = this.bankReceptorInternational
       this.bankList = this.bankInternational
       trasnfer.at(i).get('cbanco')?.setValue('')
       trasnfer.at(i).get('cbanco')?.enable();
@@ -798,7 +800,7 @@ export class PaymentAdministrationComponent {
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
     }    
     if(trasnfer.at(i).get('ctipopago')?.value == '7' ){
-      this.bankList = this.bankReceptorCustodia
+      this.targetBankList = this.bankReceptorCustodia
       trasnfer.at(i).get('cbanco')?.disable();
       trasnfer.at(i).get('cbanco')?.setValue('')
       trasnfer.at(i).get('cbanco_destino')?.enable()
@@ -806,7 +808,6 @@ export class PaymentAdministrationComponent {
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
     }
     if(trasnfer.at(i).get('ctipopago')?.value == '9' ){
-      this.bankList = this.bankReceptorCustodia
       trasnfer.at(i).get('cbanco')?.disable();
       trasnfer.at(i).get('cbanco_destino')?.disable()
     }
@@ -846,6 +847,22 @@ export class PaymentAdministrationComponent {
 
   }
 
+  masterToggle() {
+    if (this.isAllSelected()) {
+        this.selection.clear();
+      } else {
+        this.dataSource.data.forEach(row => this.selection.select(row));
+      }
+  }
+
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    // alert(numSelected);
+    // alert(numRows);
+    return numSelected === numRows;
+    // this.varable1 = 100;
+  }
 
 
 }

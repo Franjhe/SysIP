@@ -70,6 +70,8 @@ export class PaymentReportComponent {
     receipt :  this._formBuilder.array([]),
     transfer : this._formBuilder.array([]),
     xcedula: ['', Validators.required],
+    tipo_cedula: ['', Validators.required],
+
   });
 
   diferenceBool :boolean = false;
@@ -283,8 +285,10 @@ export class PaymentReportComponent {
   }
   
   searchDataReceipt(){
+    let cedula = this.searchReceipt.get('tipo_cedula')?.value + '-' +  this.searchReceipt.get('xcedula')?.value 
     const client = {
-      cedula: this.searchReceipt.get('xcedula')?.value 
+      cedula: cedula ,
+      asegurado : this.searchReceipt.get('xcedula')?.value 
     }
 
     const receipt = this.searchReceipt.get("receipt") as FormArray
@@ -781,6 +785,7 @@ export class PaymentReportComponent {
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
     }
     if(trasnfer.at(i).get('ctipopago')?.value == '1' ){
+      this.targetBankList = this.bankReceptorInternational
       this.bankList = this.bankInternational
       trasnfer.at(i).get('cbanco')?.setValue('')
       trasnfer.at(i).get('cbanco')?.enable();
@@ -794,7 +799,7 @@ export class PaymentReportComponent {
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
     }    
     if(trasnfer.at(i).get('ctipopago')?.value == '7' ){
-      this.bankList = this.bankReceptorCustodia
+      this.targetBankList = this.bankReceptorCustodia
       trasnfer.at(i).get('cbanco')?.disable();
       trasnfer.at(i).get('cbanco')?.setValue('')
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
@@ -818,6 +823,7 @@ export class PaymentReportComponent {
 
 
   getBank(i : any){
+    //bancos emision
     const trasnfer = this.searchReceipt.get("transfer") as FormArray
 
     if(trasnfer.at(i).get('cmoneda')?.value == 'Bs' ){
@@ -826,7 +832,7 @@ export class PaymentReportComponent {
 
     }
     if(trasnfer.at(i).get('cmoneda')?.value == 'USD' ){
-      this.targetBankList = this.bankReceptorInternational
+      this.targetBankList = this.bankInternational
       this.usd = true
 
 
