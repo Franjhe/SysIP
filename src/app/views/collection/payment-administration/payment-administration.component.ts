@@ -371,9 +371,10 @@ export class PaymentAdministrationComponent {
         let sumaUSD = 0;
   
         response.searchReceipt.saldo.forEach((item: any) => {
-          if (item.cmoneda_dif === 'BS') {
+          if (item.cmoneda_dif == 'BS  ') {
             sumaBS += item.msaldodif;
-          } else if (item.cmoneda_dif === 'USD') {
+          }  
+          if (item.cmoneda_dif == 'USD ') {
             sumaUSD += item.msaldodif;
   
           }
