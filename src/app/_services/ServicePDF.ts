@@ -1416,9 +1416,9 @@ export class PdfGenerationService {
 					{
 						style: 'data',
 						table: {
-							widths: [40, 140, 40, 100, 120, '*'],
+							widths: [40, 140, 40, 100, 60, 80],
 							body: [
-								[{ text: 'DIRECCIÓN:', bold: true, border: [false, false, false, false] }, { text: this.xdireccion_tomador, border: [false, false, false, false] }, { text: 'EMAIL:', bold: true, border: [false, false, false, false] }, { text: this.xcorreo_tomador, border: [false, false, false, false] }, { text: 'PÓLIZA:', bold: true, border: [false, false, false, false] }, { text: `${this.ccarga}`, border: [false, false, false, false] }]
+								[{ text: 'DIRECCIÓN:', bold: true, border: [false, false, false, false] }, { text: this.xdireccion_tomador, border: [false, false, false, false] }, { text: 'EMAIL:', bold: true, border: [false, false, false, false] }, { text: this.xcorreo_tomador, border: [false, false, false, false] }, { text: 'PÓLIZA:', bold: true, border: [false, false, false, false] }, { text: `${this.xpoliza}`, border: [false, false, false, false] }]
 							]
 						}
 					},
@@ -1719,9 +1719,9 @@ export class PdfGenerationService {
 					{
 						style: 'data',
 						table: {
-							widths: [40, 140, 40, 100, 120, '*'],
+							widths: [40, 140, 40, 100, 60, 80],
 							body: [
-								[{ text: 'DIRECCIÓN:', bold: true, border: [false, false, false, false] }, { text: this.xdireccionfiscalcliente, border: [false, false, false, false] }, { text: 'EMAIL:', bold: true, border: [false, false, false, false] }, { text: this.xemailcliente, border: [false, false, false, false] }, { text: 'PÓLIZA:', bold: true, border: [false, false, false, false] }, { text: `${this.ccarga}`, border: [false, false, false, false] }]
+								[{ text: 'DIRECCIÓN:', bold: true, border: [false, false, false, false] }, { text: this.xdireccionfiscalcliente, border: [false, false, false, false] }, { text: 'EMAIL:', bold: true, border: [false, false, false, false] }, { text: this.xemailcliente, border: [false, false, false, false] }, { text: 'PÓLIZA:', bold: true, border: [false, false, false, false] }, { text: `${this.xpoliza}`, border: [false, false, false, false] }]
 							]
 						}
 					},
