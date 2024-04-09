@@ -60,7 +60,7 @@
         </ng-container>
 
         <ng-container matColumnDef="detail">
-            <th mat-header-cell *matHeaderCellDef > </th>
+            <th mat-header-cell *matHeaderCellDef> </th>
             <td mat-cell *matCellDef="let row">
                 <button mat-raised-button color="primary">Detalles</button>
             </td>
@@ -75,7 +75,8 @@
     <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
 
     <div class="text-center mt-5">
-        <button mat-raised-button color="primary" (click)="generatePaymentRequests()">Generar solicitudes de pago</button>
+        <button mat-raised-button color="primary" (click)="generatePaymentRequests()">Generar solicitudes de
+            pago</button>
     </div>
     <!-- <div class="text-center mt-2">
             <button mat-raised-button >Ver solicitudes de pago</button>
@@ -196,6 +197,7 @@
 
 
     <ng-template #dialogPaymentRequest style="width: 80%;">
+        <form [formGroup]="paymentRequestFormGroup">
         <!-- <mat-dialog-content style="width: 900px;"> -->
         <mat-dialog-content>
             <!-- class="mat-elevation-z8" -->
@@ -269,23 +271,39 @@
                             disabled>
                     </mat-form-field>
                 </div>
-                <div class="col-2">
+                <div class="col-3">
                     <mat-form-field>
-                        <mat-label>Monto total Bs:</mat-label>
-                        <input matInput type="text" value="Bs. {{paymentRequest.mpago}}"
-                            disabled>
+                        <mat-label>Moneda Movimiento:</mat-label>
+                        <input matInput type="text" value="{{paymentRequest.cmoneda}}" disabled>
                     </mat-form-field>
                 </div>
-                <div class="col-2">
+                <div class="col-3">
+                    <mat-form-field >
+                        <mat-label>Moneda Pago Orden:</mat-label>
+                        <mat-select formControlName="cmonedaOrden" required #cmonedaOrden id="cmonedaOrden{{i}}">
+                            <mat-option value="Bs" selected>Bolívares</mat-option>
+                            <mat-option value="$">Usd</mat-option>
+                            <!-- <mat-option value="M">Mixto</mat-option> -->
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-3">
                     <mat-form-field>
-                        <mat-label>Monto total Usd:</mat-label>
+                        <mat-label>Monto Bs:</mat-label>
+                        <input matInput type="text" value="Bs. {{paymentRequest.mpago}}" disabled>
+                    </mat-form-field>
+                </div>
+                <div class="col-3">
+                    <mat-form-field>
+                        <mat-label>Monto Usd:</mat-label>
                         <input matInput type="text" value="{{paymentRequest.cmoneda}}{{paymentRequest.mpagoext}}"
                             disabled>
                     </mat-form-field>
                 </div>
-                <div class="col-8">
+                <div class="col-12">
                     <mat-form-field>
                         <mat-label>Observaciones:</mat-label>
+                        <!-- <input matInput type="text" #observaciones class="observaciones" id="observaciones{{i}}"> -->
                         <input matInput type="text" #observaciones class="observaciones" id="observaciones{{i}}">
                     </mat-form-field>
                 </div>
@@ -320,6 +338,7 @@
                 </div> -->
 
         </mat-dialog-content>
+    </form>
     </ng-template>
 
 </div>
