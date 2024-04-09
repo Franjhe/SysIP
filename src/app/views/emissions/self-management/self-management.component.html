@@ -391,30 +391,36 @@
     <mat-step [stepControl]="planFormGroup" label="Detalles del plan">
         <form [formGroup]="planFormGroup">
           <div class="row justify-content-center">
-            <div class="col-3" [class.col-3]="trans" *ngIf="activateBrandList">
-              <mat-form-field class="example-full-width">
-                <mat-label>Planes</mat-label>
-                <input type="text"
-                      placeholder="Seleccione Planes"
-                      aria-label="Seleccione"
-                      matInput
-                      [formControl]="planControl"
-                      [matAutocomplete]="plan"
-                      required>
-                <mat-autocomplete #plan="matAutocomplete" (optionSelected)="onPlanSelection($event)">
-                  <mat-option *ngFor="let plan of filteredPlan | async" [value]="plan">
-                    {{ plan }}
-                  </mat-option>
-                </mat-autocomplete>
-              </mat-form-field>
-            </div>
-            <div class="col-3" [class.col-3]="trans">
-              <label class="form-label required" for="form3Examplev5">Fecha Desde</label>
-              <input type="date" formControlName="fdesde" class="form-control form-control-lg" (ngModelChange)="calculateDate($event)" />
-            </div>
-            <div class="col-3" [class.col-3]="trans">
-              <label class="form-label required" for="form3Examplev5">Fecha Hasta</label>
-              <input type="date" formControlName="fhasta" class="form-control form-control-lg" (ngModelChange)="prueba()" />
+            <div class="" [class.col-3]="activateCard" *ngIf="activateBrandList">
+              <div class="col-3" [class.col-12]="activateCard">
+                <mat-form-field class="example-full-width">
+                  <mat-label>Planes</mat-label>
+                  <input type="text"
+                        placeholder="Seleccione Planes"
+                        aria-label="Seleccione"
+                        matInput
+                        [formControl]="planControl"
+                        [matAutocomplete]="plan"
+                        required>
+                  <mat-autocomplete #plan="matAutocomplete" (optionSelected)="onPlanSelection($event)">
+                    <mat-option *ngFor="let plan of filteredPlan | async" [value]="plan">
+                      {{ plan }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </div>
+
+              <div class="col-3" [class.col-12]="activateCard">
+                <label class="form-label required" for="form3Examplev5">Fecha Desde</label>
+                <input type="date" formControlName="fdesde" class="form-control form-control-lg" (ngModelChange)="calculateDate($event)" />
+              </div>
+
+              
+              <div class="col-3" [class.col-12]="activateCard">
+                <label class="form-label required" for="form3Examplev5">Fecha Hasta</label>
+                <input type="date" formControlName="fhasta" class="form-control form-control-lg" (ngModelChange)="prueba()" />
+              </div>
+
             </div>
             <div class="col-3" *ngIf="activateCard" style="margin-left: 88px">
               <div class="plan-card">

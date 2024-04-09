@@ -778,6 +778,7 @@ export class PdfGenerationService {
 				this.coveragesList = [];
 				for (let i = 0; i < response.data.list.length; i++) {
 					this.coveragesList.push({
+						ccobertura: response.data.list[i].ccobertura,
 						xcobertura: response.data.list[i].xcobertura,
 						m1: response.data.list[i].m1,
 						m2: response.data.list[i].m2,
@@ -1098,7 +1099,7 @@ export class PdfGenerationService {
 	}
 
 	buildCoveragesQuotesBody() {
-		let imagen = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABABAMAAABYR2ztAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAAHNAAABzQGe8tNOAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAABhQTFRF////AAAAAAAAAAAAAAAAAAAAAAAAAAAAXGJBvQAAAAd0Uk5TAEhKyMr4+ZPp1sMAAABASURBVEjHY2AYBaNgFAwEYHIrxwOSBRjEy/GCQgZz/AqKGdLxKyhjKCcACCsIxy9fStiRBL1JMKBGwSgYBQMBAA+VkPjUIAksAAAAAElFTkSuQmCC'
+		let imagen = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAABGAAAARgBIE5viAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAElSURBVFiF7dc9SgNBGIfxZ8TOS6T1AtZWaSVV+viRnMBaLG28QbqkEbyDJwhY2AleQBASCCSwf5tdWTfJzjv7NU0Gptt5f08mJLBOEjHXSVT9GACcdok5566APvANTCV9Ian1nX7QGaDcXgEXXeEvBTzbbzFxAcuYuIBFTDwB+jHxkSSi4n8BwBkwBCbAecv4deEcPeAz99AWuO8CzwJeDxx4aBvPAn5KDpZGBOA3JTP48AzYG9EEngWMPEN2IgLwW+9XmA58tkY0if/7HzBGPBrxO/MvqHC1lojG8J2AmhHB+N6AihEJMA7FDwYERlTGSwOMEQkwqYp7AzwRtXFTQBrxVMA3da49v10KeJdz7hIYAGtgLunddNA31xrQ1or+ZnQM+AU9IcfG/v5QwQAAAABJRU5ErkJggg=='
 		let body = [];
 		if (this.coveragesList.length > 0) {
 			this.coveragesList.forEach(function (row) {
@@ -1108,19 +1109,31 @@ export class PdfGenerationService {
 				if (row.m1 !== undefined && row.m1 !== 0) {
 					dataRow.push({ text: row.m1.toFixed(2), margin: [5, 0, 0, 0], alignment: 'right', border: [false, false, false, false] });
 				} else {
-					dataRow.push({ text: '–', fit: [8, 4], alignment: 'right', margin: [-8, 0, 5, 0], border: [false, false, false, false] });
+					if(row.ccobertura >= 24 && row.ccobertura <= 28){
+						dataRow.push({ image: imagen, fit: [8, 4], alignment: 'right', margin: [-4, 0, 5, 0], border: [false, false, false, false] });
+					}else{
+						dataRow.push({ text: '–', fit: [8, 4], alignment: 'right', margin: [-8, 0, 5, 0], border: [false, false, false, false] });
+					}
 				}
 
 				if (row.m2 !== undefined && row.m2 !== 0) {
 					dataRow.push({ text: row.m2.toFixed(2), margin: [11, 0, 0, 0], alignment: 'right', border: [false, false, false, false] });
 				} else {
-					dataRow.push({ text: '–', fit: [8, 4], alignment: 'right', margin: [-8, 0, 5, 0], border: [false, false, false, false] });
+					if(row.ccobertura >= 24 && row.ccobertura <= 28){
+						dataRow.push({ image: imagen, fit: [8, 4], alignment: 'right', margin: [-4, 0, 5, 0], border: [false, false, false, false] });
+					}else{
+						dataRow.push({ text: '–', fit: [8, 4], alignment: 'right', margin: [-8, 0, 5, 0], border: [false, false, false, false] });
+					}
 				}
 
 				if (row.m3 !== undefined && row.m3 !== 0) {
 					dataRow.push({ text: row.m3.toFixed(2), margin: [-10, 0, 0, 0], alignment: 'right', border: [false, false, false, false] });
 				} else {
-					dataRow.push({ text: '–', fit: [8, 4], alignment: 'right', margin: [-8, 0, 0, 0], border: [false, false, false, false] });
+					if(row.ccobertura >= 24 && row.ccobertura <= 28){
+						dataRow.push({ image: imagen, fit: [8, 4], alignment: 'right', margin: [-4, 0, 5, 0], border: [false, false, false, false] });
+					}else{
+						dataRow.push({ text: '–', fit: [8, 4], alignment: 'right', margin: [-8, 0, 5, 0], border: [false, false, false, false] });
+					}
 				}
 
 				body.push(dataRow);
