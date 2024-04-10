@@ -2506,9 +2506,6 @@ export class PdfGenerationService {
 	}
 
 	async CreatePaymentRequestPDF(paymentRequest: any) {
-		console.log('pago pago');
-		console.log(paymentRequest.csolpag);
-
 		this.PaymentRequestPDF(paymentRequest);
 
 	}
@@ -2641,14 +2638,14 @@ export class PdfGenerationService {
 								[
 									{ text: 'CORREDOR:', bold: true, border: [false, false, false, false] },
 									{ text: paymentRequest.cproductor + ' - ' + paymentRequest.xbeneficiario, border: [false, false, false, false], alignment: 'left' },
-									{ text: ``, bold: true, border: [false, false, false, false] },
-									{ text: ``, bold: true, border: [false, false, false, false] },
+									{ text: `MONEDA DE PAGO`, bold: true, border: [false, false, false, false] },
+									{ text: `${paymentRequest.xmoneda} (${paymentRequest.cmoneda})`, bold: true, border: [false, false, false, false], alignment: 'right'  },
 								],
 								[
 									{ text: 'OBSERVACIONES:', bold: true, border: [false, false, false, false] },
 									{ text: paymentRequest.xobservaciones, border: [false, false, false, false], alignment: 'left' },
 									{ text: `MONTO A PAGAR: `, bold: true, border: [false, false, false, false], alignment: 'right' },
-									{ text: paymentRequest.cmoneda + '.' + paymentRequest.mmontototal, border: [false, false, false, false], alignment: 'right' },
+									{ text: paymentRequest.cmoneda + '. ' + paymentRequest.mmontototal, border: [false, false, false, false], alignment: 'right' },
 								]
 							]
 						}
@@ -2668,7 +2665,7 @@ export class PdfGenerationService {
 						margin: [0, 0, 0, 3],
 						table: {
 							headerRows: 1,
-							widths: [35, '*', 20, 35, '*', '*', '*', '*', '*', '*'],
+							widths: [35, '*', 20, 35, '*', 25, '*', '*', '*', '*'],
 							body: movimientos
 						}
 					},

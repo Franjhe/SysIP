@@ -280,7 +280,7 @@
                 <div class="col-3">
                     <mat-form-field >
                         <mat-label>Moneda Pago Orden:</mat-label>
-                        <mat-select formControlName="cmonedaOrden" required #cmonedaOrden id="cmonedaOrden{{i}}">
+                        <mat-select formControlName="cmonedaOrden" (selectionChange)="changeMonedaPago($event)" required #cmonedaOrden id="{{i}}">
                             <mat-option value="Bs" selected>Bolívares</mat-option>
                             <mat-option value="$">Usd</mat-option>
                             <!-- <mat-option value="M">Mixto</mat-option> -->

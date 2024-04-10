@@ -31,6 +31,7 @@ export interface PaymentRequest {
   xobservaciones?: any;
   recibos: any;
   cmoneda: any;
+  xmoneda: any;
 }
 
 
@@ -221,20 +222,20 @@ export class PaymentRequestsComponent {
 
   }
 
-  calcMixBs() {
-    let mpago: any = this.paymentRequestFormGroup.get('mpago')?.value;
-    let usd: any = (mpago / this.paymentRequest.ptasamon).toFixed(2);
-    let mpagoext = (this.paymentRequest.mpagoext - usd).toFixed(2);
-    this.paymentRequestFormGroup.get('mpagoext')?.setValue(mpagoext);
-    console.log(mpagoext);
-  }
-  calcMixUsd() {
-    let mpagoext: any = this.paymentRequestFormGroup.get('mpagoext')?.value;
-    let bs: any = (mpagoext * this.paymentRequest.ptasamon).toFixed(2);
-    let mpago = (this.paymentRequest.mpago - bs).toFixed(2);
-    this.paymentRequestFormGroup.get('mpago')?.setValue(mpago);
-    console.log(mpago);
-  }
+  // calcMixBs() {
+  //   let mpago: any = this.paymentRequestFormGroup.get('mpago')?.value;
+  //   let usd: any = (mpago / this.paymentRequest.ptasamon).toFixed(2);
+  //   let mpagoext = (this.paymentRequest.mpagoext - usd).toFixed(2);
+  //   this.paymentRequestFormGroup.get('mpagoext')?.setValue(mpagoext);
+  //   console.log(mpagoext);
+  // }
+  // calcMixUsd() {
+  //   let mpagoext: any = this.paymentRequestFormGroup.get('mpagoext')?.value;
+  //   let bs: any = (mpagoext * this.paymentRequest.ptasamon).toFixed(2);
+  //   let mpago = (this.paymentRequest.mpago - bs).toFixed(2);
+  //   this.paymentRequestFormGroup.get('mpago')?.setValue(mpago);
+  //   console.log(mpago);
+  // }
 
   closeDialog() {
     // this.detailReceipts.elementRef    
@@ -292,6 +293,8 @@ export class PaymentRequestsComponent {
 
     // Formatear la fecha en el formato "día mes año"
     const fsolicit = `${dia < 10 ? '0' : ''}${dia}-${mes < 10 ? '0' : ''}${mes}-${anio}`;
+    let mmontototal = (this.paymentRequest.cmoneda == 'Bs') ? this.paymentRequest.mpago : this.paymentRequest.mpagoext
+    let xmoneda = (this.paymentRequest.cmoneda == 'Bs') ? 'Bolívares' : 'Dólares';
 
     var paymentRequest: PaymentRequest = {
       csolpag: this.paymentRequest.csolpag,
@@ -304,9 +307,10 @@ export class PaymentRequestsComponent {
       xconcepto: this.paymentRequest.xconcepto_2.trim(),
       mpago: this.paymentRequest.mpago.toFixed(2),
       mpagoext: this.paymentRequest.mpagoext.toFixed(2),
-      mmontototal: this.paymentRequest.mpagosol.toFixed(2),
+      mmontototal: mmontototal.toFixed(2),
       recibos: this.paymentRequest.recibos,
       cmoneda: this.paymentRequest.cmoneda.trim(),
+      xmoneda: xmoneda.toUpperCase(),
       xobservaciones: this.paymentRequest.xobserva.trim(),
     }
 
