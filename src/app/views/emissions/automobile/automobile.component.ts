@@ -587,10 +587,10 @@ export class AutomobileComponent {
       this.activaRepresentante = true;
       this.fechas = 'Fecha de Registro';
     } else { // Si selectedIdent es 'V', establecer la validación de 'fnacimiento'
-      this.personsFormGroup.get('fnacimiento')?.setValidators([Validators.required]);
-      this.personsFormGroup.get('iestado_civil')?.setValidators([Validators.required]);
-      this.personsFormGroup.get('isexo')?.setValidators([Validators.required]);
-      this.personsFormGroup.get('xapellido')?.setValidators([Validators.required]);
+      this.personsFormGroup.get('fnacimiento')?.clearValidators();;
+      this.personsFormGroup.get('iestado_civil')?.clearValidators();;
+      this.personsFormGroup.get('isexo')?.clearValidators();;
+      this.personsFormGroup.get('xapellido')?.clearValidators();;
       this.activaSexoYEs = true;
       this.activaNombreYapellido = true;
       this.activaRepresentante = false;
