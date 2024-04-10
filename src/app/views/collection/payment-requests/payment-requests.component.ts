@@ -25,6 +25,8 @@ export interface PaymentRequest {
   cproductor: string;
   xbeneficiario: string;
   xconcepto: string;
+  mpago: any;
+  mpagoext: any;
   mmontototal: any;
   xobservaciones?: any;
   recibos: any;
@@ -45,6 +47,8 @@ export class PaymentRequestsComponent {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator2!: MatPaginator;
+  @ViewChild(MatSort) sort2!: MatSort;
 
   @ViewChild('Alerta') InfoReceipt!: TemplateRef<any>;
   @ViewChild('Alerta1') Alerta1!: TemplateRef<any>;
@@ -52,11 +56,12 @@ export class PaymentRequestsComponent {
   @ViewChild('observaciones') observaciones!: TemplateRef<any>;
   @ViewChild('detailReceipts') detailReceipts!: TemplateRef<any>;
 
-  displayedColumns: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8'];
+  displayedColumns: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
   dataSource = new MatTableDataSource<any>;
   defaultDataSource = new MatTableDataSource<any>;
-  displayedColumns2: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  displayedColumns2: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
   tableDetailReceipts = new MatTableDataSource<any>;
+  defaultTableDetailReceipts = new MatTableDataSource<any>;
   // selection = new SelectionModel<any>(true, []);
   // selection2 = new SelectionModel<any>(true, []);
 
@@ -100,6 +105,10 @@ export class PaymentRequestsComponent {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
+  applyFilter2(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.tableDetailReceipts.filter = filterValue.trim().toLowerCase();
+  }
 
   clearData() {
     this.total_movcom = 0;
@@ -124,8 +133,9 @@ export class PaymentRequestsComponent {
       this.paymentRequest = response.returnData.search[0]
       console.log(this.paymentRequest);
 
+      this.defaultTableDetailReceipts = new MatTableDataSource(response.returnData.search[0].recibos);
       this.tableDetailReceipts = new MatTableDataSource(response.returnData.search[0].recibos);
-      // this.tableDetailReceipts.paginator = this.paginator;
+      this.tableDetailReceipts.paginator = this.paginator2;
       // this.tableDetailReceipts.sort = this.sort;
 
       return this.dialog.open(this.dialogPaymentRequest);
@@ -138,7 +148,8 @@ export class PaymentRequestsComponent {
   }
 
   closeDialog() {
-    // this.detailReceipts.elementRef
+    // this.detailReceipts.elementRef    
+    // return this.dialog.getDialogById('#dialogPaymentRequest')?.close();
     return this.dialog.closeAll();
   }
 
@@ -202,6 +213,8 @@ export class PaymentRequestsComponent {
       cproductor: this.paymentRequest.cproductor,
       xbeneficiario: this.paymentRequest.xbeneficiario.trim(),
       xconcepto: this.paymentRequest.xconcepto_2.trim(),
+      mpago: this.paymentRequest.mpago.toFixed(2),
+      mpagoext: this.paymentRequest.mpagoext.toFixed(2),
       mmontototal: this.paymentRequest.mpagosol.toFixed(2),
       recibos: this.paymentRequest.recibos,
       cmoneda: this.paymentRequest.cmoneda.trim(),
@@ -240,6 +253,32 @@ export class PaymentRequestsComponent {
         case '5': return this.compare(a.cben, b.cben, isAsc);
         case '6': return this.compare(a.mpagosol, b.mpagosol, isAsc);
         case '7': return this.compare(a.xobserva, b.xobserva, isAsc);
+        default: return 0;
+      }
+    });
+  }
+
+  sortData2(sort: Sort) {
+    const data = this.tableDetailReceipts.data.slice();
+    if (!sort.active || sort.direction === '') {
+      this.tableDetailReceipts.data = this.defaultTableDetailReceipts.data;
+      return;
+    }
+
+    this.tableDetailReceipts.data = data.sort((a, b) => {
+      const isAsc = sort.direction === 'asc';
+      switch (sort.active) {
+        case '0': return this.compare(a.cnpoliza, b.cnpoliza, isAsc);
+        case '1': return this.compare(a.crecibo, b.crecibo, isAsc);
+        case '2': return this.compare(a.imovcom, b.imovcom, isAsc);
+        case '3': return this.compare(a.cmoneda, b.cmoneda, isAsc);
+        case '4': return this.compare(a.canexo, b.canexo, isAsc);
+        case '5': return this.compare(a.femision, b.femision, isAsc);
+        case '6': return this.compare(a.mmontoapag, b.mmontoapag, isAsc);
+        case '7': return this.compare(a.pcomision, b.pcomision, isAsc);
+        case '8': return this.compare(a.mmovcom, b.mmovcom, isAsc);
+        case '9': return this.compare(a.ptasamon, b.ptasamon, isAsc);
+        case '10': return this.compare(a.mmovcomext, b.mmovcomext, isAsc);
         default: return 0;
       }
     });

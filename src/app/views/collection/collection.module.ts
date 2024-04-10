@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialExampleModule } from './../../material.module'
 import { NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
+import {MatTableModule} from '@angular/material/table';
 
 import { CollectionRoutingModule } from './collection-routing.module';
 import { PaymentReportComponent } from './payment-report/payment-report.component';
@@ -23,6 +24,9 @@ import { PaymentAdministrationComponent } from './payment-administration/payment
     PaymentAdministrationComponent
   ],
   imports: [
+    MatTableModule,
+    NgIf, 
+    NgFor,
     CommonModule,
     CollectionRoutingModule,
     CommonModule,
