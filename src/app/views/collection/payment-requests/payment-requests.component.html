@@ -17,8 +17,8 @@
                 The actual rendered columns are set as a property on the row definition" -->
             <!-- Position Column -->
             <ng-container matColumnDef="0">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Nro. Solicitud </th>
-                <td mat-cell *matCellDef="let row"> {{row.csolpag}} </td>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>&nbsp; Nro.<br>Sol. </th>
+                <td mat-cell *matCellDef="let row">&nbsp; {{row.csolpag}} </td>
             </ng-container>
 
             <!-- Name Column -->
@@ -49,14 +49,18 @@
                 <td mat-cell *matCellDef="let row">{{row.cben}} - {{row.xbeneficiario}}</td>
             </ng-container>
             <ng-container matColumnDef="6">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> M. Total </th>
-                <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mpagosol}}</td>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Total Bs. </th>
+                <td mat-cell *matCellDef="let row"> Bs. {{row.mpago}}</td>
             </ng-container>
             <ng-container matColumnDef="7">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Total Usd. </th>
+                <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mpagoext}}</td>
+            </ng-container>
+            <ng-container matColumnDef="8">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header> Observaciones </th>
                 <td mat-cell *matCellDef="let row"> {{row.xobserva}}</td>
             </ng-container>
-            <ng-container matColumnDef="8">
+            <ng-container matColumnDef="9">
                 <th mat-header-cell *matHeaderCellDef> </th>
                 <td mat-cell *matCellDef="let row">
                     <button mat-raised-button color="primary">Detalles</button>
@@ -166,14 +170,21 @@
                                 value="{{paymentRequest.cproductor}} - {{paymentRequest.xbeneficiario}}" disabled>
                         </mat-form-field>
                     </div>
-                    <div class="col-3">
+                    <div class="col-2">
                         <mat-form-field>
-                            <mat-label>Monto total:</mat-label>
-                            <input matInput type="text" value="{{paymentRequest.cmoneda}}{{paymentRequest.mpagosol}}"
+                            <mat-label>Monto total Bs.:</mat-label>
+                            <input matInput type="text" value="Bs. {{paymentRequest.mpago}}"
                                 disabled>
                         </mat-form-field>
                     </div>
-                    <div class="col-9">
+                    <div class="col-2">
+                        <mat-form-field>
+                            <mat-label>Monto total Usd:</mat-label>
+                            <input matInput type="text" value="{{paymentRequest.cmoneda}}{{paymentRequest.mpagoext}}"
+                                disabled>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-8">
                         <mat-form-field>
                             <mat-label>Observaciones:</mat-label>
                             <input matInput type="text" #observaciones class="observaciones"
@@ -208,55 +219,70 @@
 
     <ng-template #detailReceipts>
         <mat-dialog-content>
-            <table mat-table [dataSource]="tableDetailReceipts" matSort>
+
+            <mat-form-field>
+                <mat-label>Buscar</mat-label>
+                <input matInput (keyup)="applyFilter2($event)" #input>
+            </mat-form-field>
+
+            <table mat-table [dataSource]="tableDetailReceipts" matSort (matSortChange)="sortData2($event)">
                 <ng-container matColumnDef="0">
-                    <th mat-header-cell *matHeaderCellDef> Póliza </th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Póliza </th>
                     <td mat-cell *matCellDef="let row"> {{row.cnpoliza}} </td>
                 </ng-container>
                 <ng-container matColumnDef="1">
-                    <th mat-header-cell *matHeaderCellDef> Recibo/Préstamo </th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Recibo/Préstamo </th>
                     <td mat-cell *matCellDef="let row"> {{row.crecibo}} </td>
                 </ng-container>
                 <ng-container matColumnDef="2">
-                    <th mat-header-cell *matHeaderCellDef> Tipo Mov. </th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Tipo Mov. </th>
                     <td mat-cell *matCellDef="let row"> {{row.imovcom}} </td>
                 </ng-container>
                 <ng-container matColumnDef="3">
-                    <th mat-header-cell *matHeaderCellDef> Anexo </th>
-                    <td mat-cell *matCellDef="let row"> {{row.canexo}} </td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header mat-sort-header> Moneda Mov. </th>
+                    <td mat-cell *matCellDef="let row"> {{row.cmoneda}} </td>
                 </ng-container>
                 <ng-container matColumnDef="4">
-                    <th mat-header-cell *matHeaderCellDef> Fecha </th>
-                    <td mat-cell *matCellDef="let row"> {{row.femision | date: "dd/MM/YYYY"}} </td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Anexo </th>
+                    <td mat-cell *matCellDef="let row"> {{row.canexo}} </td>
                 </ng-container>
                 <ng-container matColumnDef="5">
-                    <th mat-header-cell *matHeaderCellDef> Prima Bs. </th>
-                    <td mat-cell *matCellDef="let row"> Bs.{{row.mmontoapag}} </td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha </th>
+                    <td mat-cell *matCellDef="let row"> {{row.femision | date: "dd/MM/YYYY"}} </td>
                 </ng-container>
                 <ng-container matColumnDef="6">
-                    <th mat-header-cell *matHeaderCellDef> % Com. </th>
-                    <td mat-cell *matCellDef="let row"> {{row.pcomision}}% </td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Prima Bs. </th>
+                    <td mat-cell *matCellDef="let row"> Bs. {{row.mmontoapag}} </td>
                 </ng-container>
                 <ng-container matColumnDef="7">
-                    <th mat-header-cell *matHeaderCellDef> Comisión Bs. </th>
-                    <td mat-cell *matCellDef="let row"> Bs.{{row.mmovcom}} </td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Prima Usd. </th>
+                    <td mat-cell *matCellDef="let row"> $. {{row.mmontoapagext}} </td>
                 </ng-container>
                 <ng-container matColumnDef="8">
-                    <th mat-header-cell *matHeaderCellDef> Tasa<br>Usd-Bcv. </th>
-                    <td mat-cell *matCellDef="let row"> {{row.ptasamon}} </td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> % Com. </th>
+                    <td mat-cell *matCellDef="let row"> {{row.pcomision}}% </td>
                 </ng-container>
                 <ng-container matColumnDef="9">
-                    <th mat-header-cell *matHeaderCellDef> Comisión Usd. </th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Comisión Bs. </th>
+                    <td mat-cell *matCellDef="let row"> Bs.{{row.mmovcom}} </td>
+                </ng-container>
+                <ng-container matColumnDef="10">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Comisión Usd. </th>
                     <td mat-cell *matCellDef="let row"> {{row.cmoneda}}{{row.mmovcomext}} </td>
+                </ng-container>
+                <ng-container matColumnDef="11">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Tasa<br>Usd-Bcv. </th>
+                    <td mat-cell *matCellDef="let row"> {{row.ptasamon}} </td>
                 </ng-container>
 
                 <!-- Row shown when there is no matching data. -->
                 <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
                 <tr class="mat-row" *matNoDataRow>
-                    <td class="mat-cell" colspan="10">No se encontraron recibos</td>
+                    <td class="mat-cell" colspan="4">No se han encontrado resultados</td>
                 </tr>
             </table>
+            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
 
             <hr>
 

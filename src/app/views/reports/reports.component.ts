@@ -60,15 +60,16 @@ export class ReportsComponent {
     private snackBar: MatSnackBar,
       ) {
      }
-
-availableColors = [
-{name: 'Primas Pendientes', color: 'primary'},
-{name: 'Primas Cobradas', color: 'warn'},
-];
+     availableColors = [
+      {name: 'Recibos Pendientes', color: 'primary', valor : 'P'},
+      {name: 'Recibos Cobrados', color: 'warn', valor : 'C'},
+      {name: 'Recibos Anulados', color: 'accent', valor : 'A'},
+      {name: 'Recibos Notificados', color: 'primary', valor : 'N'},
+      {name: 'Detalle de Cobrados', color: 'secondary', valor : 'CD'},
+    ];
+  
 ngOnInit() {
   this.showButton = false
-
-
   this.consulta_reporte = this.formBuilder.group({
     estado: [''],
     fdesde_pol: [''],
@@ -79,7 +80,8 @@ ngOnInit() {
 
 saveSelection(opcion: string) {
   this.selectedOption = opcion;
-  this.consulta_reporte.get('bprima')?.setValue(this.selectedOption);
+  this.consulta_reporte.get('estado')?.setValue(this.selectedOption);
+  this.dataReport();
 }
 
 onSubmit(){
@@ -154,8 +156,8 @@ dataReport(){
       fetch(environment.apiUrl + '/api/v1/collection/search-collected/'+ estado )
       .then((response) => response.json())
       .then(data => {
-  
         this.listPending = []
+
         for(let i = 0; i < data.searchPaymentCollected.recibo.length; i++){   
           //fecha emisión Recibo
           let dateEReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_Emision_Rec );
@@ -172,7 +174,28 @@ dataReport(){
            //fecha hasta Recibo
            let dateHaReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_hasta_Recibo );
            let fechaHaReceipt = dateHaReceipt.toISOString().substring(0, 10);
-   
+           let  estado = ''
+
+           if(data.searchPaymentCollected.recibo[i].Estado_del_Recibo == 'P'){
+            estado = 'Pendiente'
+
+           }
+           if(data.searchPaymentCollected.recibo[i].Estado_del_Recibo == 'C'){
+            estado = 'Cobrado'
+
+           }
+           if(data.searchPaymentCollected.recibo[i].Estado_del_Recibo == 'A'){
+            estado = 'Anulado'
+
+           }
+           if(data.searchPaymentCollected.recibo[i].Estado_del_Recibo == 'S'){
+            estado = 'Suspendido'
+
+           }
+           if(data.searchPaymentCollected.recibo[i].Estado_del_Recibo == 'N'){
+            estado = 'Notificado'
+
+           }
            this.listPending.push({
             Poliza: data.searchPaymentCollected.recibo[i].Nro_Poliza,
             // Codigo_Ramo: data.searchPaymentCollected.recibo[i].Codigo_Ramo,
@@ -192,7 +215,7 @@ dataReport(){
             Fecha_desde_Recibo: fechaDeReceipt,
             Fecha_hasta_Recibo: fechaHaReceipt,
             // Estado_del_Recibo: data.searchPaymentCollected.recibo[i].Estado_del_Recibo,
-            Descripcion_estado_rec: data.searchPaymentCollected.recibo[i].Descripcion_estado_rec,
+            Descripcion_estado_rec: estado,
             Suma_asegurada: data.searchPaymentCollected.recibo[i].Suma_asegurada,
             Suma_asegurada_Ext: data.searchPaymentCollected.recibo[i].Suma_asegurada_Ext,
             Monto_Recibo: data.searchPaymentCollected.recibo[i].Monto_Recibo,
@@ -205,6 +228,8 @@ dataReport(){
             Intermediario: data.searchPaymentCollected.recibo[i].Intermediario
           })
         }
+
+
   
       })
   }else{

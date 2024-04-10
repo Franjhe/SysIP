@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -23,6 +23,8 @@ export interface PaymentRequest {
   xconcepto: string;
   ccorredor: string;
   xcorredor: string;
+  mpago: any;
+  mpagoext: any;
   mmontototal: any;
   xobservaciones?: any;
   recibos: any;
@@ -37,6 +39,8 @@ export interface PaymentRequest {
 export class CommissionsComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator2!: MatPaginator;
+  @ViewChild(MatSort) sort2!: MatSort;
 
   @ViewChild('Alerta') InfoReceipt!: TemplateRef<any>;
   @ViewChild('Alerta1') Alerta1!: TemplateRef<any>;
@@ -45,8 +49,12 @@ export class CommissionsComponent {
 
   displayedColumns: string[] = ['select', 'cproductor', 'xnombre', 'mcomtot', 'mcomexttot', 'detail'];
   dataSource = new MatTableDataSource<any>;
-  displayedColumns2: string[] = ['select', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  defaultDataSource = new MatTableDataSource<any>;
+
+  displayedColumns2: string[] = ['select', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9','10','11'];
   tableCommisionPorProductor = new MatTableDataSource<any>;
+  defaultableCommisionPorProductor = new MatTableDataSource<any>;
+
   selection = new SelectionModel<any>(true, []);
   selection2 = new SelectionModel<any>(true, []);
 
@@ -102,9 +110,11 @@ export class CommissionsComponent {
       // });
       // console.log(response.returnData.search);
 
+      this.defaultDataSource = new MatTableDataSource(response.returnData.search);
       this.dataSource = new MatTableDataSource(response.returnData.search);
-      // this.dataSource.paginator = this.paginator;
-      // this.dataSource.sort = this.sort;
+      console.log(this.dataSource.data);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
 
       // this.tableCommisionPorProductor.paginator = this.paginator;
       // this.tableCommisionPorProductor.sort = this.sort;
@@ -123,6 +133,11 @@ export class CommissionsComponent {
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  applyFilter2(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.tableCommisionPorProductor.filter = filterValue.trim().toLowerCase();
   }
 
   clearData() {
@@ -145,7 +160,10 @@ export class CommissionsComponent {
     this.http.post(environment.apiUrl + '/api/v1/commissions/search-insurerCommissions/', data).subscribe((response: any) => {
       // this.tableCommisionPorProductor = new MatTableDataSource<any>;
       // console.log(response.returnData.search);
+      this.defaultableCommisionPorProductor = new MatTableDataSource(response.returnData.search);
       this.tableCommisionPorProductor = new MatTableDataSource(response.returnData.search);
+      this.tableCommisionPorProductor.paginator = this.paginator2;
+      this.tableCommisionPorProductor.sort = this.sort2;
       // console.log(this.tableCommisionPorProductor.data);
       this.showInsurerComissions();
     });
@@ -172,7 +190,7 @@ export class CommissionsComponent {
 
     // this.total_comision = this.total_comisionext + this.total_impuesto;
 
-    return this.dialog.open(this.InfoReceipt, { panelClass: 'custom-dialog-container' });
+    return this.dialog.open(this.InfoReceipt);
   }
 
   calculateTotalCommissions() {
@@ -306,7 +324,9 @@ export class CommissionsComponent {
             xconcepto: 'Pago Comisión Agente',
             ccorredor: e.cci_rif,
             xcorredor: e.xnombre.trim(),
-            mmontototal: element.mcomtot,
+            mpago: element.mmovcomtot,
+            mpagoext: element.mmovcomexttot,
+            mmontototal: element.mmovcomexttot,
             recibos: element.recibos,
             cmoneda: element.cmoneda,
             xobservaciones: ''
@@ -357,6 +377,56 @@ export class CommissionsComponent {
 
   closeDialog() {
     return this.dialog.closeAll();
+  }
+
+
+  sortData(sort: Sort) {
+    const data = this.dataSource.data.slice();
+    if (!sort.active || sort.direction === '') {
+      this.dataSource.data = this.defaultDataSource.data;
+      return;
+    }
+
+    this.dataSource.data = data.sort((a, b) => {
+      const isAsc = sort.direction === 'asc';
+      switch (sort.active) {
+        case '0': return this.compare(a.cproductor, b.cproductor, isAsc);
+        case '1': return this.compare(a.xnombre, b.xnombre, isAsc);
+        case '2': return this.compare(a.mmovcom, b.mmovcom, isAsc);
+        case '3': return this.compare(a.mcomexttot, b.mcomexttot, isAsc);
+        default: return 0;
+      }
+    });
+  }
+
+  sortData2(sort: Sort) {
+    const data = this.tableCommisionPorProductor.data.slice();
+    if (!sort.active || sort.direction === '') {
+      this.tableCommisionPorProductor.data = this.defaultableCommisionPorProductor.data;
+      return;
+    }
+
+    this.tableCommisionPorProductor.data = data.sort((a, b) => {
+      const isAsc = sort.direction === 'asc';
+      switch (sort.active) {
+        case '0': return this.compare(a.cnpoliza, b.cnpoliza, isAsc);
+        case '1': return this.compare(a.crecibo, b.crecibo, isAsc);
+        case '2': return this.compare(a.imovcom, b.imovcom, isAsc);
+        case '3': return this.compare(a.cmoneda, b.cmoneda, isAsc);
+        case '4': return this.compare(a.canexo, b.canexo, isAsc);
+        case '5': return this.compare(a.femision, b.femision, isAsc);
+        case '6': return this.compare(a.mmontoapag, b.mmontoapag, isAsc);
+        case '7': return this.compare(a.pcomision, b.pcomision, isAsc);
+        case '8': return this.compare(a.mmovcom, b.mmovcom, isAsc);
+        case '9': return this.compare(a.ptasamon, b.ptasamon, isAsc);
+        case '10': return this.compare(a.mmovcomext, b.mmovcomext, isAsc);
+        default: return 0;
+      }
+    });
+  }
+
+  compare(a: number | string, b: number | string, isAsc: boolean) {
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
 }

@@ -7,7 +7,12 @@
         <h3>Comisiones pendientes por corredor</h3>
     </div>
 
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z2">
+    <mat-form-field>
+        <mat-label>Buscar</mat-label>
+        <input matInput (keyup)="applyFilter($event)" #input>
+    </mat-form-field>
+
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z2" matSort (matSortChange)="sortData($event)">
 
         <!--- Note that these columns can be defined in any order.
                 The actual rendered columns are set as a property on the row definition" -->
@@ -27,35 +32,29 @@
         </ng-container>
         <!-- Position Column -->
         <ng-container matColumnDef="cproductor">
-            <th mat-header-cell *matHeaderCellDef> C. Corredor </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> C. Corredor </th>
             <td mat-cell *matCellDef="let row"> {{row.cproductor}} </td>
         </ng-container>
 
         <!-- Name Column -->
         <ng-container matColumnDef="xnombre">
-            <th mat-header-cell *matHeaderCellDef> Nombre/Denominación </th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre/Denominación </th>
             <td mat-cell *matCellDef="let row"> {{row.xnombre}} </td>
         </ng-container>
 
         <!-- Weight Column -->
         <ng-container matColumnDef="mcomtot">
-            <th mat-header-cell *matHeaderCellDef> Movimiento Bs. </th>
-            <td mat-cell *matCellDef="let row"> Bs.{{row.mmovcom}}</td>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Movimiento Bs. </th>
+            <td mat-cell *matCellDef="let row"> Bs. {{row.mmovcomtot}}</td>
         </ng-container>
-
-        <!-- Weight Column -->
-        <!-- <ng-container matColumnDef="mcomexttot">
-                <th mat-header-cell *matHeaderCellDef> Tasa<br>USD-BCV</th>
-                <td mat-cell *matCellDef="let row"> {{row.ptasamon}}</td>
-            </ng-container> -->
 
         <!-- Weight Column -->
         <ng-container matColumnDef="mcomexttot">
-            <th mat-header-cell *matHeaderCellDef> Movimiento Usd. </th>
-            <td mat-cell *matCellDef="let row"> $.{{row.mcomexttot}}</td>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Movimiento Usd. </th>
+            <td mat-cell *matCellDef="let row"> $. {{row.mmovcomexttot}}</td>
         </ng-container>
         <ng-container matColumnDef="detail">
-            <th mat-header-cell *matHeaderCellDef> </th>
+            <th mat-header-cell *matHeaderCellDef > </th>
             <td mat-cell *matCellDef="let row">
                 <button mat-raised-button color="primary">Detalles</button>
             </td>
@@ -66,6 +65,8 @@
         <tr mat-row (click)="dataCorredor(row.cproductor, row.cmoneda, i)" [class.demo-row-is-clicked]=""
             *matRowDef="let row; columns: displayedColumns; let i = index"></tr>
     </table>
+    <hr>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
 
     <div class="text-center mt-5">
         <button mat-raised-button (click)="generatePaymentRequests()">Procesar solicitudes de pago</button>
@@ -88,9 +89,14 @@
             </mat-dialog-content>
         </ng-template> -->
     <ng-template #Alerta>
-        <mat-dialog-content class="xd">
+        <mat-dialog-content>
+
+            <mat-form-field style="width: 100%;">
+                <mat-label>Buscar</mat-label>
+                <input matInput (keyup)="applyFilter2($event)" #input>
+            </mat-form-field>
             <!-- class="mat-elevation-z8" -->
-            <table mat-table [dataSource]="tableCommisionPorProductor" matSort matSortActive="2">
+            <table mat-table [dataSource]="tableCommisionPorProductor" matSort (matSortChange)="sortData2($event)">
 
                 <!--- Note that these columns can be defined in any order.
                         The actual rendered columns are set as a property on the row definition" -->
@@ -111,50 +117,63 @@
                     </td>
                 </ng-container>
                 <ng-container matColumnDef="0">
-                    <th mat-header-cell *matHeaderCellDef> Póliza </th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Póliza </th>
                     <td mat-cell *matCellDef="let row"> {{row.cnpoliza}} </td>
                 </ng-container>
                 <ng-container matColumnDef="1">
-                    <th mat-header-cell *matHeaderCellDef> Recibo/Préstamo </th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Recibo/Préstamo </th>
                     <td mat-cell *matCellDef="let row"> {{row.crecibo}} </td>
                 </ng-container>
                 <ng-container matColumnDef="2">
-                    <th mat-header-cell *matHeaderCellDef> Tipo Mov. </th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Tipo Mov. </th>
                     <td mat-cell *matCellDef="let row"> {{row.imovcom}} </td>
                 </ng-container>
                 <ng-container matColumnDef="3">
-                    <th mat-header-cell *matHeaderCellDef> Anexo </th>
-                    <td mat-cell *matCellDef="let row"> {{row.canexo}} </td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Moneda Mov. </th>
+                    <td mat-cell *matCellDef="let row"> {{row.cmoneda}} </td>
                 </ng-container>
                 <ng-container matColumnDef="4">
-                    <th mat-header-cell *matHeaderCellDef> Fecha </th>
-                    <td mat-cell *matCellDef="let row"> {{row.femision | date: "dd/MM/YYYY"}} </td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Anexo </th>
+                    <td mat-cell *matCellDef="let row"> {{row.canexo}} </td>
                 </ng-container>
                 <ng-container matColumnDef="5">
-                    <th mat-header-cell *matHeaderCellDef> Prima Bs. </th>
-                    <td mat-cell *matCellDef="let row"> Bs.{{row.mmontoapag}} </td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha </th>
+                    <td mat-cell *matCellDef="let row"> {{row.femision | date: "dd/MM/YYYY"}} </td>
                 </ng-container>
                 <ng-container matColumnDef="6">
-                    <th mat-header-cell *matHeaderCellDef> % Com. </th>
-                    <td mat-cell *matCellDef="let row"> {{row.pcomision}}% </td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Prima Bs. </th>
+                    <td mat-cell *matCellDef="let row"> Bs. {{row.mmontoapag}} </td>
                 </ng-container>
                 <ng-container matColumnDef="7">
-                    <th mat-header-cell *matHeaderCellDef> Monto Tipo<br>Mov. Bs. </th>
-                    <td mat-cell *matCellDef="let row"> Bs.{{row.mmovcom}} </td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Prima Usd. </th>
+                    <td mat-cell *matCellDef="let row"> $. {{row.mmontoapagext}} </td>
                 </ng-container>
                 <ng-container matColumnDef="8">
-                    <th mat-header-cell *matHeaderCellDef> Tasa<br>Usd-Bcv. </th>
-                    <td mat-cell *matCellDef="let row"> {{row.ptasamon}} </td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> % Com. </th>
+                    <td mat-cell *matCellDef="let row"> {{row.pcomision}}% </td>
                 </ng-container>
                 <ng-container matColumnDef="9">
-                    <th mat-header-cell *matHeaderCellDef> Monto Tipo<br>Mov. Usd. </th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Monto Tipo<br>Mov. Bs. </th>
+                    <td mat-cell *matCellDef="let row"> Bs.{{row.mmovcom}} </td>
+                </ng-container>
+                <ng-container matColumnDef="10">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Monto Tipo<br>Mov. Usd. </th>
                     <td mat-cell *matCellDef="let row"> $.{{row.mmovcomext}} </td>
+                </ng-container>
+                <ng-container matColumnDef="11">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Tasa<br>Usd-Bcv. </th>
+                    <td mat-cell *matCellDef="let row"> {{row.ptasamon}} </td>
                 </ng-container>
                 <!-- Row shown when there is no matching data. -->
 
                 <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
+                <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+                </tr>
             </table>
+            <hr>
+            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
 
             <hr>
             <div class="footer-table">
@@ -163,7 +182,7 @@
                 <span>Movimiento Bs: {{total_comision.toFixed(2)}}</span>
                 <!-- <span>Impuesto: {{total_cmoneda}}{{total_impuesto}}</span> -->
                 <span>Movimiento Usd: {{total_comisionext.toFixed(2)}}</span>
-                <button mat-raised-button (click)="calculatePaymentCommissions()">Seleccionar</button>
+                <button mat-raised-button color="primary" (click)="calculatePaymentCommissions()">Seleccionar</button>
             </div>
 
         </mat-dialog-content>
@@ -244,14 +263,21 @@
                             disabled>
                     </mat-form-field>
                 </div>
-                <div class="col-3">
+                <div class="col-2">
                     <mat-form-field>
-                        <mat-label>Monto total:</mat-label>
-                        <input matInput type="text" value="{{paymentRequest.cmoneda}}{{paymentRequest.mmontototal}}"
+                        <mat-label>Monto total Bs:</mat-label>
+                        <input matInput type="text" value="Bs. {{paymentRequest.mpago}}"
                             disabled>
                     </mat-form-field>
                 </div>
-                <div class="col-9">
+                <div class="col-2">
+                    <mat-form-field>
+                        <mat-label>Monto total Usd:</mat-label>
+                        <input matInput type="text" value="{{paymentRequest.cmoneda}}{{paymentRequest.mpagoext}}"
+                            disabled>
+                    </mat-form-field>
+                </div>
+                <div class="col-8">
                     <mat-form-field>
                         <mat-label>Observaciones:</mat-label>
                         <input matInput type="text" #observaciones class="observaciones" id="observaciones{{i}}">
