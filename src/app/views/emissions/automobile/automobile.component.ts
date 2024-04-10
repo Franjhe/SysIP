@@ -1180,6 +1180,7 @@ export class AutomobileComponent {
           this.planList = this.planList.filter(plan => plan.id !== 15);
           this.planList = this.planList.filter(plan => plan.id !== 16);
           this.planList = this.planList.filter(plan => plan.id !== 17);
+          this.planList = this.planList.filter(plan => plan.id !== 22);
         }
         
         if(this.ccotizacion){
