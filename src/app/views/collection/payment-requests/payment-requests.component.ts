@@ -2,7 +2,7 @@ import { Component, TemplateRef, ViewChild, NgModule } from '@angular/core';
 import { FormBuilder, Validators, FormGroup, FormControl, FormArray } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
@@ -65,9 +65,9 @@ export class PaymentRequestsComponent {
     // irecibo: ['']
   });
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  // @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-  @ViewChild(MatPaginator) paginator2!: MatPaginator;
+  // @ViewChild(MatPaginator) paginator2!: MatPaginator;
   @ViewChild(MatSort) sort2!: MatSort;
 
   @ViewChild('Alerta') InfoReceipt!: TemplateRef<any>;
@@ -75,6 +75,9 @@ export class PaymentRequestsComponent {
   @ViewChild('dialogPaymentRequest') dialogPaymentRequest!: TemplateRef<any>;
   @ViewChild('observaciones') observaciones!: TemplateRef<any>;
   @ViewChild('detailReceipts') detailReceipts!: TemplateRef<any>;
+  // @ViewChild('paginator') paginator!: MatPaginator;
+  @ViewChild('paginator2') paginator2!: MatPaginator;
+  @ViewChild('allPaginator', { read: MatPaginator, static: true }) allPaginator!: MatPaginator;
 
   displayedColumns: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
   dataSource = new MatTableDataSource<any>;
@@ -103,9 +106,11 @@ export class PaymentRequestsComponent {
   listPaymentRequest: PaymentRequest[] = [];
   paymentRequest: any;
 
-  constructor(private _formBuilder: FormBuilder,
+  dialogDetailReceipts: any;
+
+  constructor(
+    private _formBuilder: FormBuilder,
     private http: HttpClient,
-    // private sanitizer: DomSanitizer,
     readonly dialog: MatDialog,
     private toast: MatSnackBar,
     private _snackBar: MatSnackBar,
@@ -120,11 +125,26 @@ export class PaymentRequestsComponent {
 
       this.defaultDataSource = new MatTableDataSource(response.returnData.search);
       this.dataSource = new MatTableDataSource(response.returnData.search);
-      this.dataSource.paginator = this.paginator;
+      this.dataSource.paginator = this.allPaginator;
+      // this.tableDetailReceipts.paginator = this.allPaginator
+
+      // this.tableDetailReceipts = new MatTableDataSource(response.returnData.search);
+      // this.tableDetailReceipts.paginator = this.allPaginator;
+      // this.tableDetailReceipts.paginator = this.paginator2
+
       this.dataSource.sort = this.sort;
     });
 
   }
+
+  // public syncPaginators(event: any): void {
+  //   this.tableDetailReceipts.data.length = event.length;
+  //   this.tableDetailReceipts.data.pageIndex = event.pageIndex;
+  //   this.tableDetailReceipts.data.pageSize = event.pageSize;
+  //   }
+  // ngAfterViewInit() {
+  //   this.tableDetailReceipts.paginator = this.allPaginator;
+  // }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -152,12 +172,15 @@ export class PaymentRequestsComponent {
       this.paymentRequest = response.returnData.search[0]
       console.log(this.paymentRequest);
 
-      this.paymentRequestFormGroup.get('mpago')?.setValue(this.paymentRequest.mpago);
-      this.paymentRequestFormGroup.get('mpagoext')?.setValue(this.paymentRequest.mpagoext);
-
       this.defaultTableDetailReceipts = new MatTableDataSource(response.returnData.search[0].recibos);
       this.tableDetailReceipts = new MatTableDataSource(response.returnData.search[0].recibos);
-      this.tableDetailReceipts.paginator = this.paginator2;
+      // this.tableDetailReceipts.paginator = this.allPaginator
+      // this.tableDetailReceipts.paginator = this.allPaginator;
+      // setTimeout(() => this.tableDetailReceipts.paginator = this.allPaginator);
+      // this.tableDetailReceipts.data = response.returnData.search[0].recibos;
+      // this.tableDetailReceipts.paginator = this.allPaginator;
+      // this.tableDetailReceipts.paginator = this.paginator2;
+
 
       this.clearData()
 
@@ -173,23 +196,40 @@ export class PaymentRequestsComponent {
 
       );
 
-      this.paymentRequestFormGroup.controls["mpago"].addValidators(
-        [Validators.minLength(0), Validators.maxLength(this.paymentRequest.mpago)]
-      );
-      this.paymentRequestFormGroup.controls["mpagoext"].addValidators(
-        [Validators.minLength(0), Validators.maxLength(this.paymentRequest.mpagoext)]
-      );
-
-      // this.tableDetailReceipts.sort = this.sort;
-
       return this.dialog.open(this.dialogPaymentRequest);
     });
 
   }
 
   showDetailReceipts() {
-    return this.dialog.open(this.detailReceipts);
+    this.dialogDetailReceipts = this.dialog.open(this.detailReceipts);
+
+    const open$ = this.dialogDetailReceipts.afterOpened().subscribe( (result: any) => {
+      console.log(result);
+      alert('lalalala')
+      this.tableDetailReceipts = new MatTableDataSource(this.defaultTableDetailReceipts.data),
+      this.allPaginator;
+      // setTimeout(() => this.tableDetailReceipts.paginator = this.allPaginator)
+      this.tableDetailReceipts.paginator = this.allPaginator;
+    }
+      // alert('oaiejfwa'),
+    );
+    // var opened = this.dialog.afterOpened.pipe(
+    //   Map ? (() => this.tableDetailReceipts.paginator = this.allPaginator)
+    //   );
+    // this.tableDetailReceipts.paginator = this.paginator2;
+    // this.dialogDetailReceipts.afterOpened(() => {
+    //   this.tableDetailReceipts.paginator = this.allPaginator;
+
+    // });
+
+    // return 
+
   }
+  // this.dialog.afterOpened()
+  // ajaja() {
+  //   alert('owaeifjoae');
+  // }
 
   reset_moneda_pago() {
     this.mpagosol_bs = false;
@@ -238,9 +278,7 @@ export class PaymentRequestsComponent {
   // }
 
   closeDialog() {
-    // this.detailReceipts.elementRef    
-    // return this.dialog.getDialogById('#dialogPaymentRequest')?.close();
-    return this.dialog.closeAll();
+    return this.dialogDetailReceipts.close();
   }
 
 
@@ -271,15 +309,17 @@ export class PaymentRequestsComponent {
   }
 
   proccessPaymentRequests(csolpag: any) {
-    let data = {
-      csolpag: csolpag
-    }
-    this.http.post(environment.apiUrl + '/api/v1/commissions/pay-paymentRequests', data).subscribe((response: any) => {
-      alert(response.returnData.result.message);
-      location.reload();
-    });
+    if (window.confirm('¿Desea procesar la orden de pago?')) {
+      let data = {
+        csolpag: csolpag
+      }
+      this.http.post(environment.apiUrl + '/api/v1/commissions/pay-paymentRequests', data).subscribe((response: any) => {
+        alert(response.returnData.result.message);
+        location.reload();
+      });
 
-    return this.dialog.closeAll();
+      return this.dialog.closeAll();
+    }
   }
 
   printPaymentRequest() {
@@ -293,8 +333,8 @@ export class PaymentRequestsComponent {
 
     // Formatear la fecha en el formato "día mes año"
     const fsolicit = `${dia < 10 ? '0' : ''}${dia}-${mes < 10 ? '0' : ''}${mes}-${anio}`;
-    let mmontototal = (this.paymentRequest.cmoneda == 'Bs') ? this.paymentRequest.mpago : this.paymentRequest.mpagoext
-    let xmoneda = (this.paymentRequest.cmoneda == 'Bs') ? 'Bolívares' : 'Dólares';
+    let mmontototal = (this.paymentRequest.cmoneda.toLowerCase().trim() == 'bs') ? this.paymentRequest.mpago : this.paymentRequest.mpagoext
+    let xmoneda = (this.paymentRequest.cmoneda.toLowerCase().trim() == 'bs') ? 'Bolívares' : 'Dólares';
 
     var paymentRequest: PaymentRequest = {
       csolpag: this.paymentRequest.csolpag,
@@ -362,7 +402,7 @@ export class PaymentRequestsComponent {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
         case '0': return this.compare(a.cnpoliza, b.cnpoliza, isAsc);
-        case '1': return this.compare(a.crecibo, b.crecibo, isAsc);
+        case '1': return this.compare(a.cnrecibo, b.cnrecibo, isAsc);
         case '2': return this.compare(a.imovcom, b.imovcom, isAsc);
         case '3': return this.compare(a.cmoneda, b.cmoneda, isAsc);
         case '4': return this.compare(a.canexo, b.canexo, isAsc);
@@ -384,13 +424,25 @@ export class PaymentRequestsComponent {
 
 }
 
-@NgModule({
-  imports: [
-    MatSortModule
-  ],
-  // entryComponents: [PaymentRequestsComponent],
-  // declarations: [PaymentRequestsComponent],
-  bootstrap: [PaymentRequestsComponent],
-  providers: []
-})
-export class AppModule { }
+// @NgModule({
+//   imports: [
+//     MatSortModule
+//   ],
+//   // entryComponents: [PaymentRequestsComponent],
+//   // declarations: [PaymentRequestsComponent],
+//   bootstrap: [PaymentRequestsComponent],
+//   providers: []
+// })
+// export class AppModule { }
+
+export class ComponentB {
+  constructor(
+    public dialogRef: MatDialogRef<ComponentB>
+  ) {}
+
+  onUpload(): void {
+    // upload stuff
+
+    this.dialogRef.close();
+  }
+}
