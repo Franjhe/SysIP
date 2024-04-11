@@ -8,12 +8,14 @@ import { AutomobileComponent } from './automobile/automobile.component';
 import { MaterialExampleModule } from './../../material.module'
 import { ReactiveFormsModule } from '@angular/forms';
 import { SuretyComponent } from './surety/surety.component';
+import { SelfManagementComponent } from './self-management/self-management.component';
 
 
 @NgModule({
   declarations: [
     AutomobileComponent,
-    SuretyComponent
+    SuretyComponent,
+    SelfManagementComponent
   ],
   imports: [
     CommonModule,

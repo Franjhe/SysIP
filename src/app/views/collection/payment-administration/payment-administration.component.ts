@@ -4,21 +4,35 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort , MatSortModule } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
+import { SelectionModel } from '@angular/cdk/collections';
+import {MatStepperModule} from '@angular/material/stepper';
 import { Observable, OperatorFunction , fromEvent } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, filter } from 'rxjs/operators';
 
 
 type Treatments = { id: number; value:string};
 
-@Component({
-  selector: 'app-payment-report',
-  templateUrl: './payment-report.component.html',
-  styleUrls: ['./payment-report.component.scss']
-})
-export class PaymentReportComponent {
 
+@Component({
+  selector: 'app-payment-administration',
+  templateUrl: './payment-administration.component.html',
+  styleUrls: ['./payment-administration.component.scss']
+})
+export class PaymentAdministrationComponent {
+
+  
   @ViewChild('Alerta') Alerta!: TemplateRef<any>;
   @ViewChild('NotFound') NotFound!: TemplateRef<any>;
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+  selection = new SelectionModel<any>(true, []);
+
+  displayedColumns: string[] = ['select','progress', 'cedula','fruit','correo'];
+  dataSource = new MatTableDataSource<any> ;
 
   //modales de tipos de pago
   @ViewChild('Transfer') Transfer!: TemplateRef<any>;
@@ -30,9 +44,11 @@ export class PaymentReportComponent {
   targetBankList : any = []
   selectedFiles?: FileList;
   currentFile?: File;
+  typeOfPayList : any = []
 
   idTrans : any
   diference : boolean = false
+  asegurado : any
 
   viewData : boolean = false
   viewBank : boolean = false
@@ -45,7 +61,7 @@ export class PaymentReportComponent {
   depositoUSD : boolean = false
   trans: boolean = false
   
-  cliente : any
+  cliente : any = {}
   mount : any //monto de la suma de los recibos 
   mountIGTF : any //monto con el calculo igtf 
   mountBs : any //monto en bolivares multiplicado por bcv 
@@ -60,6 +76,7 @@ export class PaymentReportComponent {
   receiptList : any = []
   transferList : any = []
   tradesList : any = []
+  listaNombres: any = []
   transaccion : any
 
   bankInternational : any = []
@@ -73,35 +90,46 @@ export class PaymentReportComponent {
   searchReceipt = this._formBuilder.group({
     receipt :  this._formBuilder.array([]),
     transfer : this._formBuilder.array([]),
-    xcedula: ['', Validators.required],
-    tipo_cedula: ['', Validators.required],
-
+    xcedula: [''],
   });
 
-  diferenceBool :boolean = false;
-  messageDiference : any = []
-
-  listCollection : any = []
-
-
+  receiptFormGroup = this._formBuilder.group({
+    xpago: [''],
+    femision: [''],
+    fdesde: ['', Validators.required],
+    fhasta: ['', Validators.required],
+    cmetodologiapago: ['', Validators.required],
+    ctipopago: [''],
+    cbanco: [''],
+    cbanco_destino: [''],
+    fcobro: [''],
+    xreferencia: [''],
+    mprima_pagada: [''],
+    mpagado: [''],
+    xmoneda: [''],
+    mprima_accesorio: [''],
+    irecibo: ['']
+  });
   itipo!: any ;
   amountDollar!: any ;
   amountBs!: any ;
   montoTotal!: any ;
   montoDollar!: any ;
   montoBs!: any ;
-  typeOfPayList : any = []
-
+  
+  diferenceBool :boolean = false;
+  messageDiference : any = []
 
   PositiveBalance : any
   PositiveBalanceBool :boolean = false;
-
+  correo : any
 
 
   constructor( private _formBuilder: FormBuilder,
     private http: HttpClient,
     readonly dialog: MatDialog,
     private toast: MatSnackBar,
+    private _stepper: MatStepperModule
     ) {
    }
    
@@ -112,7 +140,6 @@ export class PaymentReportComponent {
   get transfer() : FormArray {
     return this.searchReceipt.get("transfer") as FormArray
   }
-
 
   ngOnInit(){
 
@@ -243,12 +270,29 @@ export class PaymentReportComponent {
       }
     })
 
+    fetch(environment.apiUrl + '/api/v1/collection/search-pending' )
+    .then((response) => response.json())
+    .then(data => {
+      this.dataSource = new MatTableDataSource(data.searchPaymentPendingData.recibo);
+      
+
+      const listPending = data.searchPaymentPendingData.recibo
+
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+
+
+    })
+
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.toLowerCase();
   }
 
   newPayment(): FormGroup {
     return this._formBuilder.group({
-      itipo : '',
-      ctipopago : '',
       formapago : '',
       cmoneda:'',
       cbanco: 0,
@@ -260,6 +304,7 @@ export class PaymentReportComponent {
       freporte: '',
       xreferencia: '',
       ximagen: '',
+      ctipopago: '',
     })
   }
   
@@ -268,34 +313,16 @@ export class PaymentReportComponent {
 
     const trasnfer = this.searchReceipt.get("transfer") as FormArray
 
-    if(trasnfer.length > 0){
-      this.paymentMix = true
-    }else{
-      this.paymentMix = false
-    }
   }
 
   removePayment(i:number) {
     this.transfer.removeAt(i);
 
-    const trasnfer = this.searchReceipt.get("transfer") as FormArray
 
-    if(trasnfer.length > 0){
-      this.paymentMix = true
-    }else{
-      this.paymentMix = false
-    }
 
   }
   
   searchDataReceipt(){
-    let cedula = this.searchReceipt.get('tipo_cedula')?.value + '-' +  this.searchReceipt.get('xcedula')?.value 
-    let aseguradoNumber = this.searchReceipt.get('xcedula')?.value 
-
-    const client = {
-      cedula: cedula ,
-      asegurado : Number(aseguradoNumber)
-    }
 
     const receipt = this.searchReceipt.get("receipt") as FormArray
 
@@ -309,140 +336,159 @@ export class PaymentReportComponent {
       trasnfer.removeAt(0)
     }
 
-    this.http.post(environment.apiUrl + '/api/v1/collection/search', client ).subscribe((response: any) => {
-      
-      if(response.searchReceipt.transaccion == null){
-        this.idTrans = 1
-      }else{
-        this.idTrans = response.searchReceipt.transaccion
+    this.listaNombres = []
+
+    this.selection.selected.forEach(item => {
+
+      this.listaNombres.push({
+        id: item.cci_rif,
+        cedula: item.cid,
+        nombre:item.xcliente,
+        correo : item.xcorreo
+      })
+
+      const client = {
+        cedula: item.cid,
+        asegurado: item.cci_rif
       }
 
-      let sumaBS = 0;
-      let sumaUSD = 0;
-
-      response.searchReceipt.saldo.forEach((item: any) => {
-        if (item.cmoneda_dif == 'BS  ') {
-          sumaBS += item.msaldodif;
-        }  
-        if (item.cmoneda_dif == 'USD ') {
-          sumaUSD += item.msaldodif;
-
+      this.http.post(environment.apiUrl + '/api/v1/collection/search', client ).subscribe((response: any) => {
+        
+        if(response.searchReceipt.transaccion == null){
+          this.idTrans = 1
+        }else{
+          this.idTrans = response.searchReceipt.transaccion
         }
-        if (item.cmoneda_dif !== null) {
-          this.PositiveBalanceBool = true
-        }
-      });
-
-      this.listCollection = response.searchReceipt.cobrados
-
-
-      this.PositiveBalance = 'Saldo a favor en Bs ' + sumaBS + '/' + 'Saldo  en USD ' + sumaUSD
-      this.viewData = false;
-      this.diference = false
-
-      if(response.searchReceipt.receipt.length > 0){
-        for(let i = 0; i < response.searchReceipt.receipt.length; i++){
-
-          const currentReceipt = response.searchReceipt.receipt[i];
-
-          // Verificar si mdiferencia es diferente de nulo
-          if (currentReceipt.mdiferencia !== null) {
-            this.viewData = true; // Cambiar el estado del booleano si se encuentra un valor diferente de nulo
-            this.diference = true
+  
+        let sumaBS = 0;
+        let sumaUSD = 0;
+  
+        response.searchReceipt.saldo.forEach((item: any) => {
+          if (item.cmoneda_dif == 'BS  ') {
+            sumaBS += item.msaldodif;
+          }  
+          if (item.cmoneda_dif == 'USD ') {
+            sumaUSD += item.msaldodif;
+  
           }
-
-          this.cliente = response.searchReceipt.receipt[i].xcliente
-
-          const fdesdeP = new Date(response.searchReceipt.receipt[i].fdesde);
-          let ISOFdesdeP = fdesdeP.toISOString().substring(0, 10);
-
-          const fhastaP = new Date(response.searchReceipt.receipt[i].fhasta);
-          let ISOFhastaP = fhastaP.toISOString().substring(0, 10);
-
-          const fdesdePol = new Date(response.searchReceipt.receipt[i].fdesde_pol);
-          let ISOFdesdePol = fdesdePol.toISOString().substring(0, 10);
-
-          const fhastaPol = new Date(response.searchReceipt.receipt[i].fhasta_pol);
-          let ISOFhastaPol = fhastaPol.toISOString().substring(0, 10);
-
-          let id = response.searchReceipt.receipt[i].cramo
-          let treatments = this.tradesList
-          let filterdata = treatments.filter((data: { id: any; }) => data.id == id)
-          const xramo = filterdata[0].value
-
-          let messaje : string 
-          if(response.searchReceipt.receipt[i].idiferencia == 'D'){
-            messaje = 	'debe '
-          }else if(response.searchReceipt.receipt[i].idiferencia == 'H'){
-            messaje = 'a favor '
-          }else{
-            messaje = ''
+          if (item.cmoneda_dif !== null) {
+            this.PositiveBalanceBool = true
           }
-          this.receipt.push(
-            this._formBuilder.group({
-              cnpoliza: response.searchReceipt.receipt[i].cnpoliza,
-              cnrecibo: response.searchReceipt.receipt[i].cnrecibo,
-              crecibo: response.searchReceipt.receipt[i].crecibo,
-              cpoliza: response.searchReceipt.receipt[i].cpoliza,
-              fanopol: response.searchReceipt.receipt[i].fanopol,
-              fmespol: response.searchReceipt.receipt[i].fmespol,
-              cramo: response.searchReceipt.receipt[i].cramo,
-              cproductor : response.searchReceipt.receipt[i].cproductor,
-              qcuotas : response.searchReceipt.receipt[i].qcuotas,
-              xramo : xramo ,
-              cmoneda: response.searchReceipt.receipt[i].cmoneda,
-              fdesde_pol: ISOFdesdePol,
-              fhasta_pol: ISOFhastaPol,
-              fdesde_rec: ISOFdesdeP,
-              fhasta_rec: ISOFhastaP,
-              mprimabruta: response.searchReceipt.receipt[i].mmontorec ,
-              mprimabrutaext: response.searchReceipt.receipt[i].mmontorecext ,
-              ptasamon: response.searchReceipt.receipt[i].ptasamon,
-              seleccionado : false,
-              mdiferenciaext: response.searchReceipt.receipt[i].mdiferenciaext,
-              mdiferencia: response.searchReceipt.receipt[i].mdiferencia,
-              xobservacion: response.searchReceipt.receipt[i].xobservacion,
-              idiferencia: messaje,
-              cdoccob: response.searchReceipt.receipt[i].cdoccob,
-              sumaBS  : sumaBS,
-              sumaUSD : sumaUSD
-            })
-          )
-
-
-          let messajeCliente : string 
-          let class_text: string 
-          if(response.searchReceipt.receipt[i].idiferencia == 'D'){
-            messajeCliente = 	'debe '
-            class_text = 'text-danger'
-
-            this.messageDiference.push({
+        });
+  
+  
+        this.PositiveBalance = 'Saldo a favor en Bs ' + sumaBS + '/' + 'Saldo  en USD ' + sumaUSD
+        this.viewData = false;
+        this.diference = false
+  
+        if(response.searchReceipt.receipt.length > 0){
+  
+          for(let i = 0; i < response.searchReceipt.receipt.length; i++){
+  
+            const currentReceipt = response.searchReceipt.receipt[i];
+  
+            // Verificar si mdiferencia es diferente de nulo
+            if (currentReceipt.mdiferencia !== null) {
+              this.viewData = true; // Cambiar el estado del booleano si se encuentra un valor diferente de nulo
+              this.diference = true
+            }
+  
+            const fdesdeP = new Date(response.searchReceipt.receipt[i].fdesde);
+            let ISOFdesdeP = fdesdeP.toISOString().substring(0, 10);
+  
+            const fhastaP = new Date(response.searchReceipt.receipt[i].fhasta);
+            let ISOFhastaP = fhastaP.toISOString().substring(0, 10);
+  
+            const fdesdePol = new Date(response.searchReceipt.receipt[i].fdesde_pol);
+            let ISOFdesdePol = fdesdePol.toISOString().substring(0, 10);
+  
+            const fhastaPol = new Date(response.searchReceipt.receipt[i].fhasta_pol);
+            let ISOFhastaPol = fhastaPol.toISOString().substring(0, 10);
+  
+            let id = response.searchReceipt.receipt[i].cramo
+            let treatments = this.tradesList
+            let filterdata = treatments.filter((data: { id: any; }) => data.id == id)
+            const xramo = filterdata[0].value
+  
+            let messaje : string 
+            if(response.searchReceipt.receipt[i].idiferencia == 'D'){
+              messaje = 	'debe '
+            }else if(response.searchReceipt.receipt[i].idiferencia == 'H'){
+              messaje = 'a favor '
+            }else{
+              messaje = ''
+            }
+            this.receipt.push(
+              this._formBuilder.group({
+                cnpoliza: response.searchReceipt.receipt[i].cnpoliza,
+                cnrecibo: response.searchReceipt.receipt[i].cnrecibo,
+                crecibo: response.searchReceipt.receipt[i].crecibo,
+                cpoliza: response.searchReceipt.receipt[i].cpoliza,
+                fanopol: response.searchReceipt.receipt[i].fanopol,
+                fmespol: response.searchReceipt.receipt[i].fmespol,
+                cramo: response.searchReceipt.receipt[i].cramo,
+                cproductor : response.searchReceipt.receipt[i].cproductor,
+                qcuotas : response.searchReceipt.receipt[i].qcuotas,
+                xramo : xramo ,
+                cmoneda: response.searchReceipt.receipt[i].cmoneda,
+                fdesde_pol: ISOFdesdePol,
+                fhasta_pol: ISOFhastaPol,
+                fdesde_rec: ISOFdesdeP,
+                fhasta_rec: ISOFhastaP,
+                mprimabruta: response.searchReceipt.receipt[i].mmontorec ,
+                mprimabrutaext: response.searchReceipt.receipt[i].mmontorecext ,
+                ptasamon: response.searchReceipt.receipt[i].ptasamon,
+                seleccionado : false,
+                mdiferenciaext: response.searchReceipt.receipt[i].mdiferenciaext,
+                mdiferencia: response.searchReceipt.receipt[i].mdiferencia,
+                xobservacion: response.searchReceipt.receipt[i].xobservacion,
+                idiferencia: messaje,
+                cliente : item.xcliente,
+                asegurado: item.cci_rif,
+                cdoccob: response.searchReceipt.receipt[i].cdoccob,
+                sumaBS  : sumaBS,
+                sumaUSD : sumaUSD,
+                positiveBalance:this.PositiveBalanceBool
+              })
+            )
+  
+  
+            let messajeCliente : string 
+            let class_text: string 
+            if(response.searchReceipt.receipt[i].idiferencia == 'D'){
+              messajeCliente = 	'debe '
+              class_text = 'text-danger'
+  
+              this.messageDiference.push({
+                class : class_text,
+                messaje: 'El cliente ' + messajeCliente + 
+                response.searchReceipt.receipt[i].mdiferencia + 'Bs /' + response.searchReceipt.receipt[i].mdiferenciaext +'USD'
+              })
+  
+              this._stepper;
+              
+            }else if(response.searchReceipt.receipt[i].idiferencia == 'H'){
+              messajeCliente = 'tiene un saldo a favor de '
+              class_text = 'text-success'
+              this.messageDiference.push({
               class : class_text,
               messaje: 'El cliente ' + messajeCliente + 
-              response.searchReceipt.receipt[i].mdiferencia + 'Bs /' + response.searchReceipt.receipt[i].mdiferenciaext +'USD'
-            })
-            
-          }else if(response.searchReceipt.receipt[i].idiferencia == 'H'){
-            messajeCliente = 'tiene un saldo a favor de '
-            class_text = 'text-success'
-            this.messageDiference.push({
-            class : class_text,
-            messaje: 'El cliente ' + messajeCliente + 
-              response.searchReceipt.receipt[i].mdiferencia + 'Bs /' + response.searchReceipt.receipt[i].mdiferenciaext +'USD'})  
-            
-
+                response.searchReceipt.receipt[i].mdiferencia + 'Bs /' + response.searchReceipt.receipt[i].mdiferenciaext +'USD'})  
+              
+  
+            }
+  
           }
-
+    
+        }else{
+  
+          this.Found()
         }
-
-        this.addPayment()
-
-      }else{
-
-        this.Found()
-      }
-
+  
+      });
     });
+
+    this.addPayment()
 
   }
 
@@ -534,26 +580,6 @@ export class PaymentReportComponent {
 
   }
 
-  modalTransfer(config?: MatDialogConfig) {
-    this.trans = true
-    return this.dialog.open(this.Transfer, config);
-  }
-
-  modalDeposit(config?: MatDialogConfig) {
-    this.depositoUSD = true
-    return this.dialog.open(this.Deposit, config);
-  }
-
-  modalPagoMovil(config?: MatDialogConfig) {
-    this.pmovil = true
-    return this.dialog.open(this.PagoMovil, config);
-  }
-
-  modalDepositoUSD(config?: MatDialogConfig) {
-    this.usd = true
-    return this.dialog.open(this.DepositoUSD, config);
-  }
-
   onFileSelect(event : any , i : number){
 
     const file = event.target.files[0]
@@ -574,6 +600,7 @@ export class PaymentReportComponent {
       if(receipt.value[i].seleccionado == true){
         if(receipt.value[i].cdoccob > 0){
           this.idTrans = receipt.value[i].cdoccob
+          this.asegurado = receipt.value[i].asegurado
           this.receiptList.push({
             cnpoliza: receipt.value[i].cnpoliza,
             cnrecibo: receipt.value[i].cnrecibo,
@@ -591,9 +618,12 @@ export class PaymentReportComponent {
             mprimabrutaext: receipt.value[i].mprimabrutaext,
             ptasamon: receipt.value[i].ptasamon,
             cproductor : receipt.value[i].cproductor,
+            asegurado : receipt.value[i].asegurado,
   
           });
         }else{
+          this.asegurado = receipt.value[i].asegurado
+
           this.receiptList.push({
             cnpoliza: receipt.value[i].cnpoliza,
             cnrecibo: receipt.value[i].cnrecibo,
@@ -611,6 +641,7 @@ export class PaymentReportComponent {
             mprimabrutaext: receipt.value[i].mprimabrutaext,
             ptasamon: receipt.value[i].ptasamon,
             cproductor : receipt.value[i].cproductor,
+            asegurado : receipt.value[i].asegurado,
   
           });
         }
@@ -619,9 +650,11 @@ export class PaymentReportComponent {
 
     }   
 
-
     const transfer = this.searchReceipt.get("transfer") as FormArray
-    let asegurado = this.searchReceipt.get('xcedula')?.value || ''
+    if(this.selection.selected.length > 1){
+      this.asegurado = 'Admin'
+    }
+
     const fecha = new Date()
     let fechaTran = fecha.toISOString().substring(0, 10);
 
@@ -630,14 +663,14 @@ export class PaymentReportComponent {
       const fileObject = transfer.at(i).get('ximagen')?.value!
       const fileType = fileObject.type;
       const extension = fileType.split('/').pop();
-      let nombre = asegurado +'-' + fechaTran +'-'+ i + transfer.value[i].xreferencia +'.'+ extension;
+      let nombre = this.asegurado +'-' + fechaTran +'-'+ i + transfer.value[i].xreferencia +'.'+ extension;
 
       if(transfer.at(i).get('cmoneda')?.value == "USD" ){
 
         this.transferList.push({
           cmoneda: transfer.value[i].cmoneda,
           cbanco: transfer.value[i]?.cbanco.id,
-          cbanco_destino: transfer.value[i]?.cbanco_destino.id,
+          cbanco_destino: transfer.value[i].cbanco_destino.id,
           mpago: 0,
           mpagoext: transfer.value[i].mpago,
           mpagoigtf: this.mountBsP,
@@ -655,7 +688,7 @@ export class PaymentReportComponent {
         this.transferList.push({
           cmoneda: transfer.value[i].cmoneda,
           cbanco: transfer.value[i]?.cbanco.id,
-          cbanco_destino: transfer.value[i]?.cbanco_destino.id,
+          cbanco_destino: transfer.value[i].cbanco_destino.id,
           mpago: transfer.value[i].mpago,
           mpagoext: 0,
           mpagoigtf: 0,
@@ -673,89 +706,106 @@ export class PaymentReportComponent {
     
   }
 
+  endHourHourOnChange(tasa : any) {
+    this.bcv = tasa;
+  }
+
   async onSubmit(){
 
     await this.llenarlistas()
     this.Submit = true
     this.searchReceipt.disable()
 
-    const transfer = this.searchReceipt.get("transfer") as FormArray
-
-    let asegurado = this.searchReceipt.get('xcedula')?.value || ''
     const fecha = new Date()
 
-    if(this.diference){
+    if(this.selection.selected.length == 1){
 
-      const reporData = {
-        report : this.transferList,
-        ctransaccion : this.idTrans,
-        casegurado: this.searchReceipt.get('xcedula')?.value,
-        diference : this.diference,
-        receipt : this.receiptList,
-        mpago : this.mountBs,
-        mpagoext : this.mountIGTF,
-        ptasamon : this.bcv,
-        freporte : fecha ,
-        positiveBalance : this.PositiveBalanceBool
-      }
-
-      this.http.post(environment.apiUrl + '/api/v1/collection/create-report-diference', reporData).subscribe( (response: any) => {
-        if (response.status) {
-
-          this.toast.open("Registro de pago éxitoso", "Cerrar", {
-            duration: 3000,
-          });
-
-        }
-        this.uploadFile()
-  
-      })
-            
-      setTimeout(() => {
-        location.reload();
-      }, 3000);
-
-    }else{
-      const savePaymentTrans = {
+      this.selection.selected.forEach(item => {
+        const savePaymentTrans = {
+        group : false,
         ctransaccion : this.idTrans,
         receipt : this.receiptList,
         report: this.transferList,
-        casegurado: asegurado,
+        casegurado: item.cci_rif,
         mpago : this.mountBs,
         mpagoext : this.mountIGTF,
         ptasamon : this.bcv,
         freporte : fecha ,
-        cprog : 'Reporte de pago web',
+        cprog : 'Pg_admin',
         cusuario : 13,
-        iestadorec : 'N',
+        iestadorec : 'C',
         ifuente : 'Web_Sys',
         iestado : 0,
+        detalle : this.receiptList,
+        fpago : fecha,
+        cliente : item.xcliente,
+        transaccion : this.idTrans,
+        correo : item.xcorreo ,
         ccategoria : this.searchReceipt.get('ccategoria')?.value,
         diference: this.diference,
         positiveBalance : this.PositiveBalanceBool
-
-      }
-
-      //primero llenamos el recipo y la tabla de transacciones 
-      this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
-        if (response.status) {
-
-          this.toast.open("Registro de pago éxitoso", "Cerrar", {
-            duration: 3000,
-          });
-
         }
-        this.uploadFile()
-      })   
-  
-      setTimeout(() => {
-        location.reload();
-      }, 3000);
+
+        //primero llenamos el recipo y la tabla de transacciones 
+        this.http.post(environment.apiUrl + '/api/v1/collection/collect-receipt',savePaymentTrans).subscribe( (response: any) => {
+          if (response.status) {
+            this.toast.open("Registro de pago éxitoso", "Cerrar", {
+              duration: 3000,
+            });
+
+          }
+          this.uploadFile()
+
+        })   
+        setTimeout(() => {
+          location.reload();
+        }, 3000);
+
+      })
+
+    }else{
+        const savePaymentTrans = {
+        group : true,
+        ctransaccion : this.idTrans,
+        receipt : this.receiptList,
+        report: this.transferList,
+        asegurados: this.listaNombres,
+        mpago : this.mountBs,
+        mpagoext : this.mountIGTF,
+        ptasamon : this.bcv,
+        freporte : fecha ,
+        cprog : 'Pg_admin',
+        cusuario : 13,
+        iestadorec : 'C',
+        ifuente : 'Web_Sys',
+        iestado : 0,
+        fpago : fecha,
+        transaccion : this.idTrans,
+        detalle : this.receiptList,
+        ccategoria : this.searchReceipt.get('ccategoria')?.value,
+        // diference: this.diference,
+        // positiveBalance : this.PositiveBalanceBool
+        }
+
+        //primero llenamos el recipo y la tabla de transacciones 
+        this.http.post(environment.apiUrl + '/api/v1/collection/collect-receipt-group',savePaymentTrans).subscribe( (response: any) => {
+          if (response.status) {
+            this.toast.open("Registro de pago éxitoso", "Cerrar", {
+              duration: 3000,
+            });
+
+          }
+          this.uploadFile()
+
+        })   
+        setTimeout(() => {
+          location.reload();
+        }, 3000);
+
     }
 
 
   }
-
 
   uploadFile(){
 
@@ -784,6 +834,8 @@ export class PaymentReportComponent {
   getTargetBank(i : any){
     const trasnfer = this.searchReceipt.get("transfer") as FormArray
 
+    console.log(trasnfer.at(i).get('ctipopago')?.value.id )
+
     if(trasnfer.at(i).get('ctipopago')?.value.id == 2 ){
       this.bankList = this.bankNational
       this.targetBankList = this.bankReceptorNational
@@ -806,10 +858,10 @@ export class PaymentReportComponent {
       this.bankList =  this.bankNational
       this.targetBankList = this.bankReceptorPM
       trasnfer.at(i).get('cbanco')?.enable();
-      trasnfer.at(i).get('cbanco')?.setValue('')
+      trasnfer.at(i).get('cbanco')?.enable();
+
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
       trasnfer.at(i).get('cbanco_destino')?.enable();
-
     }    
     if(trasnfer.at(i).get('ctipopago')?.value.id == 7 ){
       this.targetBankList = this.bankReceptorCustodia
@@ -818,6 +870,10 @@ export class PaymentReportComponent {
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
       trasnfer.at(i).get('cbanco_destino')?.enable();
 
+    }
+    if(trasnfer.at(i).get('ctipopago')?.value.id == 9 ){
+      trasnfer.at(i).get('cbanco')?.disable();
+      trasnfer.at(i).get('cbanco_destino')?.disable()
     }
   }
 
@@ -836,16 +892,13 @@ export class PaymentReportComponent {
 
   }
 
-
   getBank(i : any){
     //bancos emision
     const trasnfer = this.searchReceipt.get("transfer") as FormArray
+    
+
     this.tipoTrans = []
     if(trasnfer.at(i).get('cmoneda')?.value == 'Bs' ){
-      this.usd = false
-      trasnfer.at(i).get('cbanco')?.setValue('')
-      trasnfer.at(i).get('cbanco_destino')?.setValue('')
-      trasnfer.at(i).get('ctipopago')?.setValue('')
 
       this.tipoTrans.push(
         {
@@ -855,16 +908,19 @@ export class PaymentReportComponent {
         {
         id: 3,
         value: "Pago Movil",
+        },
+        {
+        id: 9,
+        value: "Efectivo",
         }
+      )   
 
-      )  
-
-    }
-    if(trasnfer.at(i).get('cmoneda')?.value == 'USD' ){
-      this.usd = true
       trasnfer.at(i).get('cbanco')?.setValue('')
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
       trasnfer.at(i).get('ctipopago')?.setValue('')
+
+    }
+    if(trasnfer.at(i).get('cmoneda')?.value == 'USD' ){
 
       this.tipoTrans.push(
         {
@@ -874,10 +930,35 @@ export class PaymentReportComponent {
         {
         id: 7,
         value: "Cuenta custodia",
+        },
+        {
+        id: 9,
+        value: "Efectivo",
         }
-      ) 
+      )      
+      trasnfer.at(i).get('cbanco')?.setValue('')
+      trasnfer.at(i).get('cbanco_destino')?.setValue('')
+      trasnfer.at(i).get('ctipopago')?.setValue('')
     }
 
+  }
+
+  masterToggle() {
+    if (this.isAllSelected()) {
+        this.selection.clear();
+      } else {
+        this.dataSource.data.forEach(row => this.selection.select(row));
+   
+      }
+  }
+
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    // alert(numSelected);
+    // alert(numRows);
+    return numSelected === numRows;
+    // this.varable1 = 100;
   }
 
     //Treatments

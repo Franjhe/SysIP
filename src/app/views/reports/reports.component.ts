@@ -6,6 +6,8 @@ import { ThemePalette } from '@angular/material/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import {MatButtonModule} from '@angular/material/button';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { userInfo } from 'os';
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as  pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -38,6 +40,7 @@ export class ReportsComponent {
   sendButton: boolean = false;
   selectedOption: string = '';
   correo: string = '';
+ 
 
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
   columnsToDisplay: string[] = ['cedula', 'nombApell', 'correo', 'nrofac', 'hora_emision', 'cantidad_tickes', 'mcosto_ext', 'fingreso'];
@@ -57,15 +60,16 @@ export class ReportsComponent {
     private snackBar: MatSnackBar,
       ) {
      }
-
-availableColors = [
-{name: 'Primas Pendientes', color: 'primary'},
-{name: 'Primas Cobradas', color: 'warn'},
-];
+     availableColors = [
+      {name: 'Recibos Pendientes', color: 'primary', valor : 'P'},
+      {name: 'Recibos Cobrados', color: 'warn', valor : 'C'},
+      {name: 'Recibos Anulados', color: 'accent', valor : 'A'},
+      {name: 'Recibos Notificados', color: 'primary', valor : 'N'},
+      {name: 'Detalle de Cobrados', color: 'secondary', valor : 'CD'},
+    ];
+  
 ngOnInit() {
   this.showButton = false
-
-
   this.consulta_reporte = this.formBuilder.group({
     estado: [''],
     fdesde_pol: [''],
@@ -76,7 +80,8 @@ ngOnInit() {
 
 saveSelection(opcion: string) {
   this.selectedOption = opcion;
-  this.consulta_reporte.get('bprima')?.setValue(this.selectedOption);
+  this.consulta_reporte.get('estado')?.setValue(this.selectedOption);
+  this.dataReport();
 }
 
 onSubmit(){
@@ -93,6 +98,9 @@ onSubmit(){
   });
 }
 buscarReporte(){
+  this.snackBar.open("Reporte en PDF descargado con Éxito", "Cerrar", {
+    duration: 3000,
+  });
   // window.open(environment.apiUrl_prod + '/single_receipts/', '_blank');
   let data = {
     estado: this.consulta_reporte.get('estado')?.value,
@@ -134,75 +142,107 @@ activateSendButton(){
 
 dataReport(){
   let estado = this.consulta_reporte.get('estado')?.value
-  this.showButton = true
-  // if(estado == 'C'){
+  if(estado !== 'CD'){
+    this.showButton = true
+    // if(estado == 'C'){
+  
+    //   fetch(environment.apiUrl + '/api/v1/collection/search-collected/'+ estado )
+    //   .then((response) => response.json())
+    //   .then(data => {
+    //     this.listCollection = data.searchPaymentCollected.recibo
+    //   })
+  
+    // }else{
+      fetch(environment.apiUrl + '/api/v1/collection/search-collected/'+ estado )
+      .then((response) => response.json())
+      .then(data => {
+        this.listPending = []
 
-  //   fetch(environment.apiUrl + '/api/v1/collection/search-collected/'+ estado )
-  //   .then((response) => response.json())
-  //   .then(data => {
-  //     this.listCollection = data.searchPaymentCollected.recibo
-  //   })
+        for(let i = 0; i < data.searchPaymentCollected.recibo.length; i++){   
+          //fecha emisión Recibo
+          let dateEReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_Emision_Rec );
+          let fechaEmRec = dateEReceipt.toISOString().substring(0, 10);
+           //fecha desde recibo
+           let dateDePol = new Date(data.searchPaymentCollected.recibo[i].Fecha_desde_Pol );
+           let fechaDePol = dateDePol.toISOString().substring(0, 10);
+           //fecha hasta Poliza
+           let dateHPol = new Date(data.searchPaymentCollected.recibo[i].Fecha_hasta_Pol );
+           let fechaHaPol = dateHPol.toISOString().substring(0, 10);
+           //fecha desde recibo
+           let dateDeReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_desde_Recibo );
+           let fechaDeReceipt = dateDeReceipt.toISOString().substring(0, 10);
+           //fecha hasta Recibo
+           let dateHaReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_hasta_Recibo );
+           let fechaHaReceipt = dateHaReceipt.toISOString().substring(0, 10);
+           let  estado = ''
 
-  // }else{
-    fetch(environment.apiUrl + '/api/v1/collection/search-collected/'+ estado )
-    .then((response) => response.json())
-    .then(data => {
+           if(data.searchPaymentCollected.recibo[i].Estado_del_Recibo == 'P'){
+            estado = 'Pendiente'
 
-      this.listPending = []
-      for(let i = 0; i < data.searchPaymentCollected.recibo.length; i++){   
-        //fecha emisión Recibo
-        let dateEReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_Emision_Rec );
-        let fechaEmRec = dateEReceipt.toISOString().substring(0, 10);
-         //fecha desde recibo
-         let dateDePol = new Date(data.searchPaymentCollected.recibo[i].Fecha_desde_Pol );
-         let fechaDePol = dateDePol.toISOString().substring(0, 10);
-        //fecha hasta Poliza
-        let dateHPol = new Date(data.searchPaymentCollected.recibo[i].Fecha_hasta_Pol );
-        let fechaHaPol = dateHPol.toISOString().substring(0, 10);
-        //fecha desde recibo
-        let dateDeReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_desde_Recibo );
-        let fechaDeReceipt = dateDeReceipt.toISOString().substring(0, 10);
-        //fecha hasta Recibo
-        let dateHaReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_hasta_Recibo );
-        let fechaHaReceipt = dateHaReceipt.toISOString().substring(0, 10);
+           }
+           if(data.searchPaymentCollected.recibo[i].Estado_del_Recibo == 'C'){
+            estado = 'Cobrado'
 
-        this.listPending.push({
-          Poliza: data.searchPaymentCollected.recibo[i].Nro_Poliza,
-          // Codigo_Ramo: data.searchPaymentCollected.recibo[i].Codigo_Ramo,
-          Descripcion_Ramo:data.searchPaymentCollected.recibo[i].Descripcion_Ramo,
-          Fecha_Emision_Rec: fechaEmRec,
-          Fecha_desde_Pol : fechaDePol,
-          Fecha_hasta_Pol: fechaHaPol,
-          CID: data.searchPaymentCollected.recibo[i].CID,
-          Nombre_del_Tomador: data.searchPaymentCollected.recibo[i].Nombre_del_Tomador,
-          Id_Asegurado: data.searchPaymentCollected.recibo[i].Id_Asegurado,
-          Nombre_Asegurado: data.searchPaymentCollected.recibo[i].Nombre_Asegurado,
-          // Cedula_Beneficiario: data.searchPaymentCollected.recibo[i].Id_del_Beneficiario,
-          // Nombre_Beneficiario: data.searchPaymentCollected.recibo[i].Nombre_Beneficiario,
-          // Codigo_Moneda: data.searchPaymentCollected.recibo[i].Codigo_Moneda,
-          Moneda: data.searchPaymentCollected.recibo[i].Moneda,
-          Nro_Recibo: data.searchPaymentCollected.recibo[i].Nro_Recibo,
-          Fecha_desde_Recibo: fechaDeReceipt,
-          Fecha_hasta_Recibo: fechaHaReceipt,
-          // Estado_del_Recibo: data.searchPaymentCollected.recibo[i].Estado_del_Recibo,
-          Descripcion_estado_rec: data.searchPaymentCollected.recibo[i].Descripcion_estado_rec,
-          Suma_asegurada: data.searchPaymentCollected.recibo[i].Suma_asegurada,
-          Suma_asegurada_Ext: data.searchPaymentCollected.recibo[i].Suma_asegurada_Ext,
-          Monto_Recibo: data.searchPaymentCollected.recibo[i].Monto_Recibo,
-          Monto_Recibo_Ext: data.searchPaymentCollected.recibo[i].Monto_Recibo_Ext,
-          Tasa_Cambio: data.searchPaymentCollected.recibo[i].Tasa_Cambio,
-          Dias_de_vigencia: data.searchPaymentCollected.recibo[i].Dias_de_vigencia,
-          Sucursal: data.searchPaymentCollected.recibo[i].Sucursal,
-          // Descripcion_Corta_Sucursal: data.searchPaymentCollected.recibo[i].Descripcion_Corta_Sucursal,
-          // cproductor: data.searchPaymentCollected.recibo[i].cproductor,
-          Intermediario: data.searchPaymentCollected.recibo[i].Intermediario
-        })
-      }
+           }
+           if(data.searchPaymentCollected.recibo[i].Estado_del_Recibo == 'A'){
+            estado = 'Anulado'
 
-    })
+           }
+           if(data.searchPaymentCollected.recibo[i].Estado_del_Recibo == 'S'){
+            estado = 'Suspendido'
+
+           }
+           if(data.searchPaymentCollected.recibo[i].Estado_del_Recibo == 'N'){
+            estado = 'Notificado'
+
+           }
+           this.listPending.push({
+            Poliza: data.searchPaymentCollected.recibo[i].Nro_Poliza,
+            // Codigo_Ramo: data.searchPaymentCollected.recibo[i].Codigo_Ramo,
+            Descripcion_Ramo:data.searchPaymentCollected.recibo[i].Descripcion_Ramo,
+            Fecha_Emision_Rec: fechaEmRec,
+            Fecha_desde_Pol : fechaDePol,
+            Fecha_hasta_Pol: fechaHaPol,
+            CID: data.searchPaymentCollected.recibo[i].CID,
+            Nombre_del_Tomador: data.searchPaymentCollected.recibo[i].Nombre_del_Tomador,
+            Id_Asegurado: data.searchPaymentCollected.recibo[i].Id_Asegurado,
+            Nombre_Asegurado: data.searchPaymentCollected.recibo[i].Nombre_Asegurado,
+            // Cedula_Beneficiario: data.searchPaymentCollected.recibo[i].Id_del_Beneficiario,
+            // Nombre_Beneficiario: data.searchPaymentCollected.recibo[i].Nombre_Beneficiario,
+            // Codigo_Moneda: data.searchPaymentCollected.recibo[i].Codigo_Moneda,
+            Moneda: data.searchPaymentCollected.recibo[i].Moneda,
+            Nro_Recibo: data.searchPaymentCollected.recibo[i].Nro_Recibo,
+            Fecha_desde_Recibo: fechaDeReceipt,
+            Fecha_hasta_Recibo: fechaHaReceipt,
+            // Estado_del_Recibo: data.searchPaymentCollected.recibo[i].Estado_del_Recibo,
+            Descripcion_estado_rec: estado,
+            Suma_asegurada: data.searchPaymentCollected.recibo[i].Suma_asegurada,
+            Suma_asegurada_Ext: data.searchPaymentCollected.recibo[i].Suma_asegurada_Ext,
+            Monto_Recibo: data.searchPaymentCollected.recibo[i].Monto_Recibo,
+            Monto_Recibo_Ext: data.searchPaymentCollected.recibo[i].Monto_Recibo_Ext,
+            Tasa_Cambio: data.searchPaymentCollected.recibo[i].Tasa_Cambio,
+            Dias_de_vigencia: data.searchPaymentCollected.recibo[i].Dias_de_vigencia,
+            Sucursal: data.searchPaymentCollected.recibo[i].Sucursal,
+            // Descripcion_Corta_Sucursal: data.searchPaymentCollected.recibo[i].Descripcion_Corta_Sucursal,
+            // cproductor: data.searchPaymentCollected.recibo[i].cproductor,
+            Intermediario: data.searchPaymentCollected.recibo[i].Intermediario
+          })
+        }
+
+
+  
+      })
+  }else{
+    window.open('https://api.lamundialdeseguros.com/sis2000/cobranza/', '_blank');
+
+  }
 
   }
 makeExcel(){
+  this.snackBar.open("Reporte en Excel descargado con Éxito", "Cerrar", {
+    duration: 3000,
+    panelClass: ['blue-snackbar'],  
+  });
   let fecha = new Date()
   let day = fecha.getDate()
   let month = fecha.getMonth() + 1
@@ -213,9 +253,7 @@ makeExcel(){
     // }
     // else{
         const filteredData = this.listPending.map((item :any) => ({
-
           'Poliza': item.Poliza,
-          // 'Código_Ramo': item.Codigo_Ramo,
           'Descripción_Ramo': item.Descripcion_Ramo,
           'Fecha_Emision_Rec': item.Fecha_Emision_Rec,
           'Fecha_desde_Pol' : item.Fecha_desde_Pol,
@@ -224,26 +262,19 @@ makeExcel(){
           'Nombre_del_Tomador': item.Nombre_del_Tomador,
           'Cedula_Asegurado' : item.Id_Asegurado,
           'Nombre_Asegurado' : item.Nombre_Asegurado,
-          // 'C.I./Beneficiario' : item.Id_del_Beneficiario,
-          // 'Nombre_Beneficiario,' :item.Nombre_Beneficiario,
-          // 'Codigo_Moneda,': item.Codigo_Moneda,
           'Moneda': item.Moneda,
           'Nro_Recibo' : item.Nro_Recibo,
           'Fecha_desde_Recibo' : item.Fecha_desde_Recibo,
           'Fecha_hasta_Recibo' : item.Fecha_hasta_Recibo,
-          // 'Estado_del_Recibo' :item.Estado_del_Recibo,
           'Estatus_Recibo' :item.Descripcion_estado_rec,
-          'Suma_asegurada': item.Suma_asegurada,
-          'Suma_asegurada_Ext': item.Suma_asegurada_Ext,
+          'Suma_asegurada': item.Suma_asegurada ? item.Suma_asegurada.toFixed(2) : 0.00,
+          'Suma_asegurada_Ext': item.Suma_asegurada_Ext ? item.Suma_asegurada_Ext.toFixed(2) : 0.00,
           'Monto_Recibo' : item.Monto_Recibo,
           'Monto_Recibo_Ext' : item.Monto_Recibo_Ext,
           'Tasa_Cambio' : item.Tasa_Cambio,
           'Dias_de_vigencia' : item.Dias_de_vigencia,
           'Sucursal' :item.Sucursal,
-          // 'Descripcion_Corta_Sucursal' :item.Descripcion_Corta_Sucursal,
-          // 'cproductor' :item.cproductor,
           'Intermediario' :item.Intermediario,
-
     }));
       const worksheet = XLSX.utils.json_to_sheet(filteredData);
       const workbook = XLSX.utils.book_new();

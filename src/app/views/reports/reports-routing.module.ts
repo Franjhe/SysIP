@@ -23,20 +23,20 @@ const routes: Routes = [
           title: 'consulta',
         },
       },
-      {
-        path: 'consult/premiums',
-        component: PremiumsComponent,
-        data: {
-          title: 'primas',
-        },
-      },
-      {
-        path: 'consult/receipts',
-        component: ReceiptsComponent,
-        data: {
-          title: 'Recibos',
-        },
-      },
+      // {
+      //   path: 'consult/premiums',
+      //   component: PremiumsComponent,
+      //   data: {
+      //     title: 'primas',
+      //   },
+      // },
+      // {
+      //   path: 'consult/receipts',
+      //   component: ReceiptsComponent,
+      //   data: {
+      //     title: 'Recibos',
+      //   },
+      // },
     ]
   }
 

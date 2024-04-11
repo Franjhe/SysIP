@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialExampleModule } from './../../material.module'
 import { NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
+import {MatTableModule} from '@angular/material/table';
 
 import { CollectionRoutingModule } from './collection-routing.module';
 import { PaymentReportComponent } from './payment-report/payment-report.component';
@@ -13,6 +14,7 @@ import { ClipboardModule } from 'ngx-clipboard';
 import { CommissionsComponent } from './commissions/commissions.component';
 import { PaymentRequestsComponent } from './payment-requests/payment-requests.component';
 import { ModalReceiptsComponent } from './modal-receipts/modal-receipts.component';
+import { PaymentAdministrationComponent } from './payment-administration/payment-administration.component';
 
 @NgModule({
   declarations: [
@@ -20,9 +22,13 @@ import { ModalReceiptsComponent } from './modal-receipts/modal-receipts.componen
     PaymentCancellationComponent,
     CommissionsComponent,
     PaymentRequestsComponent,
-    ModalReceiptsComponent
+    ModalReceiptsComponent,
+    PaymentAdministrationComponent
   ],
   imports: [
+    MatTableModule,
+    NgIf, 
+    NgFor,
     CommonModule,
     CollectionRoutingModule,
     CommonModule,

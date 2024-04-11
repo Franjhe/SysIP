@@ -27,7 +27,7 @@
                         <div class="col-4 text-light" style="font-size: medium;">
                           Asegurado {{group.value.casegurado}} {{group.value.xcliente}}<br>
                           Fecha de notificacion de pago {{group.value.freporte}}<br>
-                          Tasa BCV de cobros {{group.value.ptasamon}}
+                          Tasa BCV de cobro {{group.value.ptasamon}}
                         </div>
 
                         <div class="col-4 text-light" style="font-size: medium;">
@@ -54,8 +54,8 @@
 
                         <div class="col" *ngFor="let poliza of group.value.poliza;let i=index" >
                           <h2>Detalles del recibo Pagado</h2>
-                            <strong>Poliza</strong>  {{poliza.cpoliza}}<br>
-                            <strong>Recibo</strong> {{poliza.crecibo}}<br>
+                            <strong>Poliza</strong>  {{poliza.cnpoliza}}<br>
+                            <strong>Recibo</strong> {{poliza.cnrecibo}}<br>
                             <strong>Ramo</strong>  {{poliza.cramo}}<br>
                             <strong>Monto Bs</strong> {{poliza.mmontorec}}<br>
                             <strong>Monto $</strong>  {{poliza.mmontorecext}}<br>
@@ -88,10 +88,11 @@
 
 
                             <strong> Referencia</strong> {{recibos.xreferencia}}<br>
+
+          
                             
-                            <div class="col-3">
-                              <a class="btn btn-primary" [href]="recibos.xruta" target="_blank" role="button">Visualizar Soporte</a>
-                            </div>
+                            <a mat-button [href]="recibos.xruta" target="_blank" role="button">Visualizar Soporte</a>
+
                         </div>
 
                         <div class="col">
@@ -151,7 +152,7 @@
                         </div>
                     
                         <div class="text-center">
-                          <button class="btn-primary" mat-button (click)="updateReceiptNotificated(i)">Actualizar recibo</button>
+                          <button  class="btn btn-primary" (click)="updateReceiptNotificated(i)">Actualizar recibo</button>
                         </div>
 
                       </div>
@@ -169,233 +170,12 @@
 
           <mat-tab class="bg-info text-light" label="Recibos Pendientes"> 
 
-            <div class="p-4">
-              <h2>Total Pendiente {{totalPending}} $</h2>
-            </div>
+            <app-payment-administration></app-payment-administration>
 
-            <div class="mat-elevation-z8">
-
-              <mat-form-field>
-                <mat-label>Buscar</mat-label>
-                <input matInput (keyup)="applyFilter($event)" #input>
-              </mat-form-field>
-              
-              <div class="mat-elevation-z8">
-                <table mat-table [dataSource]="dataSource" matSort>
-              
-                  <!-- ID Column -->
-                  <ng-container matColumnDef="id">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Poliza </th>
-                    <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.cpoliza}} </td>
-                  </ng-container>
-              
-                  <!-- Progress Column -->
-                  <ng-container matColumnDef="progress">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Ramo </th>
-                    <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.cramo}}</td>
-                  </ng-container>
-              
-                  <!-- Name Column -->
-                  <ng-container matColumnDef="name">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Recibo </th>
-                    <td mat-cell *matCellDef="let row" (click)="dataPendient(row.crecibo,row.casegurado)"> {{row.crecibo}} </td>
-                  </ng-container>
-              
-                  <!-- Fruit Column -->
-                  <ng-container matColumnDef="fruit">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Asegurado </th>
-                    <td mat-cell *matCellDef="let row" > {{row.casegurado}} </td>
-                  </ng-container>
-              
-                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-              
-                  <!-- Row shown when there is no matching data. -->
-                  <tr class="mat-row" *matNoDataRow>
-                    <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
-                  </tr>
-                </table>
-              
-                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
-              </div>
-
-            </div>
           </mat-tab>
 
         </mat-tab-group>
 
-        <ng-template #Alerta >
-          <mat-dialog-content  >
-            
-            <form action=""  [formGroup]="updateReceiptPending">
-              <div class="container-fluid">
-                <h1 class="text-center">Registro de pago</h1>
-                <h1 *ngIf="error" class="bg-danger">{{messajeError}}</h1>
-                <div class="row">
-                  <div class="col-3">
-                    <h2>Tasa del dia {{bcv}} Bs</h2>
-
-                    <strong>Cliente</strong>   {{cliente}}<br>
-                    <strong>Correo</strong>    {{correo}}<br>
-                    <strong>Telefono</strong>  {{telefono}}<br>
-                  </div>
-
-
-                  <div class="row col-8" *ngFor="let data of dataReceiptPending let i=index">
-                    <h2 class="text-center">Datos del recibo</h2>
-
-                    <div class="col">
-                      <strong>Moneda</strong>  {{data.cmoneda}} <br>
-                      <strong>Recibo</strong>  {{data.crecibo}} <br>
-                      <strong>Poliza </strong> {{data.cpoliza}}
-
-                    </div>
-                    <div class="col">
-                      <strong>Fecha desde recibo</strong> {{data.fdesde}} <br>
-                      <strong>Fecha hasta recibo</strong> {{data.fhasta}} <br>
-                      <strong>N° Cuota</strong>  {{data.qcuotas}} <br>
-
-                    </div>
-                    <div class="col">
-                      <strong>Prima $</strong> {{data.mprimabrutaext}} <br>
-                      <strong>Prima Bs</strong> {{data.mprimabruta}} <br>
-
-                      <strong>Pendiente </strong>{{data.mpendiente}} Bs --  {{data.mpendientext}} USD<br>
-
-                      <strong>Ramo</strong> {{data.cramo}}
-
-                    </div>
- 
-                  </div>
-
-                </div>    
-                <div class="row mt-3">
-                  <div class="col-2">
-                    <mat-radio-group aria-label="Select an option" formControlName="itransaccion">
-                      <mat-radio-button value="PM" (change)="changeStatusPm()" >Pago Movil</mat-radio-button>
-                      <mat-radio-button value="EF" (change)="validationOperation()">Efectivo</mat-radio-button>
-                      <!-- <mat-radio-button value="TR" (change)="changeStatusTrans()">Tranferencia</mat-radio-button> -->
-                      <!-- <mat-radio-button value="PS" (change)="changeStatusTransCustodia()">Cuenta Custodia</mat-radio-button> -->
-                      <!-- <mat-radio-button value="DP" (change)="changeStatusUSD()">Tranferencia Moneda extranjera</mat-radio-button> -->
-                    </mat-radio-group>
-                  </div>
-
-                  <div class="col-lg-4">
-
-                    <!-- Moneda -->
-                      <div class="form-outline" *ngIf="usd"><!-- pagos en dolares  -->
-                        <label class="form-label required">Moneda</label>
-                        <select formControlName="cmoneda" class="form-control rounded-input form-control-lg colorgris" (change)="changeError()">
-                          <option  value="BS">BS</option>
-                          <option  value="USD">USD</option>
-                        </select>                     
-                      </div>
-
-                      <div class="form-outline"  *ngIf="!usd"><!-- pagos en bolivares -->
-                        <label class="form-label required">Moneda</label>
-                        <select formControlName="cmoneda" class="form-control rounded-input form-control-lg colorgris" (change)="changeError()">
-                          <option  value="Bs">Bs</option>
-                        </select>                     
-                      </div>
-
-                      <!-- Bancos de emision -->
-                      <div class="form-outline mt-3" *ngIf="!usd"><!-- lista de bancos emisores nacionales -->
-                        <label class="form-label ">Banco de emision</label>
-                        <select formControlName="cbanco" class="form-control rounded-input form-control-lg colorgris" >
-                          <option disabled>Seleccione el banco de emision</option>
-                          <option *ngFor="let backE of bankNational" value="{{ backE.id }}">{{ backE.value }}</option>
-                        </select>
-                      </div>
-
-                      <div class="form-outline mt-3" *ngIf="usd"><!-- lista de bancos emisores internacionales  -->
-                        <label class="form-label ">Banco de emision</label>
-                        <select formControlName="cbanco" class="form-control rounded-input form-control-lg colorgris" >
-                          <option disabled>Seleccione el banco de emision</option>
-                          <option *ngFor="let backE of bankInternational" value="{{ backE.id }}">{{ backE.value }}</option>
-                        </select>
-                      </div>
-
-                      <!-- Bancos destino -->
-
-                      <div class="form-outline mt-3" *ngIf="usd"><!-- lista de bancos receptores internacionales -->
-                        <label class="form-label ">Banco receptor</label>
-                        <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris" >
-                          <option disabled>Seleccione el banco receptor</option>
-                          <option *ngFor="let backE of bankReceptorInternational" value="{{ backE.id }}">{{ backE.value }}</option>
-                        </select>                     
-                      </div>
-
-
-                      <div class="form-outline mt-3" *ngIf="!usd && !pmovil && !depositoUSD && trans"><!-- lista de bancos receptores nacionales transferencia-->
-                        <label class="form-label ">Banco receptor</label>
-                        <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris" >
-                          <option disabled>Seleccione el banco receptor</option>
-                          <option *ngFor="let backE of bankReceptorNational" value="{{ backE.id }}">{{ backE.value }}</option>
-                        </select>                     
-                      </div>
-
-                      <div class="form-outline mt-3" *ngIf="!usd && pmovil && !depositoUSD && !trans"><!--  lista de bancos receptores nacionales pago movil -->
-                        <label class="form-label ">Banco receptor</label>
-                        <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris" >
-                          <option disabled>Seleccione el banco receptor</option>
-                          <option *ngFor="let backE of bankReceptorPM" value="{{ backE.id }}">{{ backE.value }}</option>
-                        </select>                     
-                      </div>
-
-                      <div class="form-outline mt-3" *ngIf="!usd && !pmovil && depositoUSD && !trans"><!--  lista de bancos receptores nacionales cuenta custodia -->
-                        <label class="form-label ">Banco receptor</label>
-                        <select formControlName="cbanco_destino" class="form-control rounded-input form-control-lg colorgris" >
-                          <option disabled>Seleccione el banco receptor</option>
-                          <option *ngFor="let backE of bankReceptorCustodia" value="{{ backE.id }}">{{ backE.value }}</option>
-                        </select>                     
-                      </div>
-
-
-
-                  </div>
-
-                  <div class="col-4 row ">
-
-                    <mat-form-field >
-                      <mat-label>Monto pagado</mat-label>
-                      <input matInput  formControlName="mpago" (change)="validateMount()">
-                    </mat-form-field>
-
-
-                    <mat-form-field >
-                      <mat-label>Referencia bancaria</mat-label>
-                      <input matInput  formControlName="xreferencia">
-                    </mat-form-field>
-
-                    <mat-form-field>
-                      <mat-label>Estado de recibo</mat-label>
-                      <mat-select formControlName="iestadorec">
-                        <mat-option value="C">Cobrado</mat-option>
-                      </mat-select>
-                    </mat-form-field>
-
-                    <div class="form-outline" >
-                      <label for="">Carga de referencia </label>
-                      <input type="file"  accept="image/png, image/jpeg, image/jpg" class="form-control rounded-input mt-3" name="ximagen" formControlName="ximagen" (change)="onFileSelect($event)" #Ximagen>
-                    </div>
-                  </div>
-                </div>
-                <button mat-button (click)="saveUpdateReceiptPending()">Cobrar recibo</button>
-              </div>
-
-            </form>
-
-          </mat-dialog-content>
-        </ng-template>
-
-        <ng-template #Alerta1>
-          <mat-dialog-content  style="width: 85%;">
-              <h1>
-                No es posible asociar transacciones que cuenten con recibos diferentes
-              </h1> 
-                
-          </mat-dialog-content>
-        </ng-template>
 
     </form>
 

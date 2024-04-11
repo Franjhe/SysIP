@@ -291,39 +291,6 @@ export class PaymentCancellationComponent {
     })
 
 
-    fetch(environment.apiUrl + '/api/v1/collection/search-pending' )
-    .then((response) => response.json())
-    .then(data => {
-      this.listPending = data.searchPaymentPendingData.recibo
-      this.dataSource = new MatTableDataSource(data.searchPaymentPendingData.recibo);
-
-      const listPending = data.searchPaymentPendingData.recibo
-
-      const sumaTotal = listPending.reduce((acumulador: any, recibo: { mprimabrutaext: any; }) => {
- 
-        acumulador += recibo.mprimabrutaext;
-        
-        return acumulador;
-      }, 0);
-
-      this.totalPending = sumaTotal.toFixed(2)
-
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-
-
-    })
-
-
-    fetch(environment.apiUrl + '/api/v1/collection/search-vencido' )
-    .then((response) => response.json())
-    .then(data => {
-      this.listVencido = data.searchPaymentData.recibo
-
-      
-    })
-
-
     fetch(environment.apiUrl + '/api/v1/collection/search-notification' )
     .then((response) => response.json())
     .then(data => {
@@ -403,25 +370,43 @@ export class PaymentCancellationComponent {
               cmoneda: recibo.cmoneda,
               ptasamon: recibo.ptasamon,
               monto_declarado: recibo.mpago,
-              monto_declarado_ext: recibo.mpagoext, 
+              monto_declarado_ext: recibo.monto_declarado_ext, 
               mpagoigtf: recibo.mpagoigtf,
               mpagoigtfext : recibo.mpagoigtfext,
               xreferencia : recibo.xreferencia,
               xruta: safeImageUrl,
             }));
 
-            const sumaMpagoext = transaction.recibos.reduce((total: any, item: any ) => total + item.mpagoext, 0);
-
-            const sumaMpago = transaction.recibos.reduce((total: any, item: any ) => total + item.mpago, 0);
-      
-      
-            this.totalNotificated = sumaMpago.toFixed(2)
-            this.totalNotificatedExt = sumaMpagoext.toFixed(2)
           });
 
           // Agregar el FormGroup principal al FormArray transactions
           transactionsArray.push(transactionGroup);
+
+
         });
+
+        let sumaMpago = 0;
+        let sumaMpagoExt = 0;
+
+        // Iterar sobre cada objeto en el array
+        data.searchPaymentReport.forEach((objeto:any) => {
+            // Iterar sobre los recibos de cada objeto
+            objeto.recibos.forEach((recibo:any) => {
+                // Sumar el valor de mpago al total
+                sumaMpago += recibo.mpago;
+            });
+        });
+
+        data.searchPaymentReport.forEach((objeto:any) => {
+          // Iterar sobre los recibos de cada objeto
+          objeto.recibos.forEach((recibo:any) => {
+              // Sumar el valor de mpago al total
+              sumaMpagoExt += recibo.monto_declarado_ext;
+          });
+      });
+
+      this.totalNotificated = sumaMpago.toFixed(2)
+      this.totalNotificatedExt = sumaMpagoExt.toFixed(2)
 
     })
 
@@ -637,273 +622,9 @@ export class PaymentCancellationComponent {
 
   }
 
-  saveUpdateReceiptPending(){
-
-    const fecha = new Date()
-    const savePaymentTrans = {
-      receipt : this.dataReceiptPendingB,
-      casegurado: this.asegurado,
-      mpago : this.mountBs,
-      mpagoext : this.mountIGTF,
-      ptasamon : this.bcv,
-      freporte : fecha ,
-      cprog : 'Cobranza web',
-      iestadorec : 'C',
-      iestado : 1,
-      cusuario: this.currentUser,
-      ifuente : 'Web_Sys',
-    }
-
-        //primero llenamos el recipo y la tabla de transacciones 
-        this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe(async (response: any) => {
-
-          const transaccion = response.ctransaccion.result
-    
-          //obtenemos el codigo de transaccion 
-          if(transaccion){
-  
-              const formData = new FormData();
-              formData.append('file', this.updateReceiptPending.get('ximagen')?.value!);
-          
-              //cargamos las imagenes con el codigo de transaccion
-              this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((response: any) => {
-                  const rutaimage  =  response.uploadedFile.filename //ruta de imagen por registro 
-    
-                  if(this.updateReceiptPending.get('cmoneda')?.value == "USD" ){
-                    this.transferList.push({
-                      cmoneda:  this.updateReceiptPending.get('cmoneda')?.value,
-                      cbanco: this.updateReceiptPending.get('cbanco')?.value,
-                      cbanco_destino:  this.updateReceiptPending.get('cbanco_destino')?.value,
-                      mpago: this.mountBs,
-                      mpagoext: this.mount,
-                      mpagoigtf: this.mountBsP,
-                      mpagoigtfext: this.mountP ,
-                      mtotal: this.mountBsExt,
-                      mtotalext: this.mountIGTF,
-                      ptasamon: this.bcv,
-                      ptasaref: 0,        
-                      xreferencia:  this.updateReceiptPending.get('xreferencia')?.value!,
-                      ximagen: rutaimage,
-                    });
-                  }
-                  if(this.updateReceiptPending.get('cmoneda')?.value == "Bs"){
-                    this.transferList.push({
-                      cmoneda:  this.updateReceiptPending.get('cmoneda')?.value,
-                      cbanco:this.updateReceiptPending.get('cbanco')?.value,
-                      cbanco_destino: this.updateReceiptPending.get('cbanco_destino')?.value,
-                      mpago: this.mountBs,
-                      mpagoext: this.mount,
-                      mpagoigtf: 0,
-                      mpagoigtfext: 0 ,
-                      mtotal:this.mountBs,
-                      mtotalext: this.mount,
-                      ptasamon: 0,
-                      ptasaref: this.bcv,       
-                      xreferencia: this.updateReceiptPending.get('xreferencia')?.value!,
-                      ximagen: rutaimage,
-                    });
-                  }
-    
-                  const reporData = {
-                    report : this.transferList,
-                    ctransaccion : transaccion,
-                    casegurado: this.asegurado,
-    
-                  }
-                  if(response.status){
-                    this.http.post(environment.apiUrl + '/api/v1/collection/create-report', reporData).subscribe((response: any) => {
-    
-                      this.toast.open(response.message, '', {
-                        duration: 5000,
-                        verticalPosition: 'top',
-                        panelClass: ['success-toast']
-                      });  
-                      location.reload()
-    
-                    })
-    
-                  }
-              
-              })
-    
-            await this.toast 
-          }
-    
-        })   
-  }
-
-  validationOperation(){
-    this.usd = true
-      this.updateReceiptPending.disable()
-      this.updateReceiptPending.get('itransaccion')?.enable()
-      this.updateReceiptPending.get('cmoneda')?.enable()
-      this.updateReceiptPending.get('mpago')?.enable()
-      this.updateReceiptPending.get('ximagen')?.enable()
-      this.updateReceiptPending.get('iestadorec ')?.enable()
-  }
-
-  validateMount(){
-    let valor = this.updateReceiptPending.get('mpago')?.value || ''
-    let moneda = this.updateReceiptPending.get('cmoneda')?.value || ''
-
-    let primaBS = this.bcv * this.dataReceiptPending[0].mprimabrutaext
-    this.error = false 
-
-
-    if(moneda == 'BS'){
-      if(valor < this.dataReceiptPending[0].mprimabruta){
-        this.updateReceiptPending.get('mpago')?.setValue('')
-        this.error = true
-        this.messajeError = 'El monto no puede ser menor al deudor'
-
-      }
-      else if(valor > this.dataReceiptPending[0].mprimabruta){
-        this.updateReceiptPending.get('mpago')?.setValue('')
-        this.messajeError = 'El monto no puede ser mayor al deudor'
-        this.error = true
-
-      }
-      else if(parseInt(valor) < primaBS){
-        this.updateReceiptPending.get('mpago')?.setValue('')
-        this.error = true
-        this.messajeError = 'El monto no puede ser menor al deudor'
-
-      }
-      else if(primaBS > parseInt(valor)){
-        this.updateReceiptPending.get('mpago')?.setValue('')
-        this.messajeError = 'El monto no puede ser mayor al deudor'
-        this.error = true
-      }
-    }
-
-    if(moneda == 'USD'){
-      if(valor < this.dataReceiptPending[0].mprimabrutaext){
-        this.updateReceiptPending.get('mpago')?.setValue('')
-        this.error = true
-        this.messajeError = 'El monto no puede ser menor al deudor'
-      }
-      if(valor > this.dataReceiptPending[0].mprimabrutaext){
-        this.updateReceiptPending.get('mpago')?.setValue('')
-        this.messajeError = 'El monto no puede ser mayor al deudor'
-        this.error = true
-      }
-    }
-
-    if(moneda == ''){
-      this.updateReceiptPending.get('mpago')?.setValue('')
-      this.messajeError = 'Seleccione la moneda de registro de Pago'
-      this.error = true 
-    }
-
-  }
 
   changeError(){
     this.error = false 
-
-  }
-
-  onFileSelect(event : any ){
-
-    const file = event.target.files[0]
-
-    this.updateReceiptPending.get('ximagen')?.setValue(file)
-
-  }
-
-  calculateMount(){
-
-    this.mount = this.updateReceipt.get('mpago')?.value //suma de los dolares brutos
-
-    const operation = this.mount * this.bcv
-    this.mountBs = operation.toFixed(2)  //dolares brutos convertidos en bolivares 
-
-    const mountIGTF = this.mount + ((3/100)*this.mount) 
-    this.mountIGTF = mountIGTF.toFixed(2) //dolares netos
-
-    const mountBs = this.mountIGTF*this.bcv
-    this.mountBsExt = mountBs.toFixed(2) //bolivares netos
-
-    const porcentajeBs = this.bcv * ((3/100)*this.mount) 
-    this.mountBsP = porcentajeBs.toFixed(2) //porcentaje del igtf en bolivares 
-
-    const porcentaje = (3/100)*this.mount
-    this.mountP = porcentaje.toFixed(2) //porcentaje del igtf en dolares  
-
-  }
-
-  changeStatusPm(){
-    if(this.pmovil == false){
-      this.pmovil = true
-    }else{
-      this.pmovil = false
-    }
-
-    if(this.usd == true){
-      this.usd = false
-    }
-    if(this.depositoUSD == true){
-      this.depositoUSD = false
-    }
-    if(this.trans == true){
-      this.trans = false
-    }
-
-    this.updateReceiptPending.enable()
-
-    
-  }
-
-  changeStatusTrans(){
-    if(this.pmovil == true){
-      this.pmovil = false
-    }
-    if(this.usd == true){
-      this.usd = false
-    }
-    if(this.depositoUSD == true){
-      this.depositoUSD = false
-    }
-    if(this.trans == false){
-      this.trans = true
-    }
-    
-    this.updateReceiptPending.enable()
-
-  }
-
-  changeStatusTransCustodia(){
-    if(this.pmovil == true){
-      this.pmovil = false
-    }
-
-    if(this.depositoUSD == false){
-      this.depositoUSD = true
-    }
-    if(this.trans == true){
-      this.trans = false
-    }
-    
-    this.updateReceiptPending.enable()
-
-  }
-
-  changeStatusUSD(){
-    if(this.usd == false){
-      this.usd = true
-    }else{
-      this.usd = false
-    }
-
-    if(this.pmovil == true){
-      this.pmovil = false
-    }
-    if(this.depositoUSD == true){
-      this.depositoUSD = false
-    }
-    if(this.trans == true){
-      this.trans = false
-    }
-    this.updateReceiptPending.enable()
 
   }
 

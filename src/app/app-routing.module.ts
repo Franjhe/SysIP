@@ -7,6 +7,7 @@ import { Page500Component } from './views/pages/page500/page500.component';
 import { LoginComponent } from './views/pages/login/login.component';
 import { RegisterComponent } from './views/pages/register/register.component';
 import { PaymentReportComponent } from './views/collection/payment-report/payment-report.component';
+import { SelfManagementComponent } from './views/emissions/self-management/self-management.component';
 
 const routes: Routes = [
   {
@@ -113,6 +114,13 @@ const routes: Routes = [
     component: PaymentReportComponent,
     data: {
       title: 'Payment Report '
+    }
+  },
+  {
+    path: 'self-management',
+    component: SelfManagementComponent,
+    data: {
+      title: 'Self Management '
     }
   },
   {

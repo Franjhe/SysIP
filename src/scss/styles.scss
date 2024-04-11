@@ -160,3 +160,13 @@ input[type=number] { -moz-appearance:textfield; }
   width: 100%;
   height: 100%;
 }
+
+.mat-mdc-tab-body-content {
+  height: 100%;
+  overflow: unset;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #ffffff transparent;
+}
