@@ -1175,19 +1175,32 @@ export class AutomobileComponent {
           });
         }
 
-        if (this.currentUser.data.crol != 7) {
-          this.planList = this.planList.filter(plan => plan.id !== 14);
-          this.planList = this.planList.filter(plan => plan.id !== 15);
-          this.planList = this.planList.filter(plan => plan.id !== 16);
-          this.planList = this.planList.filter(plan => plan.id !== 17);
+        // if (this.currentUser.data.crol != 7) {
+        //   console.log('holaaaaa')
+        //   this.planList = this.planList.filter(plan => plan.id !== 14);
+        //   this.planList = this.planList.filter(plan => plan.id !== 15);
+        //   this.planList = this.planList.filter(plan => plan.id !== 16);
+        //   this.planList = this.planList.filter(plan => plan.id !== 17);
 
-        }else if(this.currentUser.data.crol != 5){
-          this.planList = this.planList.filter(plan => plan.id !== 14);
-          this.planList = this.planList.filter(plan => plan.id !== 15);
-          this.planList = this.planList.filter(plan => plan.id !== 16);
-          this.planList = this.planList.filter(plan => plan.id !== 17);
+        // }else if(this.currentUser.data.crol != 5){
+        //   console.log('todo bien?')
+        //   this.planList = this.planList.filter(plan => plan.id !== 14);
+        //   this.planList = this.planList.filter(plan => plan.id !== 15);
+        //   this.planList = this.planList.filter(plan => plan.id !== 16);
+        //   this.planList = this.planList.filter(plan => plan.id !== 17);
+        //   this.planList = this.planList.filter(plan => plan.id !== 22);
+        // }
 
+        if (this.currentUser.data.crol === 5 || this.currentUser.data.crol === 7) {
+          
+        }else{
+          this.planList = this.planList.slice(0, 6);
         }
+        // } else {
+        //   // Show only the first 6 plans
+        //   this.planList = this.planList.slice(0, 6);
+        //   console.log('Mostrar solo los primeros 6 planes');
+        // }
         
         if(this.ccotizacion){
           const selectedId = parseInt(this.cplan);
