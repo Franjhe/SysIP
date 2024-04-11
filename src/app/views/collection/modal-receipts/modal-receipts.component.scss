@@ -1,0 +1,38 @@
+.mat-mdc-row .mat-mdc-cell {
+    // border-bottom: 1px solid transparent;
+    // border-top: 1px solid transparent;
+  }
+  
+  .mat-mdc-row:hover .mat-mdc-cell {
+    border-color: currentColor;
+    background-color: rgb(245, 245, 245);
+  }
+
+  .mdc-data-table__cell, .mdc-data-table__header-cell {
+    padding: 0 4px 0 4px;
+  }
+  
+  .footer-table {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+  
+  mat-form-field {
+    width: 100%;
+  }
+  
+  input[disabled] {
+    color: black;
+  }
+  
+  .mat-mdc-row .mat-mdc-cell .dis {
+    border-bottom: 1px solid transparent;
+    border-top: 1px solid transparent;
+  }
+
+  ::ng-deep .cdk-overlay-container {
+    /* Do you changes here */
+    position: fixed; 
+    z-index: 2000;
+  }

@@ -13,6 +13,7 @@ import { from, Observable } from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
 import { clear } from 'console';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { ModalReceiptsComponent } from '../modal-receipts/modal-receipts.component';
 
 export interface PaymentRequest {
   csolpag: string
@@ -164,7 +165,7 @@ export class PaymentRequestsComponent {
 
 
   showDetailPaymentRequest(csolpag: any, index: any) {
-
+    localStorage.setItem('csolpag', csolpag);
     let data = {
       csolpag: csolpag
     }
@@ -201,31 +202,42 @@ export class PaymentRequestsComponent {
 
   }
 
-  showDetailReceipts() {
-    this.dialogDetailReceipts = this.dialog.open(this.detailReceipts);
+  
 
-    const open$ = this.dialogDetailReceipts.afterOpened().subscribe( (result: any) => {
-      console.log(result);
-      alert('lalalala')
-      this.tableDetailReceipts = new MatTableDataSource(this.defaultTableDetailReceipts.data),
-      this.allPaginator;
-      // setTimeout(() => this.tableDetailReceipts.paginator = this.allPaginator)
-      this.tableDetailReceipts.paginator = this.allPaginator;
-    }
-      // alert('oaiejfwa'),
-    );
-    // var opened = this.dialog.afterOpened.pipe(
-    //   Map ? (() => this.tableDetailReceipts.paginator = this.allPaginator)
-    //   );
-    // this.tableDetailReceipts.paginator = this.paginator2;
-    // this.dialogDetailReceipts.afterOpened(() => {
-    //   this.tableDetailReceipts.paginator = this.allPaginator;
-
-    // });
-
-    // return 
-
+  showDetailReceipts(): void {
+    
+    const dialogRef = this.dialog.open(ModalReceiptsComponent, {
+      data: {
+        csolpag: '14'
+      }
+    });
   }
+
+  // showDetailReceipts() {
+  //   this.dialogDetailReceipts = this.dialog.open(this.detailReceipts);
+
+  //   const open$ = this.dialogDetailReceipts.afterOpened().subscribe( (result: any) => {
+  //     console.log(result);
+  //     alert('lalalala')
+  //     this.tableDetailReceipts = new MatTableDataSource(this.defaultTableDetailReceipts.data),
+  //     this.allPaginator;
+  //     // setTimeout(() => this.tableDetailReceipts.paginator = this.allPaginator)
+  //     this.tableDetailReceipts.paginator = this.allPaginator;
+  //   }
+  //     // alert('oaiejfwa'),
+  //   );
+  //   // var opened = this.dialog.afterOpened.pipe(
+  //   //   Map ? (() => this.tableDetailReceipts.paginator = this.allPaginator)
+  //   //   );
+  //   // this.tableDetailReceipts.paginator = this.paginator2;
+  //   // this.dialogDetailReceipts.afterOpened(() => {
+  //   //   this.tableDetailReceipts.paginator = this.allPaginator;
+
+  //   // });
+
+  //   // return 
+
+  // }
   // this.dialog.afterOpened()
   // ajaja() {
   //   alert('owaeifjoae');
@@ -365,7 +377,7 @@ export class PaymentRequestsComponent {
       }
     );
 
-    return this.dialog.closeAll();
+    // return this.dialog.closeAll();
   }
 
   sortData(sort: Sort) {
@@ -438,7 +450,7 @@ export class PaymentRequestsComponent {
 export class ComponentB {
   constructor(
     public dialogRef: MatDialogRef<ComponentB>
-  ) {}
+  ) { }
 
   onUpload(): void {
     // upload stuff
