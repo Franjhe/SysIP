@@ -78,7 +78,7 @@
 
         </table>
         <hr>
-        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+        <mat-paginator #allPaginator="matPaginator" [pageSizeOptions]="[5, 10, 25, 100]" ></mat-paginator>
 
         <!-- <div class="text-center mt-5">
             <button mat-raised-button>Procesar solicitudes de pago</button>
@@ -171,7 +171,38 @@
                                     value="{{paymentRequest.cproductor}} - {{paymentRequest.xbeneficiario}}" disabled>
                             </mat-form-field>
                         </div>
-                        <div class="col-2">
+                        <div class="col-3">
+                            <mat-form-field>
+                                <mat-label>Monto Movimiento (Bs):</mat-label>
+                                <input matInput type="text" value="Bs. {{paymentRequest.mpago}}" disabled>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3">
+                            <mat-form-field>
+                                <mat-label>Monto Movimiento (Usd):</mat-label>
+                                <input matInput type="text" value="$. {{paymentRequest.mpagoext}}"
+                                disabled>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3">
+                            <mat-form-field>
+                                <mat-label>Moneda Movimiento:</mat-label>
+                                <input matInput type="text" value="{{paymentRequest.xconcepto_3}}" disabled>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3">
+                            <mat-form-field>
+                                <mat-label>Moneda Pago Orden:</mat-label>
+                                <input matInput type="text" value="{{paymentRequest.cmoneda}}" disabled>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12">
+                            <mat-form-field>
+                                <mat-label>Observaciones:</mat-label>
+                                <input matInput type="text" value="{{paymentRequest.xobserva}}" disabled>
+                            </mat-form-field>
+                        </div>
+                        <!-- <div class="col-2">
                             <mat-form-field>
                                 <mat-label>Monto total Bs.:</mat-label>
                                 <input matInput type="text" value="Bs. {{paymentRequest.mpago}}" disabled>
@@ -189,7 +220,7 @@
                                 <mat-label>Observaciones:</mat-label>
                                 <input matInput type="text" value="{{paymentRequest.xobserva}}" disabled>
                             </mat-form-field>
-                        </div>
+                        </div> -->
 
                         <!-- <div class="col-3">
                             <mat-form-field class="example-full-width">
@@ -226,14 +257,14 @@
                                 (click)="cancelPaymentRequests()">Cancelar</button></div>
                         <!-- <div class="col col-8"></div> -->
                         <div class="col col-3 text-center">
-                            <button mat-raised-button (click)="showDetailReceipts()" color="primary">Ver
+                            <button mat-raised-button (click)="showDetailReceipts()" color="accent">Ver
                                 Recibos</button>
                         </div>
                         <div class="col col-3 text-center">
-                            <button mat-raised-button (click)="printPaymentRequest()" color="accent">Imprimir</button>
+                            <button mat-raised-button (click)="printPaymentRequest()" color="warn">Imprimir</button>
                         </div>
                         <div class="col col-3 text-center">
-                            <button mat-raised-button (click)="proccessPaymentRequests(paymentRequest.csolpag)"
+                            <button mat-raised-button (click)="proccessPaymentRequests(paymentRequest.csolpag)" color="primary"
                                 [disabled]="paymentRequest.xstatsol == 'Cancelado'">Procesar
                                 Orden</button>
                         </div>
@@ -249,6 +280,7 @@
 
 
     <ng-template #detailReceipts>
+        <!-- {{}} -->
         <mat-dialog-content>
 
             <mat-form-field>
@@ -263,7 +295,7 @@
                 </ng-container>
                 <ng-container matColumnDef="1">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Recibo/Préstamo </th>
-                    <td mat-cell *matCellDef="let row"> {{row.crecibo}} </td>
+                    <td mat-cell *matCellDef="let row"> {{row.cnrecibo}} </td>
                 </ng-container>
                 <ng-container matColumnDef="2">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Tipo Mov. </th>
@@ -313,12 +345,13 @@
                     <td class="mat-cell" colspan="4">No se han encontrado resultados</td>
                 </tr>
             </table>
-            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+            <hr>
+            <mat-paginator #allPaginator="matPaginator" [pageSizeOptions]="[5, 10, 25, 100]" ></mat-paginator>
 
             <hr>
 
             <div class="footer-table">
-                <b>Total co:</b>
+                <b>Total CO:</b>
                 <span>Movimiento Bs: {{total_movcom_pr.toFixed(2)}}</span>
                 <span>Movimiento Usd: {{total_movcomext_pr.toFixed(2)}}</span>
             </div>

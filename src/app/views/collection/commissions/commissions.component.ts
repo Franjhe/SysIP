@@ -29,6 +29,7 @@ export interface PaymentRequest {
   xobservaciones?: any;
   recibos: any;
   cmoneda: any;
+  cmonedaOrden: any;
 }
 
 @Component({
@@ -37,6 +38,10 @@ export interface PaymentRequest {
   styleUrls: ['./commissions.component.scss']
 })
 export class CommissionsComponent {
+  paymentRequestFormGroup = this._formBuilder.group({
+    cmonedaOrden: ['', Validators.required],
+  });
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('paginator2') paginator2!: MatPaginator;
@@ -51,13 +56,15 @@ export class CommissionsComponent {
   dataSource = new MatTableDataSource<any>;
   defaultDataSource = new MatTableDataSource<any>;
 
-  displayedColumns2: string[] = ['select', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9','10','11'];
+  displayedColumns2: string[] = ['select', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
   tableCommisionPorProductor = new MatTableDataSource<any>;
   defaultableCommisionPorProductor = new MatTableDataSource<any>;
+  commisionPorProductorOriginal = new MatTableDataSource<any>;
 
   selection = new SelectionModel<any>(true, []);
   selection2 = new SelectionModel<any>(true, []);
 
+  listMonedaOrden: any = [];
 
   rowsABuscar: any = [];
   listPaymentReceipts: any = [];
@@ -137,7 +144,23 @@ export class CommissionsComponent {
 
   applyFilter2(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.tableCommisionPorProductor.filter = filterValue.trim().toLowerCase();
+
+    console.log(filterValue);
+    if (filterValue) {
+      this.tableCommisionPorProductor.filter = filterValue.trim().toLowerCase();
+      this.defaultableCommisionPorProductor = new MatTableDataSource(this.tableCommisionPorProductor.filteredData);
+      this.tableCommisionPorProductor = new MatTableDataSource(this.tableCommisionPorProductor.filteredData);
+      // this.tableCommisionPorProductor.filteredData.forEach(row => this.selection2.select(row));
+    } else {
+      this.defaultableCommisionPorProductor = new MatTableDataSource(this.commisionPorProductorOriginal.data);
+      this.tableCommisionPorProductor = new MatTableDataSource(this.commisionPorProductorOriginal.data);
+      // this.tableCommisionPorProductor.data.forEach(row => this.selection2.select(row));
+    }
+    this.calculateTotalCommissions();
+
+    this.selection2.clear();
+    // console.log(this.selection2.selected);
+
   }
 
   clearData() {
@@ -160,6 +183,7 @@ export class CommissionsComponent {
     this.http.post(environment.apiUrl + '/api/v1/commissions/search-insurerCommissions/', data).subscribe((response: any) => {
       // this.tableCommisionPorProductor = new MatTableDataSource<any>;
       // console.log(response.returnData.search);
+      this.commisionPorProductorOriginal = new MatTableDataSource(response.returnData.search);
       this.defaultableCommisionPorProductor = new MatTableDataSource(response.returnData.search);
       this.tableCommisionPorProductor = new MatTableDataSource(response.returnData.search);
       this.tableCommisionPorProductor.paginator = this.paginator2;
@@ -170,6 +194,7 @@ export class CommissionsComponent {
   }
 
   showInsurerComissions(config?: MatDialogConfig) {
+
     this.selection2.clear();
     this.clearData();
 
@@ -198,7 +223,7 @@ export class CommissionsComponent {
 
     // console.log(this.selection2);
     this.selection2.selected.forEach(row => (
-      // console.log(row),
+      console.log(row),
       this.total_comision += row.mmovcom,
       this.total_comisionext += row.mmovcomext,
       this.total_cmoneda = row.cmoneda
@@ -220,7 +245,7 @@ export class CommissionsComponent {
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
-  if (this.isAllSelected()) {
+    if (this.isAllSelected()) {
       this.selection.clear();
     } else {
       this.dataSource.data.forEach(row => this.selection.select(row));
@@ -230,7 +255,7 @@ export class CommissionsComponent {
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected2() {
     const numSelected = this.selection2.selected.length;
-    const numRows = this.tableCommisionPorProductor.data.length;    
+    const numRows = this.tableCommisionPorProductor.data.length;
     return numSelected === numRows;
     // this.varable1 = 100;
   }
@@ -261,14 +286,20 @@ export class CommissionsComponent {
   calculatePaymentCommissions() {
 
     this.calculateTotalCommissions();
-    this.dataSource.data[this.dataSourceindex].mmovcom = this.total_comision;
-    this.dataSource.data[this.dataSourceindex].mcomtot = this.total_comision;
-    this.dataSource.data[this.dataSourceindex].mcomexttot = this.total_comisionext;
-    // console.log('↓');
+    // console.log(this.total_comision);
+
+    this.dataSource.data[this.dataSourceindex].mmovcomtot = this.total_comision;
+    // this.dataSource.data[this.dataSourceindex].mcomtot = this.total_comision;
+    this.dataSource.data[this.dataSourceindex].mmovcomexttot = this.total_comisionext;
+    console.log('↓');
+
+    console.log(this.dataSource.data[this.dataSourceindex]);
     this.dataSource.data[this.dataSourceindex].recibos = [];
     // console.log();
 
     this.selection2.selected.forEach(element => {
+      // console.log(element);
+
       this.dataSource.data[this.dataSourceindex].recibos.push(element);
     });
 
@@ -278,6 +309,15 @@ export class CommissionsComponent {
     this.selection2.clear();
 
     this.dialog.closeAll();
+  }
+
+  changeMonedaPago(e: any) {
+    console.log(e);
+    
+    // console.log(e.ariaLabel);
+    
+    this.listMonedaOrden[e.source.id] = e.value;
+    // console.log(this.listMonedaOrden);
   }
 
   generatePaymentRequests() {
@@ -304,12 +344,16 @@ export class CommissionsComponent {
       // this.listPaymentReceipts.push(element.crecibo)
       console.log("--->>>>-----<<<<<<----");
       console.log(this.rowsABuscar);
+      let xmoneda = this.paymentRequestFormGroup.get('cmonedaOrden')?.value;
+      // console.log(xmoneda);
+
 
 
       this.http.post(environment.apiUrl + '/api/v1/commissions/search-data/' + element.cproductor, '').subscribe((response: any) => {
         console.log(element.cproductor);
 
-          // this.listPaymentRequest.length
+        // this.listPaymentRequest.length
+        // paymentRequestFormGroup
 
         response.returnData.search.forEach((e: any) => {
           var paymentRequest: PaymentRequest = {
@@ -329,7 +373,8 @@ export class CommissionsComponent {
             mmontototal: element.mmovcomexttot,
             recibos: element.recibos,
             cmoneda: element.cmoneda,
-            xobservaciones: ''
+            cmonedaOrden: this.paymentRequestFormGroup.get('cmonedaOrden')?.value,
+            xobservaciones: '',
           }
           this.listPaymentRequest.push(paymentRequest);
         });
@@ -343,6 +388,33 @@ export class CommissionsComponent {
     return this.dialog.open(this.dialogPaymentRequest, config);
   }
 
+
+
+  // changeMonedaPago() {
+
+  //   this.reset_moneda_pago();
+  //   let cmoneda = this.paymentRequestFormGroup.get('cmoneda')?.value;
+  //   // let mmpago = (<HTMLInputElement>document.getElementById(`mmpago`)).value;
+  //   console.log(xmoneda);
+  //   // alert(xmoneda);
+  //   // let mpago_bs = (<HTMLInputElement>document.getElementById(`mpago`)).value;
+  //   if (xmoneda == 'Bs') {
+  //     this.mpagosol_bs = true;
+  //     this.paymentRequestFormGroup.get('mpago')?.setValue(this.paymentRequest.mpago);
+  //   }
+  //   if (xmoneda == '$') {
+  //     this.paymentRequestFormGroup.get('mpagoext')?.setValue(this.paymentRequest.mpagoext);
+  //     this.mpagosol_ext = true;
+  //   }
+  //   if (xmoneda == 'M') {
+  //     this.paymentRequestFormGroup.get('mpago')?.setValue('0.00');
+  //     this.paymentRequestFormGroup.get('mpagoext')?.setValue('0.00');
+  //     this.mpagosol_mix = true;
+  //   }
+  //   // console.log(this.paymentRequestFormGroup.get('mpago')?.value);
+
+  // }
+
   cancelPaymentRequests(config?: MatDialogConfig) {
     this.listPaymentRequest = [];
     return this.dialog.closeAll();
@@ -353,19 +425,19 @@ export class CommissionsComponent {
     if (window.confirm('¿Desea generar las órdenes de pago?')) {
 
       for (let i = 0; i < this.listPaymentRequest.length; i++) {
-        const element = this.listPaymentRequest[i];
+        // const element = this.listPaymentRequest[i];
+
+        this.listPaymentRequest[i].cmonedaOrden = this.listMonedaOrden[i]
         this.listPaymentRequest[i].xobservaciones = (<HTMLInputElement>document.getElementById(`observaciones${i}`)).value;
+        
       }
 
       let data = {
         list: this.listPaymentRequest
       }
 
-      // console.log(this.observaciones);
-      // let observaciones = 
-      // console.log(observaciones);
+      console.log(this.listPaymentRequest);
 
-      // i = 0;
       this.http.post(environment.apiUrl + '/api/v1/commissions/create-paymentRequests', data).subscribe((response: any) => {
         alert(response.returnData.result.message);
         location.reload();
@@ -374,6 +446,8 @@ export class CommissionsComponent {
       return this.dialog.closeAll();
     }
   }
+
+
 
   closeDialog() {
     return this.dialog.closeAll();

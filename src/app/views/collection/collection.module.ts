@@ -13,6 +13,7 @@ import { PaymentCancellationComponent } from './payment-cancellation/payment-can
 import { ClipboardModule } from 'ngx-clipboard';
 import { CommissionsComponent } from './commissions/commissions.component';
 import { PaymentRequestsComponent } from './payment-requests/payment-requests.component';
+import { ModalReceiptsComponent } from './modal-receipts/modal-receipts.component';
 import { PaymentAdministrationComponent } from './payment-administration/payment-administration.component';
 
 @NgModule({
@@ -21,6 +22,7 @@ import { PaymentAdministrationComponent } from './payment-administration/payment
     PaymentCancellationComponent,
     CommissionsComponent,
     PaymentRequestsComponent,
+    ModalReceiptsComponent,
     PaymentAdministrationComponent
   ],
   imports: [
