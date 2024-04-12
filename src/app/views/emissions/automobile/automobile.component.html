@@ -285,8 +285,13 @@
               </div>
             </div>
 
-            <div class="row justify-content-center">
-
+            <div class="row justify-content-center" *ngIf="clasificacionMotos">
+              <div class="col-3">
+                <mat-form-field>
+                  <mat-label>Clasificacion para Casco</mat-label>
+                  <input matInput placeholder="Clasificacion para Casco" formControlName="xclasificacion" (change)="Clasification()">
+                </mat-form-field>
+              </div>
             </div>
 
             <div class="card">

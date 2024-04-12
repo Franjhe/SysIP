@@ -1275,7 +1275,7 @@ export class PdfGenerationService {
 		if (this.receiptList.length > 0) {
 			this.receiptList.forEach(function (row) {
 				let dataRow = [];
-				dataRow.push({ text: row.cnrecibo, margin: [10, 0, 0, 0], bold: true, border: [false, false, false, false] });
+				dataRow.push({ text: row.crecibo, margin: [10, 0, 0, 0], bold: true, border: [false, false, false, false] });
 				dataRow.push({ text: row.fdesde_rec, alignment: 'right', border: [false, false, false, false] });
 				dataRow.push({ text: row.fhasta_rec, alignment: 'right', border: [false, false, false, false] });
 				dataRow.push({ text: row.fcobro, alignment: 'right', border: [false, false, false, false] });
