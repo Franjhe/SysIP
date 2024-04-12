@@ -25,7 +25,12 @@ export interface PaymentRequest {
   xcorredor: string;
   mpago: any;
   mpagoext: any;
-  mmontototal: any;
+  mpagosol: any;
+  mpagosolext: any;
+  pislr: any;
+  mislr: any;
+  mislrext: any;
+  // mmontototal: any;
   xobservaciones?: any;
   recibos: any;
   cmoneda: any;
@@ -370,7 +375,12 @@ export class CommissionsComponent {
             xcorredor: e.xcliente.trim(),
             mpago: element.mmovcomtot,
             mpagoext: element.mmovcomexttot,
-            mmontototal: element.mmovcomexttot,
+            mpagosol: '700.00',
+            mpagosolext: '110.00',
+            pislr: '2%',
+            mislr: '5.00',
+            mislrext: '0.70',
+            // mmontototal: element.mmovcomexttot,
             recibos: element.recibos,
             cmoneda: element.cmoneda,
             cmonedaOrden: this.paymentRequestFormGroup.get('cmonedaOrden')?.value,
