@@ -611,10 +611,12 @@ export class PaymentCancellationComponent {
 
     if(creds.at(i).get('iestadorec')?.value == 'ER'){
       this.revision = true
+      this.cobradoSAF = false
     }
+    
     else if(creds.at(i).get('iestadorec')?.value == 'CS'){
       this.cobradoSAF = true
-    }
+      this.revision = false    }
     else{
       this.revision = false
 

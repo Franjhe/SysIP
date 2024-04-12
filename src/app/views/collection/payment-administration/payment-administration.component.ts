@@ -40,6 +40,9 @@ export class PaymentAdministrationComponent {
   @ViewChild('PagoMovil') PagoMovil!: TemplateRef<any>;
   @ViewChild('DepositoUSD') DepositoUSD!: TemplateRef<any>;
 
+  transaccionUnica : boolean = false
+
+
   bcv : any
   targetBankList : any = []
   selectedFiles?: FileList;
@@ -79,6 +82,8 @@ export class PaymentAdministrationComponent {
   listaNombres: any = []
   transaccion : any
 
+  listaRecibos : any = []
+
   bankInternational : any = []
   bankNational: any = []
 
@@ -91,25 +96,14 @@ export class PaymentAdministrationComponent {
     receipt :  this._formBuilder.array([]),
     transfer : this._formBuilder.array([]),
     xcedula: [''],
+    iestadorec : [''],
+    xobservacion :[''],
+    mdiferencia : [''],
+    idiferencia : [''],
+    cmoneda :[''],
+    recibo: [''],
   });
 
-  receiptFormGroup = this._formBuilder.group({
-    xpago: [''],
-    femision: [''],
-    fdesde: ['', Validators.required],
-    fhasta: ['', Validators.required],
-    cmetodologiapago: ['', Validators.required],
-    ctipopago: [''],
-    cbanco: [''],
-    cbanco_destino: [''],
-    fcobro: [''],
-    xreferencia: [''],
-    mprima_pagada: [''],
-    mpagado: [''],
-    xmoneda: [''],
-    mprima_accesorio: [''],
-    irecibo: ['']
-  });
   itipo!: any ;
   amountDollar!: any ;
   amountBs!: any ;
@@ -123,6 +117,9 @@ export class PaymentAdministrationComponent {
   PositiveBalance : any
   PositiveBalanceBool :boolean = false;
   correo : any
+
+  revision : boolean = false
+  cobradoSAF : boolean = false
 
 
   constructor( private _formBuilder: FormBuilder,
@@ -488,19 +485,26 @@ export class PaymentAdministrationComponent {
       });
     });
 
+    if(this.selection.selected.length == 1){
+      this.transaccionUnica = true
+    }
+
     this.addPayment()
 
   }
 
   determinarSiPuedeAvanzar(){
-    if(this.diference){
 
-      const creds = this.searchReceipt.get("receipt") as FormArray
+    const creds = this.searchReceipt.get("receipt") as FormArray
+    this.listaRecibos = []
+    if(this.diference){
 
       creds.value.forEach((recibo:any) => {
 
         if(recibo.seleccionado && recibo.mdiferenciaext > 0){
           this.puedeAvanzar = true
+          this.listaRecibos.push({crecibo : recibo.crecibo, cnrecibo : recibo.cnrecibo});
+
         }
         else if(recibo.seleccionado && recibo.mdiferenciaext == null) {
           this.toast.open('Necesita pagar sus recibos que poseen diferencia para poder avanzar', '', {
@@ -512,7 +516,14 @@ export class PaymentAdministrationComponent {
 
       })
 
-    }else {
+    }else{
+
+      creds.value.forEach((recibo:any) => {
+        if(recibo.seleccionado){
+          this.listaRecibos.push({crecibo : recibo.crecibo, cnrecibo : recibo.cnrecibo});
+        }
+
+      })
       this.puedeAvanzar = true
     }
   }
@@ -598,6 +609,7 @@ export class PaymentAdministrationComponent {
 
     for(let i = 0; i < receipt.length; i++){
       if(receipt.value[i].seleccionado == true){
+        let montoBs = receipt.value[i].mprimabrutaext * this.bcv 
         if(receipt.value[i].cdoccob > 0){
           this.idTrans = receipt.value[i].cdoccob
           this.asegurado = receipt.value[i].asegurado
@@ -614,16 +626,15 @@ export class PaymentAdministrationComponent {
             fhasta_pol: receipt.value[i].fhasta_pol,
             fdesde_rec: receipt.value[i].fdesde_rec,
             fhasta_rec: receipt.value[i].fhasta_rec,
-            mprimabruta: receipt.value[i].mprimabruta,
+            mprimabruta: montoBs,
             mprimabrutaext: receipt.value[i].mprimabrutaext,
-            ptasamon: receipt.value[i].ptasamon,
+            ptasamon: this.bcv ,
             cproductor : receipt.value[i].cproductor,
             asegurado : receipt.value[i].asegurado,
   
           });
         }else{
           this.asegurado = receipt.value[i].asegurado
-
           this.receiptList.push({
             cnpoliza: receipt.value[i].cnpoliza,
             cnrecibo: receipt.value[i].cnrecibo,
@@ -637,9 +648,9 @@ export class PaymentAdministrationComponent {
             fhasta_pol: receipt.value[i].fhasta_pol,
             fdesde_rec: receipt.value[i].fdesde_rec,
             fhasta_rec: receipt.value[i].fhasta_rec,
-            mprimabruta: receipt.value[i].mprimabruta,
+            mprimabruta: montoBs,
             mprimabrutaext: receipt.value[i].mprimabrutaext,
-            ptasamon: receipt.value[i].ptasamon,
+            ptasamon: this.bcv ,
             cproductor : receipt.value[i].cproductor,
             asegurado : receipt.value[i].asegurado,
   
@@ -715,53 +726,100 @@ export class PaymentAdministrationComponent {
     await this.llenarlistas()
     this.Submit = true
     this.searchReceipt.disable()
-
     const fecha = new Date()
 
     if(this.selection.selected.length == 1){
-
-      this.selection.selected.forEach(item => {
-        const savePaymentTrans = {
-        group : false,
-        ctransaccion : this.idTrans,
-        receipt : this.receiptList,
-        report: this.transferList,
-        casegurado: item.cci_rif,
-        mpago : this.mountBs,
-        mpagoext : this.mountIGTF,
-        ptasamon : this.bcv,
-        freporte : fecha ,
-        cprog : 'Pg_admin',
-        cusuario : 13,
-        iestadorec : 'C',
-        ifuente : 'Web_Sys',
-        iestado : 0,
-        detalle : this.receiptList,
-        fpago : fecha,
-        cliente : item.xcliente,
-        transaccion : this.idTrans,
-        correo : item.xcorreo ,
-        ccategoria : this.searchReceipt.get('ccategoria')?.value,
-        diference: this.diference,
-        positiveBalance : this.PositiveBalanceBool
-        }
-
-        //primero llenamos el recipo y la tabla de transacciones 
-        this.http.post(environment.apiUrl + '/api/v1/collection/collect-receipt',savePaymentTrans).subscribe( (response: any) => {
-          if (response.status) {
-            this.toast.open("Registro de pago éxitoso", "Cerrar", {
-              duration: 3000,
-            });
-
+      
+      if(this.searchReceipt.get('iestadorec')?.value == 'C'){
+        this.selection.selected.forEach(item => {
+          const savePaymentTrans = {
+          group : false,
+          ctransaccion : this.idTrans,
+          receipt : this.receiptList,
+          report: this.transferList,
+          casegurado: item.cci_rif,
+          mpago : this.mountBs,
+          mpagoext : this.mountIGTF,
+          ptasamon : this.bcv,
+          freporte : fecha ,
+          cprog : 'Pg_admin',
+          cusuario : 13,
+          iestadorec : 'C',
+          ifuente : 'Web_Sys',
+          iestado : 0,
+          detalle : this.receiptList,
+          fpago : fecha,
+          cliente : item.xcliente,
+          transaccion : this.idTrans,
+          correo : item.xcorreo ,
+          ccategoria : this.searchReceipt.get('ccategoria')?.value,
+          diference: this.diference,
+          positiveBalance : this.PositiveBalanceBool
           }
-          this.uploadFile()
+  
+          //primero llenamos el recipo y la tabla de transacciones 
+          this.http.post(environment.apiUrl + '/api/v1/collection/collect-receipt',savePaymentTrans).subscribe( (response: any) => {
+            if (response.status) {
+              this.toast.open("Registro de pago éxitoso", "Cerrar", {
+                duration: 3000,
+              });
+  
+            }
+            this.uploadFile()
+  
+          })   
+          setTimeout(() => {
+            location.reload();
+          }, 3000);
+  
+        })
+      }
 
-        })   
-        setTimeout(() => {
-          location.reload();
-        }, 3000);
+      if(this.searchReceipt.get('iestadorec')?.value == 'CS'){
+        this.selection.selected.forEach(item => {
+          const savePaymentTrans = {
+          group : false,
+          msaldodif: this.searchReceipt.get('mdiferencia')?.value,
+          cmoneda_dif: this.searchReceipt.get('cmoneda')?.value,
+          receipt : this.receiptList,
+          report: this.transferList,
+          casegurado: item.cci_rif,
+          mpago : this.mountBs,
+          mpagoext : this.mountIGTF,
+          ptasamon : this.bcv,
+          freporte : fecha ,
+          cprog : 'Pg_admin',
+          cusuario : 13,
+          iestadorec : 'C',
+          ifuente : 'Web_Sys',
+          iestado : 0,
+          detalle : this.receiptList,
+          fpago : fecha,
+          cliente : item.xcliente,
+          transaccion : this.idTrans,
+          ctransaccion: this.idTrans,
+          correo : item.xcorreo ,
+          idiferencia : "H",
+          }
+  
+          //primero llenamos el recipo y la tabla de transacciones 
+          this.http.post(environment.apiUrl + '/api/v1/collection/admin-positiveBalance',savePaymentTrans).subscribe( (response: any) => {
+            if (response.status) {
+              this.toast.open("Registro de pago éxitoso", "Cerrar", {
+                duration: 3000,
+              });
+  
+            }
+            this.uploadFile()
+  
+          })   
+          setTimeout(() => {
+            location.reload();
+          }, 3000);
+  
+        })
+      }
 
-      })
 
     }else{
         const savePaymentTrans = {
@@ -802,8 +860,7 @@ export class PaymentAdministrationComponent {
           location.reload();
         }, 3000);
 
-    }
-
+    } 
 
   }
 
@@ -959,6 +1016,23 @@ export class PaymentAdministrationComponent {
     // alert(numRows);
     return numSelected === numRows;
     // this.varable1 = 100;
+  }
+
+  validateMov(){
+
+    if(this.searchReceipt.get('iestadorec')?.value == 'ER'){
+      this.revision = true
+      this.cobradoSAF = false
+    }
+    else if(this.searchReceipt.get('iestadorec')?.value== 'CS'){
+      this.cobradoSAF = true
+      this.revision = false
+
+    }
+    else{
+      this.revision = false
+    }
+
   }
 
     //Treatments
