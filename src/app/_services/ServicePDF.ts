@@ -1275,7 +1275,7 @@ export class PdfGenerationService {
 		if (this.receiptList.length > 0) {
 			this.receiptList.forEach(function (row) {
 				let dataRow = [];
-				dataRow.push({ text: row.crecibo, margin: [1, 0, 0, 0], bold: true, border: [false, false, false, false] });
+				dataRow.push({ text: row.cnrecibo, margin: [10, 0, 0, 0], bold: true, border: [false, false, false, false] });
 				dataRow.push({ text: row.fdesde_rec, alignment: 'right', border: [false, false, false, false] });
 				dataRow.push({ text: row.fhasta_rec, alignment: 'right', border: [false, false, false, false] });
 				dataRow.push({ text: row.fcobro, alignment: 'right', border: [false, false, false, false] });
@@ -2522,9 +2522,6 @@ export class PdfGenerationService {
 	}
 
 	async CreatePaymentRequestPDF(paymentRequest: any) {
-		console.log('pago pago');
-		console.log(paymentRequest.csolpag);
-
 		this.PaymentRequestPDF(paymentRequest);
 
 	}
@@ -2544,11 +2541,12 @@ export class PdfGenerationService {
 				{ text: 'TIPO MOV.:', bold: true, border: [false, false, false, false] },
 				{ text: 'FECHA:', bold: true, border: [false, false, false, false] },
 				{ text: 'PRIMA BS.:', bold: true, border: [false, false, false, false] },
+				{ text: 'PRIMA EXT.:', bold: true, border: [false, false, false, false] },
 				{ text: '% COM.:', bold: true, border: [false, false, false, false] },
 				{ text: 'COMISIÓN BS.:', bold: true, border: [false, false, false, false] },
-				{ text: 'TASA BCV:', bold: true, border: [false, false, false, false] },
 				{ text: 'COMISIÓN EXT', bold: true, border: [false, false, false, false] },
-				{ text: 'MONEDA', bold: true, border: [false, false, false, false] },
+				{ text: 'MONEDA\nRECIBO', bold: true, border: [false, false, false, false] },
+				{ text: 'TASA BCV:', bold: true, border: [false, false, false, false] },
 			]
 		);
 
@@ -2556,15 +2554,16 @@ export class PdfGenerationService {
 			movimientos.push(
 				[
 					{ text: recibo.cnpoliza, border: [false, false, false, false] },
-					{ text: recibo.crecibo, border: [false, false, false, false] },
+					{ text: recibo.cnrecibo, border: [false, false, false, false] },
 					{ text: recibo.imovcom, border: [false, false, false, false] },
 					{ text: '02-02-2020', border: [false, false, false, false] },
-					{ text: 'Bs.' + recibo.mmontoapag, border: [false, false, false, false] },
+					{ text: 'Bs. ' + recibo.mmontoapag, border: [false, false, false, false] },
+					{ text: '$. ' + recibo.mmontoapagext, border: [false, false, false, false] },
 					{ text: recibo.pcomision + '%', border: [false, false, false, false] },
-					{ text: 'Bs.' + recibo.mmovcom, border: [false, false, false, false] },
-					{ text: recibo.ptasamon, border: [false, false, false, false] },
-					{ text: '$.' + recibo.mmovcomext, border: [false, false, false, false] },
+					{ text: 'Bs. ' + recibo.mmovcom, border: [false, false, false, false] },
+					{ text: '$. ' + recibo.mmovcomext, border: [false, false, false, false] },
 					{ text: recibo.cmoneda, border: [false, false, false, false] },
+					{ text: recibo.ptasamon, border: [false, false, false, false] },
 				]
 			)
 		});
@@ -2589,9 +2588,9 @@ export class PdfGenerationService {
 								[
 									{ text: 'Telefono: +582122839619 | email: info@lamundialdeseguros.com | web: https://lamundialdeseguros.com/', fontSize: 7, alignment: 'center', border: [false, false, false, false] }
 								],
-								// [
-								// 	{ text: 'Página ' + currentPage.toString() + ' de ' + pageCount, fontSize: 7, alignment: 'center', border: [false, false, false, false] }
-								// ],
+								[
+									{ text: 'Página ' + currentPage.toString() + ' de ' + pageCount, fontSize: 7, alignment: 'center', border: [false, false, false, false] }
+								],
 							]
 						}
 					}
@@ -2657,14 +2656,14 @@ export class PdfGenerationService {
 								[
 									{ text: 'CORREDOR:', bold: true, border: [false, false, false, false] },
 									{ text: paymentRequest.cproductor + ' - ' + paymentRequest.xbeneficiario, border: [false, false, false, false], alignment: 'left' },
-									{ text: ``, bold: true, border: [false, false, false, false] },
-									{ text: ``, bold: true, border: [false, false, false, false] },
+									{ text: `MONEDA DE PAGO`, bold: true, border: [false, false, false, false] },
+									{ text: `${paymentRequest.xmoneda} (${paymentRequest.cmoneda})`, bold: true, border: [false, false, false, false], alignment: 'right'  },
 								],
 								[
 									{ text: 'OBSERVACIONES:', bold: true, border: [false, false, false, false] },
 									{ text: paymentRequest.xobservaciones, border: [false, false, false, false], alignment: 'left' },
 									{ text: `MONTO A PAGAR: `, bold: true, border: [false, false, false, false], alignment: 'right' },
-									{ text: paymentRequest.cmoneda + '.' + paymentRequest.mmontototal, border: [false, false, false, false], alignment: 'right' },
+									{ text: paymentRequest.cmoneda + '. ' + paymentRequest.mmontototal, border: [false, false, false, false], alignment: 'right' },
 								]
 							]
 						}
@@ -2684,7 +2683,7 @@ export class PdfGenerationService {
 						margin: [0, 0, 0, 3],
 						table: {
 							headerRows: 1,
-							widths: ['*', '*', '*', '*', '*', '*', '*', '*', '*', '*'],
+							widths: [37, '*', 20, 35, '*', '*', 25, '*', 30, 25, 22],
 							body: movimientos
 						}
 					},

@@ -39,7 +39,7 @@
         <!-- Name Column -->
         <ng-container matColumnDef="xnombre">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre/Denominación </th>
-            <td mat-cell *matCellDef="let row"> {{row.xnombre}} </td>
+            <td mat-cell *matCellDef="let row"> {{row.xcliente}} </td>
         </ng-container>
 
         <!-- Weight Column -->
@@ -53,8 +53,14 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Movimiento Usd. </th>
             <td mat-cell *matCellDef="let row"> $. {{row.mmovcomexttot}}</td>
         </ng-container>
+        <!-- Weight Column -->
+        <ng-container matColumnDef="moneda">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Moneda Mov. </th>
+            <td mat-cell *matCellDef="let row"> {{row.cmoneda}}</td>
+        </ng-container>
+
         <ng-container matColumnDef="detail">
-            <th mat-header-cell *matHeaderCellDef > </th>
+            <th mat-header-cell *matHeaderCellDef> </th>
             <td mat-cell *matCellDef="let row">
                 <button mat-raised-button color="primary">Detalles</button>
             </td>
@@ -69,7 +75,8 @@
     <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
 
     <div class="text-center mt-5">
-        <button mat-raised-button (click)="generatePaymentRequests()">Procesar solicitudes de pago</button>
+        <button mat-raised-button color="primary" (click)="generatePaymentRequests()">Generar solicitudes de
+            pago</button>
     </div>
     <!-- <div class="text-center mt-2">
             <button mat-raised-button >Ver solicitudes de pago</button>
@@ -122,7 +129,7 @@
                 </ng-container>
                 <ng-container matColumnDef="1">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Recibo/Préstamo </th>
-                    <td mat-cell *matCellDef="let row"> {{row.crecibo}} </td>
+                    <td mat-cell *matCellDef="let row"> {{row.cnrecibo}} </td>
                 </ng-container>
                 <ng-container matColumnDef="2">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Tipo Mov. </th>
@@ -173,7 +180,7 @@
                 </tr>
             </table>
             <hr>
-            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+            <!-- <mat-paginator #paginator2 [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator> -->
 
             <hr>
             <div class="footer-table">
@@ -190,101 +197,119 @@
 
 
     <ng-template #dialogPaymentRequest style="width: 80%;">
-        <!-- <mat-dialog-content style="width: 900px;"> -->
-        <mat-dialog-content>
-            <!-- class="mat-elevation-z8" -->
+        <form [formGroup]="paymentRequestFormGroup">
+            <!-- <mat-dialog-content style="width: 900px;"> -->
+            <mat-dialog-content>
+                <!-- class="mat-elevation-z8" -->
 
-            <div class="text-center">
-                <h2>Resúmen solicitudes de pago</h2>
-            </div>
+                <div class="text-center">
+                    <h2>Resúmen solicitudes de pago</h2>
+                </div>
 
-            <div class="row p-2" style="border: 1px solid black;"
-                *ngFor="let paymentRequest of listPaymentRequest; let i = index">
-                <!-- <div class="col-12" [ngIf]="listPaymentRequest.length == 0">
+                <div class="row p-2" style="border: 1px solid black;"
+                    *ngFor="let paymentRequest of listPaymentRequest; let i = index">
+                    <!-- <div class="col-12" [ngIf]="listPaymentRequest.length == 0">
                         <mat-form-field>
                             <input matInput type="text" value="No se encuentran órdenes de pago disponibles" disabled>
                         </mat-form-field>
                     </div> -->
-                <!--  -->
-                <div class="col-6">
-                    <mat-form-field>
-                        <mat-label>Transacción</mat-label>
-                        <input type="hidden" value="CM">
-                        <input matInput type="text" value="{{paymentRequest.xtransaccion}}" disabled>
-                        <!-- <input matInput   matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input> -->
-                    </mat-form-field>
-                </div>
-                <!-- <div class="col-3">
+                    <!--  -->
+                    <div class="col-6">
+                        <mat-form-field>
+                            <mat-label>Transacción</mat-label>
+                            <input type="hidden" value="CM">
+                            <input matInput type="text" value="{{paymentRequest.xtransaccion}}" disabled>
+                            <!-- <input matInput   matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input> -->
+                        </mat-form-field>
+                    </div>
+                    <!-- <div class="col-3">
                         <mat-form-field >
                             <mat-label>Sucursal</mat-label>
                             <input matInput type="text" value="{{paymentRequest.xsucursal}}" disabled>
                           </mat-form-field>
                     </div> -->
-                <div class="col-3">
-                    <mat-form-field>
-                        <mat-label>Facturación</mat-label>
-                        <!-- <input matInput type="text" value="13/10/1996" disabled> -->
-                        <input matInput type="text" value="{{paymentRequest.ffacturacion}}" disabled>
-                        <!-- <input matInput   matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input> -->
-                    </mat-form-field>
-                </div>
-                <div class="col-3">
-                    <mat-form-field>
-                        <mat-label>Status</mat-label>
-                        <!-- <input matInput type="text" value="Pendiente" disabled> -->
-                        <input matInput type="text" value="{{paymentRequest.xstatus}}" disabled>
-                        <!-- <input matInput   matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input> -->
-                    </mat-form-field>
-                </div>
-                <!--  -->
-                <div class="col-3">
-                    <mat-form-field>
-                        <mat-label>Págase a la orden de:</mat-label>
-                        <input matInput type="text" value="{{paymentRequest.cid}}" disabled>
-                    </mat-form-field>
-                </div>
-                <div class="col-9">
-                    <mat-form-field>
-                        <mat-label>Nombre:</mat-label>
-                        <input matInput type="text" value="{{paymentRequest.xbeneficiario}}" disabled>
-                    </mat-form-field>
-                </div>
-                <!-- <div class="col-3"></div> -->
-                <div class="col-3">
-                    <mat-form-field>
-                        <mat-label>Concepto:</mat-label>
-                        <input matInput type="text" value="{{paymentRequest.xconcepto}}" disabled>
-                    </mat-form-field>
-                </div>
-                <div class="col-9">
-                    <mat-form-field>
-                        <mat-label>Corredor:</mat-label>
-                        <input matInput type="text" value="{{paymentRequest.ccorredor}} - {{paymentRequest.xcorredor}}"
-                            disabled>
-                    </mat-form-field>
-                </div>
-                <div class="col-2">
-                    <mat-form-field>
-                        <mat-label>Monto total Bs:</mat-label>
-                        <input matInput type="text" value="Bs. {{paymentRequest.mpago}}"
-                            disabled>
-                    </mat-form-field>
-                </div>
-                <div class="col-2">
-                    <mat-form-field>
-                        <mat-label>Monto total Usd:</mat-label>
-                        <input matInput type="text" value="{{paymentRequest.cmoneda}}{{paymentRequest.mpagoext}}"
-                            disabled>
-                    </mat-form-field>
-                </div>
-                <div class="col-8">
-                    <mat-form-field>
-                        <mat-label>Observaciones:</mat-label>
-                        <input matInput type="text" #observaciones class="observaciones" id="observaciones{{i}}">
-                    </mat-form-field>
-                </div>
+                    <div class="col-3">
+                        <mat-form-field>
+                            <mat-label>Facturación</mat-label>
+                            <!-- <input matInput type="text" value="13/10/1996" disabled> -->
+                            <input matInput type="text" value="{{paymentRequest.ffacturacion}}" disabled>
+                            <!-- <input matInput   matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input> -->
+                        </mat-form-field>
+                    </div>
+                    <div class="col-3">
+                        <mat-form-field>
+                            <mat-label>Status</mat-label>
+                            <!-- <input matInput type="text" value="Pendiente" disabled> -->
+                            <input matInput type="text" value="{{paymentRequest.xstatus}}" disabled>
+                            <!-- <input matInput   matTooltip="La diferencia sera registrada con la misma moneda que el cliente reporto su pago" type="number" placeholder="Ingrese la diferencia del recibo" #input> -->
+                        </mat-form-field>
+                    </div>
+                    <!--  -->
+                    <div class="col-3">
+                        <mat-form-field>
+                            <mat-label>Págase a la orden de:</mat-label>
+                            <input matInput type="text" value="{{paymentRequest.cid}}" disabled>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-9">
+                        <mat-form-field>
+                            <mat-label>Nombre:</mat-label>
+                            <input matInput type="text" value="{{paymentRequest.xbeneficiario}}" disabled>
+                        </mat-form-field>
+                    </div>
+                    <!-- <div class="col-3"></div> -->
+                    <div class="col-3">
+                        <mat-form-field>
+                            <mat-label>Concepto:</mat-label>
+                            <input matInput type="text" value="{{paymentRequest.xconcepto}}" disabled>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-9">
+                        <mat-form-field>
+                            <mat-label>Corredor:</mat-label>
+                            <input matInput type="text"
+                                value="{{paymentRequest.ccorredor}} - {{paymentRequest.xcorredor}}" disabled>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-3">
+                        <mat-form-field>
+                            <mat-label>Moneda Movimiento:</mat-label>
+                            <input matInput type="text" value="{{paymentRequest.cmoneda}}" disabled>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-3">
+                        <mat-form-field>
+                            <mat-label>Moneda Pago Orden:</mat-label>
+                            <mat-select formControlName="cmonedaOrden" (selectionChange)="changeMonedaPago($event)"
+                                required #cmonedaOrden id="{{i}}">
+                                <mat-option value="Bs" selected>Bolívares</mat-option>
+                                <mat-option value="$">Usd</mat-option>
+                                <!-- <mat-option value="M">Mixto</mat-option> -->
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-3">
+                        <mat-form-field>
+                            <mat-label>Monto Bs:</mat-label>
+                            <input matInput type="text" value="Bs. {{paymentRequest.mpago}}" disabled>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-3">
+                        <mat-form-field>
+                            <mat-label>Monto Usd:</mat-label>
+                            <input matInput type="text" value="{{paymentRequest.cmoneda}}{{paymentRequest.mpagoext}}"
+                                disabled>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-12">
+                        <mat-form-field>
+                            <mat-label>Observaciones:</mat-label>
+                            <!-- <input matInput type="text" #observaciones class="observaciones" id="observaciones{{i}}"> -->
+                            <input matInput type="text" #observaciones class="observaciones" id="observaciones{{i}}">
+                        </mat-form-field>
+                    </div>
 
-                <!-- <div class="col-3">1</div>
+                    <!-- <div class="col-3">1</div>
                     <div class="col-3">2</div>
                     <div class="col-3">3</div>
                     <div class="col-3">4</div>
@@ -295,17 +320,19 @@
                           <mat-option value="ER">En revision</mat-option>
                         </mat-select>
                       </mat-form-field> -->
-            </div>
-            <div class="row mt-4">
-                <div class="col col-2 text-center"><button mat-raised-button
-                        (click)="cancelPaymentRequests()">Cancelar</button></div>
-                <div class="col col-8"></div>
-                <div class="col col-2 text-center"><button mat-raised-button (click)="proccessPaymentRequests()">Generar
-                        Orden</button></div>
-            </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col col-2 text-center"><button mat-raised-button
+                            (click)="cancelPaymentRequests()">Cancelar</button></div>
+                    <div class="col col-8"></div>
+                    <div class="col col-2 text-center"><button mat-raised-button color="primary"
+                            [disabled]="listPaymentRequest.length != listMonedaOrden.length"
+                            (click)="proccessPaymentRequests()">Generar
+                            Orden</button></div>
+                </div>
 
 
-            <!-- <div class="footer-table">
+                <!-- <div class="footer-table">
                     <b>Montos:</b>
                     <span>Comision: {{total_movcom}}</span>
                     <span>Impuesto: {{total_impuesto}}</span>
@@ -313,7 +340,8 @@
                     <button mat-raised-button (click)="logSelection2()">Seleccionar</button>
                 </div> -->
 
-        </mat-dialog-content>
+            </mat-dialog-content>
+        </form>
     </ng-template>
 
 </div>
