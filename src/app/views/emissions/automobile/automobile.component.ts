@@ -239,6 +239,7 @@ export class AutomobileComponent {
   fechas!: any ;
   recargaInicial!: any ;
   ocultarRecarga: boolean = true;
+  clasificacionMotos: boolean = false;
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -264,7 +265,8 @@ export class AutomobileComponent {
     xversion: [{ value: '', disabled: true}, Validators.required],
     fano: ['',[Validators.required, Validators.maxLength(4)]],
     npasajeros: [{ value: '', disabled: true }],
-    cclasificacion: [''], 
+    cclasificacion: [''],
+    xclasificacion: [''],  
     xtipovehiculo: [''],
     xcolor: ['', Validators.required],
     xserialcarroceria: ['', [Validators.required, Validators.maxLength(17)]],
@@ -953,6 +955,15 @@ export class AutomobileComponent {
       }else{
         this.activateUtility = false;
       }
+
+      const tarifaExcesoValue = this.vehicleFormGroup.get('ctarifa_exceso')?.value;
+      if (tarifaExcesoValue !== null && tarifaExcesoValue !== undefined) {
+          if (typeof tarifaExcesoValue === 'number' && tarifaExcesoValue === 20) {
+              if(this.currentUser.data.crol == 7){
+
+              }
+          }
+      }
     }
   }
 
@@ -1125,12 +1136,36 @@ export class AutomobileComponent {
       if(response.casco){
         this.casco = response.casco;
       }else{
-        this.snackBar.open(`${response.message}`, '', {
-          duration: 4000,
-        });
+        const tarifaExcesoValue = this.vehicleFormGroup.get('ctarifa_exceso')?.value;
+        if (tarifaExcesoValue !== null && tarifaExcesoValue !== undefined) {
+          if(this.currentUser.data.crol == 7){
+            if (typeof tarifaExcesoValue === 'number' && tarifaExcesoValue === 20) {
+              this.clasificacionMotos = true;
+              this.searchRates()
+              // this.casco = true;
+              // this.userBroker = true;
+            }else{
+              this.clasificacionMotos = false;
+              this.casco = false;
+              this.userBroker = false;
+            }
+          }else{
+            this.snackBar.open(`${response.message}`, '', {
+              duration: 4000,
+            });
+          }
+        }
         this.casco = response.casco;
       }
     })
+  }
+
+  Clasification(){
+    const xclasificacion = this.vehicleFormGroup.get('xclasificacion')?.value
+    if(this.currentUser.data.crol == 7){
+      this.vehicleFormGroup.get('cclasificacion')?.setValue(xclasificacion || '')
+    }
+    console.log(this.vehicleFormGroup.get('cclasificacion')?.value)
   }
 
   getClass(){
