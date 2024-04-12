@@ -598,6 +598,7 @@ export class PaymentAdministrationComponent {
 
     for(let i = 0; i < receipt.length; i++){
       if(receipt.value[i].seleccionado == true){
+        let montoBs = receipt.value[i].mprimabrutaext * this.bcv 
         if(receipt.value[i].cdoccob > 0){
           this.idTrans = receipt.value[i].cdoccob
           this.asegurado = receipt.value[i].asegurado
@@ -614,16 +615,15 @@ export class PaymentAdministrationComponent {
             fhasta_pol: receipt.value[i].fhasta_pol,
             fdesde_rec: receipt.value[i].fdesde_rec,
             fhasta_rec: receipt.value[i].fhasta_rec,
-            mprimabruta: receipt.value[i].mprimabruta,
+            mprimabruta: montoBs,
             mprimabrutaext: receipt.value[i].mprimabrutaext,
-            ptasamon: receipt.value[i].ptasamon,
+            ptasamon: this.bcv ,
             cproductor : receipt.value[i].cproductor,
             asegurado : receipt.value[i].asegurado,
   
           });
         }else{
           this.asegurado = receipt.value[i].asegurado
-
           this.receiptList.push({
             cnpoliza: receipt.value[i].cnpoliza,
             cnrecibo: receipt.value[i].cnrecibo,
@@ -637,9 +637,9 @@ export class PaymentAdministrationComponent {
             fhasta_pol: receipt.value[i].fhasta_pol,
             fdesde_rec: receipt.value[i].fdesde_rec,
             fhasta_rec: receipt.value[i].fhasta_rec,
-            mprimabruta: receipt.value[i].mprimabruta,
+            mprimabruta: montoBs,
             mprimabrutaext: receipt.value[i].mprimabrutaext,
-            ptasamon: receipt.value[i].ptasamon,
+            ptasamon: this.bcv ,
             cproductor : receipt.value[i].cproductor,
             asegurado : receipt.value[i].asegurado,
   
