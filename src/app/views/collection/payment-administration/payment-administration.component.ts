@@ -23,10 +23,7 @@ type Treatments = { id: number; value:string};
 })
 export class PaymentAdministrationComponent {
 
-  
-  @ViewChild('Alerta') Alerta!: TemplateRef<any>;
   @ViewChild('NotFound') NotFound!: TemplateRef<any>;
-
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   selection = new SelectionModel<any>(true, []);
@@ -41,7 +38,6 @@ export class PaymentAdministrationComponent {
   @ViewChild('DepositoUSD') DepositoUSD!: TemplateRef<any>;
 
   transaccionUnica : boolean = false
-
 
   bcv : any
   targetBankList : any = []
@@ -271,13 +267,9 @@ export class PaymentAdministrationComponent {
     .then((response) => response.json())
     .then(data => {
       this.dataSource = new MatTableDataSource(data.searchPaymentPendingData.recibo);
-      
-
       const listPending = data.searchPaymentPendingData.recibo
-
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-
 
     })
 
@@ -307,16 +299,10 @@ export class PaymentAdministrationComponent {
   
   addPayment() {
     this.transfer.push(this.newPayment());
-
-    const trasnfer = this.searchReceipt.get("transfer") as FormArray
-
   }
 
   removePayment(i:number) {
     this.transfer.removeAt(i);
-
-
-
   }
   
   searchDataReceipt(){
@@ -494,7 +480,6 @@ export class PaymentAdministrationComponent {
   }
 
   determinarSiPuedeAvanzar(){
-
     const creds = this.searchReceipt.get("receipt") as FormArray
     this.listaRecibos = []
     if(this.diference){
@@ -517,7 +502,6 @@ export class PaymentAdministrationComponent {
       })
 
     }else{
-
       creds.value.forEach((recibo:any) => {
         if(recibo.seleccionado){
           this.listaRecibos.push({crecibo : recibo.crecibo, cnrecibo : recibo.cnrecibo});
@@ -546,7 +530,6 @@ export class PaymentAdministrationComponent {
       if(recibo.seleccionado && recibo.mdiferenciaext !== 0){
         acumulador += recibo.mdiferenciaext;
       }
-
       if(recibo.seleccionado && recibo.sumaBS !== 0){
         let montoBolivares = recibo.sumaBS / this.bcv
         acumulador -= montoBolivares;
@@ -579,24 +562,13 @@ export class PaymentAdministrationComponent {
 
   }
 
-  Alert(config?: MatDialogConfig) {
-
-    return this.dialog.open(this.Alerta, config);
-
-  }
-
   Found(config?: MatDialogConfig) {
-
     return this.dialog.open(this.NotFound, config);
-
   }
 
   onFileSelect(event : any , i : number){
-
     const file = event.target.files[0]
-
     const creds = this.searchReceipt.get("transfer") as FormArray
-
     creds.at(i).get('ximagen')?.setValue(file);
 
   }
@@ -604,7 +576,6 @@ export class PaymentAdministrationComponent {
   async llenarlistas(){
 
     const receipt = this.searchReceipt.get("receipt") as FormArray
-
     this.receiptList = []
 
     for(let i = 0; i < receipt.length; i++){
@@ -631,6 +602,8 @@ export class PaymentAdministrationComponent {
             ptasamon: this.bcv ,
             cproductor : receipt.value[i].cproductor,
             asegurado : receipt.value[i].asegurado,
+            cuotas : receipt.value[i].qcuotas,
+
   
           });
         }else{
@@ -653,7 +626,8 @@ export class PaymentAdministrationComponent {
             ptasamon: this.bcv ,
             cproductor : receipt.value[i].cproductor,
             asegurado : receipt.value[i].asegurado,
-  
+            cuotas : receipt.value[i].qcuotas,
+
           });
         }
 
@@ -717,7 +691,7 @@ export class PaymentAdministrationComponent {
     
   }
 
-  endHourHourOnChange(tasa : any) {
+  bcvChange(tasa : any) {
     this.bcv = tasa;
   }
 
@@ -820,7 +794,6 @@ export class PaymentAdministrationComponent {
         })
       }
 
-
     }else{
         const savePaymentTrans = {
         group : true,
@@ -865,13 +838,11 @@ export class PaymentAdministrationComponent {
   }
 
   uploadFile(){
-
     const transfer = this.searchReceipt.get("transfer") as FormArray
 
     let asegurado = this.searchReceipt.get('xcedula')?.value || ''
     const fecha = new Date()
     let fechaTran = fecha.toISOString().substring(0, 10);
-
 
     const formData = new FormData();
     for(let i = 0; i < transfer.length; i++){
@@ -881,8 +852,6 @@ export class PaymentAdministrationComponent {
       const extension = fileType.split('/').pop();
       let nombre = asegurado +'-' + fechaTran +'-'+ i + transfer.value[i].xreferencia +'.'+ extension;
       formData.append('image', transfer.at(i).get('ximagen')?.value!, nombre);
-  
-      //cargamos las imagenes con el codigo de transaccion
       
     }
     this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {})
@@ -890,8 +859,6 @@ export class PaymentAdministrationComponent {
 
   getTargetBank(i : any){
     const trasnfer = this.searchReceipt.get("transfer") as FormArray
-
-    console.log(trasnfer.at(i).get('ctipopago')?.value.id )
 
     if(trasnfer.at(i).get('ctipopago')?.value.id == 2 ){
       this.bankList = this.bankNational
@@ -936,8 +903,6 @@ export class PaymentAdministrationComponent {
 
   validationBank(i : any){
     const trasnfer = this.searchReceipt.get("transfer") as FormArray
-
-
     if( trasnfer.at(i).get('cmoneda')?.value == 'Bs'){
       trasnfer.at(i).get('itipo')?.setValue('V')
       this.getBank(i);
@@ -953,7 +918,6 @@ export class PaymentAdministrationComponent {
     //bancos emision
     const trasnfer = this.searchReceipt.get("transfer") as FormArray
     
-
     this.tipoTrans = []
     if(trasnfer.at(i).get('cmoneda')?.value == 'Bs' ){
 
@@ -992,7 +956,8 @@ export class PaymentAdministrationComponent {
         id: 9,
         value: "Efectivo",
         }
-      )      
+      )   
+
       trasnfer.at(i).get('cbanco')?.setValue('')
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
       trasnfer.at(i).get('ctipopago')?.setValue('')
@@ -1012,14 +977,10 @@ export class PaymentAdministrationComponent {
   isAllSelected() {
     const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.data.length;
-    // alert(numSelected);
-    // alert(numRows);
     return numSelected === numRows;
-    // this.varable1 = 100;
   }
 
   validateMov(){
-
     if(this.searchReceipt.get('iestadorec')?.value == 'ER'){
       this.revision = true
       this.cobradoSAF = false
@@ -1031,43 +992,44 @@ export class PaymentAdministrationComponent {
     }
     else{
       this.revision = false
+      this.cobradoSAF = false
     }
 
   }
 
-    //Treatments
-    searchTreatments: OperatorFunction<string, readonly { id : any; value : any }[]> = (text$: Observable<string>) =>
-    text$.pipe(
-      debounceTime(200),
-      distinctUntilChanged(),
-      filter((term:any) => term.length >= 0),
-      map((term:any) => this.bankList.filter((Treatments:any) => new RegExp(term, 'mi').test(Treatments.value)).slice(0, 10)),
-    
-      );
-    formatterTreatments = (Treatments : Treatments) => Treatments.value;
+  //Banco Emisor
+  searchTreatments: OperatorFunction<string, readonly { id : any; value : any }[]> = (text$: Observable<string>) =>
+  text$.pipe(
+    debounceTime(200),
+    distinctUntilChanged(),
+    filter((term:any) => term.length >= 0),
+    map((term:any) => this.bankList.filter((Treatments:any) => new RegExp(term, 'mi').test(Treatments.value)).slice(0, 10)),
+  
+    );
+  formatterTreatments = (Treatments : Treatments) => Treatments.value;
 
 
-    //Treatments
-    searchBank: OperatorFunction<string, readonly { id : any; value : any }[]> = (text$: Observable<string>) =>
-    text$.pipe(
-      debounceTime(200),
-      distinctUntilChanged(),
-      filter((term:any) => term.length >= 0),
-      map((term:any) => this.targetBankList.filter((Treatments:any) => new RegExp(term, 'mi').test(Treatments.value)).slice(0, 10)),
-    
-      );
-    formatterchBank = (Treatments : Treatments) => Treatments.value;
-    
-    //Treatments
-    searchTipo: OperatorFunction<string, readonly { id : any; value : any }[]> = (text$: Observable<string>) =>
-    text$.pipe(
-      debounceTime(200),
-      distinctUntilChanged(),
-      filter((term:any) => term.length >= 0),
-      map((term:any) => this.tipoTrans.filter((Treatments:any) => new RegExp(term, 'mi').test(Treatments.value)).slice(0, 10)),
-    
-      );
-    formatterchTipo= (Treatments : Treatments) => Treatments.value;
+  //Banco receptor
+  searchBank: OperatorFunction<string, readonly { id : any; value : any }[]> = (text$: Observable<string>) =>
+  text$.pipe(
+    debounceTime(200),
+    distinctUntilChanged(),
+    filter((term:any) => term.length >= 0),
+    map((term:any) => this.targetBankList.filter((Treatments:any) => new RegExp(term, 'mi').test(Treatments.value)).slice(0, 10)),
+  
+    );
+  formatterchBank = (Treatments : Treatments) => Treatments.value;
+  
+  //Tipo de Movimiento
+  searchTipo: OperatorFunction<string, readonly { id : any; value : any }[]> = (text$: Observable<string>) =>
+  text$.pipe(
+    debounceTime(200),
+    distinctUntilChanged(),
+    filter((term:any) => term.length >= 0),
+    map((term:any) => this.tipoTrans.filter((Treatments:any) => new RegExp(term, 'mi').test(Treatments.value)).slice(0, 10)),
+  
+    );
+  formatterchTipo= (Treatments : Treatments) => Treatments.value;
     
 
 }
