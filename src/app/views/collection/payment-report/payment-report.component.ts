@@ -591,6 +591,7 @@ export class PaymentReportComponent {
             mprimabrutaext: receipt.value[i].mprimabrutaext,
             ptasamon: receipt.value[i].ptasamon,
             cproductor : receipt.value[i].cproductor,
+            cuotas : receipt.value[i].qcuotas,
   
           });
         }else{
@@ -611,7 +612,8 @@ export class PaymentReportComponent {
             mprimabrutaext: receipt.value[i].mprimabrutaext,
             ptasamon: receipt.value[i].ptasamon,
             cproductor : receipt.value[i].cproductor,
-  
+            cuotas : receipt.value[i].qcuotas,
+
           });
         }
 

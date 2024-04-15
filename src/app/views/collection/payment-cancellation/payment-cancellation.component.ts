@@ -335,6 +335,7 @@ export class PaymentCancellationComponent {
               cnrecibo: poliza.cnrecibo,
               cpoliza: poliza.cpoliza,
               cnpoliza: poliza.cnpoliza,
+              cuotas : poliza.qcuotas,
               mmontorec: poliza.mmontorec,
               mmontorecext: poliza.mmontorecext,
               iestadorec: poliza.iestadorec,

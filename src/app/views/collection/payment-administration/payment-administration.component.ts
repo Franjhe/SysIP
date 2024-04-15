@@ -602,6 +602,8 @@ export class PaymentAdministrationComponent {
             ptasamon: this.bcv ,
             cproductor : receipt.value[i].cproductor,
             asegurado : receipt.value[i].asegurado,
+            cuotas : receipt.value[i].qcuotas,
+
   
           });
         }else{
@@ -624,6 +626,8 @@ export class PaymentAdministrationComponent {
             ptasamon: this.bcv ,
             cproductor : receipt.value[i].cproductor,
             asegurado : receipt.value[i].asegurado,
+            cuotas : receipt.value[i].qcuotas,
+
           });
         }
 
