@@ -54,6 +54,7 @@ export class PaymentAdministrationComponent {
   paymentMix : boolean = false
   Submit : boolean = false 
   puedeAvanzar: boolean = false 
+  image: boolean = false 
 
   usd : boolean = false
   pmovil : boolean = false
@@ -567,6 +568,7 @@ export class PaymentAdministrationComponent {
   }
 
   onFileSelect(event : any , i : number){
+    this.image = true
     const file = event.target.files[0]
     const creds = this.searchReceipt.get("transfer") as FormArray
     creds.at(i).get('ximagen')?.setValue(file);
@@ -639,16 +641,23 @@ export class PaymentAdministrationComponent {
     if(this.selection.selected.length > 1){
       this.asegurado = 'Admin'
     }
-
+  
     const fecha = new Date()
     let fechaTran = fecha.toISOString().substring(0, 10);
-
+    
     for(let i = 0; i < transfer.length; i++){
-
-      const fileObject = transfer.at(i).get('ximagen')?.value!
-      const fileType = fileObject.type;
-      const extension = fileType.split('/').pop();
-      let nombre = this.asegurado +'-' + fechaTran +'-'+ i + transfer.value[i].xreferencia +'.'+ extension;
+      
+      let nombre = ''
+      
+      if(this.image){
+        
+        const fileObject = transfer.at(i).get('ximagen')?.value!
+        const fileType = fileObject.type;
+        const extension = fileType.split('/').pop();
+        nombre = this.asegurado +'-' + fechaTran +'-'+ i + transfer.value[i].xreferencia +'.'+ extension;
+      }else{
+        nombre = 'sinRefecencia'
+      }
 
       if(transfer.at(i).get('cmoneda')?.value == "USD" ){
 
@@ -739,8 +748,9 @@ export class PaymentAdministrationComponent {
               });
   
             }
-            this.uploadFile()
-  
+            if(this.image){
+              this.uploadFile()
+            }  
           })   
           setTimeout(() => {
             location.reload();
@@ -784,7 +794,9 @@ export class PaymentAdministrationComponent {
               });
   
             }
-            this.uploadFile()
+            if(this.image){
+              this.uploadFile()
+            }
   
           })   
           setTimeout(() => {
@@ -826,8 +838,9 @@ export class PaymentAdministrationComponent {
             });
 
           }
-          this.uploadFile()
-
+          if(this.image){
+            this.uploadFile()
+          }
         })   
         setTimeout(() => {
           location.reload();
