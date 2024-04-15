@@ -356,13 +356,17 @@ export class CommissionsComponent {
       this.http.post(environment.apiUrl + '/api/v1/commissions/search-data/' + element.cproductor, '').subscribe((response: any) => {
         let data = response.returnData.search[0]
         console.log(data);
+        
         let mislr = 0
         let mislrext = 0;
+        let pislr = 0;
 
         if (element.mmovcomtot >= data.mminislr) {
+          pislr = data.pislr;
           mislr = element.mmovcomtot * (data.pislr / 100);
           mislrext = element.mmovcomexttot * (data.pislr / 100);
         } 
+                
 
         let mpagosol = element.mmovcomtot - mislr;
         let mpagosolext = element.mmovcomexttot - mislrext;
@@ -384,9 +388,9 @@ export class CommissionsComponent {
             xconcepto: 'Pago Comisión Agente',
             ccorredor: e.cci_rif,
             xcorredor: e.xcliente.trim(),
-            mpago: element.mmovcomtot,
-            mpagoext: element.mmovcomexttot,
-            pislr: data.pislr,
+            mpago: element.mmovcomtot.toFixed(2),
+            mpagoext: element.mmovcomexttot.toFixed(2),
+            pislr: pislr.toFixed(2),
             mislr: mislr.toFixed(2),
             mislrext: mislrext.toFixed(2),
             mpagosol: mpagosol.toFixed(2),
