@@ -160,11 +160,11 @@
                     <td mat-cell *matCellDef="let row"> {{row.pcomision}}% </td>
                 </ng-container>
                 <ng-container matColumnDef="9">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Monto Tipo<br>Mov. Bs. </th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Monto<br>Mov. Bs. </th>
                     <td mat-cell *matCellDef="let row"> Bs.{{row.mmovcom}} </td>
                 </ng-container>
                 <ng-container matColumnDef="10">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Monto Tipo<br>Mov. Usd. </th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Monto<br>Mov. Usd. </th>
                     <td mat-cell *matCellDef="let row"> $.{{row.mmovcomext}} </td>
                 </ng-container>
                 <ng-container matColumnDef="11">
@@ -273,19 +273,6 @@
                     </div>
                     <div class="col-3">
                         <mat-form-field>
-                            <mat-label>Monto Movimiento Bs:</mat-label>
-                            <input matInput type="text" value="Bs. {{paymentRequest.mpago}}" disabled>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-3">
-                        <mat-form-field>
-                            <mat-label>Monto Movimiento Ext:</mat-label>
-                            <input matInput type="text" value="{{paymentRequest.cmoneda}}{{paymentRequest.mpagoext}}"
-                                disabled>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-3">
-                        <mat-form-field>
                             <mat-label>Moneda Movimiento:</mat-label>
                             <input matInput type="text" value="{{paymentRequest.cmoneda}}" disabled>
                         </mat-form-field>
@@ -300,37 +287,49 @@
                             </mat-select>
                         </mat-form-field>
                     </div>
-                    
-                    <div class="col-2">
+                    <div class="col-3">
                         <mat-form-field>
-                            <mat-label>% Impuesto Retención:</mat-label>
+                            <mat-label>Monto Movimiento Bs:</mat-label>
                             <input matInput type="text" value="Bs. {{paymentRequest.mpago}}" disabled>
                         </mat-form-field>
                     </div>
                     <div class="col-3">
                         <mat-form-field>
-                            <mat-label>Monto Retención:</mat-label>
+                            <mat-label>Monto Movimiento Ext:</mat-label>
                             <input matInput type="text" value="{{paymentRequest.cmoneda}}{{paymentRequest.mpagoext}}"
+                                disabled>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-2">
+                        <mat-form-field>
+                            <mat-label>% Impuesto Retención:</mat-label>
+                            <input matInput type="text" value="{{paymentRequest.pislr}} %" disabled>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-2">
+                        <mat-form-field>
+                            <mat-label>Monto Retención Bs.:</mat-label>
+                            <input matInput type="text" value="Bs. {{paymentRequest.mislr}}"
                             disabled>
                         </mat-form-field>
                     </div>
                     <div class="col-2">
                         <mat-form-field>
                             <mat-label>Monto Retención Ext:</mat-label>
-                            <input matInput type="text" value="{{paymentRequest.cmoneda}}{{paymentRequest.mpagoext}}"
+                            <input matInput type="text" value="$. {{paymentRequest.mislrext}}"
                             disabled>
                         </mat-form-field>
                     </div>
                     <div class="col-3">
                         <mat-form-field>
-                            <mat-label>Monto a Pagar:</mat-label>
-                            <input matInput type="text" value="{{paymentRequest.cmoneda}}" disabled>
+                            <mat-label>Monto a Pagar Bs.:</mat-label>
+                            <input matInput type="text" value="Bs. {{paymentRequest.mpagosol}}" disabled>
                         </mat-form-field>
                     </div>
-                    <div class="col-2">
+                    <div class="col-3">
                         <mat-form-field>
                             <mat-label>Monto a Pagar Ext:</mat-label>
-                            <input matInput type="text" value="{{paymentRequest.cmoneda}}" disabled>
+                            <input matInput type="text" value="$. {{paymentRequest.mpagosolext}}" disabled>
                         </mat-form-field>
                     </div>
                     <div class="col-12">

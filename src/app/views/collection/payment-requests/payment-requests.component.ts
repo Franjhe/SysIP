@@ -28,6 +28,14 @@ export interface PaymentRequest {
   xconcepto: string;
   mpago: any;
   mpagoext: any;
+  mmovimiento: any;
+  mmonedamov: any;
+  mpagosol: any;
+  mpagosolext: any;
+  pislr: any;
+  mislr: any;
+  mislrext: any;
+  islr: any;
   mmontototal: any;
   xobservaciones?: any;
   recibos: any;
@@ -202,10 +210,10 @@ export class PaymentRequestsComponent {
 
   }
 
-  
+
 
   showDetailReceipts(): void {
-    
+
     const dialogRef = this.dialog.open(ModalReceiptsComponent, {
       data: {
         csolpag: '14'
@@ -345,8 +353,19 @@ export class PaymentRequestsComponent {
 
     // Formatear la fecha en el formato "día mes año"
     const fsolicit = `${dia < 10 ? '0' : ''}${dia}-${mes < 10 ? '0' : ''}${mes}-${anio}`;
-    let mmontototal = (this.paymentRequest.cmoneda.toLowerCase().trim() == 'bs') ? this.paymentRequest.mpago : this.paymentRequest.mpagoext
-    let xmoneda = (this.paymentRequest.cmoneda.toLowerCase().trim() == 'bs') ? 'Bolívares' : 'Dólares';
+
+    if (this.paymentRequest.cmoneda.toLowerCase().trim() == 'bs') {
+      var mmontototal = this.paymentRequest.mpagosol
+      var mmovimiento = this.paymentRequest.mpago
+      var xmoneda = 'Bolívares';
+      var islr = this.paymentRequest.mislr;
+    } else {
+      var mmontototal = this.paymentRequest.mpagosolext
+      var mmovimiento = this.paymentRequest.mpagoext
+      var xmoneda = 'Dólares';
+      var islr = this.paymentRequest.mislrext;
+    }
+    
 
     var paymentRequest: PaymentRequest = {
       csolpag: this.paymentRequest.csolpag,
@@ -359,6 +378,14 @@ export class PaymentRequestsComponent {
       xconcepto: this.paymentRequest.xconcepto_2.trim(),
       mpago: this.paymentRequest.mpago.toFixed(2),
       mpagoext: this.paymentRequest.mpagoext.toFixed(2),
+      mmovimiento: mmovimiento,
+      mmonedamov: this.paymentRequest.xconcepto_2.trim(),
+      mpagosol: this.paymentRequest.mpagosol.toFixed(2),
+      mpagosolext: this.paymentRequest.mpagosolext.toFixed(2),
+      pislr: this.paymentRequest.pislr.toFixed(2),
+      mislr: this.paymentRequest.mislr.toFixed(2),
+      mislrext: this.paymentRequest.mislrext.toFixed(2),
+      islr: islr,
       mmontototal: mmontototal.toFixed(2),
       recibos: this.paymentRequest.recibos,
       cmoneda: this.paymentRequest.cmoneda.trim(),

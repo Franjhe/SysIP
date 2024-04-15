@@ -78,7 +78,7 @@
 
         </table>
         <hr>
-        <mat-paginator #allPaginator="matPaginator" [pageSizeOptions]="[5, 10, 25, 100]" ></mat-paginator>
+        <mat-paginator #allPaginator="matPaginator" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
 
         <!-- <div class="text-center mt-5">
             <button mat-raised-button>Procesar solicitudes de pago</button>
@@ -173,19 +173,6 @@
                         </div>
                         <div class="col-3">
                             <mat-form-field>
-                                <mat-label>Monto Movimiento (Bs):</mat-label>
-                                <input matInput type="text" value="Bs. {{paymentRequest.mpago}}" disabled>
-                            </mat-form-field>
-                        </div>
-                        <div class="col-3">
-                            <mat-form-field>
-                                <mat-label>Monto Movimiento (Usd):</mat-label>
-                                <input matInput type="text" value="$. {{paymentRequest.mpagoext}}"
-                                disabled>
-                            </mat-form-field>
-                        </div>
-                        <div class="col-3">
-                            <mat-form-field>
                                 <mat-label>Moneda Movimiento:</mat-label>
                                 <input matInput type="text" value="{{paymentRequest.xconcepto_3}}" disabled>
                             </mat-form-field>
@@ -196,6 +183,50 @@
                                 <input matInput type="text" value="{{paymentRequest.cmoneda}}" disabled>
                             </mat-form-field>
                         </div>
+                        <div class="col-3">
+                            <mat-form-field>
+                                <mat-label>Monto Movimiento Bs:</mat-label>
+                                <input matInput type="text" value="Bs. {{paymentRequest.mpago}}" disabled>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3">
+                            <mat-form-field>
+                                <mat-label>Monto Movimiento Ext:</mat-label>
+                                <input matInput type="text"
+                                    value="$. {{paymentRequest.mpagoext}}" disabled>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-2">
+                            <mat-form-field>
+                                <mat-label>% Impuesto Retención:</mat-label>
+                                <input matInput type="text" value="{{paymentRequest.pislr}} %" disabled>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-2">
+                            <mat-form-field>
+                                <mat-label>Monto Retención Bs.:</mat-label>
+                                <input matInput type="text" value="Bs. {{paymentRequest.mislr}}" disabled>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-2">
+                            <mat-form-field>
+                                <mat-label>Monto Retención Ext:</mat-label>
+                                <input matInput type="text" value="$. {{paymentRequest.mislrext}}" disabled>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3">
+                            <mat-form-field>
+                                <mat-label>Monto a Pagar Bs.:</mat-label>
+                                <input matInput type="text" value="Bs. {{paymentRequest.mpagosol}}" disabled>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3">
+                            <mat-form-field>
+                                <mat-label>Monto a Pagar Ext:</mat-label>
+                                <input matInput type="text" value="$. {{paymentRequest.mpagosolext}}" disabled>
+                            </mat-form-field>
+                        </div>
+
                         <div class="col-12">
                             <mat-form-field>
                                 <mat-label>Observaciones:</mat-label>
@@ -264,8 +295,8 @@
                             <button mat-raised-button (click)="printPaymentRequest()" color="warn">Imprimir</button>
                         </div>
                         <div class="col col-3 text-center">
-                            <button mat-raised-button (click)="proccessPaymentRequests(paymentRequest.csolpag)" color="primary"
-                                [disabled]="paymentRequest.xstatsol == 'Cancelado'">Procesar
+                            <button mat-raised-button (click)="proccessPaymentRequests(paymentRequest.csolpag)"
+                                color="primary" [disabled]="paymentRequest.xstatsol == 'Cancelado'">Procesar
                                 Orden</button>
                         </div>
                     </div>
@@ -346,7 +377,7 @@
                 </tr>
             </table>
             <hr>
-            <mat-paginator #allPaginator="matPaginator" [pageSizeOptions]="[5, 10, 25, 100]" ></mat-paginator>
+            <mat-paginator #allPaginator="matPaginator" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
 
             <hr>
 

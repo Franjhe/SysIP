@@ -2570,8 +2570,8 @@ export class PdfGenerationService {
 
 		try {
 			const pdfDefinition: any = {
-				pageSize: 'A5',
-				pageOrientation: 'landscape',
+				// pageSize: 'A5',
+				// pageOrientation: 'landscape',
 
 				info: {
 					title: `Solicitud de pago N° ${paymentRequest.csolpag}`,
@@ -2656,15 +2656,45 @@ export class PdfGenerationService {
 								[
 									{ text: 'CORREDOR:', bold: true, border: [false, false, false, false] },
 									{ text: paymentRequest.cproductor + ' - ' + paymentRequest.xbeneficiario, border: [false, false, false, false], alignment: 'left' },
-									{ text: `MONEDA DE PAGO`, bold: true, border: [false, false, false, false] },
-									{ text: `${paymentRequest.xmoneda} (${paymentRequest.cmoneda})`, bold: true, border: [false, false, false, false], alignment: 'right'  },
+									{ text: ``, bold: true, border: [false, false, false, false] },
+									{ text: ``, bold: true, border: [false, false, false, false], alignment: 'right'  },
 								],
 								[
 									{ text: 'OBSERVACIONES:', bold: true, border: [false, false, false, false] },
 									{ text: paymentRequest.xobservaciones, border: [false, false, false, false], alignment: 'left' },
-									{ text: `MONTO A PAGAR: `, bold: true, border: [false, false, false, false], alignment: 'right' },
-									{ text: paymentRequest.cmoneda + '. ' + paymentRequest.mmontototal, border: [false, false, false, false], alignment: 'right' },
-								]
+									{ text: '', bold: true, border: [false, false, false, false], alignment: 'right' },
+									{ text: '', border: [false, false, false, false], alignment: 'right' },
+								],
+								[
+									{ text: `MONEDA DE PAGO`, bold: true, border: [false, false, false, false], alignment: 'left'  },
+									{ text: `${paymentRequest.xmoneda} (${paymentRequest.cmoneda})`, bold: true, border: [false, false, false, false], alignment: 'left'  },
+									{ text: '', bold: true, border: [false, false, false, false], alignment: 'right' },
+									{ text: '', border: [false, false, false, false], alignment: 'right' },
+								],
+								[
+									{ text: 'MONTO MOVIMIENTO:', bold: true, border: [false, false, false, false] },
+									{ text: `${paymentRequest.cmoneda}. ${paymentRequest.mmovimiento}`, border: [false, false, false, false], alignment: 'left' },
+									{ text: '', bold: true, border: [false, false, false, false], alignment: 'right' },
+									{ text: '', border: [false, false, false, false], alignment: 'right' },
+								],
+								[
+									{ text: `% RETENCIÓN: `, bold: true, border: [false, false, false, false] },
+									{ text: '% '+ paymentRequest.pislr, border: [false, false, false, false], alignment: 'left' },
+									{ text: ``, bold: true, border: [false, false, false, false], alignment: 'right' },
+									{ text: '', border: [false, false, false, false], alignment: 'right' },
+								],
+								[
+									{ text: `MONTO RETENCIÓN: `, bold: true, border: [false, false, false, false] },
+									{ text: `${paymentRequest.cmoneda}. ${paymentRequest.islr}`, border: [false, false, false, false], alignment: 'left' },
+									{ text: ``, bold: true, border: [false, false, false, false], alignment: 'right' },
+									{ text: '', border: [false, false, false, false], alignment: 'right' },
+								],
+								[
+									{ text: `MONTO A PAGAR: `, bold: true, border: [false, false, false, false], alignment: 'left' },
+									{ text: `${paymentRequest.cmoneda}. ${paymentRequest.mmontototal}`, border: [false, false, false, false], alignment: 'left' },
+									{ text: ``, bold: true, border: [false, false, false, false], alignment: 'left' },
+									{ text: '', border: [false, false, false, false], alignment: 'left' },
+								],
 							]
 						}
 					},
