@@ -2551,17 +2551,22 @@ export class PdfGenerationService {
 		);
 
 		paymentRequest.recibos.forEach((recibo: any) => {
+			var mmontoapag = recibo.mmontoapag.toFixed(2);
+			var mmontoapagext = recibo.mmontoapagext.toFixed(2);
+			var mmovcom = recibo.mmovcom.toFixed(2);
+			var mmovcomext = recibo.mmovcomext.toFixed(2);
+
 			movimientos.push(
 				[
 					{ text: recibo.cnpoliza, border: [false, false, false, false] },
 					{ text: recibo.cnrecibo, border: [false, false, false, false] },
 					{ text: recibo.imovcom, border: [false, false, false, false] },
 					{ text: '02-02-2020', border: [false, false, false, false] },
-					{ text: 'Bs. ' + recibo.mmontoapag, border: [false, false, false, false] },
-					{ text: '$. ' + recibo.mmontoapagext, border: [false, false, false, false] },
+					{ text: 'Bs. ' + mmontoapag, border: [false, false, false, false] },
+					{ text: '$. ' + mmontoapagext, border: [false, false, false, false] },
 					{ text: recibo.pcomision + '%', border: [false, false, false, false] },
-					{ text: 'Bs. ' + recibo.mmovcom, border: [false, false, false, false] },
-					{ text: '$. ' + recibo.mmovcomext, border: [false, false, false, false] },
+					{ text: 'Bs. ' + mmovcom, border: [false, false, false, false] },
+					{ text: '$. ' + mmovcomext, border: [false, false, false, false] },
 					{ text: recibo.cmoneda, border: [false, false, false, false] },
 					{ text: recibo.ptasamon, border: [false, false, false, false] },
 				]
