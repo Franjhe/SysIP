@@ -196,31 +196,31 @@
                                     value="$. {{paymentRequest.mpagoext}}" disabled>
                             </mat-form-field>
                         </div>
-                        <div class="col-2">
+                        <div class="col-3">
                             <mat-form-field>
                                 <mat-label>% Impuesto Retención:</mat-label>
                                 <input matInput type="text" value="{{paymentRequest.pislr}} %" disabled>
                             </mat-form-field>
                         </div>
-                        <div class="col-2">
+                        <div class="col-3" *ngIf="paymentRequest.cmoneda.toLowerCase().trim() == 'bs'">
                             <mat-form-field>
                                 <mat-label>Monto Retención Bs.:</mat-label>
                                 <input matInput type="text" value="Bs. {{paymentRequest.mislr}}" disabled>
                             </mat-form-field>
                         </div>
-                        <div class="col-2">
+                        <div class="col-3" *ngIf="paymentRequest.cmoneda.toLowerCase().trim() == '$'">
                             <mat-form-field>
                                 <mat-label>Monto Retención Ext:</mat-label>
                                 <input matInput type="text" value="$. {{paymentRequest.mislrext}}" disabled>
                             </mat-form-field>
                         </div>
-                        <div class="col-3">
+                        <div class="col-3" *ngIf="paymentRequest.cmoneda.toLowerCase().trim() == 'bs'">
                             <mat-form-field>
                                 <mat-label>Monto a Pagar Bs.:</mat-label>
                                 <input matInput type="text" value="Bs. {{paymentRequest.mpagosol}}" disabled>
                             </mat-form-field>
                         </div>
-                        <div class="col-3">
+                        <div class="col-3" *ngIf="paymentRequest.cmoneda.toLowerCase().trim() == '$'">
                             <mat-form-field>
                                 <mat-label>Monto a Pagar Ext:</mat-label>
                                 <input matInput type="text" value="$. {{paymentRequest.mpagosolext}}" disabled>
