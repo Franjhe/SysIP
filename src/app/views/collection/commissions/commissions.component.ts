@@ -25,7 +25,11 @@ export interface PaymentRequest {
   xcorredor: string;
   mpago: any;
   mpagoext: any;
-  mmontototal: any;
+  mpagosol: any;
+  mpagosolext: any;
+  pislr: any;
+  mislr: any;
+  mislrext: any;
   xobservaciones?: any;
   recibos: any;
   cmoneda: any;
@@ -350,7 +354,19 @@ export class CommissionsComponent {
 
 
       this.http.post(environment.apiUrl + '/api/v1/commissions/search-data/' + element.cproductor, '').subscribe((response: any) => {
-        console.log(element.cproductor);
+        let data = response.returnData.search[0]
+        console.log(data);
+        let mislr = 0
+        let mislrext = 0;
+
+        if (element.mmovcomtot >= data.mminislr) {
+          mislr = element.mmovcomtot * (data.pislr / 100);
+          mislrext = element.mmovcomexttot * (data.pislr / 100);
+        } 
+
+        let mpagosol = element.mmovcomtot - mislr;
+        let mpagosolext = element.mmovcomexttot - mislrext;
+
 
         // this.listPaymentRequest.length
         // paymentRequestFormGroup
@@ -370,10 +386,15 @@ export class CommissionsComponent {
             xcorredor: e.xcliente.trim(),
             mpago: element.mmovcomtot,
             mpagoext: element.mmovcomexttot,
-            mmontototal: element.mmovcomexttot,
+            pislr: data.pislr,
+            mislr: mislr.toFixed(2),
+            mislrext: mislrext.toFixed(2),
+            mpagosol: mpagosol.toFixed(2),
+            mpagosolext: mpagosolext.toFixed(2),
+            // mmontototal: element.mmovcomexttot,
             recibos: element.recibos,
             cmoneda: element.cmoneda,
-            cmonedaOrden: this.paymentRequestFormGroup.get('cmonedaOrden')?.value,
+            cmonedaOrden: xmoneda,
             xobservaciones: '',
           }
           this.listPaymentRequest.push(paymentRequest);
