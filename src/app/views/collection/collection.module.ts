@@ -15,6 +15,7 @@ import { CommissionsComponent } from './commissions/commissions.component';
 import { PaymentRequestsComponent } from './payment-requests/payment-requests.component';
 import { ModalReceiptsComponent } from './modal-receipts/modal-receipts.component';
 import { PaymentAdministrationComponent } from './payment-administration/payment-administration.component';
+import { ReceiptsCollectedComponent } from './receipts-collected/receipts-collected.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { PaymentAdministrationComponent } from './payment-administration/payment
     CommissionsComponent,
     PaymentRequestsComponent,
     ModalReceiptsComponent,
-    PaymentAdministrationComponent
+    PaymentAdministrationComponent,
+    ReceiptsCollectedComponent
   ],
   imports: [
     MatTableModule,
