@@ -663,8 +663,8 @@ export class PaymentAdministrationComponent {
 
         this.transferList.push({
           cmoneda: transfer.value[i].cmoneda,
-          cbanco: transfer.value[i]?.cbanco.id,
-          cbanco_destino: transfer.value[i].cbanco_destino.id,
+          cbanco: transfer.value[i]?.cbanco?.id || '',
+          cbanco_destino: transfer.value[i]?.cbanco_destino?.id || '',
           mpago: 0,
           mpagoext: transfer.value[i].mpago,
           mpagoigtf: this.mountBsP,
@@ -673,7 +673,7 @@ export class PaymentAdministrationComponent {
           mtotalext: this.mountIGTF,
           ptasamon: this.bcv,
           ptasaref: 0,        
-          xreferencia: transfer.value[i].xreferencia,
+          xreferencia: transfer.value[i]?.xreferencia,
           ximage : nombre
 
         });
@@ -681,8 +681,8 @@ export class PaymentAdministrationComponent {
       else if(transfer.at(i).get('cmoneda')?.value == "Bs"){
         this.transferList.push({
           cmoneda: transfer.value[i].cmoneda,
-          cbanco: transfer.value[i]?.cbanco.id,
-          cbanco_destino: transfer.value[i].cbanco_destino.id,
+          cbanco: transfer.value[i]?.cbanco?.id || '',
+          cbanco_destino: transfer.value[i]?.cbanco_destino?.id || '',
           mpago: transfer.value[i].mpago,
           mpagoext: 0,
           mpagoigtf: 0,
@@ -691,7 +691,7 @@ export class PaymentAdministrationComponent {
           mtotalext: this.mount,
           ptasaref: 0,
           ptasamon: this.bcv,        
-          xreferencia: transfer.value[i].xreferencia,
+          xreferencia: transfer.value[i]?.xreferencia,
           ximage : nombre
         });
       }
