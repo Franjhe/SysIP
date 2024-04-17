@@ -1,13 +1,13 @@
-import { AfterViewInit, Component, ViewChild ,TemplateRef } from '@angular/core';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import {  Component, ViewChild ,TemplateRef } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-
+import { from } from 'rxjs';
+import { PdfGenerationService } from '../../../_services/ServicePDF'
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-receipts-collected',
@@ -16,7 +16,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 })
 export class ReceiptsCollectedComponent {
   displayedColumns: string[] = ['id', 'name', 'progress', 'fruit'];
-  details: string[] = ['cnpoliza','cnrecibo', 'pdf','recibo'];
+  details: string[] = ['cnpoliza','cnrecibo','ramo', 'pdf','recibo'];
   dataSource: any;
 
   cliente : any
@@ -38,8 +38,10 @@ export class ReceiptsCollectedComponent {
   }
 
   constructor( 
+    private snackBar: MatSnackBar,
     private http: HttpClient,
     readonly dialog: MatDialog,
+    private pdfGenerationService: PdfGenerationService,
     ) {
   }
 
@@ -71,11 +73,33 @@ export class ReceiptsCollectedComponent {
   }
 
   openR(recibo : any){
-    window.open('https://api.lamundialdeseguros.com/sis2000/recibo/' + recibo + '/', '_blank')
+    console.log(recibo)
+    window.open('https://api.lamundialdeseguros.com/sis2000/recibo/' + recibo[0] + '/', '_blank')
   }
 
   openP(poliza : any){  
-    window.open('https://api.lamundialdeseguros.com/sis2000/poliza/' + poliza.trim() + '/', '_blank')
+      if(poliza.cramo !== 18){
+        window.open('https://api.lamundialdeseguros.com/sis2000/poliza/' + poliza.cnpoliza + '/', '_blank')
+      }else{
+        this.openPdf(poliza.contrato)
+      }
+
+  }
+
+  openPdf(ccontratoflota: any) {
+    const observable = from(this.pdfGenerationService.LoadDataCertifiqued(ccontratoflota));
+
+    observable.subscribe(
+      (data) => {},
+      (error) => {
+        console.log(error)
+      }
+    );
+
+    this.snackBar.open(`Se está generando el Cuadro Póliza. Por favor espere.`, '', {
+      duration: 6000,
+    });
+
   }
 
 

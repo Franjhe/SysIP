@@ -92,6 +92,7 @@ export class PaymentAdministrationComponent {
   searchReceipt = this._formBuilder.group({
     receipt :  this._formBuilder.array([]),
     transfer : this._formBuilder.array([]),
+    fcobro : new Date(),
     xcedula: [''],
     iestadorec : [''],
     xobservacion :[''],
@@ -736,6 +737,7 @@ export class PaymentAdministrationComponent {
           transaccion : this.idTrans,
           correo : item.xcorreo ,
           ccategoria : this.searchReceipt.get('ccategoria')?.value,
+          fcobro : this.searchReceipt.get('fcobro')?.value,
           diference: this.diference,
           positiveBalance : this.PositiveBalanceBool
           }
@@ -783,6 +785,8 @@ export class PaymentAdministrationComponent {
           transaccion : this.idTrans,
           ctransaccion: this.idTrans,
           correo : item.xcorreo ,
+          fcobro : this.searchReceipt.get('fcobro')?.value,
+
           idiferencia : "H",
           }
   
@@ -825,6 +829,8 @@ export class PaymentAdministrationComponent {
         fpago : fecha,
         transaccion : this.idTrans,
         detalle : this.receiptList,
+        fcobro : this.searchReceipt.get('fcobro')?.value,
+
         ccategoria : this.searchReceipt.get('ccategoria')?.value,
         // diference: this.diference,
         // positiveBalance : this.PositiveBalanceBool
