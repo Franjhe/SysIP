@@ -117,8 +117,9 @@ export class PaymentCancellationComponent {
     agrupado : this._formBuilder.array([])
   });
 
-  currentUser : any
+  currentUser!: any
   token: any
+  usuario : any
 
   get agrupado() : FormArray {
     return this.groupReceiptsForm.get("agrupado") as FormArray
@@ -160,9 +161,10 @@ export class PaymentCancellationComponent {
 
   ngOnInit(){
 
+    let token : any = localStorage.getItem('user');
 
-    this.token = localStorage.getItem('user');
-    this.currentUser = JSON.parse(this.token);
+    this.currentUser = JSON.parse(token);
+    this.usuario = this.currentUser.data.cusuario
 
     fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv')
     .then((response) => response.json())
@@ -535,7 +537,9 @@ export class PaymentCancellationComponent {
           correo : creds.at(i).get('xcorreo')?.value,
           cmoneda : creds.at(i).get('cmoneda')?.value,
           idiferencia : creds.at(i).get('idiferencia')?.value,
-          tasa : this.bcv
+          tasa : this.bcv,
+          cusuario : this.usuario,
+
 
         }
 
@@ -553,7 +557,9 @@ export class PaymentCancellationComponent {
           recibo : creds.at(i).get('recibo')?.value,
           cmoneda : creds.at(i).get('cmoneda')?.value,
           idiferencia : creds.at(i).get('idiferencia')?.value,
-          tasa : this.bcv
+          tasa : this.bcv,
+          cusuario : this.usuario,
+
         }
 
       }
@@ -577,7 +583,9 @@ export class PaymentCancellationComponent {
         correo : creds.at(i).get('xcorreo')?.value,
         idiferencia : "H",
         detalle : creds.at(i).get('poliza')?.value,
-        ptasamon : this.bcv
+        ptasamon : this.bcv,
+        cusuario : this.usuario,
+
       }
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt-positive-balance', data ).subscribe((response: any) => {
         if(response.status){
@@ -595,6 +603,8 @@ export class PaymentCancellationComponent {
         cliente : creds.at(i).get('xcliente')?.value,
         fpago : creds.at(i).get('freporte')?.value,
         detalle : creds.at(i).get('poliza')?.value,
+        cusuario : this.usuario,
+
       }
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt/', data ).subscribe((response: any) => {
         if(response.status){

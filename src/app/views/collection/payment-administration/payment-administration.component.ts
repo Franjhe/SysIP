@@ -118,7 +118,8 @@ export class PaymentAdministrationComponent {
 
   revision : boolean = false
   cobradoSAF : boolean = false
-
+  currentUser!: any
+  usuario : any 
 
   constructor( private _formBuilder: FormBuilder,
     private http: HttpClient,
@@ -137,6 +138,12 @@ export class PaymentAdministrationComponent {
   }
 
   ngOnInit(){
+    let token : any = localStorage.getItem('user');
+
+    this.currentUser = JSON.parse(token);
+    this.usuario = this.currentUser.data.cusuario
+
+
 
     fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv')
     .then((response) => response.json())
@@ -727,7 +734,7 @@ export class PaymentAdministrationComponent {
           ptasamon : this.bcv,
           freporte : fecha ,
           cprog : 'Pg_admin',
-          cusuario : 13,
+          cusuario : this.usuario,
           iestadorec : 'C',
           ifuente : 'Web_Sys',
           iestado : 0,
@@ -775,7 +782,7 @@ export class PaymentAdministrationComponent {
           ptasamon : this.bcv,
           freporte : fecha ,
           cprog : 'Pg_admin',
-          cusuario : 13,
+          cusuario : this.usuario,
           iestadorec : 'C',
           ifuente : 'Web_Sys',
           iestado : 0,
@@ -822,7 +829,7 @@ export class PaymentAdministrationComponent {
         ptasamon : this.bcv,
         freporte : fecha ,
         cprog : 'Pg_admin',
-        cusuario : 13,
+        cusuario : this.usuario,
         iestadorec : 'C',
         ifuente : 'Web_Sys',
         iestado : 0,
