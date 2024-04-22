@@ -342,6 +342,7 @@ export class PaymentCancellationComponent {
               mmontorecext: poliza.mmontorecext,
               iestadorec: poliza.iestadorec,
               cramo: poliza.cramo, 
+              xramo: poliza.xramo, 
               cplan: poliza.cplan,
               codigo_corredor : poliza.codigo_corredor,
               corredor : poliza.corredor,
