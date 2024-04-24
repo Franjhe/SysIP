@@ -540,6 +540,8 @@ export class PaymentCancellationComponent {
           idiferencia : creds.at(i).get('idiferencia')?.value,
           tasa : this.bcv,
           cusuario : this.usuario,
+          fcobro : new Date(),
+
 
 
         }
@@ -560,6 +562,8 @@ export class PaymentCancellationComponent {
           idiferencia : creds.at(i).get('idiferencia')?.value,
           tasa : this.bcv,
           cusuario : this.usuario,
+          fcobro : new Date(),
+
 
         }
 
@@ -577,6 +581,7 @@ export class PaymentCancellationComponent {
       let data = {
         transaccion : creds.at(i).get('id')?.value,
         iestadorec: 'C',
+        fcobro : new Date(),
         casegurado : creds.at(i).get('casegurado')?.value,
         msaldodif: creds.at(i).get('mdiferencia')?.value,
         cmoneda_dif: creds.at(i).get('cmoneda')?.value,
@@ -605,6 +610,8 @@ export class PaymentCancellationComponent {
         fpago : creds.at(i).get('freporte')?.value,
         detalle : creds.at(i).get('poliza')?.value,
         cusuario : this.usuario,
+        fcobro : new Date(),
+
 
       }
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt/', data ).subscribe((response: any) => {
