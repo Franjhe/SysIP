@@ -95,6 +95,9 @@ export class PaymentReportComponent {
 
   PositiveBalance : any
   PositiveBalanceBool :boolean = false;
+  positiveBalanceBs! : number
+  positiveBalanceUSD! : number
+
 
 
 
@@ -321,6 +324,7 @@ export class PaymentReportComponent {
       let sumaUSD = 0;
 
       response.searchReceipt.saldo.forEach((item: any) => {
+
         if (item.cmoneda_dif == 'BS  ') {
           sumaBS += item.msaldodif;
         }  
@@ -332,6 +336,9 @@ export class PaymentReportComponent {
           this.PositiveBalanceBool = true
         }
       });
+
+      this.positiveBalanceBs = sumaBS
+      this.positiveBalanceUSD = sumaUSD
 
       this.listCollection = response.searchReceipt.cobrados
 
@@ -490,20 +497,22 @@ export class PaymentReportComponent {
         acumulador += recibo.mdiferenciaext;
       }
 
-      if(recibo.seleccionado && recibo.sumaBS !== 0){
-        let montoBolivares = recibo.sumaBS / this.bcv
-        acumulador -= montoBolivares;
-      }
-      if(recibo.seleccionado && recibo.sumaUSD !== 0){
-        acumulador -= recibo.sumaUSD;
-      }
       return acumulador;
     }, 0);
 
     this.determinarSiPuedeAvanzar()
-    let mount = sumaTotal
 
-    this.mount = sumaTotal.toFixed(2) //suma de los dolares brutos
+    let mount 
+    if(this.PositiveBalanceBool){      
+
+      mount = Number(sumaTotal) - this.positiveBalanceUSD 
+  
+    }else{
+      mount = sumaTotal
+    }
+  
+
+    this.mount = mount.toFixed(2) //suma de los dolares brutos
 
     const operation = mount * this.bcv
     this.mountBs = operation.toFixed(2)  //dolares brutos convertidos en bolivares 
