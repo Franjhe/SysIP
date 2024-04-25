@@ -16,7 +16,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class ReceiptsCollectedComponent {
   displayedColumns: string[] = ['id', 'name', 'progress', 'fruit'];
-  details: string[] = ['cnpoliza','cnrecibo','ramo', 'pdf','recibo'];
+  details: string[] = ['cnpoliza','cnrecibo','ramo', 'recibo'];
   dataSource: any;
 
   cliente : any
