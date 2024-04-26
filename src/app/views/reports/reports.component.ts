@@ -100,10 +100,8 @@ buscadorFiltro(event: Event) {
     let buscarTransaccion = {
       ctransaccion: this.consulta_reporte.get('ctransaccion')?.value,
       };
-    this.http.get(environment.apiUrl_prod + '/sis2000/ingreso_caja/', buscarTransaccion.ctransaccion).subscribe((response: any) => {
-    });
-  }
-  
+      window.open(environment.apiUrl_prod + '/sis2000/ingreso_caja/' + buscarTransaccion + '/', '_blank');
+}
   onSubmit() {
     let data = {
       estado: this.consulta_reporte.get('estado')?.value,
