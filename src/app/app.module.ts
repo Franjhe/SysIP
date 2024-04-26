@@ -40,6 +40,7 @@ import {
 
 import { IconModule, IconSetService } from '@coreui/icons-angular';
 
+
 const APP_CONTAINERS = [
   DefaultFooterComponent,
   DefaultHeaderComponent,

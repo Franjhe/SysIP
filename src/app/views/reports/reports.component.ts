@@ -1,6 +1,6 @@
-import { Component, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {FormBuilder, Validators, FormGroup, FormControl , FormArray, FormGroupDirective, NgForm, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormBuilder, Validators, FormGroup, FormControl, FormArray, FormGroupDirective, NgForm, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { environment } from 'src/environments/environment';
 import { ThemePalette } from '@angular/material/core';
 import { MatTableDataSource } from '@angular/material/table';
@@ -40,6 +40,7 @@ export class ReportsComponent {
   sendButton: boolean = false;
   selectedOption: string = '';
   correo: string = '';
+  numeroTransaccion: string = '';
  
 
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
@@ -49,8 +50,9 @@ export class ReportsComponent {
 
   listPending: any = []
   listCollection: any = []
-
   listCollectedReport: any = []
+  valorList: any = []
+
   groupReceiptsForm = this.formBuilder.group({
     agrupado : this.formBuilder.array([])
   });
@@ -61,11 +63,12 @@ export class ReportsComponent {
       ) {
      }
      availableColors = [
-      {name: 'Recibos Pendientes', color: 'primary', valor : 'P'},
-      {name: 'Recibos Cobrados', color: 'warn', valor : 'C'},
-      {name: 'Recibos Anulados', color: 'accent', valor : 'A'},
-      {name: 'Recibos Notificados', color: 'primary', valor : 'N'},
-      {name: 'Detalle de Cobrados', color: 'secondary', valor : 'CD'},
+      {name: 'Recibos Pendientes',  color: 'primary',   valor : 'P'},
+      {name: 'Recibos Cobrados',    color: 'warn',      valor : 'C'},
+      {name: 'Recibos Anulados',    color: 'accent',    valor : 'A'},
+      {name: 'Recibos Notificados', color: 'warn',   valor : 'N'},
+      {name: 'Detalle de Cobrados', color: 'accent',      valor : 'CD'},
+      {name: 'Ingreso de Caja',     color: 'primary',    valor : 'I'},
     ];
   
 ngOnInit() {
@@ -74,7 +77,8 @@ ngOnInit() {
     estado: [''],
     fdesde_pol: [''],
     fhasta_pol: [''],
-    correo: ['', [Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]]
+    correo: ['', [Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]],
+    ctransaccion: ['']
   });
 }
 
@@ -83,18 +87,24 @@ saveSelection(opcion: string) {
   this.consulta_reporte.get('estado')?.setValue(this.selectedOption);
   this.dataReport();
 }
+selectValor(opcion: any){
+  this.valorList = opcion;
+  }
+  onSubmit() {
 
-onSubmit(){
-  let data = {
-    estado: this.consulta_reporte.get('estado')?.value,
-    fdesde_pol: this.consulta_reporte.get('fdesde_pol')?.value,
-    fhasta_pol: this.consulta_reporte.get('fhasta_pol')?.value,
-  };
+    let data = {
+      estado: this.consulta_reporte.get('estado')?.value,
+      fdesde_pol: this.consulta_reporte.get('fdesde_pol')?.value,
+      fhasta_pol: this.consulta_reporte.get('fhasta_pol')?.value,
+      ctransaccion: this.numeroTransaccion
+    };
   // let estado = this.consulta_reporte.get('fhasta')?.value
   this.http.post(environment.apiUrl_reporte + '/single_receipts/', data).subscribe((response: any) => {
     // if (response.data.list) {
     //   this.dataSource.data = response.data.list;
     // }
+  });
+  this.http.post(environment.apiUrl_prod + '/sis2000/ingreso_caja/', data).subscribe((response: any) => {
   });
 }
 buscarReporte(){
@@ -106,6 +116,7 @@ buscarReporte(){
     estado: this.consulta_reporte.get('estado')?.value,
     fdesde_pol: this.consulta_reporte.get('fdesde_pol')?.value,
     fhasta_pol: this.consulta_reporte.get('fhasta_pol')?.value,
+    ctransaccion: this.consulta_reporte.get('ctransaccion')?.value,
   };
 
   // var form = document.getElementById("formato");
@@ -198,7 +209,6 @@ dataReport(){
            }
            this.listPending.push({
             Poliza: data.searchPaymentCollected.recibo[i].Nro_Poliza,
-            // Codigo_Ramo: data.searchPaymentCollected.recibo[i].Codigo_Ramo,
             Descripcion_Ramo:data.searchPaymentCollected.recibo[i].Descripcion_Ramo,
             Fecha_Emision_Rec: fechaEmRec,
             Fecha_desde_Pol : fechaDePol,
@@ -207,14 +217,10 @@ dataReport(){
             Nombre_del_Tomador: data.searchPaymentCollected.recibo[i].Nombre_del_Tomador,
             Id_Asegurado: data.searchPaymentCollected.recibo[i].Id_Asegurado,
             Nombre_Asegurado: data.searchPaymentCollected.recibo[i].Nombre_Asegurado,
-            // Cedula_Beneficiario: data.searchPaymentCollected.recibo[i].Id_del_Beneficiario,
-            // Nombre_Beneficiario: data.searchPaymentCollected.recibo[i].Nombre_Beneficiario,
-            // Codigo_Moneda: data.searchPaymentCollected.recibo[i].Codigo_Moneda,
             Moneda: data.searchPaymentCollected.recibo[i].Moneda,
             Nro_Recibo: data.searchPaymentCollected.recibo[i].Nro_Recibo,
             Fecha_desde_Recibo: fechaDeReceipt,
             Fecha_hasta_Recibo: fechaHaReceipt,
-            // Estado_del_Recibo: data.searchPaymentCollected.recibo[i].Estado_del_Recibo,
             Descripcion_estado_rec: estado,
             Suma_asegurada: data.searchPaymentCollected.recibo[i].Suma_asegurada,
             Suma_asegurada_Ext: data.searchPaymentCollected.recibo[i].Suma_asegurada_Ext,
@@ -223,32 +229,26 @@ dataReport(){
             Tasa_Cambio: data.searchPaymentCollected.recibo[i].Tasa_Cambio,
             Dias_de_vigencia: data.searchPaymentCollected.recibo[i].Dias_de_vigencia,
             Sucursal: data.searchPaymentCollected.recibo[i].Sucursal,
-            // Descripcion_Corta_Sucursal: data.searchPaymentCollected.recibo[i].Descripcion_Corta_Sucursal,
-            // cproductor: data.searchPaymentCollected.recibo[i].cproductor,
             Intermediario: data.searchPaymentCollected.recibo[i].Intermediario
           })
         }
 
-
-  
       })
   }else{
     window.open('https://api.lamundialdeseguros.com/sis2000/cobranza/', '_blank');
-
   }
-
-  }
+  
+}
 makeExcel(){
   this.snackBar.open("Reporte en Excel descargado con Éxito", "Cerrar", {
     duration: 3000,
-    panelClass: ['blue-snackbar'],  
   });
   let fecha = new Date()
   let day = fecha.getDate()
   let month = fecha.getMonth() + 1
   let year = fecha.getFullYear()
   var formato_fecha = fecha.toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' });
-    // if(this.consulta_reporte.get('estatus')?.value == 'C'){
+    // if(this.consulta_reporte.get('estatus')?.value == 'CD'){
     //   this.makeExcelCollection()
     // }
     // else{
@@ -282,56 +282,48 @@ makeExcel(){
       const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
       const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.  spreadsheetml.sheet' });
       saveAs(excelData, `Reporte de recibos pendientes solicitados.xlsx`);
-      // } 
+    // } 
 }
-
-// makeExcelCollection(){
-//   const filteredData = this.listCollection.map((item :any) => ({
-//     'Poliza': item.Nro_Poliza,
-//     'Código_Ramo': item.Codigo_Ramo,
-//     'Descripción_Ramo': item.Descripcion_Ramo,
-//     'Fecha_Emision_Rec': item.Fecha_Emision_Rec,
-//     'Fecha_desde_Pol' : item.Fecha_desde_Pol,
-//     'Fecha_hasta_Pol': item.Fecha_hasta_Pol,
-//     'CID': item.CID,
-//     'Nombre_del_Tomador': item.Nombre_del_Tomador,
-//     'C.I./Asegurado' : item.Id_Asegurado,
-//     'Nombre_Asegurado' : item.Nombre_Asegurado,
-//     'C.I./Beneficiario' : item.Id_del_Beneficiario,
-//     'Nombre_Beneficiario,' :item.Nombre_Beneficiario,
-//     'Codigo_Moneda,': item.Codigo_Moneda,
-//     'Moneda': item.Moneda,
-//     'Nro_Recibo' : item.Nro_Recibo,
-//     'Fecha_desde_Recibo' : item.Fecha_desde_Recibo,
-//     'C.I./Fecha_hasta_Recibo' : item.Fecha_hasta_Recibo,
-//     'Estado_del_Recibo' :item.Estado_del_Recibo,
-//     'Descripcion_estado_rec' :item.Descripcion_estado_rec,
-//     'Suma_asegurada': item.Suma_asegurada,
-//     // 'Suma_asegurada_Ext': item.Suma_asegurada_Ext,
-//     'Monto_Recibo' : item.Monto_Recibo,
-//     'Monto_Recibo_Ext' : item.Monto_Recibo_Ext,
-//     'Tasa_Cambio' : item.Tasa_Cambio,
-//     'Dias_de_vigencia' : item.Dias_de_vigencia,
-//     'Sucursal' :item.Sucursal,
-//     'Descripcion_Corta_Sucursal' :item.Descripcion_Corta_Sucursal,
-//     'cproductor' :item.cproductor,
-//     'Intermediario' :item.Intermediario,
-//     'mdiferencia' : item.mdiferencia,
-//     'mdiferenciaext' :item.mdiferenciaext,
-//     'idiferencia' :item.idiferencia,
-//     'mpago' :item.mpago,
-//     'mpagoext' :item.mpagoext,
-//     'xreferencia' :item.xreferencia,
-//     'cbanco_destino' :item.cbanco_destino,
-//     'xbanco' :item.xbanco,
-//     }));
-//     const worksheet = XLSX.utils.json_to_sheet(filteredData);
-//     const workbook = XLSX.utils.book_new();
-//     XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
-//     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-//     const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.  spreadsheetml.sheet' });
-//     saveAs(excelData, `Reporte de recibos pendientes Cobrados.xlsx`);
-// } 
+makeExcelCollection(){
+  this.snackBar.open("Reporte en Excel descargado con Éxito", "Cerrar", {
+    duration: 3000,
+  });
+  const filteredData = this.listCollection.map((item :any) => ({
+    'Cod_Transaccion': item.ctransaccion,
+    'C.I/Asegurado': item.casegurado,
+    'Nombre_Apellido': item.xcliente,
+    'Fecha_Reporte': item.freporte,
+    'Monto_Transaccion' : item.mpago,
+    'Monto_Transaccion_Ext': item.mpagoext,
+    'Tasa': item.ptasamon ? item.ptasamon.toFixed(2) : 0.00,
+          //     Soporte Recibo
+         'Recibo' : item.cnrecibo,
+         'Monto_Recibo' : item.mmontorec,
+         'Monto_Recibo_Ext,' :item.mmontorecext,
+         'Fecha_Ingreso,': item.fingreso,
+         'Fecha_Cobro': item.fcobro,
+         'Diferencia_Bs' : item.mdiferencia,
+         'Diferencia_Dolares' : item.mdiferenciaext,
+         'Tasa_Diferencia' : item.ptasamon,
+         'Moneda_Diferencia' :item.cmoneda,
+         'Observacion' :item.xobservacion,
+                //     Soporte Transacción
+               'banco_destino' :item.cbanco_destino,
+               'banco_origen': item.cbanco_origen,
+               'tasa': item.ptasamon,
+               'moneda' : item.cmoneda,
+               'pago_total' : item.mpago,
+               'pago_total_ext' : item.monto_declarado_ext,
+               'Pago_igtf' : item.mpagoigtf,
+               'Referencia' : item.xreferencia,
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(filteredData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.  spreadsheetml.sheet' });
+    saveAs(excelData, `Detalle de recibos pendientes Cobrados.xlsx`);
+} 
 
 sendMail(){
   let estado = this.consulta_reporte.get('estado')?.value

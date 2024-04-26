@@ -3,25 +3,39 @@
     <h3><h1 style="color: #3f51b5">Datos para Impresión de Reportes</h1></h3>
   </div>
 </div>
-<!-- Segundo intento -->
-  <div class="row" >
-    <div class="col-sm-3">
-      <div class="card">
-        <div class="card-body">
-            <mat-list>
-                <h2 class="letra">Seleccione por favor</h2>
-                <mat-divider></mat-divider>
-            </mat-list>
-            <mat-chip-listbox class="mat-mdc-chip-set-stacked" aria-label="Color selection">
-                <mat-chip-option *ngFor="let chip of availableColors; let first = first" [color]="chip.color" (click)="saveSelection(chip.valor)">
-                    {{chip.name}}
-                </mat-chip-option>
-            </mat-chip-listbox>
-        </div>
+<div class="row" >
+  <div class="col-sm-3">
+    <div class="card">
+      <div class="card-body">
+        <mat-list>
+          <h2 class="letra">Seleccione por favor</h2>
+          <mat-divider></mat-divider>
+        </mat-list>
+        <mat-chip-listbox class="mat-mdc-chip-set-stacked" aria-label="Color selection">
+          <mat-chip-option *ngFor="let chip of availableColors; let first = first" [color]="chip.color" (click)="saveSelection(chip.valor)" (click)="selectValor(chip.valor)">
+            {{chip.name}}
+          </mat-chip-option>
+        </mat-chip-listbox>
       </div>
     </div>
-    <div class="col-sm-8" style="display: grid;">
-        <div class="card container py-4  registration-form" >
+  </div>
+  <div class="col-sm-8" style="display: grid;" >  
+    <div class="card container py-4 registration-form" *ngIf="valorList == 'I'">
+      <div>
+        <h2 class="text-center">Seleccione el Número de Transacción</h2>
+      </div>
+      <hr>
+      <form class="example-form">
+                  <mat-form-field class="registration-form2">
+                    <mat-label>Número de Transacción</mat-label>
+                    <input matInput placeholder="Número Transacción" 
+                    value ="1" type="number"> 
+                  </mat-form-field>
+                  <button mat-flat-button color="primary" (click)="onSubmit()">Buscar</button>
+                  <!-- <a mat-flat-button color="primary" href="https://www.google.com/" target="_blank">Link</a>  [(ngModel)]="numeroTransaccion" -->
+        </form> 
+      </div>
+    <div class="card container py-4  registration-form" *ngIf="valorList != 'I'">
             <div>
               <h2 class="text-center">Seleccione el rango de fecha</h2>
             </div>
@@ -37,7 +51,7 @@
                       class="form-control rounded-input"
                       [ngClass]="{ 'is-invalid': submitted && consulta_reporte.controls['fdesde_pol'].errors }">
                       <div class="invalid-feedback"
-                      *ngIf="submitted && consulta_reporte.controls['fdesde_pol'].errors">Erroren el nombre</div>
+                      *ngIf="submitted && consulta_reporte.controls['fdesde_pol'].errors">Error en el nombre</div>
                       </div>
                     </div>
                     <div class="col-6">
@@ -87,14 +101,10 @@
                   src="https://www.islahospitalmenorca.org/wp-content/uploads/2015/12/adobe-pdf-file-icon-logo-vector.png"
                   width="21px" height="20px" margin-right="2px"> PDF
                   </button>
-                  <button (click)="sendMail()" mat-raised-button class="mat-enviar"
-                  id="prueba1" color="primary" *ngIf="sendButton">
-                  <img class
-                  src="https://cdn-icons-png.flaticon.com/512/1034/1034313.png"
-                  width="23px" height="20px" margin-right="2px"> Enviar
-                  </button>
+                  <br>
             </div>
             </form>
+             
         </div>
     </div>
   </div>
