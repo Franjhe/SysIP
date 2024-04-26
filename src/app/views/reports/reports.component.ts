@@ -53,6 +53,7 @@ export class ReportsComponent {
   listCollection: any = []
   listCollectedReport: any = []
   valorList: any = []
+  ctransaccion_receipt : any = []
 
   groupReceiptsForm = this.formBuilder.group({
     agrupado : this.formBuilder.array([])
@@ -92,15 +93,13 @@ selectValor(opcion: any){
   this.valorList = opcion;
 }
 buscadorFiltro(event: Event) {
-  const valorBuscado = (event.target as HTMLInputElement).value;
-  this.dataSource.filter = valorBuscado.trim().toLowerCase();
-  console.log(valorBuscado);
+  this.ctransaccion_receipt  = (event.target as HTMLInputElement).value;
 }
   buscarTransaccion(){
     let buscarTransaccion = {
       ctransaccion: this.consulta_reporte.get('ctransaccion')?.value,
       };
-      window.open(environment.apiUrl_prod + '/sis2000/ingreso_caja/' + buscarTransaccion + '/', '_blank');
+      window.open(environment.apiUrl_prod + '/sis2000/ingreso_caja/' + this.ctransaccion_receipt + '/', '_blank');
 }
   onSubmit() {
     let data = {
@@ -116,7 +115,6 @@ buscarReporte(){
   this.snackBar.open("Reporte en PDF descargado con Éxito", "Cerrar", {
     duration: 3000,
   });
-  // window.open(environment.apiUrl_prod + '/single_receipts/', '_blank');
   let data = {
     estado: this.consulta_reporte.get('estado')?.value,
     fdesde_pol: this.consulta_reporte.get('fdesde_pol')?.value,
@@ -124,12 +122,6 @@ buscarReporte(){
     ctransaccion: this.consulta_reporte.get('ctransaccion')?.value,
   };
 
-  // var form = document.getElementById("formato");
-  // document.body.appendChild(this.consulta_reporte.value);
-  //   window.open('', 'view');
-  //   form?.click;
-  
-    
   var mediaType = 'application/pdf';
   try {
     this.http.post(environment.apiUrl_prod + '/single_receipts/', JSON.stringify(data), { responseType: 'blob' }).subscribe(

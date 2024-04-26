@@ -25,11 +25,11 @@
         <h2 class="text-center">Seleccione el Número de Transacción</h2>
       </div>
       <hr>
-      <form class="example-form">
+      <form class="example-form" [formGroup]="consulta_reporte">
                   <mat-form-field class="registration-form2">
                     <mat-label>Número de Transacción</mat-label>
                     <input matInput placeholder="Número Transacción" 
-                    value = "1" type="number" (keyup)="buscadorFiltro($event)" #input> 
+                    value = "1" type="number" (keyup)="buscadorFiltro($event)"> 
                   </mat-form-field>
                   <button mat-flat-button color="primary" (click)="buscarTransaccion()">Buscar</button>
                   <!-- <a mat-flat-button color="primary" href="https://www.google.com/" target="_blank">Link</a>  [(ngModel)]="numeroTransaccion" -->
