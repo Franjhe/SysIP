@@ -22,6 +22,7 @@ import {
   MatSnackBarHorizontalPosition,
   MatSnackBarVerticalPosition,
 } from '@angular/material/snack-bar';
+import { log } from 'console';
 
 
 @Component({
@@ -40,7 +41,7 @@ export class ReportsComponent {
   sendButton: boolean = false;
   selectedOption: string = '';
   correo: string = '';
-  numeroTransaccion: string = '';
+  ctransaccion: string = '';
  
 
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
@@ -89,22 +90,28 @@ saveSelection(opcion: string) {
 }
 selectValor(opcion: any){
   this.valorList = opcion;
+}
+buscadorFiltro(event: Event) {
+  const valorBuscado = (event.target as HTMLInputElement).value;
+  this.dataSource.filter = valorBuscado.trim().toLowerCase();
+  console.log(valorBuscado);
+}
+  buscarTransaccion(){
+    let buscarTransaccion = {
+      ctransaccion: this.consulta_reporte.get('ctransaccion')?.value,
+      };
+    this.http.get(environment.apiUrl_prod + '/sis2000/ingreso_caja/', buscarTransaccion.ctransaccion).subscribe((response: any) => {
+    });
   }
+  
   onSubmit() {
-
     let data = {
       estado: this.consulta_reporte.get('estado')?.value,
       fdesde_pol: this.consulta_reporte.get('fdesde_pol')?.value,
       fhasta_pol: this.consulta_reporte.get('fhasta_pol')?.value,
-      ctransaccion: this.numeroTransaccion
+      
     };
-  // let estado = this.consulta_reporte.get('fhasta')?.value
   this.http.post(environment.apiUrl_reporte + '/single_receipts/', data).subscribe((response: any) => {
-    // if (response.data.list) {
-    //   this.dataSource.data = response.data.list;
-    // }
-  });
-  this.http.post(environment.apiUrl_prod + '/sis2000/ingreso_caja/', data).subscribe((response: any) => {
   });
 }
 buscarReporte(){
