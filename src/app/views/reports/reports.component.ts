@@ -149,7 +149,9 @@ activateSendButton(){
 }
 
 dataReport(){
-  let estado = this.consulta_reporte.get('estado')?.value
+  let estado = this.consulta_reporte.get('estado')?.value;
+  let fdesde_pol = this.consulta_reporte.get('fdesde_pol')?.value;
+  let fhasta_pol = this.consulta_reporte.get('fhasta_pol')?.value;
   if(estado !== 'CD'){
     this.showButton = true
     // if(estado == 'C'){
@@ -169,6 +171,7 @@ dataReport(){
         //   if (fdesde_pol !== fdesde_pol) {
 
         for(let i = 0; i < data.searchPaymentCollected.recibo.length; i++){
+          let fechaFiltro = new Date(data.searchPaymentCollected.recibo[i].Fecha_desde_Pol).toISOString().substring(0, 10);              
           //fecha emisión Recibo
           let dateEReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_Emision_Rec );
           let fechaEmRec = dateEReceipt.toISOString().substring(0, 10);
@@ -209,8 +212,8 @@ dataReport(){
             estado = 'Notificado'
            }
            this.listPending.push({
-            Fecha_Cobro: fechaDeCobro,
             Poliza: data.searchPaymentCollected.recibo[i].Nro_Poliza,
+            Fecha_Cobro: fechaDeCobro,
             Descripcion_Ramo:data.searchPaymentCollected.recibo[i].Descripcion_Ramo,
             Fecha_Emision_Rec: fechaEmRec,
             Fecha_desde_Pol : fechaDePol,
@@ -232,13 +235,14 @@ dataReport(){
             Dias_de_vigencia: data.searchPaymentCollected.recibo[i].Dias_de_vigencia,
             Sucursal: data.searchPaymentCollected.recibo[i].Sucursal,
             Intermediario: data.searchPaymentCollected.recibo[i].Intermediario
+            
           })
+        
         }
       })
   }else{
     window.open('https://api.lamundialdeseguros.com/sis2000/cobranza/', '_blank');
   }
-  
 }
 makeExcel(){
   this.snackBar.open("Reporte en Excel descargado con Éxito", "Cerrar", {
@@ -253,31 +257,39 @@ makeExcel(){
     //   this.makeExcelCollection()
     // }
     // else{
-        const filteredData = this.listPending.map((item :any) => ({
-          'Fecha_Cobro': item.Fecha_Cobro,
-          'Poliza': item.Poliza,
-          'Descripción_Ramo': item.Descripcion_Ramo,
-          'Fecha_Emision_Rec': item.Fecha_Emision_Rec,
-          'Fecha_desde_Pol' : item.Fecha_desde_Pol,
-          'Fecha_hasta_Pol': item.Fecha_hasta_Pol,
-          'Cedula_Tomador': item.CID,
-          'Nombre_del_Tomador': item.Nombre_del_Tomador,
-          'Cedula_Asegurado' : item.Id_Asegurado,
-          'Nombre_Asegurado' : item.Nombre_Asegurado,
-          'Moneda': item.Moneda,
-          'Nro_Recibo' : item.Nro_Recibo,
-          'Fecha_desde_Recibo' : item.Fecha_desde_Recibo,
-          'Fecha_hasta_Recibo' : item.Fecha_hasta_Recibo,
-          'Estatus_Recibo' :item.Descripcion_estado_rec,
-          'Suma_asegurada': item.Suma_asegurada ? item.Suma_asegurada.toFixed(2) : 0.00,
-          'Suma_asegurada_Ext': item.Suma_asegurada_Ext ? item.Suma_asegurada_Ext.toFixed(2) : 0.00,
-          'Monto_Recibo' : item.Monto_Recibo,
-          'Monto_Recibo_Ext' : item.Monto_Recibo_Ext,
-          'Tasa_Cambio' : item.Tasa_Cambio,
-          'Dias_de_vigencia' : item.Dias_de_vigencia,
-          'Sucursal' :item.Sucursal,
-          'Intermediario' :item.Intermediario,
-    }));
+      let filteredData = []
+      let fdesde_pol = this.consulta_reporte.get('fdesde_pol')?.value;
+
+    for(let item of this.listPending){
+      let fechaFiltro = new Date(item.Fecha_Cobro).toISOString().substring(0, 10);
+          if(fechaFiltro >= fdesde_pol){
+            filteredData.push({
+              'Poliza': item.Poliza,
+              'Fecha_Cobro': item.Fecha_Cobro,
+              'Descripción_Ramo': item.Descripcion_Ramo,
+              'Fecha_Emision_Rec': item.Fecha_Emision_Rec,
+              'Fecha_desde_Pol' : item.Fecha_desde_Pol,
+              'Fecha_hasta_Pol': item.Fecha_hasta_Pol,
+              'Cedula_Tomador': item.CID,
+              'Nombre_del_Tomador': item.Nombre_del_Tomador,
+              'Cedula_Asegurado' : item.Id_Asegurado,
+              'Nombre_Asegurado' : item.Nombre_Asegurado,
+              'Moneda': item.Moneda,
+              'Nro_Recibo' : item.Nro_Recibo,
+              'Fecha_desde_Recibo' : item.Fecha_desde_Recibo,
+              'Fecha_hasta_Recibo' : item.Fecha_hasta_Recibo,
+              'Estatus_Recibo' :item.Descripcion_estado_rec,
+              'Suma_asegurada': item.Suma_asegurada ? item.Suma_asegurada.toFixed(2) : 0.00,
+              'Suma_asegurada_Ext': item.Suma_asegurada_Ext ? item.Suma_asegurada_Ext.toFixed(2) : 0.00,
+              'Monto_Recibo' : item.Monto_Recibo,
+              'Monto_Recibo_Ext' : item.Monto_Recibo_Ext,
+              'Tasa_Cambio' : item.Tasa_Cambio,
+              'Dias_de_vigencia' : item.Dias_de_vigencia,
+              'Sucursal' :item.Sucursal,
+              'Intermediario' :item.Intermediario,
+            })
+          }
+    }
       const worksheet = XLSX.utils.json_to_sheet(filteredData);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
