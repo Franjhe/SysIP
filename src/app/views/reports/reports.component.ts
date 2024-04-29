@@ -263,7 +263,7 @@ makeExcel(){
     for(let item of this.listPending){
       let fechaFiltro = new Date(item.Fecha_Cobro).toISOString().substring(0, 10);
           if(fechaFiltro >= fdesde_pol){
-            filteredData.push({
+            filteredData.push ({
               'Poliza': item.Poliza,
               'Fecha_Cobro': item.Fecha_Cobro,
               'Descripción_Ramo': item.Descripcion_Ramo,
