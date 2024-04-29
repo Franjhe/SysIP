@@ -42,6 +42,7 @@ export class ReportsComponent {
   selectedOption: string = '';
   correo: string = '';
   ctransaccion: string = '';
+  fdesde_pol: string = '';
  
 
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
@@ -135,7 +136,6 @@ buscarReporte(){
     console.log(e);
   }
 }
-
 activateSendButton(){
   if(this.consulta_reporte.invalid){
     this.snackBar.open(`Ingrese un correo valido`, '', {
@@ -165,8 +165,10 @@ dataReport(){
       .then((response) => response.json())
       .then(data => {
         this.listPending = []
+        // let fdesde_pol = this.consulta_reporte.get('fdesde_pol')?.value;
+        //   if (fdesde_pol !== fdesde_pol) {
 
-        for(let i = 0; i < data.searchPaymentCollected.recibo.length; i++){   
+        for(let i = 0; i < data.searchPaymentCollected.recibo.length; i++){
           //fecha emisión Recibo
           let dateEReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_Emision_Rec );
           let fechaEmRec = dateEReceipt.toISOString().substring(0, 10);
@@ -182,7 +184,10 @@ dataReport(){
            //fecha hasta Recibo
            let dateHaReceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_hasta_Recibo );
            let fechaHaReceipt = dateHaReceipt.toISOString().substring(0, 10);
-           let  estado = ''
+           //fecha Cobro Recibo
+          let dateFCreceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_Cobro );
+          let fechaDeCobro = dateFCreceipt.toISOString().substring(0, 10);
+           let estado = ''
 
            if(data.searchPaymentCollected.recibo[i].Estado_del_Recibo == 'P'){
             estado = 'Pendiente'
@@ -202,9 +207,9 @@ dataReport(){
            }
            if(data.searchPaymentCollected.recibo[i].Estado_del_Recibo == 'N'){
             estado = 'Notificado'
-
            }
            this.listPending.push({
+            Fecha_Cobro: fechaDeCobro,
             Poliza: data.searchPaymentCollected.recibo[i].Nro_Poliza,
             Descripcion_Ramo:data.searchPaymentCollected.recibo[i].Descripcion_Ramo,
             Fecha_Emision_Rec: fechaEmRec,
@@ -229,7 +234,6 @@ dataReport(){
             Intermediario: data.searchPaymentCollected.recibo[i].Intermediario
           })
         }
-
       })
   }else{
     window.open('https://api.lamundialdeseguros.com/sis2000/cobranza/', '_blank');
@@ -250,6 +254,7 @@ makeExcel(){
     // }
     // else{
         const filteredData = this.listPending.map((item :any) => ({
+          'Fecha_Cobro': item.Fecha_Cobro,
           'Poliza': item.Poliza,
           'Descripción_Ramo': item.Descripcion_Ramo,
           'Fecha_Emision_Rec': item.Fecha_Emision_Rec,
@@ -278,7 +283,7 @@ makeExcel(){
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
       const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
       const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.  spreadsheetml.sheet' });
-      saveAs(excelData, `Reporte de recibos pendientes solicitados.xlsx`);
+      saveAs(excelData, `Reporte de Recibos.xlsx`);
     // } 
 }
 makeExcelCollection(){
