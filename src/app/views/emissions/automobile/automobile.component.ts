@@ -291,6 +291,7 @@ export class AutomobileComponent {
     xcorredor: [''],
     ctomador: [{ value: '', disabled: false }],
     xtomador: [{ value: '', disabled: false }],
+    icedula_tomador: [''],
     xrif_tomador: [''],
     cestado_tomador: [''],
     cciudad_tomador: [''],
@@ -2658,6 +2659,7 @@ export class AutomobileComponent {
         cclasificacion: this.vehicleFormGroup.get('cclasificacion')?.value,
         ctomador: this.planFormGroup.get('ctomador')?.value,
         xtomador: this.planFormGroup.get('xtomador')?.value,
+        icedula_tomador: this.planFormGroup.get('icedula_tomador')?.value,
         xrif_tomador: this.planFormGroup.get('xrif_tomador')?.value,
         xemail_tomador: this.planFormGroup.get('xemail_tomador')?.value,
         cestado_tomador: this.planFormGroup.get('cestado_tomador')?.value,
@@ -2709,6 +2711,7 @@ export class AutomobileComponent {
       }
     }else{
       console.log('pasa por aqui y da error')
+      console.log('Que error les dio?')
       data = {
         icedula: this.personsFormGroup.get('icedula')?.value,
         xrif_cliente: this.personsFormGroup.get('xrif_cliente')?.value,
@@ -2736,6 +2739,7 @@ export class AutomobileComponent {
         cclasificacion: this.vehicleFormGroup.get('cclasificacion')?.value,
         ctomador: this.planFormGroup.get('ctomador')?.value,
         xtomador: this.planFormGroup.get('xtomador')?.value,
+        icedula_tomador: this.planFormGroup.get('icedula_tomador')?.value,
         xrif_tomador: this.planFormGroup.get('xrif_tomador')?.value,
         xemail_tomador: this.planFormGroup.get('xemail_tomador')?.value,
         cestado_tomador: this.planFormGroup.get('cestado_tomador')?.value,
