@@ -263,7 +263,6 @@ export class ReportsComponent {
     let fdesde_pol = this.consulta_reporte.get('fdesde_pol')?.value;
     let fhasta_pol = this.consulta_reporte.get('fhasta_pol')?.value;
 
-<<<<<<< HEAD
     fdesde_pol = fdesde_pol ? fdesde_pol : '1900-01-01';
     fhasta_pol = fhasta_pol ? fhasta_pol : '2100-01-01';
 
@@ -299,37 +298,6 @@ export class ReportsComponent {
           })
         }
       }
-=======
-    for(let item of this.listPending){
-      let fechaFiltro = new Date(item.Fecha_Cobro).toISOString().substring(0, 10);
-          if(fechaFiltro >= fdesde_pol){
-            filteredData.push ({
-              'Poliza': item.Poliza,
-              'Fecha_Cobro': item.Fecha_Cobro,
-              'Descripción_Ramo': item.Descripcion_Ramo,
-              'Fecha_Emision_Rec': item.Fecha_Emision_Rec,
-              'Fecha_desde_Pol' : item.Fecha_desde_Pol,
-              'Fecha_hasta_Pol': item.Fecha_hasta_Pol,
-              'Cedula_Tomador': item.CID,
-              'Nombre_del_Tomador': item.Nombre_del_Tomador,
-              'Cedula_Asegurado' : item.Id_Asegurado,
-              'Nombre_Asegurado' : item.Nombre_Asegurado,
-              'Moneda': item.Moneda,
-              'Nro_Recibo' : item.Nro_Recibo,
-              'Fecha_desde_Recibo' : item.Fecha_desde_Recibo,
-              'Fecha_hasta_Recibo' : item.Fecha_hasta_Recibo,
-              'Estatus_Recibo' :item.Descripcion_estado_rec,
-              'Suma_asegurada': item.Suma_asegurada ? item.Suma_asegurada.toFixed(2) : 0.00,
-              'Suma_asegurada_Ext': item.Suma_asegurada_Ext ? item.Suma_asegurada_Ext.toFixed(2) : 0.00,
-              'Monto_Recibo' : item.Monto_Recibo,
-              'Monto_Recibo_Ext' : item.Monto_Recibo_Ext,
-              'Tasa_Cambio' : item.Tasa_Cambio,
-              'Dias_de_vigencia' : item.Dias_de_vigencia,
-              'Sucursal' :item.Sucursal,
-              'Intermediario' :item.Intermediario,
-            })
-          }
->>>>>>> af7c38279f3e384a5f92d3ebe52e9b2d7aa09ca3
     }
     else {
       
