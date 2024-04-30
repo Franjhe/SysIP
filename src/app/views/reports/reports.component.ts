@@ -215,7 +215,7 @@ export class ReportsComponent {
             }
             this.listPending.push({
               Poliza: data.searchPaymentCollected.recibo[i].Nro_Poliza,
-              Fecha_Cobro: (fechaDeCobro == '1970-01-01') ? 'N/A' : fechaDeCobro,
+              Fecha_Cobro: fechaDeCobro,
               Descripcion_Ramo: data.searchPaymentCollected.recibo[i].Descripcion_Ramo,
               Fecha_Emision_Rec: fechaEmRec,
               Fecha_desde_Pol: fechaDePol,
@@ -273,7 +273,8 @@ export class ReportsComponent {
         if (fechaFiltro >= fdesde_pol && fechaFiltro <= fhasta_pol) {
           filteredData.push({
             'Poliza': item.Poliza,
-            'Fecha_Cobro': item.Fecha_Cobro,
+            // 'Fecha_Cobro': item.Fecha_Cobro,
+            'Fecha_Cobro': (item.Fecha_Cobro == '1970-01-01') ? 'N/A' : item.Fecha_Cobro,
             'Descripción_Ramo': item.Descripcion_Ramo,
             'Fecha_Emision_Rec': item.Fecha_Emision_Rec,
             'Fecha_desde_Pol': item.Fecha_desde_Pol,
@@ -306,7 +307,7 @@ export class ReportsComponent {
         if (fechaFiltro >= fdesde_pol && fechaFiltro <= fhasta_pol) {
           filteredData.push({
             'Poliza': item.Poliza,
-            'Fecha_Cobro': item.Fecha_Cobro,
+            'Fecha_Cobro': (item.Fecha_Cobro == '1970-01-01') ? 'N/A' : item.Fecha_Cobro,
             'Descripción_Ramo': item.Descripcion_Ramo,
             'Fecha_Emision_Rec': item.Fecha_Emision_Rec,
             'Fecha_desde_Pol': item.Fecha_desde_Pol,
