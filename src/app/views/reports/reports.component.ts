@@ -147,7 +147,6 @@ export class ReportsComponent {
       this.sendButton = true;
     }
   }
-
   dataReport() {
     let estado = this.consulta_reporte.get('estado')?.value;
     let fdesde_pol = this.consulta_reporte.get('fdesde_pol')?.value;
