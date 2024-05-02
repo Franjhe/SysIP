@@ -60,8 +60,8 @@ export class CommissionsComponent {
   dataSource = new MatTableDataSource<any>;
   defaultDataSource = new MatTableDataSource<any>;
 
-  // displayedColumns2: string[] = ['select', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
-  displayedColumns2: string[] = ['select', '0', '1', '2', '3', '4', '5', '6', '7', '9', '10', '11'];
+  displayedColumns2: string[] = ['select', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
+  // displayedColumns2: string[] = ['select', '0', '1', '2', '3', '4', '5', '6', '7', '9', '10', '11'];
   tableCommisionPorProductor = new MatTableDataSource<any>;
   defaultableCommisionPorProductor = new MatTableDataSource<any>;
   commisionPorProductorOriginal = new MatTableDataSource<any>;
