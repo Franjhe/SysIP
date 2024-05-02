@@ -118,10 +118,10 @@ const routes: Routes = [
     }
   },
   {
-    path: 'group-payment-report-group',
+    path: 'group-payment-report',
     component: GroupPaymentReportComponent,
     data: {
-      title: 'Payment Report '
+      title: 'Group Payment Report '
     }
   },
   {
