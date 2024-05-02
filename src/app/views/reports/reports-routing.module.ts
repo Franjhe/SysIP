@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import {PremiumsComponent} from './premiums/premiums.component'
 import { ReportsComponent } from './reports.component';
 import { ReceiptsComponent } from './receipts/receipts.component';
+import { BonusAndCommissionsComponent } from './bonus-and-commissions/bonus-and-commissions.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,13 @@ const routes: Routes = [
         component: ReportsComponent,
         data: {
           title: 'consulta',
+        },
+      },
+      {
+        path: 'bonus-and-commissions',
+        component: BonusAndCommissionsComponent,
+        data: {
+          title: 'Bonus y Comisiones',
         },
       },
       // {
