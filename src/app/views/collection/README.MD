@@ -11,11 +11,9 @@
     "ifuente":"",
     "iestado":"",
     "cusuario":"",
-    "iestado_tran":"",
-    "fingreso":"",
     "positiveBalance": false,
     "diference": false,
-    "reciboConDiferencia":{
+    "reciboConDiferencia":{          //objet Admin
         "mdiferencia":"",
         "mdiferenciaext":"",
         "xobservacion":"",
@@ -27,7 +25,7 @@
         "idiferencia":"",
         "cmoneda":""
     },
-    "balancePositivo":{
+    "balancePositivo":{          //objet Admin
         "cmoneda_dif":"",
         "msaldodif":"",
         "idiferencia":""
@@ -48,9 +46,9 @@
             "fhasta_rec": "",
             "mprimabruta": ""  ,
             "mprimabrutaext": "",
-            "ptasamon": "",
             "cproductor": "",
-            "cuotas": ""
+            "cuotas": "",
+            "asegurado": ""
         }
     ],
     "soporte":[
