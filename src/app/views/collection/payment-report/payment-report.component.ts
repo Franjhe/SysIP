@@ -625,6 +625,7 @@ export class PaymentReportComponent {
         this.transferList.push({
           cmoneda: transfer.value[i].cmoneda,
           cbanco: transfer.value[i]?.cbanco.id,
+          ctipopago: transfer.value[i]?.ctipopago.id,
           cbanco_destino: transfer.value[i]?.cbanco_destino.id,
           mpago: 0,
           mpagoext: transfer.value[i].mpago,
@@ -642,6 +643,7 @@ export class PaymentReportComponent {
         this.transferList.push({
           cmoneda: transfer.value[i].cmoneda,
           cbanco: transfer.value[i]?.cbanco.id,
+          ctipopago: transfer.value[i]?.ctipopago.id,
           cbanco_destino: transfer.value[i]?.cbanco_destino.id,
           mpago: transfer.value[i].mpago,
           mpagoext: 0,
@@ -674,7 +676,7 @@ export class PaymentReportComponent {
       const reporData = {
         transaccion : this.idTrans,
         freporte : fecha ,
-        casegurado: this.searchReceipt.get('xcedula')?.value,
+        casegurado: asegurado,
         mpago : this.mountBs,
         mpagoext : this.mountIGTF,
         ptasamon : this.bcv,

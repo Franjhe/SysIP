@@ -1,5 +1,7 @@
 # JSON global para el control de cobranza 
 ## `aún en implementacion 2/5/2024`
+
+## Payment-Report 90%
 {
     "transaccion":"",
     "freporte":"",
@@ -57,6 +59,7 @@
        "cmoneda" : "",
        "cbanco" : "",
        "cbanco_destino" : "",
+       "ctipopago" : "",
        "mpago" : "",
        "mpagoext" : "",
        "mpagoigtf" : "",
