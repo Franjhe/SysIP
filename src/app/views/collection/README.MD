@@ -20,8 +20,6 @@
         "mdiferencia":"",
         "mdiferenciaext":"",
         "xobservacion":"",
-        "casegurado":"",
-        "fingreso":"",
         "iestado":"",
         "crecibo":"",
         "freporte":"",
@@ -71,6 +69,14 @@
        "xreferencia" : "",
        "ximage" : ""
         }
-    ]
+    ],
+    "clientes":[
+        {
+       "casegurado" : "",
+       "xcliente" : "",
+       "xcorreo" : ""
+        }
+    ],
+
     
 }
