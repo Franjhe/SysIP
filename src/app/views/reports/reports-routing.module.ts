@@ -28,7 +28,7 @@ const routes: Routes = [
         path: 'bonus-and-commissions',
         component: BonusAndCommissionsComponent,
         data: {
-          title: 'Bonus y Comisiones',
+          title: 'Bonificaciones y Comisiones',
         },
       },
       // {
