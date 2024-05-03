@@ -6,6 +6,7 @@ import { ReportsRoutingModule } from './reports-routing.module'
 import { MaterialExampleModule } from './../../material.module'
 import { ReactiveFormsModule } from '@angular/forms';
 import { ReceiptsComponent } from './receipts/receipts.component';
+import { BonusAndCommissionsComponent } from './bonus-and-commissions/bonus-and-commissions.component';
 
 
 
@@ -13,7 +14,8 @@ import { ReceiptsComponent } from './receipts/receipts.component';
   declarations: [
     PremiumsComponent,
     ReportsComponent,
-    ReceiptsComponent
+    ReceiptsComponent,
+    BonusAndCommissionsComponent
   ],
   imports: [
     CommonModule,
