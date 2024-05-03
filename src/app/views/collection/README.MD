@@ -2,6 +2,7 @@
 ## `aún en implementacion 2/5/2024`
 
 ## Payment-Report 90%
+## Group-payment-Report 90%
 {
     "transaccion":"",
     "freporte":"",

@@ -605,9 +605,9 @@ export class GroupPaymentReportComponent {
             fhasta_rec: receipt.value[i].fhasta_rec,
             mprimabruta: receipt.value[i].mprimabruta,
             mprimabrutaext: receipt.value[i].mprimabrutaext,
-            ptasamon: receipt.value[i].ptasamon,
             cproductor : receipt.value[i].cproductor,
             cuotas : receipt.value[i].qcuotas,
+            asegurado : receipt.value[i].asegurado,
   
           });
         }else{
@@ -626,9 +626,10 @@ export class GroupPaymentReportComponent {
             fhasta_rec: receipt.value[i].fhasta_rec,
             mprimabruta: receipt.value[i].mprimabruta,
             mprimabrutaext: receipt.value[i].mprimabrutaext,
-            ptasamon: receipt.value[i].ptasamon,
             cproductor : receipt.value[i].cproductor,
             cuotas : receipt.value[i].qcuotas,
+            asegurado : receipt.value[i].asegurado,
+
 
           });
         }
@@ -655,6 +656,7 @@ export class GroupPaymentReportComponent {
         this.transferList.push({
           cmoneda: transfer.value[i].cmoneda,
           cbanco: transfer.value[i]?.cbanco.id,
+          ctipopago: transfer.value[i]?.ctipopago.id,
           cbanco_destino: transfer.value[i]?.cbanco_destino.id,
           mpago: 0,
           mpagoext: transfer.value[i].mpago,
@@ -666,13 +668,13 @@ export class GroupPaymentReportComponent {
           ptasaref: 0,        
           xreferencia: transfer.value[i].xreferencia,
           ximage : nombre
-
         });
       }
       else if(transfer.at(i).get('cmoneda')?.value == "Bs"){
         this.transferList.push({
           cmoneda: transfer.value[i].cmoneda,
           cbanco: transfer.value[i]?.cbanco.id,
+          ctipopago: transfer.value[i]?.ctipopago.id,
           cbanco_destino: transfer.value[i]?.cbanco_destino.id,
           mpago: transfer.value[i].mpago,
           mpagoext: 0,
@@ -697,22 +699,25 @@ export class GroupPaymentReportComponent {
     this.Submit = true
     this.searchReceipt.disable()
 
-    let asegurado = 1
+    let asegurado = this.searchReceipt.get('xcedula')?.value || ''
     const fecha = new Date()
 
     if(this.diference){
 
       const reporData = {
-        report : this.transferList,
-        ctransaccion : this.idTrans,
+        transaccion : this.idTrans,
+        freporte : fecha ,
         casegurado: asegurado,
-        diference : this.diference,
-        receipt : this.receiptList,
         mpago : this.mountBs,
         mpagoext : this.mountIGTF,
         ptasamon : this.bcv,
-        freporte : fecha ,
-        positiveBalance : this.PositiveBalanceBool
+        cprog : 'Reporte de pago web',
+        ifuente : 'Web_Sys',
+        cusuario : 13,
+        positiveBalance : this.PositiveBalanceBool,
+        diference : this.diference,
+        soporte : this.transferList,
+        recibo : this.receiptList,
       }
 
       this.http.post(environment.apiUrl + '/api/v1/collection/create-report-diference', reporData).subscribe( (response: any) => {
@@ -733,22 +738,19 @@ export class GroupPaymentReportComponent {
 
     }else{
       const savePaymentTrans = {
-        ctransaccion : this.idTrans,
-        receipt : this.receiptList,
-        report: this.transferList,
+        transaccion : this.idTrans,
+        freporte : fecha ,
         casegurado: asegurado,
         mpago : this.mountBs,
         mpagoext : this.mountIGTF,
         ptasamon : this.bcv,
-        freporte : fecha ,
-        cprog : 'ReportePagoGrupo',
-        cusuario : 13,
-        iestadorec : 'N',
+        cprog : 'Reporte de pago web',
         ifuente : 'Web_Sys',
-        iestado : 0,
-        ccategoria : this.searchReceipt.get('ccategoria')?.value,
+        cusuario : 13,
+        positiveBalance : this.PositiveBalanceBool,      
         diference: this.diference,
-        positiveBalance : this.PositiveBalanceBool
+        recibo : this.receiptList,
+        soporte: this.transferList,
 
       }
 
