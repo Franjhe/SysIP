@@ -421,6 +421,7 @@ export class GroupPaymentReportComponent {
                 fanopol: response.searchReceipt.receipt[i].fanopol,
                 fmespol: response.searchReceipt.receipt[i].fmespol,
                 cramo: response.searchReceipt.receipt[i].cramo,
+                asegurado:item.xcedula,
                 cproductor : response.searchReceipt.receipt[i].cproductor,
                 qcuotas : response.searchReceipt.receipt[i].qcuotas,
                 xramo : xramo ,
@@ -714,7 +715,9 @@ export class GroupPaymentReportComponent {
         cprog : 'Reporte de pago web',
         ifuente : 'Web_Sys',
         cusuario : 13,
+        iestado : 0,
         positiveBalance : this.PositiveBalanceBool,
+        clientes:this.cliente ,
         diference : this.diference,
         soporte : this.transferList,
         recibo : this.receiptList,
@@ -732,22 +735,24 @@ export class GroupPaymentReportComponent {
   
       })
             
-      setTimeout(() => {
-        location.reload();
-      }, 3000);
+      // setTimeout(() => {
+      //   location.reload();
+      // }, 3000);
 
     }else{
       const savePaymentTrans = {
         transaccion : this.idTrans,
         freporte : fecha ,
-        casegurado: asegurado,
+        casegurado: 0,
         mpago : this.mountBs,
         mpagoext : this.mountIGTF,
         ptasamon : this.bcv,
         cprog : 'Reporte de pago web',
         ifuente : 'Web_Sys',
         cusuario : 13,
-        positiveBalance : this.PositiveBalanceBool,      
+        iestado : 0,
+        positiveBalance : this.PositiveBalanceBool,  
+        clientes:this.cliente ,
         diference: this.diference,
         recibo : this.receiptList,
         soporte: this.transferList,
@@ -755,7 +760,7 @@ export class GroupPaymentReportComponent {
       }
 
       //primero llenamos el recipo y la tabla de transacciones 
-      this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
+      this.http.post(environment.apiUrl + '/api/v1/collection/create-group-trans',savePaymentTrans).subscribe( (response: any) => {
         if (response.status) {
 
           this.toast.open("Registro de pago éxitoso", "Cerrar", {
@@ -766,9 +771,9 @@ export class GroupPaymentReportComponent {
         this.uploadFile()
       })   
   
-      setTimeout(() => {
-        location.reload();
-      }, 3000);
+      // setTimeout(() => {
+      //   location.reload();
+      // }, 3000);
     }
 
 

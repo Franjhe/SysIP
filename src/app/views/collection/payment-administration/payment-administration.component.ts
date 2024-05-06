@@ -131,6 +131,16 @@ export class PaymentAdministrationComponent {
 
     })
 
+    fetch(environment.apiUrl + '/api/v1/collection/search-pending' )
+    .then((response) => response.json())
+    .then(data => {
+      this.dataSource = new MatTableDataSource(data.searchPaymentPendingData.recibo);
+      const listPending = data.searchPaymentPendingData.recibo
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+
+    })
+
 
     //bancos nacionales transfertencias
     let bankNational = {
