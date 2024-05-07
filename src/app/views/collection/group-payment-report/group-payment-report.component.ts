@@ -708,7 +708,7 @@ export class GroupPaymentReportComponent {
       const reporData = {
         transaccion : this.idTrans,
         freporte : fecha ,
-        casegurado: asegurado,
+        casegurado: 1300,
         mpago : this.mountBs,
         mpagoext : this.mountIGTF,
         ptasamon : this.bcv,
@@ -743,7 +743,7 @@ export class GroupPaymentReportComponent {
       const savePaymentTrans = {
         transaccion : this.idTrans,
         freporte : fecha ,
-        casegurado: 0,
+        casegurado: 1300,
         mpago : this.mountBs,
         mpagoext : this.mountIGTF,
         ptasamon : this.bcv,

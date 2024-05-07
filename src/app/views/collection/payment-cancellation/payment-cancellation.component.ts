@@ -103,6 +103,7 @@ export class PaymentCancellationComponent {
           const polizaArray = transactionGroup.get('poliza') as FormArray;
           transaction.poliza.forEach((poliza:any) => {
             polizaArray.push(this._formBuilder.group({
+              beneficiario : poliza.beneficiario,
               crecibo: poliza.crecibo,
               cnrecibo: poliza.cnrecibo,
               cpoliza: poliza.cpoliza,
