@@ -56,11 +56,12 @@
                           <h2>Detalles del recibo Pagado</h2>
                             <strong>Poliza</strong>  {{poliza.cnpoliza}}<br>
                             <strong>Recibo</strong> {{poliza.cnrecibo}}<br>
-                            <strong>Beneficiario</strong>{{poliza.cnrecibo}}<br>
                             <strong>Ramo</strong>  {{poliza.xramo}}<br>
                             <strong>Monto Bs</strong> {{poliza.mmontorec}}<br>
                             <strong>Monto $</strong>  {{poliza.mmontorecext}}<br>
-                            <strong>Productor</strong> {{poliza.codigo_corredor}} - {{poliza.corredor}}
+                            <strong>Productor</strong> {{poliza.codigo_corredor}} - {{poliza.corredor}}<br>
+                            <strong>Beneficiario</strong> {{poliza.beneficiario}}
+
 
                             <div class="row bg-danger " *ngIf="poliza.mdiferenciaext > 1">
                               <h2 class="text-light">Recibo con diferencia</h2>
