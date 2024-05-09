@@ -93,6 +93,11 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/collection/collection.module').then((m) => m.CollectionModule)
       },
+      {
+        path: 'poliza',
+        loadChildren: () =>
+          import('./views/poliza/poliza.module').then((m) => m.PolizaModule)
+      },
     ]
   },
   {
