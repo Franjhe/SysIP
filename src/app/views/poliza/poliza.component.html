@@ -1,0 +1,75 @@
+<div class="card container-fluid">
+
+    <div class="text-center">
+        <h1>Gestión de Pólizas</h1>
+    </div>
+    <div class="text-center">
+        <h3>Ingrese Datos de la Póliza</h3>
+    </div>
+    
+    <mat-form-field>
+        <mat-label>Buscar</mat-label>
+        <input matInput (keyup)="applyFilter($event)" #input>
+    </mat-form-field>
+
+    <div class="mat-elevation-z8">
+      <table mat-table [dataSource]="dataSource">
+    
+        <!-- Position Column -->
+        <ng-container matColumnDef="Nro_Poliza">
+          <th mat-header-cell *matHeaderCellDef> Póliza </th>
+          <td mat-cell *matCellDef="let element"> {{element.Nro_Poliza}} </td>
+        </ng-container>
+    
+        <!-- Name Column -->
+        <ng-container matColumnDef="Descripcion_Ramo">
+          <th mat-header-cell *matHeaderCellDef> Ramo </th>
+          <td mat-cell *matCellDef="let element"> {{element.Descripcion_Ramo}} </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="Sucursal">
+          <th mat-header-cell *matHeaderCellDef> Sucursal </th>
+          <td mat-cell *matCellDef="let element"> {{element.Sucursal}} </td>
+        </ng-container>
+        
+        
+        <ng-container matColumnDef="Intermediario">
+          <th mat-header-cell *matHeaderCellDef> Intermediario </th>
+          <td mat-cell *matCellDef="let element"> {{element.Intermediario}} </td>
+        </ng-container>
+        
+        <ng-container matColumnDef="Dias_de_vigencia">
+          <th mat-header-cell *matHeaderCellDef> Vigencia </th>
+          <td mat-cell *matCellDef="let element"> {{element.Dias_de_vigencia}} </td>
+        </ng-container>
+        
+        <ng-container matColumnDef="Nombre_Asegurado">
+          <th mat-header-cell *matHeaderCellDef> Asegurado </th>
+          <td mat-cell *matCellDef="let element"> {{element.Nombre_Asegurado}} </td>
+        </ng-container>
+        
+        <ng-container matColumnDef="Id_Asegurado">
+          <th mat-header-cell *matHeaderCellDef> Identificación </th>
+          <td mat-cell *matCellDef="let element"> {{element.Id_Asegurado}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="Nro_Recibo">
+          <th mat-header-cell *matHeaderCellDef> Recibo </th>
+          <td mat-cell *matCellDef="let element"> {{element.Nro_Recibo}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="Estado_del_Recibo">
+          <th mat-header-cell *matHeaderCellDef> Estado </th>
+          <td mat-cell *matCellDef="let element"> {{element.Estado_del_Recibo}} </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 50, 100]"
+                     showFirstLastButtons
+                     aria-label="Select page of periodic elements">
+      </mat-paginator>
+    </div>

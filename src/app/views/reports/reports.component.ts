@@ -81,13 +81,15 @@ export class ReportsComponent {
       fdesde_pol: [''],
       fhasta_pol: [''],
       correo: ['', [Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]],
-      ctransaccion: ['']
+      ctransaccion: [''],
+      
     });
   }
 
   saveSelection(opcion: string) {
     this.selectedOption = opcion;
     this.consulta_reporte.get('estado')?.setValue(this.selectedOption);
+    
     this.dataReport();
   }
   selectValor(opcion: any) {
@@ -147,28 +149,17 @@ export class ReportsComponent {
       this.sendButton = true;
     }
   }
+  
   dataReport() {
     let estado = this.consulta_reporte.get('estado')?.value;
     let fdesde_pol = this.consulta_reporte.get('fdesde_pol')?.value;
     let fhasta_pol = this.consulta_reporte.get('fhasta_pol')?.value;
     if (estado !== 'CD') {
       this.showButton = true
-      // if(estado == 'C'){
-
-      //   fetch(environment.apiUrl + '/api/v1/collection/search-collected/'+ estado )
-      //   .then((response) => response.json())
-      //   .then(data => {
-      //     this.listCollection = data.searchPaymentCollected.recibo
-      //   })
-
-      // }else{
       fetch(environment.apiUrl + '/api/v1/collection/search-collected/' + estado)
         .then((response) => response.json())
         .then(data => {
           this.listPending = []
-          // let fdesde_pol = this.consulta_reporte.get('fdesde_pol')?.value;
-          //   if (fdesde_pol !== fdesde_pol) {
-
           for (let i = 0; i < data.searchPaymentCollected.recibo.length; i++) {
             let fechaFiltro = new Date(data.searchPaymentCollected.recibo[i].Fecha_desde_Pol).toISOString().substring(0, 10);
             //fecha emisión Recibo
@@ -189,7 +180,6 @@ export class ReportsComponent {
             //fecha Cobro Recibo
             let dateFCreceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_Cobro);
             let fechaDeCobro = dateFCreceipt.toISOString().substring(0, 10);
-            // console.log(fechaDeCobro);
             
             let estado = ''
 
@@ -211,10 +201,9 @@ export class ReportsComponent {
             }
             if (data.searchPaymentCollected.recibo[i].Estado_del_Recibo == 'N') {
               estado = 'Notificado'
-            }
+            } 
             this.listPending.push({
               Poliza: data.searchPaymentCollected.recibo[i].Nro_Poliza,
-              Fecha_Cobro: fechaDeCobro,
               Descripcion_Ramo: data.searchPaymentCollected.recibo[i].Descripcion_Ramo,
               Fecha_Emision_Rec: fechaEmRec,
               Fecha_desde_Pol: fechaDePol,
@@ -235,17 +224,19 @@ export class ReportsComponent {
               Tasa_Cambio: data.searchPaymentCollected.recibo[i].Tasa_Cambio,
               Dias_de_vigencia: data.searchPaymentCollected.recibo[i].Dias_de_vigencia,
               Sucursal: data.searchPaymentCollected.recibo[i].Sucursal,
-              Intermediario: data.searchPaymentCollected.recibo[i].Intermediario
-
+              Intermediario: data.searchPaymentCollected.recibo[i].Intermediario,
+              Fecha_Cobro: fechaDeCobro,
+              Poliza_Origen: data.searchPaymentCollected.recibo[i].Poliza_Origen,
+              
             })
           }
-          // console.log(this.listPending);
         })
     } else {
       window.open('https://api.lamundialdeseguros.com/sis2000/cobranza/', '_blank');
     }
   }
   makeExcel() {
+    
     this.snackBar.open("Reporte en Excel descargado con Éxito", "Cerrar", {
       duration: 3000,
     });
@@ -254,10 +245,6 @@ export class ReportsComponent {
     let month = fecha.getMonth() + 1
     let year = fecha.getFullYear()
     var formato_fecha = fecha.toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' });
-    // if(this.consulta_reporte.get('estatus')?.value == 'CD'){
-    //   this.makeExcelCollection()
-    // }
-    // else{
     let filteredData = []
     let fdesde_pol = this.consulta_reporte.get('fdesde_pol')?.value;
     let fhasta_pol = this.consulta_reporte.get('fhasta_pol')?.value;
@@ -266,14 +253,12 @@ export class ReportsComponent {
     fhasta_pol = fhasta_pol ? fhasta_pol : '2100-01-01';
 
     if (this.valorList == 'C') {
-      
+
       for (let item of this.listPending) {
         let fechaFiltro = new Date(item.Fecha_Cobro).toISOString().substring(0, 10);
         if (fechaFiltro >= fdesde_pol && fechaFiltro <= fhasta_pol) {
           filteredData.push({
             'Poliza': item.Poliza,
-            // 'Fecha_Cobro': item.Fecha_Cobro,
-            'Fecha_Cobro': (item.Fecha_Cobro == '1970-01-01') ? 'N/A' : item.Fecha_Cobro,
             'Descripción_Ramo': item.Descripcion_Ramo,
             'Fecha_Emision_Rec': item.Fecha_Emision_Rec,
             'Fecha_desde_Pol': item.Fecha_desde_Pol,
@@ -295,18 +280,18 @@ export class ReportsComponent {
             'Dias_de_vigencia': item.Dias_de_vigencia,
             'Sucursal': item.Sucursal,
             'Intermediario': item.Intermediario,
+            'Fecha_Cobro': (item.Fecha_Cobro == '1970-01-01') ? 'N/A' : item.Fecha_Cobro,
+            'Poliza_Origen': item.Poliza_Origen == null ? 'N/A' : item.Poliza_Origen,
           })
         }
       }
     }
     else {
-      
       for (let item of this.listPending) {
         let fechaFiltro = new Date(item.Fecha_desde_Recibo).toISOString().substring(0, 10);
         if (fechaFiltro >= fdesde_pol && fechaFiltro <= fhasta_pol) {
           filteredData.push({
             'Poliza': item.Poliza,
-            'Fecha_Cobro': (item.Fecha_Cobro == '1970-01-01') ? 'N/A' : item.Fecha_Cobro,
             'Descripción_Ramo': item.Descripcion_Ramo,
             'Fecha_Emision_Rec': item.Fecha_Emision_Rec,
             'Fecha_desde_Pol': item.Fecha_desde_Pol,
@@ -328,6 +313,8 @@ export class ReportsComponent {
             'Dias_de_vigencia': item.Dias_de_vigencia,
             'Sucursal': item.Sucursal,
             'Intermediario': item.Intermediario,
+            'Fecha_Cobro': (item.Fecha_Cobro == '1970-01-01') ? 'N/A' : item.Fecha_Cobro,
+            'Poliza_Origen': item.Poliza_Origen == null ? 'N/A' : item.Poliza_Origen,
           })
         }
       }

@@ -5,8 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialExampleModule } from './../../material.module'
 import { NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
-import { MatTableModule } from '@angular/material/table';
-
+import { MatTableModule } from '@angular/material/table'  
 import { CollectionRoutingModule } from './collection-routing.module';
 import { PaymentReportComponent } from './payment-report/payment-report.component';
 import { PaymentCancellationComponent } from './payment-cancellation/payment-cancellation.component';
@@ -39,7 +38,8 @@ import { ReceiptsCollectedComponent } from './receipts-collected/receipts-collec
     NgbModule,
     FormsModule,
     NgbAccordionModule,
-    ClipboardModule
+    ClipboardModule,
+    MatTableModule,
   ]
 })
 export class CollectionModule { }

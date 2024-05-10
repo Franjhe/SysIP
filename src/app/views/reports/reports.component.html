@@ -4,8 +4,6 @@
       text-decoration-line: underline;
       color: steelblue;
       "
-  
-    
     ><h1 style="color: #3f51b5">Datos para Impresión de Reportes</h1></h3>
   </div>
 </div>
@@ -26,7 +24,7 @@
     </div>
   </div>
   <div class="col-sm-8" style="display: grid;" >  
-    <div class="card container py-4 registration-form" *ngIf="valorList == 'I'">
+    <div class="card container py-4 registration-form" value="1" *ngIf="valorList == 'I'">
       <div>
         <h2 class="text-center">Seleccione el Número de Transacción</h2>
       </div>
@@ -76,18 +74,18 @@
                   </div>
               </div>
               <div class="example-button-row">
-                <button *ngIf="!showButton" (click)="makeExcel()"
-                [disabled]="!showButton"
-                mat-raised-button class="mat-raised-button"
-                style="color: #fff; background-color: #adadadfb;">
-                <img class="izquierda_op"
+                  <button *ngIf="!showButton" (click)="makeExcel()"
+                  [disabled]="!showButton"
+                  mat-raised-button class="mat-raised-button"
+                  style="color: #fff; background-color: #adadadfb;">
+                  <img class="izquierda_op"
                   src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/1101px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png"
                   width="20px" height="20px" margin-right="2px">Excel
-                </button>
-                <button *ngIf="showButton" (click)="makeExcel()"
-                mat-raised-button class="mat-raised-button"
-                style="color: #fff; background-color: #13ad34fb;">
-                <img class="izquierda"
+                  </button>
+                  <button *ngIf="showButton" (click)="makeExcel()"
+                  mat-raised-button class="mat-raised-button"
+                  style="color: #fff; background-color: #13ad34fb;">
+                  <img class="izquierda"
                   src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/1101px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png"
                   width="20px" height="20px" margin-right="2px">Excel
                   </button>
