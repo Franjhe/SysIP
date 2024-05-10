@@ -34,6 +34,7 @@ export interface PaymentRequest {
   recibos: any;
   cmoneda: any;
   cmonedaOrden: any;
+  
 }
 
 @Component({
@@ -69,6 +70,9 @@ export class CommissionsComponent {
   diferencia : any
   neto : any
   netoBs : any
+
+  currentUser!: any
+  usuario : any 
 
 
 
@@ -111,6 +115,11 @@ export class CommissionsComponent {
   }
 
   ngOnInit() {
+
+    let token : any = localStorage.getItem('user');
+
+    this.currentUser = JSON.parse(token);
+    this.usuario = this.currentUser.data.cusuario
 
     fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv')
     .then((response) => response.json())
@@ -514,22 +523,27 @@ export class CommissionsComponent {
     //36.59 'Bs' 2.71 2.71
     if(this.diferencia != null && this.moneda == '$'){
       this.neto = 0
-      this.neto = Number(this.montoext) + Number(this.diferencia)
+      let mount = Number(this.montoext) + Number(this.diferencia)
+      this.neto = mount
+
 
     }
 
     if(this.diferencia != null && this.moneda == 'Bs'){
       this.netoBs = 0
-      this.netoBs = Number(this.monto) + Number(this.diferencia)
+      let mount = Number(this.monto) + Number(this.diferencia)
+      this.netoBs = mount
     }
 
     if(this.diferencia != null && this.moneda == '$'){
-      this.restante = this.neto
+      let monto = this.neto.toFixed(2)
+      this.restante = monto
 
     }
 
     if(this.diferencia != null && this.moneda == 'Bs'){
-      this.restante = this.netoBs
+      let monto = this.netoBs.toFixed(2)
+      this.restante = monto
     }
 
     for(let item of trasnfer.value){
@@ -537,11 +551,16 @@ export class CommissionsComponent {
       if(this.moneda == '$'){  //la moneda de pago
        
         if(item.cmoneda == '$'){  //la moneda de distribucion del pago
-          this.restante = this.restante - item.mpago
+          let operation = this.restante - item.mpago
+
+          this.restante = operation.toFixed(2)
         }
         else if(item.cmoneda == 'Bs'){  //la moneda de distribucion del pago
           let monto = item.mpago /  this.tasaBcv
-          this.restante = this.restante - monto
+
+          let operation = this.restante - monto
+
+          this.restante = operation.toFixed(2)
         }
 
       }
@@ -551,11 +570,15 @@ export class CommissionsComponent {
         if(item.cmoneda == '$'){  //la moneda de distribucion del pago
           let monto = item.mpago *  this.tasaBcv
 
-          this.restante = this.restante - monto
+          let operation = this.restante - monto
+
+          this.restante = operation.toFixed(2)
         }
         else if(item.cmoneda == 'Bs'){  //la moneda de distribucion del pago
 
-          this.restante = this.restante - item.mpago
+          let operation = this.restante - item.mpago
+
+          this.restante = operation.toFixed(2)
         }
 
       }
@@ -633,7 +656,9 @@ export class CommissionsComponent {
 
       let data = {
         list: this.listPaymentRequest,
-        pago : this.paymentDetail
+        pago : this.paymentDetail,
+        diferencia : this.diferencia,
+        cusuario : this.usuario
       }
 
 
