@@ -342,7 +342,17 @@
                         </mat-form-field>
                     </div >
 
+                    <div class="col-3">
+                        <mat-form-field>
+                            <mat-label>Diferencia cambiaria</mat-label>
+                            <input #diferencia  matInput [value]="diferencia" class="form-control form-control-alternative"  type="number" (change)="diferenceChange(diferencia.value)"/>                                                      
+            
+                        </mat-form-field>
+                    </div >
+
                     <div formArrayName="transfer" class="row justify-content-center">
+                        Monto restante {{restante}}
+                        monto neto {{neto}} USD / {{netoBs}} Bs
                         <div *ngFor="let creds of transfer.controls let i=index"  >
                             <div [formGroupName]="i"  class="row">
                               
@@ -359,7 +369,7 @@
                                     <div class="col-3">
                                         <mat-form-field>
                                             <mat-label>Monto</mat-label>
-                                            <input matInput formControlName="mpago">
+                                            <input matInput formControlName="mpago" (change)="calculateMount()">
                                         </mat-form-field>
                                     </div>
                                     <div class="mt-3 col-4" >
