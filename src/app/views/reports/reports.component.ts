@@ -89,6 +89,7 @@ export class ReportsComponent {
   saveSelection(opcion: string) {
     this.selectedOption = opcion;
     this.consulta_reporte.get('estado')?.setValue(this.selectedOption);
+    
     this.dataReport();
   }
   selectValor(opcion: any) {
@@ -280,7 +281,7 @@ export class ReportsComponent {
             'Sucursal': item.Sucursal,
             'Intermediario': item.Intermediario,
             'Fecha_Cobro': (item.Fecha_Cobro == '1970-01-01') ? 'N/A' : item.Fecha_Cobro,
-            'Poliza_Origen': item.Poliza_Origen,
+            'Poliza_Origen': item.Poliza_Origen == null ? 'N/A' : item.Poliza_Origen,
           })
         }
       }
@@ -313,7 +314,7 @@ export class ReportsComponent {
             'Sucursal': item.Sucursal,
             'Intermediario': item.Intermediario,
             'Fecha_Cobro': (item.Fecha_Cobro == '1970-01-01') ? 'N/A' : item.Fecha_Cobro,
-            'Poliza_Origen': item.Poliza_Origen,
+            'Poliza_Origen': item.Poliza_Origen == null ? 'N/A' : item.Poliza_Origen,
           })
         }
       }
