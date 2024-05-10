@@ -117,8 +117,9 @@ export class PaymentCancellationComponent {
     agrupado : this._formBuilder.array([])
   });
 
-  currentUser : any
+  currentUser!: any
   token: any
+  usuario : any
 
   get agrupado() : FormArray {
     return this.groupReceiptsForm.get("agrupado") as FormArray
@@ -160,9 +161,10 @@ export class PaymentCancellationComponent {
 
   ngOnInit(){
 
+    let token : any = localStorage.getItem('user');
 
-    this.token = localStorage.getItem('user');
-    this.currentUser = JSON.parse(this.token);
+    this.currentUser = JSON.parse(token);
+    this.usuario = this.currentUser.data.cusuario
 
     fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv')
     .then((response) => response.json())
@@ -335,10 +337,12 @@ export class PaymentCancellationComponent {
               cnrecibo: poliza.cnrecibo,
               cpoliza: poliza.cpoliza,
               cnpoliza: poliza.cnpoliza,
+              cuotas : poliza.cuotas,
               mmontorec: poliza.mmontorec,
               mmontorecext: poliza.mmontorecext,
               iestadorec: poliza.iestadorec,
               cramo: poliza.cramo, 
+              xramo: poliza.xramo, 
               cplan: poliza.cplan,
               codigo_corredor : poliza.codigo_corredor,
               corredor : poliza.corredor,
@@ -534,7 +538,11 @@ export class PaymentCancellationComponent {
           correo : creds.at(i).get('xcorreo')?.value,
           cmoneda : creds.at(i).get('cmoneda')?.value,
           idiferencia : creds.at(i).get('idiferencia')?.value,
-          tasa : this.bcv
+          tasa : this.bcv,
+          cusuario : this.usuario,
+          fcobro : new Date(),
+
+
 
         }
 
@@ -552,7 +560,11 @@ export class PaymentCancellationComponent {
           recibo : creds.at(i).get('recibo')?.value,
           cmoneda : creds.at(i).get('cmoneda')?.value,
           idiferencia : creds.at(i).get('idiferencia')?.value,
-          tasa : this.bcv
+          tasa : this.bcv,
+          cusuario : this.usuario,
+          fcobro : new Date(),
+
+
         }
 
       }
@@ -569,6 +581,7 @@ export class PaymentCancellationComponent {
       let data = {
         transaccion : creds.at(i).get('id')?.value,
         iestadorec: 'C',
+        fcobro : new Date(),
         casegurado : creds.at(i).get('casegurado')?.value,
         msaldodif: creds.at(i).get('mdiferencia')?.value,
         cmoneda_dif: creds.at(i).get('cmoneda')?.value,
@@ -576,7 +589,9 @@ export class PaymentCancellationComponent {
         correo : creds.at(i).get('xcorreo')?.value,
         idiferencia : "H",
         detalle : creds.at(i).get('poliza')?.value,
-        ptasamon : this.bcv
+        ptasamon : this.bcv,
+        cusuario : this.usuario,
+
       }
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt-positive-balance', data ).subscribe((response: any) => {
         if(response.status){
@@ -594,6 +609,10 @@ export class PaymentCancellationComponent {
         cliente : creds.at(i).get('xcliente')?.value,
         fpago : creds.at(i).get('freporte')?.value,
         detalle : creds.at(i).get('poliza')?.value,
+        cusuario : this.usuario,
+        fcobro : new Date(),
+
+
       }
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt/', data ).subscribe((response: any) => {
         if(response.status){
@@ -611,10 +630,12 @@ export class PaymentCancellationComponent {
 
     if(creds.at(i).get('iestadorec')?.value == 'ER'){
       this.revision = true
+      this.cobradoSAF = false
     }
+    
     else if(creds.at(i).get('iestadorec')?.value == 'CS'){
       this.cobradoSAF = true
-    }
+      this.revision = false    }
     else{
       this.revision = false
 

@@ -1,5 +1,5 @@
-import {Component, TemplateRef, ViewChild  } from '@angular/core';
-import {FormBuilder, Validators, FormGroup, FormControl , FormArray} from '@angular/forms';
+import { Component, OnInit, OnDestroy, ViewChild, TemplateRef, ElementRef, Inject } from '@angular/core';
+import { FormBuilder, Validators, FormGroup, AbstractControl, FormArray, FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
@@ -7,9 +7,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort , MatSortModule } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
-
+import { SelectionModel } from '@angular/cdk/collections';
 import {MatStepperModule} from '@angular/material/stepper';
+import { Observable, OperatorFunction , fromEvent } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, filter } from 'rxjs/operators';
 
+
+type Treatments = { id: number; value:string};
 
 
 @Component({
@@ -19,15 +23,12 @@ import {MatStepperModule} from '@angular/material/stepper';
 })
 export class PaymentAdministrationComponent {
 
-  
-  @ViewChild('Alerta') Alerta!: TemplateRef<any>;
   @ViewChild('NotFound') NotFound!: TemplateRef<any>;
-
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  selection = new SelectionModel<any>(true, []);
 
-
-  displayedColumns: string[] = ['progress', 'fruit'];
+  displayedColumns: string[] = ['select','progress', 'cedula','fruit','correo'];
   dataSource = new MatTableDataSource<any> ;
 
   //modales de tipos de pago
@@ -35,6 +36,8 @@ export class PaymentAdministrationComponent {
   @ViewChild('Deposit') Deposit!: TemplateRef<any>;
   @ViewChild('PagoMovil') PagoMovil!: TemplateRef<any>;
   @ViewChild('DepositoUSD') DepositoUSD!: TemplateRef<any>;
+
+  transaccionUnica : boolean = false
 
   bcv : any
   targetBankList : any = []
@@ -44,19 +47,21 @@ export class PaymentAdministrationComponent {
 
   idTrans : any
   diference : boolean = false
+  asegurado : any
 
   viewData : boolean = false
   viewBank : boolean = false
   paymentMix : boolean = false
   Submit : boolean = false 
   puedeAvanzar: boolean = false 
+  image: boolean = false 
 
   usd : boolean = false
   pmovil : boolean = false
   depositoUSD : boolean = false
   trans: boolean = false
   
-  cliente : any
+  cliente : any = {}
   mount : any //monto de la suma de los recibos 
   mountIGTF : any //monto con el calculo igtf 
   mountBs : any //monto en bolivares multiplicado por bcv 
@@ -65,13 +70,16 @@ export class PaymentAdministrationComponent {
   mountBsExt : any //monto en bolivares del monto total en dolares con igtf
 
   bankList : any = []
-  backReceptors : any = []
+  tipoTrans : any = []
   backEmitter : any = []
   coinList : any = []
   receiptList : any = []
   transferList : any = []
   tradesList : any = []
+  listaNombres: any = []
   transaccion : any
+
+  listaRecibos : any = []
 
   bankInternational : any = []
   bankNational: any = []
@@ -84,26 +92,16 @@ export class PaymentAdministrationComponent {
   searchReceipt = this._formBuilder.group({
     receipt :  this._formBuilder.array([]),
     transfer : this._formBuilder.array([]),
+    fcobro : new Date(),
     xcedula: [''],
+    iestadorec : [''],
+    xobservacion :[''],
+    mdiferencia : [''],
+    idiferencia : [''],
+    cmoneda :[''],
+    recibo: [''],
   });
 
-  receiptFormGroup = this._formBuilder.group({
-    xpago: [''],
-    femision: [''],
-    fdesde: ['', Validators.required],
-    fhasta: ['', Validators.required],
-    cmetodologiapago: ['', Validators.required],
-    ctipopago: [''],
-    cbanco: [''],
-    cbanco_destino: [''],
-    fcobro: [''],
-    xreferencia: [''],
-    mprima_pagada: [''],
-    mpagado: [''],
-    xmoneda: [''],
-    mprima_accesorio: [''],
-    irecibo: ['']
-  });
   itipo!: any ;
   amountDollar!: any ;
   amountBs!: any ;
@@ -116,9 +114,12 @@ export class PaymentAdministrationComponent {
 
   PositiveBalance : any
   PositiveBalanceBool :boolean = false;
-  asegurado : any
   correo : any
 
+  revision : boolean = false
+  cobradoSAF : boolean = false
+  currentUser!: any
+  usuario : any 
 
   constructor( private _formBuilder: FormBuilder,
     private http: HttpClient,
@@ -137,6 +138,12 @@ export class PaymentAdministrationComponent {
   }
 
   ngOnInit(){
+    let token : any = localStorage.getItem('user');
+
+    this.currentUser = JSON.parse(token);
+    this.usuario = this.currentUser.data.cusuario
+
+
 
     fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv')
     .then((response) => response.json())
@@ -269,18 +276,13 @@ export class PaymentAdministrationComponent {
     .then((response) => response.json())
     .then(data => {
       this.dataSource = new MatTableDataSource(data.searchPaymentPendingData.recibo);
-
       const listPending = data.searchPaymentPendingData.recibo
-
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-
 
     })
 
   }
-
-  
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -306,37 +308,13 @@ export class PaymentAdministrationComponent {
   
   addPayment() {
     this.transfer.push(this.newPayment());
-
-    const trasnfer = this.searchReceipt.get("transfer") as FormArray
-
-    if(trasnfer.length > 0){
-      this.paymentMix = true
-    }else{
-      this.paymentMix = false
-    }
   }
 
   removePayment(i:number) {
     this.transfer.removeAt(i);
-
-    const trasnfer = this.searchReceipt.get("transfer") as FormArray
-
-    if(trasnfer.length > 0){
-      this.paymentMix = true
-    }else{
-      this.paymentMix = false
-    }
-
   }
   
-  searchDataReceipt(casegurado : any,correo  : any){
-    const client = {
-      cedula: casegurado
-    }
-
-    this.asegurado = casegurado
-    this.correo = correo
-
+  searchDataReceipt(){
 
     const receipt = this.searchReceipt.get("receipt") as FormArray
 
@@ -350,152 +328,177 @@ export class PaymentAdministrationComponent {
       trasnfer.removeAt(0)
     }
 
-    this.http.post(environment.apiUrl + '/api/v1/collection/search', client ).subscribe((response: any) => {
-      
-      if(response.searchReceipt.transaccion == null){
-        this.idTrans = 1
-      }else{
-        this.idTrans = response.searchReceipt.transaccion
+    this.listaNombres = []
+
+    this.selection.selected.forEach(item => {
+
+      this.listaNombres.push({
+        id: item.cci_rif,
+        cedula: item.cid,
+        nombre:item.xcliente,
+        correo : item.xcorreo
+      })
+
+      const client = {
+        cedula: item.cid,
+        asegurado: item.cci_rif
       }
 
-      let sumaBS = 0;
-      let sumaUSD = 0;
-
-      response.searchReceipt.saldo.forEach((item: any) => {
-        if (item.cmoneda_dif === 'BS') {
-          sumaBS += item.msaldodif;
-        } else if (item.cmoneda_dif === 'USD') {
-          sumaUSD += item.msaldodif;
-
+      this.http.post(environment.apiUrl + '/api/v1/collection/search', client ).subscribe((response: any) => {
+        
+        if(response.searchReceipt.transaccion == null){
+          this.idTrans = 1
+        }else{
+          this.idTrans = response.searchReceipt.transaccion
         }
-        if (item.cmoneda_dif !== null) {
-          this.PositiveBalanceBool = true
-        }
-      });
-
-
-      this.PositiveBalance = 'Saldo a favor en Bs ' + sumaBS + '/' + 'Saldo  en USD ' + sumaUSD
-      this.viewData = false;
-      this.diference = false
-
-      if(response.searchReceipt.receipt.length > 0){
-
-        for(let i = 0; i < response.searchReceipt.receipt.length; i++){
-
-          const currentReceipt = response.searchReceipt.receipt[i];
-
-          // Verificar si mdiferencia es diferente de nulo
-          if (currentReceipt.mdiferencia !== null) {
-            this.viewData = true; // Cambiar el estado del booleano si se encuentra un valor diferente de nulo
-            this.diference = true
+  
+        let sumaBS = 0;
+        let sumaUSD = 0;
+  
+        response.searchReceipt.saldo.forEach((item: any) => {
+          if (item.cmoneda_dif == 'BS  ') {
+            sumaBS += item.msaldodif;
+          }  
+          if (item.cmoneda_dif == 'USD ') {
+            sumaUSD += item.msaldodif;
+  
           }
-
-          this.cliente = response.searchReceipt.receipt[i].xcliente
-
-          const fdesdeP = new Date(response.searchReceipt.receipt[i].fdesde);
-          let ISOFdesdeP = fdesdeP.toISOString().substring(0, 10);
-
-          const fhastaP = new Date(response.searchReceipt.receipt[i].fhasta);
-          let ISOFhastaP = fhastaP.toISOString().substring(0, 10);
-
-          const fdesdePol = new Date(response.searchReceipt.receipt[i].fdesde_pol);
-          let ISOFdesdePol = fdesdePol.toISOString().substring(0, 10);
-
-          const fhastaPol = new Date(response.searchReceipt.receipt[i].fhasta_pol);
-          let ISOFhastaPol = fhastaPol.toISOString().substring(0, 10);
-
-          let id = response.searchReceipt.receipt[i].cramo
-          let treatments = this.tradesList
-          let filterdata = treatments.filter((data: { id: any; }) => data.id == id)
-          const xramo = filterdata[0].value
-
-          let messaje : string 
-          if(response.searchReceipt.receipt[i].idiferencia == 'D'){
-            messaje = 	'debe '
-          }else if(response.searchReceipt.receipt[i].idiferencia == 'H'){
-            messaje = 'a favor '
-          }else{
-            messaje = ''
+          if (item.cmoneda_dif !== null) {
+            this.PositiveBalanceBool = true
           }
-          this.receipt.push(
-            this._formBuilder.group({
-              cnpoliza: response.searchReceipt.receipt[i].cnpoliza,
-              cnrecibo: response.searchReceipt.receipt[i].cnrecibo,
-              crecibo: response.searchReceipt.receipt[i].crecibo,
-              cpoliza: response.searchReceipt.receipt[i].cpoliza,
-              fanopol: response.searchReceipt.receipt[i].fanopol,
-              fmespol: response.searchReceipt.receipt[i].fmespol,
-              cramo: response.searchReceipt.receipt[i].cramo,
-              cproductor : response.searchReceipt.receipt[i].cproductor,
-              qcuotas : response.searchReceipt.receipt[i].qcuotas,
-              xramo : xramo ,
-              cmoneda: response.searchReceipt.receipt[i].cmoneda,
-              fdesde_pol: ISOFdesdePol,
-              fhasta_pol: ISOFhastaPol,
-              fdesde_rec: ISOFdesdeP,
-              fhasta_rec: ISOFhastaP,
-              mprimabruta: response.searchReceipt.receipt[i].mmontorec ,
-              mprimabrutaext: response.searchReceipt.receipt[i].mmontorecext ,
-              ptasamon: response.searchReceipt.receipt[i].ptasamon,
-              seleccionado : false,
-              mdiferenciaext: response.searchReceipt.receipt[i].mdiferenciaext,
-              mdiferencia: response.searchReceipt.receipt[i].mdiferencia,
-              xobservacion: response.searchReceipt.receipt[i].xobservacion,
-              idiferencia: messaje,
-              cdoccob: response.searchReceipt.receipt[i].cdoccob,
-              sumaBS  : sumaBS,
-              sumaUSD : sumaUSD
-            })
-          )
-
-
-          let messajeCliente : string 
-          let class_text: string 
-          if(response.searchReceipt.receipt[i].idiferencia == 'D'){
-            messajeCliente = 	'debe '
-            class_text = 'text-danger'
-
-            this.messageDiference.push({
+        });
+  
+  
+        this.PositiveBalance = 'Saldo a favor en Bs ' + sumaBS + '/' + 'Saldo  en USD ' + sumaUSD
+        this.viewData = false;
+        this.diference = false
+  
+        if(response.searchReceipt.receipt.length > 0){
+  
+          for(let i = 0; i < response.searchReceipt.receipt.length; i++){
+  
+            const currentReceipt = response.searchReceipt.receipt[i];
+  
+            // Verificar si mdiferencia es diferente de nulo
+            if (currentReceipt.mdiferencia !== null) {
+              this.viewData = true; // Cambiar el estado del booleano si se encuentra un valor diferente de nulo
+              this.diference = true
+            }
+  
+            const fdesdeP = new Date(response.searchReceipt.receipt[i].fdesde);
+            let ISOFdesdeP = fdesdeP.toISOString().substring(0, 10);
+  
+            const fhastaP = new Date(response.searchReceipt.receipt[i].fhasta);
+            let ISOFhastaP = fhastaP.toISOString().substring(0, 10);
+  
+            const fdesdePol = new Date(response.searchReceipt.receipt[i].fdesde_pol);
+            let ISOFdesdePol = fdesdePol.toISOString().substring(0, 10);
+  
+            const fhastaPol = new Date(response.searchReceipt.receipt[i].fhasta_pol);
+            let ISOFhastaPol = fhastaPol.toISOString().substring(0, 10);
+  
+            let id = response.searchReceipt.receipt[i].cramo
+            let treatments = this.tradesList
+            let filterdata = treatments.filter((data: { id: any; }) => data.id == id)
+            const xramo = filterdata[0].value
+  
+            let messaje : string 
+            if(response.searchReceipt.receipt[i].idiferencia == 'D'){
+              messaje = 	'debe '
+            }else if(response.searchReceipt.receipt[i].idiferencia == 'H'){
+              messaje = 'a favor '
+            }else{
+              messaje = ''
+            }
+            this.receipt.push(
+              this._formBuilder.group({
+                cnpoliza: response.searchReceipt.receipt[i].cnpoliza,
+                cnrecibo: response.searchReceipt.receipt[i].cnrecibo,
+                crecibo: response.searchReceipt.receipt[i].crecibo,
+                cpoliza: response.searchReceipt.receipt[i].cpoliza,
+                fanopol: response.searchReceipt.receipt[i].fanopol,
+                fmespol: response.searchReceipt.receipt[i].fmespol,
+                cramo: response.searchReceipt.receipt[i].cramo,
+                cproductor : response.searchReceipt.receipt[i].cproductor,
+                qcuotas : response.searchReceipt.receipt[i].qcuotas,
+                xramo : xramo ,
+                cmoneda: response.searchReceipt.receipt[i].cmoneda,
+                fdesde_pol: ISOFdesdePol,
+                fhasta_pol: ISOFhastaPol,
+                fdesde_rec: ISOFdesdeP,
+                fhasta_rec: ISOFhastaP,
+                mprimabruta: response.searchReceipt.receipt[i].mmontorec ,
+                mprimabrutaext: response.searchReceipt.receipt[i].mmontorecext ,
+                ptasamon: response.searchReceipt.receipt[i].ptasamon,
+                seleccionado : false,
+                mdiferenciaext: response.searchReceipt.receipt[i].mdiferenciaext,
+                mdiferencia: response.searchReceipt.receipt[i].mdiferencia,
+                xobservacion: response.searchReceipt.receipt[i].xobservacion,
+                idiferencia: messaje,
+                cliente : item.xcliente,
+                asegurado: item.cci_rif,
+                cdoccob: response.searchReceipt.receipt[i].cdoccob,
+                sumaBS  : sumaBS,
+                sumaUSD : sumaUSD,
+                positiveBalance:this.PositiveBalanceBool
+              })
+            )
+  
+  
+            let messajeCliente : string 
+            let class_text: string 
+            if(response.searchReceipt.receipt[i].idiferencia == 'D'){
+              messajeCliente = 	'debe '
+              class_text = 'text-danger'
+  
+              this.messageDiference.push({
+                class : class_text,
+                messaje: 'El cliente ' + messajeCliente + 
+                response.searchReceipt.receipt[i].mdiferencia + 'Bs /' + response.searchReceipt.receipt[i].mdiferenciaext +'USD'
+              })
+  
+              this._stepper;
+              
+            }else if(response.searchReceipt.receipt[i].idiferencia == 'H'){
+              messajeCliente = 'tiene un saldo a favor de '
+              class_text = 'text-success'
+              this.messageDiference.push({
               class : class_text,
               messaje: 'El cliente ' + messajeCliente + 
-              response.searchReceipt.receipt[i].mdiferencia + 'Bs /' + response.searchReceipt.receipt[i].mdiferenciaext +'USD'
-            })
-
-            this._stepper;
-            
-          }else if(response.searchReceipt.receipt[i].idiferencia == 'H'){
-            messajeCliente = 'tiene un saldo a favor de '
-            class_text = 'text-success'
-            this.messageDiference.push({
-            class : class_text,
-            messaje: 'El cliente ' + messajeCliente + 
-              response.searchReceipt.receipt[i].mdiferencia + 'Bs /' + response.searchReceipt.receipt[i].mdiferenciaext +'USD'})  
-            
-
+                response.searchReceipt.receipt[i].mdiferencia + 'Bs /' + response.searchReceipt.receipt[i].mdiferenciaext +'USD'})  
+              
+  
+            }
+  
           }
-
+    
+        }else{
+  
+          this.Found()
         }
-
-        this.addPayment()
-
-      }else{
-
-        this.Found()
-      }
-
+  
+      });
     });
+
+    if(this.selection.selected.length == 1){
+      this.transaccionUnica = true
+    }
+
+    this.addPayment()
 
   }
 
   determinarSiPuedeAvanzar(){
+    const creds = this.searchReceipt.get("receipt") as FormArray
+    this.listaRecibos = []
     if(this.diference){
-
-      const creds = this.searchReceipt.get("receipt") as FormArray
 
       creds.value.forEach((recibo:any) => {
 
         if(recibo.seleccionado && recibo.mdiferenciaext > 0){
           this.puedeAvanzar = true
+          this.listaRecibos.push({crecibo : recibo.crecibo, cnrecibo : recibo.cnrecibo});
+
         }
         else if(recibo.seleccionado && recibo.mdiferenciaext == null) {
           this.toast.open('Necesita pagar sus recibos que poseen diferencia para poder avanzar', '', {
@@ -507,7 +510,13 @@ export class PaymentAdministrationComponent {
 
       })
 
-    }else {
+    }else{
+      creds.value.forEach((recibo:any) => {
+        if(recibo.seleccionado){
+          this.listaRecibos.push({crecibo : recibo.crecibo, cnrecibo : recibo.cnrecibo});
+        }
+
+      })
       this.puedeAvanzar = true
     }
   }
@@ -530,7 +539,6 @@ export class PaymentAdministrationComponent {
       if(recibo.seleccionado && recibo.mdiferenciaext !== 0){
         acumulador += recibo.mdiferenciaext;
       }
-
       if(recibo.seleccionado && recibo.sumaBS !== 0){
         let montoBolivares = recibo.sumaBS / this.bcv
         acumulador -= montoBolivares;
@@ -563,24 +571,14 @@ export class PaymentAdministrationComponent {
 
   }
 
-  Alert(config?: MatDialogConfig) {
-
-    return this.dialog.open(this.Alerta, config);
-
-  }
-
   Found(config?: MatDialogConfig) {
-
     return this.dialog.open(this.NotFound, config);
-
   }
 
   onFileSelect(event : any , i : number){
-
+    this.image = true
     const file = event.target.files[0]
-
     const creds = this.searchReceipt.get("transfer") as FormArray
-
     creds.at(i).get('ximagen')?.setValue(file);
 
   }
@@ -588,13 +586,14 @@ export class PaymentAdministrationComponent {
   async llenarlistas(){
 
     const receipt = this.searchReceipt.get("receipt") as FormArray
-
     this.receiptList = []
 
     for(let i = 0; i < receipt.length; i++){
       if(receipt.value[i].seleccionado == true){
+        let montoBs = receipt.value[i].mprimabrutaext * this.bcv 
         if(receipt.value[i].cdoccob > 0){
           this.idTrans = receipt.value[i].cdoccob
+          this.asegurado = receipt.value[i].asegurado
           this.receiptList.push({
             cnpoliza: receipt.value[i].cnpoliza,
             cnrecibo: receipt.value[i].cnrecibo,
@@ -608,13 +607,17 @@ export class PaymentAdministrationComponent {
             fhasta_pol: receipt.value[i].fhasta_pol,
             fdesde_rec: receipt.value[i].fdesde_rec,
             fhasta_rec: receipt.value[i].fhasta_rec,
-            mprimabruta: receipt.value[i].mprimabruta,
+            mprimabruta: montoBs,
             mprimabrutaext: receipt.value[i].mprimabrutaext,
-            ptasamon: receipt.value[i].ptasamon,
+            ptasamon: this.bcv ,
             cproductor : receipt.value[i].cproductor,
+            asegurado : receipt.value[i].asegurado,
+            cuotas : receipt.value[i].qcuotas,
+
   
           });
         }else{
+          this.asegurado = receipt.value[i].asegurado
           this.receiptList.push({
             cnpoliza: receipt.value[i].cnpoliza,
             cnrecibo: receipt.value[i].cnrecibo,
@@ -628,11 +631,13 @@ export class PaymentAdministrationComponent {
             fhasta_pol: receipt.value[i].fhasta_pol,
             fdesde_rec: receipt.value[i].fdesde_rec,
             fhasta_rec: receipt.value[i].fhasta_rec,
-            mprimabruta: receipt.value[i].mprimabruta,
+            mprimabruta: montoBs,
             mprimabrutaext: receipt.value[i].mprimabrutaext,
-            ptasamon: receipt.value[i].ptasamon,
+            ptasamon: this.bcv ,
             cproductor : receipt.value[i].cproductor,
-  
+            asegurado : receipt.value[i].asegurado,
+            cuotas : receipt.value[i].qcuotas,
+
           });
         }
 
@@ -640,25 +645,34 @@ export class PaymentAdministrationComponent {
 
     }   
 
-
     const transfer = this.searchReceipt.get("transfer") as FormArray
-    let asegurado = this.searchReceipt.get('xcedula')?.value || ''
+    if(this.selection.selected.length > 1){
+      this.asegurado = 'Admin'
+    }
+  
     const fecha = new Date()
     let fechaTran = fecha.toISOString().substring(0, 10);
-
+    
     for(let i = 0; i < transfer.length; i++){
-
-      const fileObject = transfer.at(i).get('ximagen')?.value!
-      const fileType = fileObject.type;
-      const extension = fileType.split('/').pop();
-      let nombre = asegurado +'-' + fechaTran +'-'+ i + transfer.value[i].xreferencia +'.'+ extension;
+      
+      let nombre = ''
+      
+      if(this.image){
+        
+        const fileObject = transfer.at(i).get('ximagen')?.value!
+        const fileType = fileObject.type;
+        const extension = fileType.split('/').pop();
+        nombre = this.asegurado +'-' + fechaTran +'-'+ i + transfer.value[i].xreferencia +'.'+ extension;
+      }else{
+        nombre = 'sinRefecencia'
+      }
 
       if(transfer.at(i).get('cmoneda')?.value == "USD" ){
 
         this.transferList.push({
           cmoneda: transfer.value[i].cmoneda,
-          cbanco: transfer.value[i]?.cbanco,
-          cbanco_destino: transfer.value[i].cbanco_destino,
+          cbanco: transfer.value[i]?.cbanco?.id || '',
+          cbanco_destino: transfer.value[i]?.cbanco_destino?.id || '',
           mpago: 0,
           mpagoext: transfer.value[i].mpago,
           mpagoigtf: this.mountBsP,
@@ -667,7 +681,7 @@ export class PaymentAdministrationComponent {
           mtotalext: this.mountIGTF,
           ptasamon: this.bcv,
           ptasaref: 0,        
-          xreferencia: transfer.value[i].xreferencia,
+          xreferencia: transfer.value[i]?.xreferencia,
           ximage : nombre
 
         });
@@ -675,8 +689,8 @@ export class PaymentAdministrationComponent {
       else if(transfer.at(i).get('cmoneda')?.value == "Bs"){
         this.transferList.push({
           cmoneda: transfer.value[i].cmoneda,
-          cbanco: transfer.value[i]?.cbanco,
-          cbanco_destino: transfer.value[i].cbanco_destino,
+          cbanco: transfer.value[i]?.cbanco?.id || '',
+          cbanco_destino: transfer.value[i]?.cbanco_destino?.id || '',
           mpago: transfer.value[i].mpago,
           mpagoext: 0,
           mpagoigtf: 0,
@@ -685,7 +699,7 @@ export class PaymentAdministrationComponent {
           mtotalext: this.mount,
           ptasaref: 0,
           ptasamon: this.bcv,        
-          xreferencia: transfer.value[i].xreferencia,
+          xreferencia: transfer.value[i]?.xreferencia,
           ximage : nombre
         });
       }
@@ -694,115 +708,220 @@ export class PaymentAdministrationComponent {
     
   }
 
+  bcvChange(tasa : any) {
+    this.bcv = tasa;
+  }
+
   async onSubmit(){
 
     await this.llenarlistas()
     this.Submit = true
     this.searchReceipt.disable()
-
-    const transfer = this.searchReceipt.get("transfer") as FormArray
-
-    let asegurado = this.searchReceipt.get('xcedula')?.value || ''
     const fecha = new Date()
 
+    if(this.selection.selected.length == 1){
+      
+      if(this.searchReceipt.get('iestadorec')?.value == 'C'){
+        this.selection.selected.forEach(item => {
+          const savePaymentTrans = {
+          group : false,
+          ctransaccion : this.idTrans,
+          receipt : this.receiptList,
+          report: this.transferList,
+          casegurado: item.cci_rif,
+          mpago : this.mountBs,
+          mpagoext : this.mountIGTF,
+          ptasamon : this.bcv,
+          freporte : fecha ,
+          cprog : 'Pg_admin',
+          cusuario : this.usuario,
+          iestadorec : 'C',
+          ifuente : 'Web_Sys',
+          iestado : 0,
+          detalle : this.receiptList,
+          fpago : fecha,
+          cliente : item.xcliente,
+          transaccion : this.idTrans,
+          correo : item.xcorreo ,
+          ccategoria : this.searchReceipt.get('ccategoria')?.value,
+          fcobro : this.searchReceipt.get('fcobro')?.value,
+          diference: this.diference,
+          positiveBalance : this.PositiveBalanceBool
+          }
+  
+          //primero llenamos el recipo y la tabla de transacciones 
+          this.http.post(environment.apiUrl + '/api/v1/collection/collect-receipt',savePaymentTrans).subscribe( (response: any) => {
+            if (response.status) {
+              this.toast.open("Registro de pago éxitoso", "Cerrar", {
+                duration: 3000,
+              });
+  
+            }
+            if(this.image){
+              this.uploadFile()
+            }  
+          })   
+          setTimeout(() => {
+            location.reload();
+          }, 3000);
+  
+        })
+      }
 
-      const savePaymentTrans = {
+      if(this.searchReceipt.get('iestadorec')?.value == 'CS'){
+        this.selection.selected.forEach(item => {
+          const savePaymentTrans = {
+          group : false,
+          msaldodif: this.searchReceipt.get('mdiferencia')?.value,
+          cmoneda_dif: this.searchReceipt.get('cmoneda')?.value,
+          receipt : this.receiptList,
+          report: this.transferList,
+          casegurado: item.cci_rif,
+          mpago : this.mountBs,
+          mpagoext : this.mountIGTF,
+          ptasamon : this.bcv,
+          freporte : fecha ,
+          cprog : 'Pg_admin',
+          cusuario : this.usuario,
+          iestadorec : 'C',
+          ifuente : 'Web_Sys',
+          iestado : 0,
+          detalle : this.receiptList,
+          fpago : fecha,
+          cliente : item.xcliente,
+          transaccion : this.idTrans,
+          ctransaccion: this.idTrans,
+          correo : item.xcorreo ,
+          fcobro : this.searchReceipt.get('fcobro')?.value,
+
+          idiferencia : "H",
+          }
+  
+          //primero llenamos el recipo y la tabla de transacciones 
+          this.http.post(environment.apiUrl + '/api/v1/collection/admin-positiveBalance',savePaymentTrans).subscribe( (response: any) => {
+            if (response.status) {
+              this.toast.open("Registro de pago éxitoso", "Cerrar", {
+                duration: 3000,
+              });
+  
+            }
+            if(this.image){
+              this.uploadFile()
+            }
+  
+          })   
+          setTimeout(() => {
+            location.reload();
+          }, 3000);
+  
+        })
+      }
+
+    }else{
+        const savePaymentTrans = {
+        group : true,
         ctransaccion : this.idTrans,
         receipt : this.receiptList,
         report: this.transferList,
-        casegurado: this.asegurado,
+        asegurados: this.listaNombres,
         mpago : this.mountBs,
         mpagoext : this.mountIGTF,
         ptasamon : this.bcv,
         freporte : fecha ,
         cprog : 'Pg_admin',
-        cusuario : 13,
+        cusuario : this.usuario,
         iestadorec : 'C',
         ifuente : 'Web_Sys',
         iestado : 0,
-        detalle : this.receiptList,
         fpago : fecha,
-        cliente : this.cliente,
         transaccion : this.idTrans,
-        correo : this.correo ,
+        detalle : this.receiptList,
+        fcobro : this.searchReceipt.get('fcobro')?.value,
+
         ccategoria : this.searchReceipt.get('ccategoria')?.value,
-        diference: this.diference,
-        positiveBalance : this.PositiveBalanceBool
-
-      }
-
-      //primero llenamos el recipo y la tabla de transacciones 
-      this.http.post(environment.apiUrl + '/api/v1/collection/collect-receipt',savePaymentTrans).subscribe( (response: any) => {
-        if (response.status) {
-          this.uploadFile()
+        // diference: this.diference,
+        // positiveBalance : this.PositiveBalanceBool
         }
-      })   
-      setTimeout(() => {
-        location.reload();
-      }, 3000);
-    
 
+        //primero llenamos el recipo y la tabla de transacciones 
+        this.http.post(environment.apiUrl + '/api/v1/collection/collect-receipt-group',savePaymentTrans).subscribe( (response: any) => {
+          if (response.status) {
+            this.toast.open("Registro de pago éxitoso", "Cerrar", {
+              duration: 3000,
+            });
+
+          }
+          if(this.image){
+            this.uploadFile()
+          }
+        })   
+        setTimeout(() => {
+          location.reload();
+        }, 3000);
+
+    } 
 
   }
 
   uploadFile(){
-
     const transfer = this.searchReceipt.get("transfer") as FormArray
 
     let asegurado = this.searchReceipt.get('xcedula')?.value || ''
     const fecha = new Date()
     let fechaTran = fecha.toISOString().substring(0, 10);
 
-
+    const formData = new FormData();
     for(let i = 0; i < transfer.length; i++){
 
       const fileObject = transfer.at(i).get('ximagen')?.value!
       const fileType = fileObject.type;
       const extension = fileType.split('/').pop();
       let nombre = asegurado +'-' + fechaTran +'-'+ i + transfer.value[i].xreferencia +'.'+ extension;
-      const formData = new FormData();
       formData.append('image', transfer.at(i).get('ximagen')?.value!, nombre);
-  
-      //cargamos las imagenes con el codigo de transaccion
-      this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {})
-
+      
     }
+    this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {})
   }
 
   getTargetBank(i : any){
     const trasnfer = this.searchReceipt.get("transfer") as FormArray
 
-    if(trasnfer.at(i).get('ctipopago')?.value == '2' ){
-      this.bankList = this.bankReceptorNational
+    if(trasnfer.at(i).get('ctipopago')?.value.id == 2 ){
+      this.bankList = this.bankNational
+      this.targetBankList = this.bankReceptorNational
       trasnfer.at(i).get('cbanco')?.setValue('')
       trasnfer.at(i).get('cbanco')?.enable();
-      trasnfer.at(i).get('cbanco_destino')?.enable()
-      trasnfer.at(i).get('cbanco_destino')?.setValue('')
-    }
-    if(trasnfer.at(i).get('ctipopago')?.value == '1' ){
-      this.bankList = this.bankReceptorInternational
-      trasnfer.at(i).get('cbanco')?.setValue('')
-      trasnfer.at(i).get('cbanco')?.enable();
-      trasnfer.at(i).get('cbanco_destino')?.enable()
-      trasnfer.at(i).get('cbanco_destino')?.setValue('')
-    }
-    if(trasnfer.at(i).get('ctipopago')?.value == '3' ){
-      this.bankList = this.bankReceptorPM
-      trasnfer.at(i).get('cbanco')?.enable();
-      trasnfer.at(i).get('cbanco')?.setValue('')
-      trasnfer.at(i).get('cbanco_destino')?.enable()
-      trasnfer.at(i).get('cbanco_destino')?.setValue('')
-    }    
-    if(trasnfer.at(i).get('ctipopago')?.value == '7' ){
-      this.bankList = this.bankReceptorCustodia
-      trasnfer.at(i).get('cbanco')?.disable();
-      trasnfer.at(i).get('cbanco')?.setValue('')
-      trasnfer.at(i).get('cbanco_destino')?.enable()
+      trasnfer.at(i).get('cbanco_destino')?.enable();
 
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
     }
-    if(trasnfer.at(i).get('ctipopago')?.value == '9' ){
-      this.bankList = this.bankReceptorCustodia
+    if(trasnfer.at(i).get('ctipopago')?.value.id == 1 ){
+      this.targetBankList = this.bankReceptorInternational
+      this.bankList = this.bankInternational
+      trasnfer.at(i).get('cbanco')?.setValue('')
+      trasnfer.at(i).get('cbanco')?.enable();
+      trasnfer.at(i).get('cbanco_destino')?.enable();
+
+      trasnfer.at(i).get('cbanco_destino')?.setValue('')
+    }
+    if(trasnfer.at(i).get('ctipopago')?.value.id == 3 ){
+      this.bankList =  this.bankNational
+      this.targetBankList = this.bankReceptorPM
+      trasnfer.at(i).get('cbanco')?.enable();
+      trasnfer.at(i).get('cbanco')?.enable();
+
+      trasnfer.at(i).get('cbanco_destino')?.setValue('')
+      trasnfer.at(i).get('cbanco_destino')?.enable();
+    }    
+    if(trasnfer.at(i).get('ctipopago')?.value.id == 7 ){
+      this.targetBankList = this.bankReceptorCustodia
+      trasnfer.at(i).get('cbanco')?.disable();
+      trasnfer.at(i).get('cbanco')?.setValue('')
+      trasnfer.at(i).get('cbanco_destino')?.setValue('')
+      trasnfer.at(i).get('cbanco_destino')?.enable();
+
+    }
+    if(trasnfer.at(i).get('ctipopago')?.value.id == 9 ){
       trasnfer.at(i).get('cbanco')?.disable();
       trasnfer.at(i).get('cbanco_destino')?.disable()
     }
@@ -810,8 +929,6 @@ export class PaymentAdministrationComponent {
 
   validationBank(i : any){
     const trasnfer = this.searchReceipt.get("transfer") as FormArray
-
-
     if( trasnfer.at(i).get('cmoneda')?.value == 'Bs'){
       trasnfer.at(i).get('itipo')?.setValue('V')
       this.getBank(i);
@@ -823,25 +940,122 @@ export class PaymentAdministrationComponent {
 
   }
 
-
-
   getBank(i : any){
+    //bancos emision
     const trasnfer = this.searchReceipt.get("transfer") as FormArray
-
+    
+    this.tipoTrans = []
     if(trasnfer.at(i).get('cmoneda')?.value == 'Bs' ){
-      this.targetBankList = this.bankNational
-      this.usd = false
+
+      this.tipoTrans.push(
+        {
+        id: 2,
+        value: "Tranferencias",
+        },
+        {
+        id: 3,
+        value: "Pago Movil",
+        },
+        {
+        id: 9,
+        value: "Efectivo",
+        }
+      )   
+
+      trasnfer.at(i).get('cbanco')?.setValue('')
+      trasnfer.at(i).get('cbanco_destino')?.setValue('')
+      trasnfer.at(i).get('ctipopago')?.setValue('')
 
     }
-    if(trasnfer.at(i).get('cmoneda')?.value == 'Ds' ){
-      this.targetBankList = this.bankInternational
-      this.usd = true
+    if(trasnfer.at(i).get('cmoneda')?.value == 'USD' ){
 
+      this.tipoTrans.push(
+        {
+        id: 1,
+        value: "Tranferencias USD",
+        },
+        {
+        id: 7,
+        value: "Cuenta custodia",
+        },
+        {
+        id: 9,
+        value: "Efectivo",
+        }
+      )   
 
+      trasnfer.at(i).get('cbanco')?.setValue('')
+      trasnfer.at(i).get('cbanco_destino')?.setValue('')
+      trasnfer.at(i).get('ctipopago')?.setValue('')
     }
 
   }
 
+  masterToggle() {
+    if (this.isAllSelected()) {
+        this.selection.clear();
+      } else {
+        this.dataSource.data.forEach(row => this.selection.select(row));
+   
+      }
+  }
 
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  validateMov(){
+    if(this.searchReceipt.get('iestadorec')?.value == 'ER'){
+      this.revision = true
+      this.cobradoSAF = false
+    }
+    else if(this.searchReceipt.get('iestadorec')?.value== 'CS'){
+      this.cobradoSAF = true
+      this.revision = false
+
+    }
+    else{
+      this.revision = false
+      this.cobradoSAF = false
+    }
+
+  }
+
+  //Banco Emisor
+  searchTreatments: OperatorFunction<string, readonly { id : any; value : any }[]> = (text$: Observable<string>) =>
+  text$.pipe(
+    debounceTime(200),
+    distinctUntilChanged(),
+    filter((term:any) => term.length >= 0),
+    map((term:any) => this.bankList.filter((Treatments:any) => new RegExp(term, 'mi').test(Treatments.value)).slice(0, 10)),
+  
+    );
+  formatterTreatments = (Treatments : Treatments) => Treatments.value;
+
+
+  //Banco receptor
+  searchBank: OperatorFunction<string, readonly { id : any; value : any }[]> = (text$: Observable<string>) =>
+  text$.pipe(
+    debounceTime(200),
+    distinctUntilChanged(),
+    filter((term:any) => term.length >= 0),
+    map((term:any) => this.targetBankList.filter((Treatments:any) => new RegExp(term, 'mi').test(Treatments.value)).slice(0, 10)),
+  
+    );
+  formatterchBank = (Treatments : Treatments) => Treatments.value;
+  
+  //Tipo de Movimiento
+  searchTipo: OperatorFunction<string, readonly { id : any; value : any }[]> = (text$: Observable<string>) =>
+  text$.pipe(
+    debounceTime(200),
+    distinctUntilChanged(),
+    filter((term:any) => term.length >= 0),
+    map((term:any) => this.tipoTrans.filter((Treatments:any) => new RegExp(term, 'mi').test(Treatments.value)).slice(0, 10)),
+  
+    );
+  formatterchTipo= (Treatments : Treatments) => Treatments.value;
+    
 
 }

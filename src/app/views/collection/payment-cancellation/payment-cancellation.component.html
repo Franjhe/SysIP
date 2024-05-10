@@ -56,7 +56,7 @@
                           <h2>Detalles del recibo Pagado</h2>
                             <strong>Poliza</strong>  {{poliza.cnpoliza}}<br>
                             <strong>Recibo</strong> {{poliza.cnrecibo}}<br>
-                            <strong>Ramo</strong>  {{poliza.cramo}}<br>
+                            <strong>Ramo</strong>  {{poliza.xramo}}<br>
                             <strong>Monto Bs</strong> {{poliza.mmontorec}}<br>
                             <strong>Monto $</strong>  {{poliza.mmontorecext}}<br>
                             <strong>Productor</strong> {{poliza.codigo_corredor}} - {{poliza.corredor}}
@@ -116,7 +116,7 @@
                             <mat-label>Tipo de Diferencia</mat-label>
                             <mat-select formControlName="idiferencia">
                               <mat-option value="D">En contra</mat-option>
-                              <mat-option value="H">A favor</mat-option>
+                              <!-- <mat-option value="H">A favor</mat-option> -->
                             </mat-select>
                           </mat-form-field>
 
@@ -170,27 +170,18 @@
 
           <mat-tab class="bg-info text-light" label="Recibos Pendientes"> 
 
-            <div class="p-4">
-              <h2>Total Pendiente {{totalPending}} $</h2>
-            </div>
-
             <app-payment-administration></app-payment-administration>
 
+          </mat-tab>
+
+          <mat-tab class="bg-info text-light" label="Recibos Cobrados"> 
+
+            <app-receipts-collected></app-receipts-collected>
 
           </mat-tab>
 
         </mat-tab-group>
 
-
-
-        <ng-template #Alerta1>
-          <mat-dialog-content  style="width: 85%;">
-              <h1>
-                No es posible asociar transacciones que cuenten con recibos diferentes
-              </h1> 
-                
-          </mat-dialog-content>
-        </ng-template>
 
     </form>
 

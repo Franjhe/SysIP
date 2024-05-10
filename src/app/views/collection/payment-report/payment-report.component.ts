@@ -1,10 +1,14 @@
-import {Component, TemplateRef, ViewChild  } from '@angular/core';
-import {FormBuilder, Validators, FormGroup, FormControl , FormArray} from '@angular/forms';
+import { Component, OnInit, OnDestroy, ViewChild, TemplateRef, ElementRef, Inject } from '@angular/core';
+import { FormBuilder, Validators, FormGroup, AbstractControl, FormArray, FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Observable, OperatorFunction , fromEvent } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, filter } from 'rxjs/operators';
 
+
+type Treatments = { id: number; value:string};
 
 @Component({
   selector: 'app-payment-report',
@@ -50,7 +54,7 @@ export class PaymentReportComponent {
   mountBsExt : any //monto en bolivares del monto total en dolares con igtf
 
   bankList : any = []
-  backReceptors : any = []
+  tipoTrans : any = []
   backEmitter : any = []
   coinList : any = []
   receiptList : any = []
@@ -70,6 +74,8 @@ export class PaymentReportComponent {
     receipt :  this._formBuilder.array([]),
     transfer : this._formBuilder.array([]),
     xcedula: ['', Validators.required],
+    tipo_cedula: ['', Validators.required],
+
   });
 
   diferenceBool :boolean = false;
@@ -89,6 +95,9 @@ export class PaymentReportComponent {
 
   PositiveBalance : any
   PositiveBalanceBool :boolean = false;
+  positiveBalanceBs! : number
+  positiveBalanceUSD! : number
+
 
 
 
@@ -283,8 +292,12 @@ export class PaymentReportComponent {
   }
   
   searchDataReceipt(){
+    let cedula = this.searchReceipt.get('tipo_cedula')?.value + '-' +  this.searchReceipt.get('xcedula')?.value 
+    let aseguradoNumber = this.searchReceipt.get('xcedula')?.value 
+
     const client = {
-      cedula: this.searchReceipt.get('xcedula')?.value 
+      cedula: cedula ,
+      asegurado : Number(aseguradoNumber)
     }
 
     const receipt = this.searchReceipt.get("receipt") as FormArray
@@ -311,9 +324,11 @@ export class PaymentReportComponent {
       let sumaUSD = 0;
 
       response.searchReceipt.saldo.forEach((item: any) => {
-        if (item.cmoneda_dif === 'BS') {
+
+        if (item.cmoneda_dif == 'BS  ') {
           sumaBS += item.msaldodif;
-        } else if (item.cmoneda_dif === 'USD') {
+        }  
+        if (item.cmoneda_dif == 'USD ') {
           sumaUSD += item.msaldodif;
 
         }
@@ -321,6 +336,9 @@ export class PaymentReportComponent {
           this.PositiveBalanceBool = true
         }
       });
+
+      this.positiveBalanceBs = sumaBS
+      this.positiveBalanceUSD = sumaUSD
 
       this.listCollection = response.searchReceipt.cobrados
 
@@ -479,20 +497,22 @@ export class PaymentReportComponent {
         acumulador += recibo.mdiferenciaext;
       }
 
-      if(recibo.seleccionado && recibo.sumaBS !== 0){
-        let montoBolivares = recibo.sumaBS / this.bcv
-        acumulador -= montoBolivares;
-      }
-      if(recibo.seleccionado && recibo.sumaUSD !== 0){
-        acumulador -= recibo.sumaUSD;
-      }
       return acumulador;
     }, 0);
 
     this.determinarSiPuedeAvanzar()
-    let mount = sumaTotal
 
-    this.mount = sumaTotal.toFixed(2) //suma de los dolares brutos
+    let mount 
+    if(this.PositiveBalanceBool){      
+
+      mount = Number(sumaTotal) - this.positiveBalanceUSD 
+  
+    }else{
+      mount = sumaTotal
+    }
+  
+
+    this.mount = mount.toFixed(2) //suma de los dolares brutos
 
     const operation = mount * this.bcv
     this.mountBs = operation.toFixed(2)  //dolares brutos convertidos en bolivares 
@@ -580,6 +600,7 @@ export class PaymentReportComponent {
             mprimabrutaext: receipt.value[i].mprimabrutaext,
             ptasamon: receipt.value[i].ptasamon,
             cproductor : receipt.value[i].cproductor,
+            cuotas : receipt.value[i].qcuotas,
   
           });
         }else{
@@ -600,7 +621,8 @@ export class PaymentReportComponent {
             mprimabrutaext: receipt.value[i].mprimabrutaext,
             ptasamon: receipt.value[i].ptasamon,
             cproductor : receipt.value[i].cproductor,
-  
+            cuotas : receipt.value[i].qcuotas,
+
           });
         }
 
@@ -625,8 +647,8 @@ export class PaymentReportComponent {
 
         this.transferList.push({
           cmoneda: transfer.value[i].cmoneda,
-          cbanco: transfer.value[i]?.cbanco,
-          cbanco_destino: transfer.value[i]?.cbanco_destino,
+          cbanco: transfer.value[i]?.cbanco.id,
+          cbanco_destino: transfer.value[i]?.cbanco_destino.id,
           mpago: 0,
           mpagoext: transfer.value[i].mpago,
           mpagoigtf: this.mountBsP,
@@ -643,8 +665,8 @@ export class PaymentReportComponent {
       else if(transfer.at(i).get('cmoneda')?.value == "Bs"){
         this.transferList.push({
           cmoneda: transfer.value[i].cmoneda,
-          cbanco: transfer.value[i]?.cbanco,
-          cbanco_destino: transfer.value[i]?.cbanco_destino,
+          cbanco: transfer.value[i]?.cbanco.id,
+          cbanco_destino: transfer.value[i]?.cbanco_destino.id,
           mpago: transfer.value[i].mpago,
           mpagoext: 0,
           mpagoigtf: 0,
@@ -690,8 +712,13 @@ export class PaymentReportComponent {
 
       this.http.post(environment.apiUrl + '/api/v1/collection/create-report-diference', reporData).subscribe( (response: any) => {
         if (response.status) {
-          this.uploadFile()
+
+          this.toast.open("Registro de pago éxitoso", "Cerrar", {
+            duration: 3000,
+          });
+
         }
+        this.uploadFile()
   
       })
             
@@ -728,8 +755,8 @@ export class PaymentReportComponent {
             duration: 3000,
           });
 
-          this.uploadFile()
         }
+        this.uploadFile()
       })   
   
       setTimeout(() => {
@@ -750,49 +777,58 @@ export class PaymentReportComponent {
     let fechaTran = fecha.toISOString().substring(0, 10);
 
 
+    const formData = new FormData();
     for(let i = 0; i < transfer.length; i++){
 
       const fileObject = transfer.at(i).get('ximagen')?.value!
       const fileType = fileObject.type;
       const extension = fileType.split('/').pop();
       let nombre = asegurado +'-' + fechaTran +'-'+ i + transfer.value[i].xreferencia +'.'+ extension;
-      const formData = new FormData();
       formData.append('image', transfer.at(i).get('ximagen')?.value!, nombre);
   
       //cargamos las imagenes con el codigo de transaccion
-      this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {})
-
+      
     }
+    this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {})
   }
 
   getTargetBank(i : any){
     const trasnfer = this.searchReceipt.get("transfer") as FormArray
 
-    if(trasnfer.at(i).get('ctipopago')?.value == '2' ){
-      this.bankList = this.bankReceptorNational
+    if(trasnfer.at(i).get('ctipopago')?.value.id == 2 ){
+      this.bankList = this.bankNational
+      this.targetBankList = this.bankReceptorNational
       trasnfer.at(i).get('cbanco')?.setValue('')
       trasnfer.at(i).get('cbanco')?.enable();
+      trasnfer.at(i).get('cbanco_destino')?.enable();
 
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
     }
-    if(trasnfer.at(i).get('ctipopago')?.value == '1' ){
+    if(trasnfer.at(i).get('ctipopago')?.value.id == 1 ){
+      this.targetBankList = this.bankReceptorInternational
       this.bankList = this.bankInternational
       trasnfer.at(i).get('cbanco')?.setValue('')
       trasnfer.at(i).get('cbanco')?.enable();
+      trasnfer.at(i).get('cbanco_destino')?.enable();
 
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
     }
-    if(trasnfer.at(i).get('ctipopago')?.value == '3' ){
-      this.bankList = this.bankReceptorPM
+    if(trasnfer.at(i).get('ctipopago')?.value.id == 3 ){
+      this.bankList =  this.bankNational
+      this.targetBankList = this.bankReceptorPM
       trasnfer.at(i).get('cbanco')?.enable();
       trasnfer.at(i).get('cbanco')?.setValue('')
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
+      trasnfer.at(i).get('cbanco_destino')?.enable();
+
     }    
-    if(trasnfer.at(i).get('ctipopago')?.value == '7' ){
-      this.bankList = this.bankReceptorCustodia
+    if(trasnfer.at(i).get('ctipopago')?.value.id == 7 ){
+      this.targetBankList = this.bankReceptorCustodia
       trasnfer.at(i).get('cbanco')?.disable();
       trasnfer.at(i).get('cbanco')?.setValue('')
       trasnfer.at(i).get('cbanco_destino')?.setValue('')
+      trasnfer.at(i).get('cbanco_destino')?.enable();
+
     }
   }
 
@@ -813,22 +849,81 @@ export class PaymentReportComponent {
 
 
   getBank(i : any){
+    //bancos emision
     const trasnfer = this.searchReceipt.get("transfer") as FormArray
-
+    this.tipoTrans = []
     if(trasnfer.at(i).get('cmoneda')?.value == 'Bs' ){
-      this.targetBankList = this.bankNational
       this.usd = false
+      trasnfer.at(i).get('cbanco')?.setValue('')
+      trasnfer.at(i).get('cbanco_destino')?.setValue('')
+      trasnfer.at(i).get('ctipopago')?.setValue('')
+
+      this.tipoTrans.push(
+        {
+        id: 2,
+        value: "Tranferencias",
+        },
+        {
+        id: 3,
+        value: "Pago Movil",
+        }
+
+      )  
 
     }
     if(trasnfer.at(i).get('cmoneda')?.value == 'USD' ){
-      this.targetBankList = this.bankReceptorInternational
       this.usd = true
+      trasnfer.at(i).get('cbanco')?.setValue('')
+      trasnfer.at(i).get('cbanco_destino')?.setValue('')
+      trasnfer.at(i).get('ctipopago')?.setValue('')
 
-
+      this.tipoTrans.push(
+        {
+        id: 1,
+        value: "Tranferencias USD",
+        },
+        {
+        id: 7,
+        value: "Cuenta custodia",
+        }
+      ) 
     }
 
   }
 
+    //Treatments
+    searchTreatments: OperatorFunction<string, readonly { id : any; value : any }[]> = (text$: Observable<string>) =>
+    text$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      filter((term:any) => term.length >= 0),
+      map((term:any) => this.bankList.filter((Treatments:any) => new RegExp(term, 'mi').test(Treatments.value)).slice(0, 10)),
+    
+      );
+    formatterTreatments = (Treatments : Treatments) => Treatments.value;
 
+
+    //Treatments
+    searchBank: OperatorFunction<string, readonly { id : any; value : any }[]> = (text$: Observable<string>) =>
+    text$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      filter((term:any) => term.length >= 0),
+      map((term:any) => this.targetBankList.filter((Treatments:any) => new RegExp(term, 'mi').test(Treatments.value)).slice(0, 10)),
+    
+      );
+    formatterchBank = (Treatments : Treatments) => Treatments.value;
+    
+    //Treatments
+    searchTipo: OperatorFunction<string, readonly { id : any; value : any }[]> = (text$: Observable<string>) =>
+    text$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      filter((term:any) => term.length >= 0),
+      map((term:any) => this.tipoTrans.filter((Treatments:any) => new RegExp(term, 'mi').test(Treatments.value)).slice(0, 10)),
+    
+      );
+    formatterchTipo= (Treatments : Treatments) => Treatments.value;
+    
 
 }

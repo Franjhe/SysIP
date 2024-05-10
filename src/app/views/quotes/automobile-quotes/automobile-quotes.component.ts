@@ -648,13 +648,10 @@ export class AutomobileQuotesComponent {
           });
           this.updatePremiums()
         }else{
-          console.log(this.quotesList)
           this.quotesList.forEach(quote => {
             const mtotal_rcv = parseFloat(quote.mtotal_rcv);
             const tasa_amplia = parseFloat(quote.pcobertura_amplia);
             const tasa_perdida = parseFloat(quote.pperdida_total);
-            console.log(quote.pcobertura_amplia)
-            console.log(quote.pperdida_total)
 
             if(this.quotesForm.get('msuma_aseg')?.value == null || this.quotesForm.get('msuma_aseg')?.value == undefined){
               this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
@@ -679,8 +676,6 @@ export class AutomobileQuotesComponent {
               this.quotesForm.get('msuma_aseg')?.setValue(suma_aseg.toString());
               return
             }else{
-              console.log(tasa_amplia)
-              console.log(suma_aseg)
 
               const calculoCA = suma_aseg * tasa_amplia / 100;
               const calculoPE = suma_aseg * tasa_perdida / 100;
@@ -841,12 +836,158 @@ export class AutomobileQuotesComponent {
       window.alert('La Suma Asegurada excedió el 30% de inma.');
       this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial);
       return
+    }else{
+      this.estoEsFeoperoFunciona()
     }
 
     if(suma_aseg < this.sumaAseguradaMin){
       window.alert('La Suma Asegurada es menor al 10% de inma.');
       this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial);
       return
+    }else{
+      this.estoEsFeoperoFunciona()
+    }
+  }
+
+  estoEsFeoperoFunciona(){
+    let recarga = this.quotesForm.get('precarga')?.value
+    let descuento = this.quotesForm.get('pdescuento')?.value
+    if(recarga){
+      this.quotesList.forEach(quote => {
+        const recargaPorcentaje = parseFloat(recarga || '');
+        const recargaDecimal = recargaPorcentaje / 100;
+    
+        const mtotal_rcv = parseFloat(quote.mtotal_rcv);
+        const mtotal_amplia = parseFloat(quote.mtotal_amplia);
+        const mtotal_perdida = parseFloat(quote.mtotal_perdida);
+    
+        // Comprobación de valores numéricos
+        if (!isNaN(mtotal_rcv) && !isNaN(mtotal_amplia) && !isNaN(mtotal_perdida)) {
+            // Realizar los cálculos necesarios para cada objeto
+            let mtotalAmpliaNuevo = mtotal_amplia - mtotal_rcv;
+            let mtotalPerdidaNuevo = mtotal_perdida - mtotal_rcv;
+    
+            // Aplicar el descuento al resultado de la resta
+            mtotalAmpliaNuevo *= (1 + recargaDecimal);
+            mtotalPerdidaNuevo *= (1 + recargaDecimal);
+    
+            // Sumar nuevamente mtotal_rcv al resultado del descuento
+            let mtotalamplia = mtotalAmpliaNuevo + mtotal_rcv;
+            let mtotalperdida = mtotalPerdidaNuevo + mtotal_rcv;
+    
+            // Asignar los nuevos valores al objeto original
+            quote.mtotal_amplia = mtotalamplia.toFixed(2);
+            quote.mtotal_perdida = mtotalperdida.toFixed(2);
+        }
+      });
+      this.updatePremiums()
+    }else if(descuento){
+      this.quotesList.forEach(quote => {
+        const descuentoPorcentaje = parseFloat(descuento || '');
+        const descuentoDecimal = descuentoPorcentaje / 100;
+    
+        const mtotal_rcv = parseFloat(quote.mtotal_rcv);
+        const mtotal_amplia = parseFloat(quote.mtotal_amplia);
+        const mtotal_perdida = parseFloat(quote.mtotal_perdida);
+    
+        // Comprobación de valores numéricos
+        if (!isNaN(mtotal_rcv) && !isNaN(mtotal_amplia) && !isNaN(mtotal_perdida)) {
+            // Realizar los cálculos necesarios para cada objeto
+            let mtotalAmpliaNuevo = mtotal_amplia - mtotal_rcv;
+            let mtotalPerdidaNuevo = mtotal_perdida - mtotal_rcv;
+    
+            // Aplicar el descuento al resultado de la resta
+            mtotalAmpliaNuevo *= (1 - descuentoDecimal);
+            mtotalPerdidaNuevo *= (1 - descuentoDecimal);
+    
+            // Sumar nuevamente mtotal_rcv al resultado del descuento
+            let mtotalamplia = mtotalAmpliaNuevo + mtotal_rcv;
+            let mtotalperdida = mtotalPerdidaNuevo + mtotal_rcv;
+    
+            // Asignar los nuevos valores al objeto original
+            quote.mtotal_amplia = mtotalamplia.toFixed(2);
+            quote.mtotal_perdida = mtotalperdida.toFixed(2);
+        }
+      });
+      this.updatePremiums()
+    }else{
+      this.quotesList.forEach(quote => {
+        const mtotal_rcv = parseFloat(quote.mtotal_rcv);
+        const tasa_amplia = parseFloat(quote.pcobertura_amplia);
+        const tasa_perdida = parseFloat(quote.pperdida_total);
+
+        if(this.quotesForm.get('msuma_aseg')?.value == null || this.quotesForm.get('msuma_aseg')?.value == undefined){
+          this.quotesForm.get('msuma_aseg')?.setValue(this.sumaAseguradaInicial)
+        }
+
+        const suma_aseg = parseFloat(this.quotesForm.get('msuma_aseg')?.value || '');
+
+        let max = this.sumaAseguradaInicial * 0.30
+        let min = this.sumaAseguradaInicial * 0.10
+
+        let MaxSum = this.sumaAseguradaInicial + max;
+        let MinSum = this.sumaAseguradaInicial - min;
+
+        this.sumaAseguradaMax = MaxSum.toFixed(2)
+        this.sumaAseguradaMin = MinSum.toFixed(2)
+
+        if(suma_aseg > this.sumaAseguradaMax){
+          this.snackBar.open('La Suma Asegurada excedió el 30%.', '', {
+            duration: 5000,
+          });
+
+          this.quotesForm.get('msuma_aseg')?.setValue(suma_aseg.toString());
+          return
+        }else{
+
+          const calculoCA = suma_aseg * tasa_amplia / 100;
+          const calculoPE = suma_aseg * tasa_perdida / 100;
+
+          const sumaCA = calculoCA + mtotal_rcv;
+          const sumaPE = calculoPE + mtotal_rcv;
+
+          quote.mtotal_amplia = sumaCA.toFixed(2);
+          quote.mtotal_perdida = sumaPE.toFixed(2);
+        }
+
+        if(suma_aseg < this.sumaAseguradaMin){
+          this.snackBar.open('La Suma Asegurada es menor al 10%.', '', {
+            duration: 5000,
+          });
+
+          this.quotesForm.get('msuma_aseg')?.setValue(suma_aseg.toString());
+          return
+        }else{
+          const pcatastrofico = 0.10;
+          const msumaAsegRobo = 600;
+          const probo = 4.48;
+          const pmotinCA = 0.88;
+          const pmotinPE = 0.59;
+
+          const calculoCA = suma_aseg * tasa_amplia / 100;
+          const calculoPE = suma_aseg * tasa_perdida / 100;
+
+          const motinCA = (suma_aseg * pmotinCA) / 100;
+          const motinPE = (suma_aseg * pmotinPE) / 100;
+          const catastrofico = (suma_aseg * pcatastrofico) / 100;
+          const robo = (msumaAsegRobo * probo) / 100;
+
+          const CA = motinCA + catastrofico + robo;
+          const PE = motinPE + catastrofico + robo;
+
+          const resultCA = calculoCA + CA
+          const resultPE = calculoPE + PE
+
+          const sumaCA = resultCA + mtotal_rcv;
+          const sumaPE = resultPE + mtotal_rcv;
+
+          quote.mtotal_amplia = sumaCA.toFixed(2);
+          quote.mtotal_perdida = sumaPE.toFixed(2);
+        }
+
+
+      })
+      this.updatePremiums()
     }
   }
 

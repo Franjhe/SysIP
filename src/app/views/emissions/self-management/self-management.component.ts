@@ -8,6 +8,7 @@ import { environment } from 'src/environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { PdfGenerationService } from '../../../_services/ServicePDF'
+import { MatStepper } from '@angular/material/stepper';
 import {
   MatSnackBar,
   MatSnackBarHorizontalPosition,
@@ -45,6 +46,33 @@ export const MY_FORMATS = {
 })
 export class SelfManagementComponent {
   @ViewChild('paymentModal') paymentModal: any;
+  @ViewChild('stepper') stepper!: MatStepper;
+  campoNombres: { [key: string]: string } = { // Mapa de nombres de campo
+    icedula: 'Tipo de Documento de Identidad',
+    xrif_cliente: 'RIF o Cédula',
+    xnombre: 'Nombre',
+    xapellido: 'Apellido',
+    fnacimiento: 'Fecha de Nacimiento',
+    xtelefono_emp: 'Teléfono',
+    email: 'Correo',
+    cestado: 'Estado',
+    cciudad: 'Ciudad',
+    iestado_civil: 'Estado Civil',
+    isexo: 'Sexo',
+    xdireccion: 'Direcciónn',
+  };
+
+  campoNombresV: { [key: string]: string } = {
+    xplaca: 'Placa',
+    xmarca: 'Marca',
+    xmodelo: 'Modelo',
+    xversion: 'Version',
+    fano: 'Año',
+    xcolor: 'Color',
+    xserialcarroceria: 'Serial de Carroceria'
+  };
+
+
   dataList: any[] = []; 
   identList = ['V', 'P', 'E', 'J', 'C','G'];
   stateList: any[] = [];
@@ -114,6 +142,7 @@ export class SelfManagementComponent {
   isLinear = true;
   check = false;
   helmet: boolean = false;
+  trans: boolean = true;
   discount: boolean = false;
   enableInfo: boolean = false;
   amountTotalRcv: boolean = false;
@@ -180,6 +209,9 @@ export class SelfManagementComponent {
   fechas!: any ;
   recargaInicial!: any ;
   ocultarRecarga: boolean = true;
+  activateCard: boolean = false;
+  xnombrePlan!: any
+  planCoverage: any[] = [];
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -200,9 +232,9 @@ export class SelfManagementComponent {
     ccotizacion: [{ value: '', disabled: false }],
     cinspeccion: [{ value: '', disabled: false }],
     xplaca: ['',[Validators.required, Validators.maxLength(7)]],
-    xmarca: [{ value: '', disabled: true}, Validators.required],
-    xmodelo: [{ value: '', disabled: true}, Validators.required],
-    xversion: [{ value: '', disabled: true}, Validators.required],
+    xmarca: ['', [Validators.required, Validators.maxLength(50)]],
+    xmodelo: ['', [Validators.required, Validators.maxLength(50)]],
+    xversion: ['', [Validators.required, Validators.maxLength(50)]],
     fano: ['',[Validators.required, Validators.maxLength(4)]],
     npasajeros: [{ value: '', disabled: true }],
     cclasificacion: [''], 
@@ -210,7 +242,7 @@ export class SelfManagementComponent {
     xcolor: ['', Validators.required],
     xserialcarroceria: ['', [Validators.required, Validators.maxLength(17)]],
     xserialmotor: ['', [Validators.maxLength(17)]],
-    xcobertura: ['', Validators.required],
+    xcobertura: [{ value: 'Rcv', disabled: true}, Validators.required],
     ctarifa_exceso: ['', Validators.required],
     cuso: [''],
     cusoVeh: [''],
@@ -375,6 +407,59 @@ export class SelfManagementComponent {
       }
     });
   }
+
+  onNextStep() {
+    if (this.personsFormGroup.valid) {
+      this.stepper.next();
+      // Si el formulario es válido, permite pasar al siguiente paso
+      // Puedes poner aquí cualquier lógica adicional que necesites
+    } else {
+ // Si el formulario es inválido, construir mensaje de campos faltantes
+      let camposFaltantes = '';
+      Object.keys(this.personsFormGroup.controls).forEach(key => {
+        const control = this.personsFormGroup.get(key);
+        if (control && control.invalid) { // Agregar verificación de nulidad
+          camposFaltantes += this.campoNombres[key] + '\n'; // Usar el mapa de nombres de campo
+        }
+      });
+      camposFaltantes = camposFaltantes.slice(0, -2); // Eliminar la coma y el espacio extra al final
+      window.alert('Por favor, complete los siguientes campos: \n' + camposFaltantes);
+    }
+  }
+
+  onNextStepV() {
+    if (this.vehicleFormGroup.valid) {
+      this.stepper.next();
+      // Si el formulario es válido, permite pasar al siguiente paso
+      // Puedes poner aquí cualquier lógica adicional que necesites
+    } else {
+      let camposFaltantes = '';
+      Object.keys(this.vehicleFormGroup.controls).forEach(key => {
+        if (key !== 'ctarifa_exceso') { // Excluir el campo 'ctarifa_exceso'
+          const control = this.vehicleFormGroup.get(key);
+          if (control && control.invalid) {
+            const nombreCampo = this.campoNombresV[key] || key;
+            camposFaltantes += nombreCampo + '\n';
+          }
+        }
+      });
+      if (camposFaltantes.length > 0) {
+        camposFaltantes = camposFaltantes.trimEnd(); // Eliminar espacios en blanco al final
+        window.alert('Por favor, complete los siguientes campos:\n' + camposFaltantes);
+      }
+    }
+  }
+
+  onNextStepP() {
+    if (this.planFormGroup.valid) {
+      this.stepper.next();
+      // Si el formulario es válido, permite pasar al siguiente paso
+      // Puedes poner aquí cualquier lógica adicional que necesites
+    } else {
+      window.alert('Por favor, seleccione un plan para poder continuar con la autogestión vehicular');
+    }
+  }
+
 
   valueplate(value: any){
     var ExpRegSoloLetras="^[A-Za-z0-9\s]+$";
@@ -606,14 +691,7 @@ export class SelfManagementComponent {
   }
 
   changeYears() {
-    const fanoControl = this.vehicleFormGroup.get('fano');
-    
-    if (fanoControl && fanoControl.value) {
-      this.getBrand() 
-      this.snackBar.open(`Si el vehículo no existe por favor localice al ejecutivo comercial para regularizar esa incidencia`, '', {
-        duration: 4000,
-      });
-    }
+    this.getBrand() 
   }
 
   getBrand(){
@@ -630,6 +708,11 @@ export class SelfManagementComponent {
           });
         }
         this.brandList.sort((a, b) => a.value > b.value ? 1 : -1);
+
+        if(!this.brandList[0]){
+          window.alert(`No existe una Marca para el año ${data.qano}`)
+          this.vehicleFormGroup.get('fano')?.setValue('')
+        }
 
         this.filteredBrand = this.brandControl.valueChanges.pipe(
           startWith(''),
@@ -736,7 +819,6 @@ export class SelfManagementComponent {
             this.vehicleFormGroup.get('cclasificacion')?.setValue(selectedVersion.cclasificacion);
             this.vehicleFormGroup.get('id_inma')?.setValue(selectedVersion.id_inma);
             this.vehicleFormGroup.get('xtipovehiculo')?.setValue(selectedVersion.xtipovehiculo);
-            this.getHullPrice()
             this.vehicleFormGroup.get('xuso')?.setValue(selectedVersion.xuso);
       
             if(!this.vehicleFormGroup.get('xtipovehiculo')?.value){
@@ -780,7 +862,6 @@ export class SelfManagementComponent {
     if (selectedVersion) {
       this.vehicleFormGroup.get('xversion')?.setValue(selectedVersion.value);
       this.vehicleFormGroup.get('npasajeros')?.setValue(selectedVersion.npasajero);
-      this.searchRates();
       this.vehicleFormGroup.get('id_inma')?.setValue(selectedVersion.id_inma);
       this.vehicleFormGroup.get('xtipovehiculo')?.setValue(selectedVersion.xtipovehiculo);
       this.vehicleFormGroup.get('ctarifa_exceso')?.setValue(selectedVersion.ctarifa_exceso);
@@ -908,7 +989,6 @@ export class SelfManagementComponent {
     const selectedTypeVehicle = this.typeVehicleList.find(typeVehicle => typeVehicle.value === selectedValue);
     if (selectedTypeVehicle) {
       this.vehicleFormGroup.get('xtipovehiculo')?.setValue(selectedTypeVehicle.value);
-      this.validateYearsFromHullPrice()
     }
   }
 
@@ -975,23 +1055,6 @@ export class SelfManagementComponent {
     this.vehicleFormGroup.get('xuso')?.setValue(selectedUtility.value);
   }
 
-  searchRates(){
-    let data = {
-      cano: this.vehicleFormGroup.get('fano')?.value,
-      xclase: this.vehicleFormGroup.get('cclasificacion')?.value,
-    }
-    this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/search-rates', data).subscribe((response: any) => {
-      if(response.casco){
-        this.casco = response.casco;
-      }else{
-        this.snackBar.open(`${response.message}`, '', {
-          duration: 4000,
-        });
-        this.casco = response.casco;
-      }
-    })
-  }
-
   getClass(){
     this.http.post(environment.apiUrl + '/api/v1/valrep/class', null).subscribe((response: any) => {
       if (response.data.class) {
@@ -1054,6 +1117,20 @@ export class SelfManagementComponent {
     const selectedPlan = this.planList.find(plan => plan.value === selectedValue);
     if (selectedPlan) {
       this.planFormGroup.get('cplan')?.setValue(selectedPlan.id);
+      let plan = {
+        cplan: selectedPlan.id
+      }
+      this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/coverages-plan', plan).subscribe((response: any) => {
+        console.log(response.data.coverages)
+        this.planCoverage = response.data.coverages.map((item: any) => {
+          this.trans = false;
+          return {
+            name: item.cobertura,
+            sum: item.suma.toFixed(2)   
+          };
+        });
+      })
+      this.xnombrePlan = selectedPlan.value;
       this.getAmount();
     }
   }
@@ -1176,92 +1253,8 @@ export class SelfManagementComponent {
   onCoverageChange() {
     if(this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv'){
       this.paymentButtons = true;
-      this.helmet = false;
-      this.activateInspection = false;
-      
-      if(this.currentUser.data.crol == 7){
-        this.paymentButtonManual = false;
-      }else{
-        this.paymentButtonManual = true;
-      }
-
-      if(this.ccotizacion){
-        this.messageCoti = false;
-      }else{
-        this.messageCoti = true;
-      }
-      this.planFormGroup.get('mmotin')?.setValue('');
-      this.planFormGroup.get('mcatastrofico')?.setValue('');
+      this.messageCoti = true;
     }
-    else if(this.vehicleFormGroup.get('xcobertura')?.value !== 'Rcv'){
-      this.validateYearsFromHullPrice()
-      this.activateInspection = true;
-      if(this.ccotizacion){
-        this.helmet = true;
-        this.messageCoti = false;
-      }else{
-        this.helmet = true;
-        this.messageCoti = true;
-      }
-      
-      this.paymentButtons = false;
-    }
-  }
-
-  changeInspection(){
-    if(this.currentUser.data.crol != 5){
-      this.snackBar.open(`No posee Número de Inspección, por lo tanto no puede proceder con ${this.vehicleFormGroup.get('xcobertura')?.value}`, '', {
-        duration: 4000,
-      });
-    }
-  }
-
-  validateYearsFromHullPrice() {
-    if(this.vehicleFormGroup.get('xtipovehiculo')?.value){
-      this.getHullPrice()
-    }
-  }
-
-  getHullPrice(){
-    let data =  {
-      cano: this.vehicleFormGroup.get('fano')?.value,
-      xclase: this.vehicleFormGroup.get('cclasificacion')?.value,
-    };
-    this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/hull-price', data).subscribe((response: any) => {
-      if(response.status){
-        if(!this.ccotizacion){
-          let SumaAsegurada = this.sumaAsegurada
-          if(this.vehicleFormGroup.get('xcobertura')?.value == 'Cobertura Amplia'){
-            this.tasaCascoInicial = response.data.ptasa_casco
-            this.planFormGroup.get('pcasco')?.setValue(response.data.ptasa_casco);
-            this.planFormGroup.get('pblindaje')?.setValue(response.data.ptasa_casco);
-            if(this.vehicleFormGroup.get('xtipovehiculo')?.value == 'CARGA' || this.vehicleFormGroup.get('xtipovehiculo')?.value == 'Carga'){
-              this.planFormGroup.get('paditamento')?.setValue(response.data.ptasa_casco);
-            }else{
-              this.planFormGroup.get('paditamento')?.setValue(null);
-            }
-          }else{
-            this.tasaCascoInicial = response.data.pperdida_total;
-            this.planFormGroup.get('pcasco')?.setValue(response.data.pperdida_total);
-            this.planFormGroup.get('pblindaje')?.setValue(response.data.pperdida_total);
-            if(this.vehicleFormGroup.get('xtipovehiculo')?.value == 'CARGA' || this.vehicleFormGroup.get('xtipovehiculo')?.value == 'Carga'){
-              this.planFormGroup.get('paditamento')?.setValue(response.data.pperdida_total);
-            }else{
-              this.planFormGroup.get('paditamento')?.setValue(null);
-            }
-          }
-          
-          this.planFormGroup.get('msuma_aseg')?.setValue(this.sumaAsegurada);
-          if(this.currentUser.data.crol == 5 || this.currentUser.data.crol == 7){
-            this.planFormGroup.get('msuma_aseg')?.enable();
-          }else{
-            this.planFormGroup.get('msuma_aseg')?.disable();
-          }
-          this.planFormGroup.get('msuma_aseg_text')?.setValue(this.formatCurrency(SumaAsegurada));
-  
-        }
-      }
-    })
   }
 
   validateTaker(){
@@ -1344,14 +1337,12 @@ export class SelfManagementComponent {
     }
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/premium-amount', data).subscribe((response: any) => {
       if (response.status) {
+        this.activateCard = true;
         this.montoTotal = response.data.mprima
         this.ubii = response.data.ccubii
         if(this.montoTotal){
           this.operationUbii();
           this.amountTotalRcv = true;
-          if(this.vehicleFormGroup.get('xcobertura')?.value !== 'Rcv'){
-            this.amountTotalCasco = true;
-          }
         }else{
           this.amountTotalRcv = false;
         }
@@ -1599,7 +1590,7 @@ export class SelfManagementComponent {
           accesorios: this.planFormGroup.controls.accesorios.value,
           xpago: this.receiptFormGroup.get('xpago')?.value,
           femision: this.receiptFormGroup.get('femision')?.value,
-          cmetodologiapago: this.receiptFormGroup.get('cmetodologiapago')?.value,
+          cmetodologiapago: 5,
           id_inma: this.vehicleFormGroup.get('id_inma')?.value,
           cuso: this.vehicleFormGroup.get('cuso')?.value,
           xuso: this.vehicleFormGroup.get('xuso')?.value,
@@ -1849,7 +1840,7 @@ export class SelfManagementComponent {
       pcasco: this.planFormGroup.get('pcasco')?.value,
       xpago: this.receiptFormGroup.get('xpago')?.value,
       femision: this.receiptFormGroup.get('femision')?.value,
-      cmetodologiapago: this.receiptFormGroup.get('cmetodologiapago')?.value,
+      cmetodologiapago: 5,
       id_inma: this.vehicleFormGroup.get('id_inma')?.value,
       cuso: this.vehicleFormGroup.get('cuso')?.value,
       xuso: this.vehicleFormGroup.get('xuso')?.value,

@@ -239,6 +239,7 @@ export class AutomobileComponent {
   fechas!: any ;
   recargaInicial!: any ;
   ocultarRecarga: boolean = true;
+  clasificacionMotos: boolean = false;
 
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -264,7 +265,8 @@ export class AutomobileComponent {
     xversion: [{ value: '', disabled: true}, Validators.required],
     fano: ['',[Validators.required, Validators.maxLength(4)]],
     npasajeros: [{ value: '', disabled: true }],
-    cclasificacion: [''], 
+    cclasificacion: [''],
+    xclasificacion: [''],  
     xtipovehiculo: [''],
     xcolor: ['', Validators.required],
     xserialcarroceria: ['', [Validators.required, Validators.maxLength(17)]],
@@ -289,6 +291,7 @@ export class AutomobileComponent {
     xcorredor: [''],
     ctomador: [{ value: '', disabled: false }],
     xtomador: [{ value: '', disabled: false }],
+    icedula_tomador: [''],
     xrif_tomador: [''],
     cestado_tomador: [''],
     cciudad_tomador: [''],
@@ -587,10 +590,10 @@ export class AutomobileComponent {
       this.activaRepresentante = true;
       this.fechas = 'Fecha de Registro';
     } else { // Si selectedIdent es 'V', establecer la validación de 'fnacimiento'
-      this.personsFormGroup.get('fnacimiento')?.setValidators([Validators.required]);
-      this.personsFormGroup.get('iestado_civil')?.setValidators([Validators.required]);
-      this.personsFormGroup.get('isexo')?.setValidators([Validators.required]);
-      this.personsFormGroup.get('xapellido')?.setValidators([Validators.required]);
+      this.personsFormGroup.get('fnacimiento')?.clearValidators();;
+      this.personsFormGroup.get('iestado_civil')?.clearValidators();;
+      this.personsFormGroup.get('isexo')?.clearValidators();;
+      this.personsFormGroup.get('xapellido')?.clearValidators();;
       this.activaSexoYEs = true;
       this.activaNombreYapellido = true;
       this.activaRepresentante = false;
@@ -953,6 +956,15 @@ export class AutomobileComponent {
       }else{
         this.activateUtility = false;
       }
+
+      const tarifaExcesoValue = this.vehicleFormGroup.get('ctarifa_exceso')?.value;
+      if (tarifaExcesoValue !== null && tarifaExcesoValue !== undefined) {
+          if (typeof tarifaExcesoValue === 'number' && tarifaExcesoValue === 20) {
+              if(this.currentUser.data.crol == 7){
+
+              }
+          }
+      }
     }
   }
 
@@ -1125,12 +1137,36 @@ export class AutomobileComponent {
       if(response.casco){
         this.casco = response.casco;
       }else{
-        this.snackBar.open(`${response.message}`, '', {
-          duration: 4000,
-        });
+        const tarifaExcesoValue = this.vehicleFormGroup.get('ctarifa_exceso')?.value;
+        if (tarifaExcesoValue !== null && tarifaExcesoValue !== undefined) {
+          if(this.currentUser.data.crol == 7){
+            if (typeof tarifaExcesoValue === 'number' && tarifaExcesoValue === 20) {
+              this.clasificacionMotos = true;
+              this.searchRates()
+              // this.casco = true;
+              // this.userBroker = true;
+            }else{
+              this.clasificacionMotos = false;
+              this.casco = false;
+              this.userBroker = false;
+            }
+          }else{
+            this.snackBar.open(`${response.message}`, '', {
+              duration: 4000,
+            });
+          }
+        }
         this.casco = response.casco;
       }
     })
+  }
+
+  Clasification(){
+    const xclasificacion = this.vehicleFormGroup.get('xclasificacion')?.value
+    if(this.currentUser.data.crol == 7){
+      this.vehicleFormGroup.get('cclasificacion')?.setValue(xclasificacion || '')
+    }
+    console.log(this.vehicleFormGroup.get('cclasificacion')?.value)
   }
 
   getClass(){
@@ -1175,11 +1211,32 @@ export class AutomobileComponent {
           });
         }
 
-        if (this.currentUser.data.crol != 7) {
-          this.planList = this.planList.filter(plan => plan.id !== 14);
-          this.planList = this.planList.filter(plan => plan.id !== 15);
-          this.planList = this.planList.filter(plan => plan.id !== 16);
+        // if (this.currentUser.data.crol != 7) {
+        //   console.log('holaaaaa')
+        //   this.planList = this.planList.filter(plan => plan.id !== 14);
+        //   this.planList = this.planList.filter(plan => plan.id !== 15);
+        //   this.planList = this.planList.filter(plan => plan.id !== 16);
+        //   this.planList = this.planList.filter(plan => plan.id !== 17);
+
+        // }else if(this.currentUser.data.crol != 5){
+        //   console.log('todo bien?')
+        //   this.planList = this.planList.filter(plan => plan.id !== 14);
+        //   this.planList = this.planList.filter(plan => plan.id !== 15);
+        //   this.planList = this.planList.filter(plan => plan.id !== 16);
+        //   this.planList = this.planList.filter(plan => plan.id !== 17);
+        //   this.planList = this.planList.filter(plan => plan.id !== 22);
+        // }
+
+        if (this.currentUser.data.crol === 5 || this.currentUser.data.crol === 7) {
+          
+        }else{
+          this.planList = this.planList.slice(0, 6);
         }
+        // } else {
+        //   // Show only the first 6 plans
+        //   this.planList = this.planList.slice(0, 6);
+        //   console.log('Mostrar solo los primeros 6 planes');
+        // }
         
         if(this.ccotizacion){
           const selectedId = parseInt(this.cplan);
@@ -2602,6 +2659,7 @@ export class AutomobileComponent {
         cclasificacion: this.vehicleFormGroup.get('cclasificacion')?.value,
         ctomador: this.planFormGroup.get('ctomador')?.value,
         xtomador: this.planFormGroup.get('xtomador')?.value,
+        icedula_tomador: this.planFormGroup.get('icedula_tomador')?.value,
         xrif_tomador: this.planFormGroup.get('xrif_tomador')?.value,
         xemail_tomador: this.planFormGroup.get('xemail_tomador')?.value,
         cestado_tomador: this.planFormGroup.get('cestado_tomador')?.value,
@@ -2653,6 +2711,7 @@ export class AutomobileComponent {
       }
     }else{
       console.log('pasa por aqui y da error')
+      console.log('Que error les dio?')
       data = {
         icedula: this.personsFormGroup.get('icedula')?.value,
         xrif_cliente: this.personsFormGroup.get('xrif_cliente')?.value,
@@ -2680,6 +2739,7 @@ export class AutomobileComponent {
         cclasificacion: this.vehicleFormGroup.get('cclasificacion')?.value,
         ctomador: this.planFormGroup.get('ctomador')?.value,
         xtomador: this.planFormGroup.get('xtomador')?.value,
+        icedula_tomador: this.planFormGroup.get('icedula_tomador')?.value,
         xrif_tomador: this.planFormGroup.get('xrif_tomador')?.value,
         xemail_tomador: this.planFormGroup.get('xemail_tomador')?.value,
         cestado_tomador: this.planFormGroup.get('cestado_tomador')?.value,
