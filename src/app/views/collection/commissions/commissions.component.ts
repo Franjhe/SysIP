@@ -165,6 +165,17 @@ export class CommissionsComponent {
 
   }
 
+  searchCommis(data : any){
+    this.http.post(environment.apiUrl + '/api/v1/commissions/search', {fecha: data}).subscribe((response: any) => {
+
+      this.defaultDataSource = new MatTableDataSource(response.returnData.search);
+      this.dataSource = new MatTableDataSource(response.returnData.search);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+
+    })
+  }
+
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();

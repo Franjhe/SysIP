@@ -12,6 +12,18 @@
         <input matInput (keyup)="applyFilter($event)" #input>
     </mat-form-field>
 
+    <div class="col-3">
+
+
+        <mat-form-field>
+            <mat-label>Fecha desde</mat-label>
+            <input matInput [matDatepicker]="dp3" #fecha (dateChange)="searchCommis(fecha.value)">
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="dp3"></mat-datepicker-toggle>
+            <mat-datepicker #dp3 disabled="false"></mat-datepicker>
+        </mat-form-field>
+    </div>
+
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z2" matSort (matSortChange)="sortData($event)">
 
         <!--- Note that these columns can be defined in any order.
