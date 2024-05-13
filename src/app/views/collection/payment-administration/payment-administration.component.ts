@@ -677,7 +677,7 @@ export class PaymentAdministrationComponent {
         this.selection.selected.forEach(item => {
           const savePaymentTrans = {
           group : false,
-          ctransaccion : this.idTrans,
+          transaccion : this.idTrans,
           receipt : this.receiptList,
           soporte: this.transferList,
           casegurado: item.cci_rif,
@@ -741,7 +741,7 @@ export class PaymentAdministrationComponent {
           fpago : fecha,
           cliente : item.xcliente,
           transaccion : this.idTrans,
-          ctransaccion: this.idTrans,
+          transaccion: this.idTrans,
           correo : item.xcorreo ,
           fcobro : this.searchReceipt.get('fcobro')?.value,
 
@@ -771,7 +771,7 @@ export class PaymentAdministrationComponent {
     }else{
         const savePaymentTrans = {
         group : true,
-        ctransaccion : this.idTrans,
+        transaccion : this.idTrans,
         receipt : this.receiptList,
         soporte: this.transferList,
         asegurados: this.listaNombres,

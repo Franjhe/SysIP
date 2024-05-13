@@ -138,7 +138,7 @@ export class PaymentCancellationComponent {
             const safeImageUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullImageUrl);
 
             recibosArray.push(this._formBuilder.group({
-              ctransaccion: recibo.ctransaccion,
+              transaccion: recibo.ctransaccion,
               cbanco_destino: recibo.cbanco_destino,
               cbanco_origen: recibo.cbanco_origen,
               npago: recibo.npago,
