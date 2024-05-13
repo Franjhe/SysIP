@@ -291,16 +291,16 @@ export class PaymentReportComponent {
 
     this.http.post(environment.apiUrl + '/api/v1/collection/search', client ).subscribe((response: any) => {
       
-      if(response.searchReceipt.transaccion == null){
+      if(response.searchReceiptsByCustomer.transaccion == null){
         this.idTrans = 1
       }else{
-        this.idTrans = response.searchReceipt.transaccion
+        this.idTrans = response.searchReceiptsByCustomer.transaccion
       }
 
       let sumaBS = 0;
       let sumaUSD = 0;
 
-      response.searchReceipt.saldo.forEach((item: any) => {
+      response.searchReceiptsByCustomer.saldo.forEach((item: any) => {
 
         if (item.cmoneda_dif == 'BS  ') {
           sumaBS += item.msaldodif;
@@ -317,17 +317,17 @@ export class PaymentReportComponent {
       this.positiveBalanceBs = sumaBS
       this.positiveBalanceUSD = sumaUSD
 
-      this.listCollection = response.searchReceipt.cobrados
+      this.listCollection = response.searchReceiptsByCustomer.cobrados
 
 
       this.PositiveBalance = 'Saldo a favor en Bs ' + sumaBS + '/' + 'Saldo  en USD ' + sumaUSD
       this.viewData = false;
       this.diference = false
 
-      if(response.searchReceipt.receipt.length > 0){
-        for(let i = 0; i < response.searchReceipt.receipt.length; i++){
+      if(response.searchReceiptsByCustomer.receipt.length > 0){
+        for(let i = 0; i < response.searchReceiptsByCustomer.receipt.length; i++){
 
-          const currentReceipt = response.searchReceipt.receipt[i];
+          const currentReceipt = response.searchReceiptsByCustomer.receipt[i];
 
           // Verificar si mdiferencia es diferente de nulo
           if (currentReceipt.mdiferencia !== null) {
@@ -335,59 +335,59 @@ export class PaymentReportComponent {
             this.diference = true
           }
 
-          this.cliente = response.searchReceipt.receipt[i].xcliente
+          this.cliente = response.searchReceiptsByCustomer.receipt[i].xcliente
 
-          const fdesdeP = new Date(response.searchReceipt.receipt[i].fdesde);
+          const fdesdeP = new Date(response.searchReceiptsByCustomer.receipt[i].fdesde);
           let ISOFdesdeP = fdesdeP.toISOString().substring(0, 10);
 
-          const fhastaP = new Date(response.searchReceipt.receipt[i].fhasta);
+          const fhastaP = new Date(response.searchReceiptsByCustomer.receipt[i].fhasta);
           let ISOFhastaP = fhastaP.toISOString().substring(0, 10);
 
-          const fdesdePol = new Date(response.searchReceipt.receipt[i].fdesde_pol);
+          const fdesdePol = new Date(response.searchReceiptsByCustomer.receipt[i].fdesde_pol);
           let ISOFdesdePol = fdesdePol.toISOString().substring(0, 10);
 
-          const fhastaPol = new Date(response.searchReceipt.receipt[i].fhasta_pol);
+          const fhastaPol = new Date(response.searchReceiptsByCustomer.receipt[i].fhasta_pol);
           let ISOFhastaPol = fhastaPol.toISOString().substring(0, 10);
 
-          let id = response.searchReceipt.receipt[i].cramo
+          let id = response.searchReceiptsByCustomer.receipt[i].cramo
           let treatments = this.tradesList
           let filterdata = treatments.filter((data: { id: any; }) => data.id == id)
           const xramo = filterdata[0].value
 
           let messaje : string 
-          if(response.searchReceipt.receipt[i].idiferencia == 'D'){
+          if(response.searchReceiptsByCustomer.receipt[i].idiferencia == 'D'){
             messaje = 	'debe '
-          }else if(response.searchReceipt.receipt[i].idiferencia == 'H'){
+          }else if(response.searchReceiptsByCustomer.receipt[i].idiferencia == 'H'){
             messaje = 'a favor '
           }else{
             messaje = ''
           }
           this.receipt.push(
             this._formBuilder.group({
-              cnpoliza: response.searchReceipt.receipt[i].cnpoliza,
-              cnrecibo: response.searchReceipt.receipt[i].cnrecibo,
-              crecibo: response.searchReceipt.receipt[i].crecibo,
-              cpoliza: response.searchReceipt.receipt[i].cpoliza,
-              fanopol: response.searchReceipt.receipt[i].fanopol,
-              fmespol: response.searchReceipt.receipt[i].fmespol,
-              cramo: response.searchReceipt.receipt[i].cramo,
-              cproductor : response.searchReceipt.receipt[i].cproductor,
-              qcuotas : response.searchReceipt.receipt[i].qcuotas,
+              cnpoliza: response.searchReceiptsByCustomer.receipt[i].cnpoliza,
+              cnrecibo: response.searchReceiptsByCustomer.receipt[i].cnrecibo,
+              crecibo: response.searchReceiptsByCustomer.receipt[i].crecibo,
+              cpoliza: response.searchReceiptsByCustomer.receipt[i].cpoliza,
+              fanopol: response.searchReceiptsByCustomer.receipt[i].fanopol,
+              fmespol: response.searchReceiptsByCustomer.receipt[i].fmespol,
+              cramo: response.searchReceiptsByCustomer.receipt[i].cramo,
+              cproductor : response.searchReceiptsByCustomer.receipt[i].cproductor,
+              qcuotas : response.searchReceiptsByCustomer.receipt[i].qcuotas,
               xramo : xramo ,
-              cmoneda: response.searchReceipt.receipt[i].cmoneda,
+              cmoneda: response.searchReceiptsByCustomer.receipt[i].cmoneda,
               fdesde_pol: ISOFdesdePol,
               fhasta_pol: ISOFhastaPol,
               fdesde_rec: ISOFdesdeP,
               fhasta_rec: ISOFhastaP,
-              mprimabruta: response.searchReceipt.receipt[i].mmontorec ,
-              mprimabrutaext: response.searchReceipt.receipt[i].mmontorecext ,
-              ptasamon: response.searchReceipt.receipt[i].ptasamon,
+              mprimabruta: response.searchReceiptsByCustomer.receipt[i].mmontorec ,
+              mprimabrutaext: response.searchReceiptsByCustomer.receipt[i].mmontorecext ,
+              ptasamon: response.searchReceiptsByCustomer.receipt[i].ptasamon,
               seleccionado : false,
-              mdiferenciaext: response.searchReceipt.receipt[i].mdiferenciaext,
-              mdiferencia: response.searchReceipt.receipt[i].mdiferencia,
-              xobservacion: response.searchReceipt.receipt[i].xobservacion,
+              mdiferenciaext: response.searchReceiptsByCustomer.receipt[i].mdiferenciaext,
+              mdiferencia: response.searchReceiptsByCustomer.receipt[i].mdiferencia,
+              xobservacion: response.searchReceiptsByCustomer.receipt[i].xobservacion,
               idiferencia: messaje,
-              cdoccob: response.searchReceipt.receipt[i].cdoccob,
+              cdoccob: response.searchReceiptsByCustomer.receipt[i].cdoccob,
               asegurado : Number(aseguradoNumber)
             })
           )
@@ -395,23 +395,23 @@ export class PaymentReportComponent {
 
           let messajeCliente : string 
           let class_text: string 
-          if(response.searchReceipt.receipt[i].idiferencia == 'D'){
+          if(response.searchReceiptsByCustomer.receipt[i].idiferencia == 'D'){
             messajeCliente = 	'debe '
             class_text = 'text-danger'
 
             this.messageDiference.push({
               class : class_text,
               messaje: 'El cliente ' + messajeCliente + 
-              response.searchReceipt.receipt[i].mdiferencia + 'Bs /' + response.searchReceipt.receipt[i].mdiferenciaext +'USD'
+              response.searchReceiptsByCustomer.receipt[i].mdiferencia + 'Bs /' + response.searchReceiptsByCustomer.receipt[i].mdiferenciaext +'USD'
             })
             
-          }else if(response.searchReceipt.receipt[i].idiferencia == 'H'){
+          }else if(response.searchReceiptsByCustomer.receipt[i].idiferencia == 'H'){
             messajeCliente = 'tiene un saldo a favor de '
             class_text = 'text-success'
             this.messageDiference.push({
             class : class_text,
             messaje: 'El cliente ' + messajeCliente + 
-              response.searchReceipt.receipt[i].mdiferencia + 'Bs /' + response.searchReceipt.receipt[i].mdiferenciaext +'USD'})  
+              response.searchReceiptsByCustomer.receipt[i].mdiferencia + 'Bs /' + response.searchReceiptsByCustomer.receipt[i].mdiferenciaext +'USD'})  
             
 
           }
@@ -624,9 +624,9 @@ export class PaymentReportComponent {
 
         this.transferList.push({
           cmoneda: transfer.value[i].cmoneda,
-          cbanco: transfer.value[i]?.cbanco.id,
+          cbanco: transfer.value[i]?.cbanco?.id,
           ctipopago: transfer.value[i]?.ctipopago.id,
-          cbanco_destino: transfer.value[i]?.cbanco_destino.id,
+          cbanco_destino: transfer.value[i]?.cbanco_destino?.id,
           mpago: 0,
           mpagoext: transfer.value[i].mpago,
           mpagoigtf: this.mountBsP,
@@ -683,6 +683,7 @@ export class PaymentReportComponent {
         cprog : 'Reporte de pago web',
         ifuente : 'Web_Sys',
         cusuario : 13,
+        iestado : 0,
         positiveBalance : this.PositiveBalanceBool,
         diference : this.diference,
         soporte : this.transferList,
@@ -716,6 +717,7 @@ export class PaymentReportComponent {
         cprog : 'Reporte de pago web',
         ifuente : 'Web_Sys',
         cusuario : 13,
+        iestado : 0,
         positiveBalance : this.PositiveBalanceBool,      
         diference: this.diference,
         recibo : this.receiptList,

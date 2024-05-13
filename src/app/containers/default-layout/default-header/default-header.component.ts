@@ -31,19 +31,19 @@ export class DefaultHeaderComponent extends HeaderComponent {
     super();
 
  
-    this.subscription = this.dataSharingService.data$.subscribe(menu => {
+    // this.subscription = this.dataSharingService.data$.subscribe(menu => {
 
-      this.menuData = []
-      for(let i = 0; i < menu.list.length; i++){
+    //   // this.menuData = []
+    //   // for(let i = 0; i < menu.list.length; i++){
     
-            this.menuData.push({
-              xsubmenu: menu.list[i].xsubmenu,
-              xrutasubmenu: '#/' +menu.list[i].xrutasubmenu
-          })
+    //   //       this.menuData.push({
+    //   //         xsubmenu: menu.list[i].xsubmenu,
+    //   //         xrutasubmenu: '#/' +menu.list[i].xrutasubmenu
+    //   //     })
   
-      }
+    //   // }
 
-    });
+    // });
 
    
   }

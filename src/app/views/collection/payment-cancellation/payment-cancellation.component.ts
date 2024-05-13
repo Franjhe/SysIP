@@ -70,7 +70,7 @@ export class PaymentCancellationComponent {
         // Obtener la referencia al FormArray transactions
         const transactionsArray = this.groupReceiptsForm.get("agrupado") as FormArray
         
-        data.searchPaymentReport.forEach((transaction: any) => {
+        data.searchPaymentNotifications.forEach((transaction: any) => {
           let dateNotification = new Date(transaction.freporte);
           let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
 
@@ -164,7 +164,7 @@ export class PaymentCancellationComponent {
         let sumaMpagoExt = 0;
 
         // Iterar sobre cada objeto en el array
-        data.searchPaymentReport.forEach((objeto:any) => {
+        data.searchPaymentNotifications.forEach((objeto:any) => {
             // Iterar sobre los recibos de cada objeto
             objeto.recibos.forEach((recibo:any) => {
                 // Sumar el valor de mpago al total
@@ -172,7 +172,7 @@ export class PaymentCancellationComponent {
             });
         });
 
-        data.searchPaymentReport.forEach((objeto:any) => {
+        data.searchPaymentNotifications.forEach((objeto:any) => {
           // Iterar sobre los recibos de cada objeto
           objeto.recibos.forEach((recibo:any) => {
               // Sumar el valor de mpago al total

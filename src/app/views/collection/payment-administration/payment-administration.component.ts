@@ -134,8 +134,8 @@ export class PaymentAdministrationComponent {
     fetch(environment.apiUrl + '/api/v1/collection/search-pending' )
     .then((response) => response.json())
     .then(data => {
-      this.dataSource = new MatTableDataSource(data.searchPaymentPendingData.recibo);
-      const listPending = data.searchPaymentPendingData.recibo
+      this.dataSource = new MatTableDataSource(data.searchReceiptsPending.recibo);
+      const listPending = data.searchReceiptsPending.recibo
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
 
@@ -693,7 +693,6 @@ export class PaymentAdministrationComponent {
           recibo : this.receiptList,
           fpago : fecha,
           cliente : item.xcliente,
-          transaccion : this.idTrans,
           correo : item.xcorreo ,
           ccategoria : this.searchReceipt.get('ccategoria')?.value,
           fcobro : this.searchReceipt.get('fcobro')?.value,
@@ -741,7 +740,6 @@ export class PaymentAdministrationComponent {
           fpago : fecha,
           cliente : item.xcliente,
           transaccion : this.idTrans,
-          transaccion: this.idTrans,
           correo : item.xcorreo ,
           fcobro : this.searchReceipt.get('fcobro')?.value,
 
@@ -768,6 +766,32 @@ export class PaymentAdministrationComponent {
         })
       }
 
+      else if(this.searchReceipt.get('iestadorec')?.value == 'ER'){
+        this.selection.selected.forEach(item => {
+          let data = {
+            group : false,
+            ifuente : 'Web_Sys',
+            transaccion : this.idTrans,
+            casegurado : item.cci_rif,
+            cliente : item.xcliente,
+            correo : item.xcorreo ,
+            tasa : this.bcv,
+            cusuario : item.cci_rif,
+            fcobro : new Date(),
+            reciboConDiferencia: {
+              mdiferencia: this.searchReceipt.get('mdiferencia')?.value,
+              cmoneda: this.searchReceipt.get('cmoneda')?.value,
+              xobservacion: item.xobservacion, //asignar
+              idiferencia : 'D',
+              crecibo : item.crecibo, //asignar
+            }
+   
+          }
+
+        })
+
+      }
+
     }else{
         const savePaymentTrans = {
         group : true,
@@ -785,13 +809,10 @@ export class PaymentAdministrationComponent {
         ifuente : 'Web_Sys',
         iestado : 0,
         fpago : fecha,
-        transaccion : this.idTrans,
         recibo : this.receiptList,
         fcobro : this.searchReceipt.get('fcobro')?.value,
-
         ccategoria : this.searchReceipt.get('ccategoria')?.value,
-        // diference: this.diference,
-        // positiveBalance : this.PositiveBalanceBool
+
         }
 
         //primero llenamos el recipo y la tabla de transacciones 

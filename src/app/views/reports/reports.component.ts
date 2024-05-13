@@ -135,7 +135,7 @@ export class ReportsComponent {
         // e => { throwError(e); }
       );
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     }
   }
   activateSendButton() {
@@ -372,7 +372,7 @@ export class ReportsComponent {
     let estado = this.consulta_reporte.get('estado')?.value
     let variable = (<HTMLInputElement>document.getElementById("prueba1")).value;
     this.http.get(environment.apiUrl + '/api/v1/report/email/' + estado).subscribe((response: any) => {
-      console.log(response, this.correo)
+      // console.log(response, this.correo)
     });
 
   }

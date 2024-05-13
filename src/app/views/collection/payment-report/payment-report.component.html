@@ -135,8 +135,8 @@
                   </div>
       
                   <div class="mt-5 text-center">
-                    <button mat-button matStepperPrevious class="bg-warning text-light p-3">Atras</button>
-                    <button mat-button matStepperNext   [disabled]="!puedeAvanzar" class="bg-primary text-light">Siguiente</button>
+                    <button mat-button matStepperPrevious class="bg-warning text-light m-2">Atras</button>
+                    <button mat-button matStepperNext   [disabled]="!puedeAvanzar" class="bg-primary text-light m-2">Siguiente</button>
                   </div>
       
                 </form>
@@ -150,7 +150,6 @@
                     <th>N° Poliza</th>
                     <th>N° Recibo</th>
                     <th>N° Cuota</th>
-                    <th>Recibo notificado</th>
                     <th>Total del recibo</th>
                   </tr>
                 </thead>
@@ -159,10 +158,6 @@
                     <td >{{creds.cnpoliza}}</td>
                     <td >{{creds.cnrecibo}}</td>
                     <td >{{creds.qcuotas}}</td>
-                    <td >
-                      <div *ngIf="creds.cdoccob > 0"><mat-icon style="color:green">check</mat-icon></div>
-                      <div *ngIf="creds.cdoccob == 0"><mat-icon style="color:red">close</mat-icon></div>
-                    </td>
                     <td >
                       <div class="row">
                         <div class="col">
@@ -202,8 +197,8 @@
 
           </div>
           <div class="mt-5 text-center">
-            <button mat-button matStepperPrevious class="bg-warning text-light p-3">Atras</button>
-            <button mat-button matStepperNext class="bg-primary text-light">Siguiente</button>
+            <button mat-button matStepperPrevious class="bg-warning text-light m-2">Atras</button>
+            <button mat-button matStepperNext class="bg-primary text-light m-2">Siguiente</button>
  
           </div>
         </mat-step>
@@ -311,18 +306,17 @@
                       </div>
     
                       <div class="mt-3" >
-                        <button mat-button [disabled]="Submit" class="bg-warning text-light m-2" (click)="addPayment()">Anadir movimiento</button>
                         <button mat-button [disabled]="Submit" class="bg-danger text-light m-2" (click)="removePayment(i)">Eliminar movimiento</button>
                       </div> 
     
     
                     </div>
-                    <div class="mt-5" >
-                      
-                      <button mat-button [disabled]="Submit" class="bg-success text-light" (click)="onSubmit()">Registrar Pago</button>
-    
-    
-                    </div>
+                  </div>
+                  <div class="mt-5" >
+
+                    <button mat-button [disabled]="Submit" class="bg-warning text-light m-2" (click)="addPayment()">Añadir movimiento</button>
+                    <button mat-button [disabled]="Submit" class="bg-success text-light m-2" (click)="onSubmit()">Registrar Pago</button>
+
                   </div>
                 </div>
 

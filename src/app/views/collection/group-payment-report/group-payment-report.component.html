@@ -28,7 +28,10 @@
       <form [formGroup]="searchReceipt">
         <ng-template matStepLabel>Consulte sus recibos pendientes</ng-template>
           <div class="container row">
-            <div class="col-lg-7 p-5 mt-5" formArrayName="clients">
+            <div class="col-lg-7 p-5" formArrayName="clients">
+                <h2>Ingrese la identificación de sus familiares,si desea reportar un pago individual dirijase a 
+                  <a [href]="url +'payment-report'" style="text-decoration: unset;">Reporta tu Pago</a>
+                </h2>
                 <div *ngFor="let creds of clients.controls let i=index">
                     <div [formGroupName]="i">
                         <mat-form-field>
@@ -59,7 +62,7 @@
 
           </div>
         <div class="container text-center">
-          <button class="bg-primary text-light" mat-button matStepperNext (click)="searchDataReceipt()">Siguiente</button>
+          <button class="bg-primary text-light" mat-button matStepperNext (click)="searchDataReceipt()" *ngIf="clients.value.length > 1">Siguiente</button>
         </div>
       </form>
     </mat-step>
@@ -149,8 +152,8 @@
               </div>
   
               <div class="mt-5 text-center">
-                <button mat-button matStepperPrevious class="bg-warning text-light p-3">Atras</button>
-                <button mat-button matStepperNext   [disabled]="!puedeAvanzar" class="bg-primary text-light">Siguiente</button>
+                <button mat-button matStepperPrevious class="bg-warning text-light m-2">Atras</button>
+                <button mat-button matStepperNext   [disabled]="!puedeAvanzar" class="bg-primary text-light m-2">Siguiente</button>
               </div>
   
             </form>
@@ -216,8 +219,8 @@
 
       </div>
       <div class="mt-5 text-center">
-        <button mat-button matStepperPrevious class="bg-warning text-light p-3">Atras</button>
-        <button mat-button matStepperNext class="bg-primary text-light">Siguiente</button>
+        <button mat-button matStepperPrevious class="bg-warning text-light m-2">Atras</button>
+        <button mat-button matStepperNext class="bg-primary text-light m-2">Siguiente</button>
 
       </div>
     </mat-step>
@@ -324,9 +327,9 @@
                 </div>
                 </div>
                 <div class="mt-5" >
-                <button mat-button [disabled]="Submit" class="bg-warning text-light m-2 " (click)="addPayment()">Anadir movimiento</button>
-                
-                <button mat-button [disabled]="Submit" class="bg-success text-light" (click)="onSubmit()">Registrar Pago</button>
+                  <button mat-button [disabled]="Submit" class="bg-warning text-light m-2 " (click)="addPayment()">Añadir movimiento</button>
+                  
+                  <button mat-button [disabled]="Submit" class="bg-success text-light" (click)="onSubmit()">Registrar Pago</button>
                 </div>
             </div>
 

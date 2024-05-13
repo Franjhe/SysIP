@@ -524,7 +524,7 @@ export class AutomobileQuotesComponent {
         this.loading = false;
         this.quotesBoolean = true;
         this.quotesList = response.data.list.result;
-        console.log(this.quotesList)
+        // console.log(this.quotesList)
         this.quotesList.sort((a, b) => a.xplan_rc > b.xplan_rc ? 1 : -1);
 
         this.nombreCompleto = data.xnombre + ' ' + data.xapellido;
@@ -554,7 +554,7 @@ export class AutomobileQuotesComponent {
             email_user: this.xcorreo_emisor
           }
           this.http.post('https://api.lamundialdeseguros.com/get_quote/', data2).subscribe((response: any) => {
-            console.log(response.status)
+            // console.log(response.status)
           })
         }
 
@@ -1025,7 +1025,7 @@ export class AutomobileQuotesComponent {
       (data) => {
       },
       (error) => {
-        console.log(error)
+        // console.log(error)
       }
     );
   }

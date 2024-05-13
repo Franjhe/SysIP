@@ -47,7 +47,7 @@ export class BonusAndCommissionsComponent {
     this.http.post(environment.apiUrl + '/api/v1/report/bonusAndCommissions', '').subscribe((response: any) => {
       var data = response.data.list.search
 
-      console.log(response.data.list.search);
+      // console.log(response.data.list.search);
 
       this.defaultDataSource = new MatTableDataSource(data);
       this.dataSource = new MatTableDataSource(data);

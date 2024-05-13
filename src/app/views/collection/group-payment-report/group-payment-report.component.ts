@@ -32,6 +32,7 @@ export class GroupPaymentReportComponent {
   selectedFiles?: FileList;
   currentFile?: File;
 
+  url = environment.url
   idTrans : any
   diference : boolean = false
 
@@ -82,14 +83,6 @@ export class GroupPaymentReportComponent {
   messageDiference : any = []
 
   listCollection : any = []
-
-
-  itipo!: any ;
-  amountDollar!: any ;
-  amountBs!: any ;
-  montoTotal!: any ;
-  montoDollar!: any ;
-  montoBs!: any ;
   typeOfPayList : any = []
 
 
@@ -97,7 +90,6 @@ export class GroupPaymentReportComponent {
   PositiveBalanceBool :boolean = false;
   positiveBalanceBs! : number
   positiveBalanceUSD! : number
-
   aplicaPositiveBalance : boolean = false
 
   constructor( private _formBuilder: FormBuilder,
@@ -251,6 +243,8 @@ export class GroupPaymentReportComponent {
     })
 
     this.addClient()
+    this.addClient()
+
 
   }
 
@@ -285,14 +279,6 @@ export class GroupPaymentReportComponent {
 
   addPayment() {
     this.transfer.push(this.newPayment());
-
-    const trasnfer = this.searchReceipt.get("transfer") as FormArray
-
-    if(trasnfer.length > 0){
-      this.paymentMix = true
-    }else{
-      this.paymentMix = false
-    }
   }
 
   addClient(){
@@ -330,18 +316,18 @@ export class GroupPaymentReportComponent {
       
       this.http.post(environment.apiUrl + '/api/v1/collection/search', client ).subscribe((response: any) => {
 
-        this.listCollection = response.searchReceipt.cobrados
+        this.listCollection = response.searchReceiptsByCustomer.cobrados
 
-        if(response.searchReceipt.transaccion == null){
+        if(response.searchReceiptsByCustomer.transaccion == null){
           this.idTrans = 1
         }else{
-          this.idTrans = response.searchReceipt.transaccion
+          this.idTrans = response.searchReceiptsByCustomer.transaccion
         }
   
         let sumaBS = 0;
         let sumaUSD = 0;
   
-        response.searchReceipt.saldo.forEach((item: any) => {
+        response.searchReceiptsByCustomer.saldo.forEach((item: any) => {
   
           if (item.cmoneda_dif == 'BS  ') {
             sumaBS += item.msaldodif;
@@ -362,99 +348,99 @@ export class GroupPaymentReportComponent {
         this.viewData = false;
         this.diference = false
   
-        if(response.searchReceipt.receipt.length > 0){
-          for(let i = 0; i < response.searchReceipt.receipt.length; i++){
-  
-            const currentReceipt = response.searchReceipt.receipt[i];
-  
-            // Verificar si mdiferencia es diferente de nulo
-            if (currentReceipt.mdiferencia !== null) {
-              this.viewData = true; // Cambiar el estado del booleano si se encuentra un valor diferente de nulo
-              this.diference = true
-            }
-  
 
-            // lista de nombres de los clientes
-            response.searchReceipt.receipt.forEach((item : any) => {
-                const cid = item.cid;
-                if (!resultado[cid]) {
-                  resultado[cid] = { 
-                      cedula: item.cid,
-                      nombre:item.xcliente
-                    };
-                }
-            });
+        for(let i = 0; i < response.searchReceiptsByCustomer.receipt.length; i++){
 
-           this.cliente = Object.values(resultado);
-  
-            const fdesdeP = new Date(response.searchReceipt.receipt[i].fdesde);
-            let ISOFdesdeP = fdesdeP.toISOString().substring(0, 10);
-  
-            const fhastaP = new Date(response.searchReceipt.receipt[i].fhasta);
-            let ISOFhastaP = fhastaP.toISOString().substring(0, 10);
-  
-            const fdesdePol = new Date(response.searchReceipt.receipt[i].fdesde_pol);
-            let ISOFdesdePol = fdesdePol.toISOString().substring(0, 10);
-  
-            const fhastaPol = new Date(response.searchReceipt.receipt[i].fhasta_pol);
-            let ISOFhastaPol = fhastaPol.toISOString().substring(0, 10);
-  
-            let id = response.searchReceipt.receipt[i].cramo
-            let treatments = this.tradesList
-            let filterdata = treatments.filter((data: { id: any; }) => data.id == id)
-            const xramo = filterdata[0].value
-  
-            let messaje : string 
-            if(response.searchReceipt.receipt[i].idiferencia == 'D'){
-              messaje = 	'debe '
-            }else if(response.searchReceipt.receipt[i].idiferencia == 'H'){
-              messaje = 'a favor '
-            }else{
-              messaje = ''
-            }
-            this.receipt.push(
-              this._formBuilder.group({
-                cnpoliza: response.searchReceipt.receipt[i].cnpoliza,
-                cnrecibo: response.searchReceipt.receipt[i].cnrecibo,
-                crecibo: response.searchReceipt.receipt[i].crecibo,
-                cpoliza: response.searchReceipt.receipt[i].cpoliza,
-                fanopol: response.searchReceipt.receipt[i].fanopol,
-                fmespol: response.searchReceipt.receipt[i].fmespol,
-                cramo: response.searchReceipt.receipt[i].cramo,
-                asegurado:item.xcedula,
-                cproductor : response.searchReceipt.receipt[i].cproductor,
-                qcuotas : response.searchReceipt.receipt[i].qcuotas,
-                xramo : xramo ,
-                cmoneda: response.searchReceipt.receipt[i].cmoneda,
-                fdesde_pol: ISOFdesdePol,
-                fhasta_pol: ISOFhastaPol,
-                fdesde_rec: ISOFdesdeP,
-                fhasta_rec: ISOFhastaP,
-                mprimabruta: response.searchReceipt.receipt[i].mmontorec ,
-                mprimabrutaext: response.searchReceipt.receipt[i].mmontorecext ,
-                ptasamon: response.searchReceipt.receipt[i].ptasamon,
-                seleccionado : false,
-                mdiferenciaext: response.searchReceipt.receipt[i].mdiferenciaext,
-                mdiferencia: response.searchReceipt.receipt[i].mdiferencia,
-                xobservacion: response.searchReceipt.receipt[i].xobservacion,
-                idiferencia: messaje,
-                cdoccob: response.searchReceipt.receipt[i].cdoccob,
-                cliente  : response.searchReceipt.receipt[i].xcliente
-              })
-            )
-  
+          const currentReceipt = response.searchReceiptsByCustomer.receipt[i];
 
+          // Verificar si mdiferencia es diferente de nulo
+          if (currentReceipt.mdiferencia !== null) {
+            this.viewData = true; // Cambiar el estado del booleano si se encuentra un valor diferente de nulo
+            this.diference = true
           }
-  
-          this.addPayment()
-  
-        }else{
 
-          this.Found()
+
+          // lista de nombres de los clientes
+          response.searchReceiptsByCustomer.receipt.forEach((item : any) => {
+              const cid = item.cid;
+              if (!resultado[cid]) {
+                resultado[cid] = { 
+                    cedula: item.cid,
+                    nombre:item.xcliente
+                  };
+              }
+          });
+
+          this.cliente = Object.values(resultado);
+
+          const fdesdeP = new Date(response.searchReceiptsByCustomer.receipt[i].fdesde);
+          let ISOFdesdeP = fdesdeP.toISOString().substring(0, 10);
+
+          const fhastaP = new Date(response.searchReceiptsByCustomer.receipt[i].fhasta);
+          let ISOFhastaP = fhastaP.toISOString().substring(0, 10);
+
+          const fdesdePol = new Date(response.searchReceiptsByCustomer.receipt[i].fdesde_pol);
+          let ISOFdesdePol = fdesdePol.toISOString().substring(0, 10);
+
+          const fhastaPol = new Date(response.searchReceiptsByCustomer.receipt[i].fhasta_pol);
+          let ISOFhastaPol = fhastaPol.toISOString().substring(0, 10);
+
+          let id = response.searchReceiptsByCustomer.receipt[i].cramo
+          let treatments = this.tradesList
+          let filterdata = treatments.filter((data: { id: any; }) => data.id == id)
+          const xramo = filterdata[0].value
+
+          let messaje : string 
+          if(response.searchReceiptsByCustomer.receipt[i].idiferencia == 'D'){
+            messaje = 	'debe '
+          }else if(response.searchReceiptsByCustomer.receipt[i].idiferencia == 'H'){
+            messaje = 'a favor '
+          }else{
+            messaje = ''
+          }
+          this.receipt.push(
+            this._formBuilder.group({
+              cnpoliza: response.searchReceiptsByCustomer.receipt[i].cnpoliza,
+              cnrecibo: response.searchReceiptsByCustomer.receipt[i].cnrecibo,
+              crecibo: response.searchReceiptsByCustomer.receipt[i].crecibo,
+              cpoliza: response.searchReceiptsByCustomer.receipt[i].cpoliza,
+              fanopol: response.searchReceiptsByCustomer.receipt[i].fanopol,
+              fmespol: response.searchReceiptsByCustomer.receipt[i].fmespol,
+              cramo: response.searchReceiptsByCustomer.receipt[i].cramo,
+              asegurado:item.xcedula,
+              cproductor : response.searchReceiptsByCustomer.receipt[i].cproductor,
+              qcuotas : response.searchReceiptsByCustomer.receipt[i].qcuotas,
+              xramo : xramo ,
+              cmoneda: response.searchReceiptsByCustomer.receipt[i].cmoneda,
+              fdesde_pol: ISOFdesdePol,
+              fhasta_pol: ISOFhastaPol,
+              fdesde_rec: ISOFdesdeP,
+              fhasta_rec: ISOFhastaP,
+              mprimabruta: response.searchReceiptsByCustomer.receipt[i].mmontorec ,
+              mprimabrutaext: response.searchReceiptsByCustomer.receipt[i].mmontorecext ,
+              ptasamon: response.searchReceiptsByCustomer.receipt[i].ptasamon,
+              seleccionado : false,
+              mdiferenciaext: response.searchReceiptsByCustomer.receipt[i].mdiferenciaext,
+              mdiferencia: response.searchReceiptsByCustomer.receipt[i].mdiferencia,
+              xobservacion: response.searchReceiptsByCustomer.receipt[i].xobservacion,
+              idiferencia: messaje,
+              cdoccob: response.searchReceiptsByCustomer.receipt[i].cdoccob,
+              cliente  : response.searchReceiptsByCustomer.receipt[i].xcliente
+            })
+          )
+
+
         }
+
+
+  
+        
   
       });
     });
+
+    this.addPayment()
+
 
   }
 
@@ -708,7 +694,7 @@ export class GroupPaymentReportComponent {
       const reporData = {
         transaccion : this.idTrans,
         freporte : fecha ,
-        casegurado: 1300,
+        casegurado: 1301307,
         mpago : this.mountBs,
         mpagoext : this.mountIGTF,
         ptasamon : this.bcv,
@@ -743,7 +729,7 @@ export class GroupPaymentReportComponent {
       const savePaymentTrans = {
         transaccion : this.idTrans,
         freporte : fecha ,
-        casegurado: 1300,
+        casegurado: 1301307,
         mpago : this.mountBs,
         mpagoext : this.mountIGTF,
         ptasamon : this.bcv,

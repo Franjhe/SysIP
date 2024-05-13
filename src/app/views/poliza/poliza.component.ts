@@ -52,7 +52,7 @@ export class PolizaComponent implements AfterViewInit {
     const isLoggedIn = localStorage.getItem('user');
     if (isLoggedIn) {
       this.http.post(environment.apiUrl + '/api/v1/poliza/searchPoliza', null).subscribe((response: any) => {
-        console.log(response)
+        // console.log(response)
         if (response.data.list) {
           this.dataSource.data = response.data.list;
         }

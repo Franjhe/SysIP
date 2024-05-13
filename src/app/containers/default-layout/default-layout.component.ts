@@ -111,7 +111,7 @@ export class DefaultLayoutComponent {
       });
       
     } else {
-      console.log('No hay usuario autenticado');
+      // console.log('No hay usuario autenticado');
     }
   }
 
