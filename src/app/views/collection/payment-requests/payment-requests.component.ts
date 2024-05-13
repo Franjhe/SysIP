@@ -56,6 +56,7 @@ export class PaymentRequestsComponent {
   });
 
   paymentRequestFormGroup = this._formBuilder.group({
+    transfer : this._formBuilder.array([]),
     // xpago: [''],
     // femision: [''],
     // fdesde: ['', Validators.required],
@@ -126,6 +127,10 @@ export class PaymentRequestsComponent {
     private _liveAnnouncer: LiveAnnouncer,
     private pdfGenerationService: PdfGenerationService,
   ) {
+  }
+
+  get transfer() : FormArray {
+    return this.paymentRequestFormGroup.get("transfer") as FormArray
   }
 
   ngOnInit() {
@@ -204,6 +209,7 @@ export class PaymentRequestsComponent {
       }
 
       );
+      this.addPayment()
 
       return this.dialog.open(this.dialogPaymentRequest);
     });
@@ -299,6 +305,36 @@ export class PaymentRequestsComponent {
 
   closeDialog() {
     return this.dialogDetailReceipts.close();
+  }
+
+  newPayment(): FormGroup {
+    return this._formBuilder.group({
+      cmoneda:'',
+      mpago: ''
+    })
+  }
+  
+  addPayment() {
+    const trasnfer = this.paymentRequestFormGroup.get("transfer") as FormArray
+
+    if(trasnfer.length < 2){
+      this.transfer.push(this.newPayment());
+    }
+    else if(trasnfer.length >= 2){
+      this.toast.open('Solo puede registrar dos modalidades de pago', '', {
+        duration: 5000,
+        verticalPosition: 'top',
+        panelClass: ['error-toast']
+      }); 
+    }
+
+
+  }
+
+  removePayment(i:number) {
+    this.transfer.removeAt(i);
+
+
   }
 
 
@@ -485,3 +521,6 @@ export class ComponentB {
     this.dialogRef.close();
   }
 }
+
+
+
