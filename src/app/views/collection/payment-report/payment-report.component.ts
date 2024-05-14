@@ -554,6 +554,8 @@ export class PaymentReportComponent {
     const receipt = this.searchReceipt.get("receipt") as FormArray
 
     this.receiptList = []
+    this.transferList = []
+
 
     for(let i = 0; i < receipt.length; i++){
       if(receipt.value[i].seleccionado == true){

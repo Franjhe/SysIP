@@ -125,7 +125,6 @@ export class PaymentCancellationComponent {
               estado_diferencia: poliza.estado_diferencia,
               freport_pago: poliza.freport_pago,
               moneda_cobro_diferencia: poliza.moneda_cobro_diferencia, 
-
             }));
           });
       

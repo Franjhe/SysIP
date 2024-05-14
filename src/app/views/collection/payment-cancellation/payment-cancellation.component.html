@@ -51,7 +51,7 @@
                     <div class="row p-3">
 
                       <div class="col" *ngFor="let poliza of group.value.poliza;let i=index" >
-                        <h2>Detalles del recibo Pagado</h2>
+                        <h2>Recibos pagados</h2>
                           <strong>Poliza</strong>  {{poliza.cnpoliza}}<br>
                           <strong>Recibo</strong> {{poliza.cnrecibo}}<br>
                           <strong>Ramo</strong>  {{poliza.xramo}}<br>
@@ -73,7 +73,7 @@
                       </div>
 
                       <div  class="col" *ngFor="let recibos of group.value.recibos;let i=index">
-                        <h2>Detalles del Soporte de pago, Número {{i + 1}}</h2> 
+                        <h2>Soporte de pago número {{i + 1}}</h2> 
 
                           <strong>Banco remitente</strong>  {{recibos.cbanco_origen}}<br>
                           <strong>Banco Receptor</strong> {{recibos.cbanco_destino}}<br>
@@ -95,7 +95,7 @@
 
                       </div>
 
-                      <div class="col">
+                      <div class="col-2">
 
 
                         <mat-form-field>

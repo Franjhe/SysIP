@@ -52,7 +52,5 @@ export class DefaultHeaderComponent extends HeaderComponent {
     this.authenticationService.logout();
   }
 
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
-  }
+
 }

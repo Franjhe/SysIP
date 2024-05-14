@@ -572,6 +572,7 @@ export class GroupPaymentReportComponent {
     const receipt = this.searchReceipt.get("receipt") as FormArray
 
     this.receiptList = []
+    this.transferList = []
 
     for(let i = 0; i < receipt.length; i++){
       if(receipt.value[i].seleccionado == true){
@@ -627,7 +628,7 @@ export class GroupPaymentReportComponent {
 
 
     const transfer = this.searchReceipt.get("transfer") as FormArray
-    let asegurado = this.searchReceipt.get('xcedula')?.value || ''
+    let asegurado = String(1300) + 'group'
     const fecha = new Date()
     let fechaTran = fecha.toISOString().substring(0, 10);
 
@@ -642,9 +643,9 @@ export class GroupPaymentReportComponent {
 
         this.transferList.push({
           cmoneda: transfer.value[i].cmoneda,
-          cbanco: transfer.value[i]?.cbanco.id,
+          cbanco: transfer.value[i]?.cbanco?.id,
           ctipopago: transfer.value[i]?.ctipopago.id,
-          cbanco_destino: transfer.value[i]?.cbanco_destino.id,
+          cbanco_destino: transfer.value[i]?.cbanco_destino?.id,
           mpago: 0,
           mpagoext: transfer.value[i].mpago,
           mpagoigtf: this.mountBsP,
@@ -660,9 +661,9 @@ export class GroupPaymentReportComponent {
       else if(transfer.at(i).get('cmoneda')?.value == "Bs"){
         this.transferList.push({
           cmoneda: transfer.value[i].cmoneda,
-          cbanco: transfer.value[i]?.cbanco.id,
+          cbanco: transfer.value[i]?.cbanco?.id,
           ctipopago: transfer.value[i]?.ctipopago.id,
-          cbanco_destino: transfer.value[i]?.cbanco_destino.id,
+          cbanco_destino: transfer.value[i]?.cbanco_destino?.id,
           mpago: transfer.value[i].mpago,
           mpagoext: 0,
           mpagoigtf: 0,
@@ -686,7 +687,6 @@ export class GroupPaymentReportComponent {
     this.Submit = true
     this.searchReceipt.disable()
 
-    let asegurado = this.searchReceipt.get('xcedula')?.value || ''
     const fecha = new Date()
 
     if(this.diference){
@@ -694,7 +694,7 @@ export class GroupPaymentReportComponent {
       const reporData = {
         transaccion : this.idTrans,
         freporte : fecha ,
-        casegurado: 1301307,
+        casegurado: 1300,
         mpago : this.mountBs,
         mpagoext : this.mountIGTF,
         ptasamon : this.bcv,
@@ -729,7 +729,7 @@ export class GroupPaymentReportComponent {
       const savePaymentTrans = {
         transaccion : this.idTrans,
         freporte : fecha ,
-        casegurado: 1301307,
+        casegurado: 1300,
         mpago : this.mountBs,
         mpagoext : this.mountIGTF,
         ptasamon : this.bcv,
@@ -746,7 +746,7 @@ export class GroupPaymentReportComponent {
       }
 
       //primero llenamos el recipo y la tabla de transacciones 
-      this.http.post(environment.apiUrl + '/api/v1/collection/create-group-trans',savePaymentTrans).subscribe( (response: any) => {
+      this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
         if (response.status) {
 
           this.toast.open("Registro de pago éxitoso", "Cerrar", {
@@ -770,7 +770,7 @@ export class GroupPaymentReportComponent {
 
     const transfer = this.searchReceipt.get("transfer") as FormArray
 
-    let asegurado = this.searchReceipt.get('xcedula')?.value || ''
+    let asegurado = String(1300) + 'group'
     const fecha = new Date()
     let fechaTran = fecha.toISOString().substring(0, 10);
 
