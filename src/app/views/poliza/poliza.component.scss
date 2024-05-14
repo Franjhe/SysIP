@@ -5,3 +5,41 @@ table {
   th.mat-sort-header-sorted {
     color: black;
   }
+.mat-stepper-horizontal {
+    margin-top: 8px;
+  }
+  
+.mat-mdc-form-field {
+    margin-top: 16px;
+  }
+.mat-form-field-lg {
+    width: 100%;
+  }
+.align-right-button {
+    float: right;
+  }
+button {
+  margin: 4px;
+}
+.medium{
+  width: 40%;
+}
+.menosmedium{
+  width: 36%;
+}
+.totalwidth{
+  width: 100%;
+}
+.specific{
+  width: 27%;
+}
+.specific2{
+  width: 32%;
+}
+.specific3{
+  width: 45%;
+}
+// .readonly-input, textarea {
+//   pointer-events: none;
+//   opacity: 0.5; 
+// }
