@@ -2528,7 +2528,7 @@ export class PdfGenerationService {
 
 	PaymentRequestPDF(paymentRequest: any) {
 		console.log('pago pago');
-		console.log(paymentRequest);
+		console.log(paymentRequest, 'info pdf');
 
 		// Creamos la varabile para el body de los recibos
 		const movimientos = [];
@@ -2716,7 +2716,7 @@ export class PdfGenerationService {
 						style: 'mini',
 						margin: [0, 0, 0, 3],
 						table: {
-							widths: ['*', '*', '*', '*', '*'],
+							widths: ['*', '*', '*', '*', '*', '*'],
 							body: [
 								[
 									{ text: 'MONEDA DE PAGO', bold: true, border: [false, false, false, false] },
@@ -2724,6 +2724,8 @@ export class PdfGenerationService {
 									{ text: '% RETENCIÓN', bold: true, border: [false, false, false, false] },
 									{ text: 'MONTO RETENCIÓN', bold: true, border: [false, false, false, false] },
 									{ text: 'MONTO A PAGAR', bold: true, border: [false, false, false, false] },
+									{ text: 'DIFERENCIA CAMBIARIA', bold: true, border: [false, false, false, false] },
+
 								],
 								[
 									{ text: `${paymentRequest.xmoneda} (${paymentRequest.cmoneda})`, border: [false, false, false, false], alignment: 'left'  },
@@ -2731,10 +2733,39 @@ export class PdfGenerationService {
 									{ text: paymentRequest.pislr + ' %', border: [false, false, false, false], alignment: 'left' },
 									{ text: `${paymentRequest.cmoneda}. ${paymentRequest.islr}`, border: [false, false, false, false], alignment: 'left' },
 									{ text: `${paymentRequest.cmoneda}. ${paymentRequest.mmontototal}`, border: [false, false, false, false], alignment: 'left' },
+									{ text: `${paymentRequest.cmoneda}. ${paymentRequest.mmonto_3}`, border: [false, false, false, false], alignment: 'left' },
 								],
 								]
 						}
 					},
+					{
+						style: 'data',
+						table: {
+							widths: ['*'],
+							body: [
+								[{ text: 'DISTRIBUCIÓN DE PAGO', alignment: 'center', fillColor: '#D7D7D7', bold: true, border: [false, false, false, false] }]
+							]
+						}
+					},
+					{
+						style: 'mini',
+						margin: [0, 0, 0, 3],
+						table: {
+							widths: ['*', '*'],
+							body: [
+								[
+									{ text: 'PRIMER MOVIMIENTO', bold: true, border: [false, false, false, false] },
+									{ text: 'SEGUNDO MOVIMIENTO', bold: true, border: [false, false, false, false] },
+								],
+								[
+									{ text: `${paymentRequest.cmoneda_1} ${paymentRequest.mmonto_1}`, border: [false, false, false, false], alignment: 'left'  },
+									{ text: `${paymentRequest.cmoneda_2}. ${paymentRequest.mmonto_2}`, border: [false, false, false, false], alignment: 'left'  },
+								],
+								]
+						}
+					}
+					
+					,
 
 					{
 						style: 'data',

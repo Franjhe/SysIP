@@ -41,6 +41,11 @@ export interface PaymentRequest {
   recibos: any;
   cmoneda: any;
   xmoneda: any;
+  mmonto_1 : any;
+  mmonto_2 : any;
+  cmoneda_2 : any;
+  cmoneda_1 : any;
+  mmonto_3: any;
 }
 
 
@@ -401,6 +406,23 @@ export class PaymentRequestsComponent {
       var xmoneda = 'Dólares';
       var islr = this.paymentRequest.mislrext;
     }
+
+    
+    if(this.paymentRequest.mmonto_1 == null){
+      this.paymentRequest.mmonto_1 = 0
+      this.paymentRequest.cmoneda_1  = '.'
+      
+    }
+    if(this.paymentRequest.mmonto_2 == null){
+      this.paymentRequest.mmonto_2  = 0
+      this.paymentRequest.cmoneda_2  ='.'
+      
+    }
+    if( this.paymentRequest.mmonto_3 == null){
+      this.paymentRequest.mmonto_3  = 0
+    }
+
+
     
 
     var paymentRequest: PaymentRequest = {
@@ -427,6 +449,12 @@ export class PaymentRequestsComponent {
       cmoneda: this.paymentRequest.cmoneda.trim(),
       xmoneda: xmoneda.toUpperCase(),
       xobservaciones: this.paymentRequest.xobserva.trim(),
+      mmonto_1:this.paymentRequest.mmonto_1,
+      mmonto_2:this.paymentRequest.mmonto_2,
+      cmoneda_2:this.paymentRequest.cmoneda_2,
+      cmoneda_1:this.paymentRequest.cmoneda_1,
+      mmonto_3:this.paymentRequest.mmonto_3,
+
     }
 
     const observable = from(this.pdfGenerationService.CreatePaymentRequestPDF(paymentRequest));

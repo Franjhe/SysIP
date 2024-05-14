@@ -48,6 +48,11 @@ export class CommissionsComponent {
     cmonedaOrden: ['', Validators.required],
   });
 
+  range = new FormGroup({
+    start: new FormControl<Date | null>(null),
+    end: new FormControl<Date | null>(null),
+  });
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('paginator2') paginator2!: MatPaginator;
@@ -127,7 +132,13 @@ export class CommissionsComponent {
       this.tasaBcv = data.monitors.usd.price
     })
 
-    this.http.post(environment.apiUrl + '/api/v1/commissions/search', '').subscribe((response: any) => {
+
+    let rangoFecha = {
+      start: new Date(),
+      end : new Date()
+    }
+
+    this.http.post(environment.apiUrl + '/api/v1/commissions/search', rangoFecha).subscribe((response: any) => {
       // ////console.log(response);
 
 
@@ -165,8 +176,13 @@ export class CommissionsComponent {
 
   }
 
-  searchCommis(data : any){
-    this.http.post(environment.apiUrl + '/api/v1/commissions/search', {fecha: data}).subscribe((response: any) => {
+  searchCommis(){
+    let rangoFecha = {
+      start: this.range.get('start')?.value,
+      end : this.range.get('end')?.value
+
+    }
+    this.http.post(environment.apiUrl + '/api/v1/commissions/search',rangoFecha ).subscribe((response: any) => {
 
       this.defaultDataSource = new MatTableDataSource(response.returnData.search);
       this.dataSource = new MatTableDataSource(response.returnData.search);
