@@ -177,9 +177,12 @@ export class CommissionsComponent {
   }
 
   searchCommis(){
+    let inicio : Date = this.range.get('start')?.value || new Date()
+    let final = this.range.get('end')?.value || new Date()
+
     let rangoFecha = {
-      start: this.range.get('start')?.value,
-      end : this.range.get('end')?.value
+      start: new Date(inicio).toLocaleDateString('fr-CA'),
+      end : new Date(final).toLocaleDateString('fr-CA')
 
     }
     this.http.post(environment.apiUrl + '/api/v1/commissions/search',rangoFecha ).subscribe((response: any) => {
@@ -229,13 +232,16 @@ export class CommissionsComponent {
   dataCorredor(ccorredor: any, cmoneda: any, index: any) {
     this.clearData();
 
+    let inicio : Date = this.range.get('start')?.value || new Date()
+    let final = this.range.get('end')?.value || new Date()
+
     // ////console.log(index);
     this.dataSourceindex = index;
     let data = {
       "ccorredor": ccorredor,
       "cmoneda": cmoneda,
-      start: this.range.get('start')?.value,
-      end : this.range.get('end')?.value
+      start: new Date(inicio).toLocaleDateString('fr-CA'),
+      end : new Date(final).toLocaleDateString('fr-CA')
     }
     this.http.post(environment.apiUrl + '/api/v1/commissions/search-insurerCommissions/', data).subscribe((response: any) => {
       // this.tableCommisionPorProductor = new MatTableDataSource<any>;
