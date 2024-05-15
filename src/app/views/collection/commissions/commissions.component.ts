@@ -233,7 +233,9 @@ export class CommissionsComponent {
     this.dataSourceindex = index;
     let data = {
       "ccorredor": ccorredor,
-      "cmoneda": cmoneda
+      "cmoneda": cmoneda,
+      start: this.range.get('start')?.value,
+      end : this.range.get('end')?.value
     }
     this.http.post(environment.apiUrl + '/api/v1/commissions/search-insurerCommissions/', data).subscribe((response: any) => {
       // this.tableCommisionPorProductor = new MatTableDataSource<any>;
