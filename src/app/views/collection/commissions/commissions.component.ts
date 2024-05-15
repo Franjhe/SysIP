@@ -30,6 +30,8 @@ export interface PaymentRequest {
   pislr: any;
   mislr: any;
   mislrext: any;
+  msustraendo: any;
+  ipersona: any;
   xobservaciones?: any;
   recibos: any;
   cmoneda: any;
@@ -73,6 +75,7 @@ export class CommissionsComponent {
   montoext : any
   restante : any
   diferencia : any
+  msustraendo: any = 0;
   neto : any
   netoBs : any
 
@@ -377,10 +380,27 @@ export class CommissionsComponent {
     ////console.log(e);
     
     // ////console.log(e.ariaLabel);
+
+    
     
     this.listMonedaOrden[e.source.id] = e.value;
     this.moneda = e.value
     this.addPayment1(e.value)
+
+    
+    
+    // console.log(this.moneda);
+    
+
+    if (this.moneda.trim().toLowerCase() == 'bs') {
+      this.msustraendo = 22.5
+    } else {
+      this.msustraendo = (22.5 / this.tasaBcv).toFixed(2);
+    }
+
+    // this.monto = this.msustraendo
+    // this.montoext = this.msustraendo
+    // console.log(this.msustraendo);
 
   }
 
@@ -487,12 +507,19 @@ export class CommissionsComponent {
           mislr = element.mmovcomtot * (data.pislr / 100);
           mislrext = element.mmovcomexttot * (data.pislr / 100);
         } 
-                
 
         let mpagosol = element.mmovcomtot - mislr;
         let mpagosolext = element.mmovcomexttot - mislrext;
-        this.montoext = mpagosolext
-        this.monto = mpagosol
+
+        if (data.ipersona == 'N') {
+          mpagosol -= 22.5;
+          mpagosolext -= (22.5 / this.tasaBcv);
+        } else {
+          this.msustraendo = 0;
+        }
+        
+        this.montoext = mpagosolext 
+        this.monto = mpagosol 
         this.neto = this.montoext
         this.netoBs = this.monto 
 
@@ -517,6 +544,8 @@ export class CommissionsComponent {
             pislr: pislr.toFixed(2),
             mislr: mislr.toFixed(2),
             mislrext: mislrext.toFixed(2),
+            msustraendo: this.msustraendo,
+            ipersona: data.ipersona,
             mpagosol: mpagosol.toFixed(2),
             mpagosolext: mpagosolext.toFixed(2),
             // mmontototal: element.mmovcomexttot,
@@ -527,6 +556,9 @@ export class CommissionsComponent {
           }
           this.listPaymentRequest.push(paymentRequest);
         });
+
+        console.log(this.listPaymentRequest);
+        
 
       });
     });

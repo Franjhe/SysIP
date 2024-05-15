@@ -338,6 +338,12 @@
                             disabled>
                         </mat-form-field>
                     </div>
+                    <div class="col-3" *ngIf="paymentRequest.ipersona == 'N'">
+                        <mat-form-field>
+                            <mat-label>Sustraendo:</mat-label>
+                            <input matInput type="text" value="{{moneda}}. {{msustraendo}}" disabled>
+                        </mat-form-field>
+                    </div>
                     <div class="col-3" *ngIf="listMonedaOrden[i] == 'Bs'">
                         <mat-form-field>
                             <mat-label>Monto a Pagar Bs.:</mat-label>
