@@ -73,6 +73,12 @@ export class PolizaComponent implements AfterViewInit {
   @ViewChild('Sucursal') Sucursal!: ElementRef<HTMLInputElement>;
   @ViewChild('Intermediario') Intermediario!: ElementRef<HTMLInputElement>;
   @ViewChild('Productor') Productor!: ElementRef<HTMLInputElement>;
+  @ViewChild('Moneda') Moneda!: ElementRef<HTMLInputElement>;
+  @ViewChild('Tasa') Tasa!: ElementRef<HTMLInputElement>;
+  @ViewChild('Tipo_Renovacion') Tipo_Renovacion!: ElementRef<HTMLInputElement>;
+  @ViewChild('Estatus_Poliza') Estatus_Poliza!: ElementRef<HTMLInputElement>;
+
+  
   @ViewChild('Observacion') Observacion!: ElementRef<HTMLInputElement>;
 
   firstFormGroup = this._formBuilder.group({
@@ -98,13 +104,13 @@ export class PolizaComponent implements AfterViewInit {
       this.paginator2.previousPageLabel = "Página Anterior";
       this.paginator2.nextPageLabel = "Siguiente Página";
       this.paginator2.lastPageLabel = "Última Página";
-      // this.paginator2.getRangeLabel = (page: number, pageSize: number, length: number): string => {22
-      //   if (length === 0) {
-      //     return `Página 1 de 1`;
-      //   }
-      //   const amountPages = Math.ceil(length / pageSize);
-      //   return `Página ${page + 1} de ${amountPages}`;
-      //   };
+      this.paginator2.getRangeLabel = (page: number, pageSize: number, length: number): string => {22
+        if (length === 0) {
+          return `Página 1 de 1`;
+        }
+        const amountPages = Math.ceil(length / pageSize);
+        return `Página ${page + 1} de ${amountPages}`;
+        };
     }
     isAllSelected() {
       return this.selection.selected.length === 1;
@@ -113,7 +119,7 @@ export class PolizaComponent implements AfterViewInit {
       this.selection.clear();
       this.selection.toggle(row);
     }
-    
+
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -140,8 +146,14 @@ export class PolizaComponent implements AfterViewInit {
     }
   }
   buscarReporte() {
+  if (this.poliza === undefined) {
+      this.snackBar.open('La Póliza Seleccionada No fue Encontrada.', 'Cerrar', {
+      duration: 3000
+    });
+  } else {
     window.open(environment.apiUrl_prod + '/sis2000/poliza/' + this.poliza + '/', '_blank');
   }
+}
   
   pruebaDialog() {
     this.selection.selected.forEach((row: any) => {
@@ -162,6 +174,10 @@ export class PolizaComponent implements AfterViewInit {
       let Intermediario = row.Intermediario.trim();
       let Productor = row.cproductor;
       let Observacion = row.Observacion;
+      let Moneda = row.Moneda.trim();
+      let Tasa = row.Tasa_Cambio.toFixed(2);
+      let Tipo_Renovacion = row.Tipo_Renovacion.trim();
+      let Estatus_Poliza = row.Estatus_Poliza.trim();
       this.nroPolizaInput.nativeElement.value = Nro_Poliza;
       this.ciTomadorInput.nativeElement.value = CID_T;
       this.tomadorInput.nativeElement.value = Nombre_Tomador;
@@ -177,6 +193,10 @@ export class PolizaComponent implements AfterViewInit {
       this.Sucursal.nativeElement.value = Sucursal;
       this.Intermediario.nativeElement.value = Intermediario;
       this.Productor.nativeElement.value = Productor;
+      this.Moneda.nativeElement.value = Moneda;
+      this.Tasa.nativeElement.value = Tasa;
+      this.Tipo_Renovacion.nativeElement.value = Tipo_Renovacion;
+      this.Estatus_Poliza.nativeElement.value = Estatus_Poliza;
       this.Observacion.nativeElement.value = Observacion;
     });
     this.http.post(environment.apiUrl + '/api/v1/poliza/searchPoliza', null).subscribe((response: any) => {

@@ -93,7 +93,7 @@
     <mat-step [stepControl]="secondFormGroup" label="Información de la Póliza">
 
       <form [formGroup]="secondFormGroup">
-        <mat-form-field class="medium">
+        <mat-form-field>
           <mat-label>Nro. Póliza:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -111,7 +111,7 @@
           </span>
         </mat-form-field>
         
-        <mat-form-field class="specific2">
+        <mat-form-field>
           <mat-label>Tomador:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -129,7 +129,7 @@
           </span>
         </mat-form-field>
 
-        <mat-form-field class="menosmedium">
+        <mat-form-field>
           <mat-label>C.I. Asegurado:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -138,7 +138,7 @@
           </span>
         </mat-form-field>
 
-        <mat-form-field class="menosmedium">
+        <mat-form-field>
           <mat-label>Asegurado:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -156,7 +156,7 @@
           </span>
         </mat-form-field>
 
-        <mat-form-field class="menosmedium">
+        <mat-form-field>
           <mat-label>C.I. Beneficiario:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -165,7 +165,7 @@
           </span>
         </mat-form-field>
 
-        <mat-form-field class="menosmedium">
+        <mat-form-field>
           <mat-label>Beneficiario:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -174,7 +174,7 @@
           </span>
         </mat-form-field>
 
-        <mat-form-field class="menosmedium">
+        <mat-form-field>
           <mat-label>Fecha desde Póliza:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -183,7 +183,7 @@
           </span>
         </mat-form-field>
 
-        <mat-form-field class="menosmedium">
+        <mat-form-field>
           <mat-label>Fecha hasta Póliza:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -201,7 +201,7 @@
           </span>
         </mat-form-field>
 
-        <mat-form-field class="specific">
+        <mat-form-field>
           <mat-label>Sucursal:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -210,7 +210,7 @@
           </span>
         </mat-form-field>
         
-        <mat-form-field class = "specific3">
+        <mat-form-field>
           <mat-label>Intermediario:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -224,6 +224,42 @@
           <span class="readonly-input">
             <input matInput 
               #Productor
+              readonly>
+          </span>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Moneda:</mat-label>
+          <span class="readonly-input">
+            <input matInput 
+              #Moneda
+              readonly>
+          </span>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Tasa:</mat-label>
+          <span class="readonly-input">
+            <input matInput 
+              #Tasa
+              readonly>
+          </span>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Tipo Renovacion:</mat-label>
+          <span class="readonly-input">
+            <input matInput 
+              #Tipo_Renovacion
+              readonly>
+          </span>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Estatus Poliza:</mat-label>
+          <span class="readonly-input">
+            <input matInput 
+              #Estatus_Poliza
               readonly>
           </span>
         </mat-form-field>
@@ -243,18 +279,18 @@
                     style="color: #fff; background-color: #db2a13fb;"
                     >Cuadro Póliza
           </button>
-          <!-- <button class="align-right-button" mat-flat-button color = "warn" mat-button matStepperNext>Siguiente</button> -->
+          <button class="align-right-button" mat-flat-button color = "primary" mat-button matStepperNext>Siguiente</button>
           <button class="align-right-button" mat-flat-button color = "warn" mat-button matStepperPrevious>Regresar</button>
         </div>
       </form>
     </mat-step>
 
-    <!-- <mat-step>
-      <ng-template matStepLabel>Procesar Información</ng-template>
+    <mat-step>
+      <ng-template matStepLabel>Recibos Asociados</ng-template>
       <div>
         <br>
         <button class="align-right-button" mat-flat-button color="primary" mat-button (click)="stepper.reset()">Inicio</button>
         <button class="align-right-button" mat-flat-button color="warn" mat-button matStepperPrevious>Regresar</button>
       </div>
-    </mat-step> -->
+    </mat-step>
   </mat-stepper>
