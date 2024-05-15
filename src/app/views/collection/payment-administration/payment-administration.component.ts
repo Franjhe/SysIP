@@ -692,12 +692,7 @@ export class PaymentAdministrationComponent {
             cliente : item.xcliente,
             correo : item.xcorreo ,
             fcobro : this.searchReceipt.get('fcobro')?.value,
-            diference: this.diference,
-            positiveBalance : this.PositiveBalanceBool
-          }
-
-          console.log(savePaymentTrans)
-  
+          }  
           //primero llenamos el recipo y la tabla de transacciones 
           this.http.post(environment.apiUrl + '/api/v1/collection/collect-receipt',savePaymentTrans).subscribe( (response: any) => {
             if (response.status) {

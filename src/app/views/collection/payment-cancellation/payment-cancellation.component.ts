@@ -282,12 +282,15 @@ export class PaymentCancellationComponent {
         cliente : creds.at(i).get('xcliente')?.value,
         fpago : creds.at(i).get('freporte')?.value,
         recibo : creds.at(i).get('poliza')?.value,
+        ptasamon : creds.at(i).get('ptasamon')?.value,
         cusuario : this.usuario,
         fcobro : new Date(),
+        cprog : 'normalizacionPago',
+        ifuente : 'Web_Sys',
       }
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt/', data ).subscribe((response: any) => {
         if(response.status){
-          location.reload()
+          //location.reload()
         }
   
       })
