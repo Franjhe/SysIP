@@ -261,18 +261,22 @@ export class PaymentCancellationComponent {
         recibo : creds.at(i).get('poliza')?.value,
         ptasamon : this.bcv,
         cusuario : this.usuario,
+        cprog : 'normalizacionPago',
+        ifuente : 'Web_Sys',
         balancePositivo:{        
           cmoneda_dif: creds.at(i).get('cmoneda')?.value,
           msaldodif: creds.at(i).get('mdiferencia')?.value,
           idiferencia : "H",
         }
       }
-      this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt-positive-balance', data ).subscribe((response: any) => {
-        if(response.status){
-          location.reload()
-        }
+
+      console.log(data)
+      // this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt-positive-balance', data ).subscribe((response: any) => {
+      //   if(response.status){
+      //     location.reload()
+      //   }
   
-      })
+      // })
     }
     else if(creds.at(i).get('iestadorec')?.value == 'C' ){
       const data = {
@@ -309,8 +313,8 @@ export class PaymentCancellationComponent {
     
     else if(creds.at(i).get('iestadorec')?.value == 'CS'){
       this.cobradoSAF = true
-      this.revision = false    }
-    else{
+      this.revision = false    
+    }else{
       this.revision = false
 
     }
