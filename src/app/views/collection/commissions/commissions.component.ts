@@ -31,6 +31,7 @@ export interface PaymentRequest {
   mislr: any;
   mislrext: any;
   msustraendo: any;
+  msustraendoext: any;
   ipersona: any;
   xobservaciones?: any;
   recibos: any;
@@ -510,10 +511,14 @@ export class CommissionsComponent {
 
         let mpagosol = element.mmovcomtot - mislr;
         let mpagosolext = element.mmovcomexttot - mislrext;
+        let msustraendo = 0;
+        let msustraendoext = 0;
 
         if (data.ipersona == 'N') {
           mpagosol -= 22.5;
           mpagosolext -= (22.5 / this.tasaBcv);
+          msustraendo = 22.5
+          msustraendoext = (22.5 / this.tasaBcv);
         } else {
           this.msustraendo = 0;
         }
@@ -544,7 +549,8 @@ export class CommissionsComponent {
             pislr: pislr.toFixed(2),
             mislr: mislr.toFixed(2),
             mislrext: mislrext.toFixed(2),
-            msustraendo: this.msustraendo,
+            msustraendo: msustraendo,
+            msustraendoext: msustraendoext,
             ipersona: data.ipersona,
             mpagosol: mpagosol.toFixed(2),
             mpagosolext: mpagosolext.toFixed(2),
@@ -569,7 +575,9 @@ export class CommissionsComponent {
   }
 
   bcvChange(tasa : any) {
+    
     this.tasaBcv = tasa;
+    this.updateSustraendo();
   }
 
   diferenceChange(mount : any) {
@@ -699,6 +707,23 @@ export class CommissionsComponent {
   //   // ////console.log(this.paymentRequestFormGroup.get('mpago')?.value);
 
   // }
+
+  updateSustraendo() {
+    this.listPaymentRequest.forEach((e: any) => {
+      if (e.ipersona == 'N') {
+        if (this.moneda == 'Bs') {
+          this.msustraendo = 22.5 
+          e.msustraendo = 22.5
+        } else {
+          this.msustraendo = (22.5 / this.tasaBcv).toFixed(2)
+          e.msustraendo = (22.5 / this.tasaBcv).toFixed(2)
+          this.netoBs = e.mpagosolext - this.msustraendo
+        }
+      }
+    })
+    console.log(this.listPaymentRequest);
+    
+  }
 
   cancelPaymentRequests(config?: MatDialogConfig) {
     this.listPaymentRequest = [];

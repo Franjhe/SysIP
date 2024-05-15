@@ -216,6 +216,18 @@
                         </div>
                         <div class="col-3" *ngIf="paymentRequest.cmoneda.toLowerCase().trim() == 'bs'">
                             <mat-form-field>
+                                <mat-label>Sustraendo:</mat-label>
+                                <input matInput type="text" value="Bs. {{paymentRequest.mmonto_4}}" disabled>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3" *ngIf="paymentRequest.cmoneda.toLowerCase().trim() == '$'">
+                            <mat-form-field>
+                                <mat-label>Sustraendo:</mat-label>
+                                <input matInput type="text" value="$. {{paymentRequest.mmonto_4ext}}" disabled>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-3" *ngIf="paymentRequest.cmoneda.toLowerCase().trim() == 'bs'">
+                            <mat-form-field>
                                 <mat-label>Monto a Pagar Bs.:</mat-label>
                                 <input matInput type="text" value="Bs. {{paymentRequest.mpagosol}}" disabled>
                             </mat-form-field>

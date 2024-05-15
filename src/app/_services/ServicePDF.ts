@@ -1109,9 +1109,9 @@ export class PdfGenerationService {
 				if (row.m1 !== undefined && row.m1 !== 0) {
 					dataRow.push({ text: row.m1.toFixed(2), margin: [5, 0, 0, 0], alignment: 'right', border: [false, false, false, false] });
 				} else {
-					if(row.ccobertura >= 24 && row.ccobertura <= 28){
+					if (row.ccobertura >= 24 && row.ccobertura <= 28) {
 						dataRow.push({ image: imagen, fit: [8, 4], alignment: 'right', margin: [-4, 0, 5, 0], border: [false, false, false, false] });
-					}else{
+					} else {
 						dataRow.push({ text: '–', fit: [8, 4], alignment: 'right', margin: [-8, 0, 5, 0], border: [false, false, false, false] });
 					}
 				}
@@ -1119,9 +1119,9 @@ export class PdfGenerationService {
 				if (row.m2 !== undefined && row.m2 !== 0) {
 					dataRow.push({ text: row.m2.toFixed(2), margin: [11, 0, 0, 0], alignment: 'right', border: [false, false, false, false] });
 				} else {
-					if(row.ccobertura >= 24 && row.ccobertura <= 28){
+					if (row.ccobertura >= 24 && row.ccobertura <= 28) {
 						dataRow.push({ image: imagen, fit: [8, 4], alignment: 'right', margin: [-4, 0, 5, 0], border: [false, false, false, false] });
-					}else{
+					} else {
 						dataRow.push({ text: '–', fit: [8, 4], alignment: 'right', margin: [-8, 0, 5, 0], border: [false, false, false, false] });
 					}
 				}
@@ -1129,9 +1129,9 @@ export class PdfGenerationService {
 				if (row.m3 !== undefined && row.m3 !== 0) {
 					dataRow.push({ text: row.m3.toFixed(2), margin: [-10, 0, 0, 0], alignment: 'right', border: [false, false, false, false] });
 				} else {
-					if(row.ccobertura >= 24 && row.ccobertura <= 28){
+					if (row.ccobertura >= 24 && row.ccobertura <= 28) {
 						dataRow.push({ image: imagen, fit: [8, 4], alignment: 'right', margin: [-4, 0, 5, 0], border: [false, false, false, false] });
-					}else{
+					} else {
 						dataRow.push({ text: '–', fit: [8, 4], alignment: 'right', margin: [-8, 0, 5, 0], border: [false, false, false, false] });
 					}
 				}
@@ -1353,7 +1353,7 @@ export class PdfGenerationService {
 				if (receipt.cestatus == 13) {
 					watermarkBody = { text: 'PENDIENTE DE PAGO', color: '#FFA9A9', opacity: 0.3, bold: true, italics: false, fontSize: 50, angle: 70 };
 					break; // Salir del bucle si se encuentra una marca de agua
-				}else if (receipt.cestatus == 3) {
+				} else if (receipt.cestatus == 3) {
 					watermarkBody = { text: 'PÓLIZA ANULADA', color: '#FFA9A9', opacity: 0.3, bold: true, italics: false, fontSize: 50, angle: 70 };
 					break; // Salir del bucle si se encuentra una marca de agua
 				}
@@ -2539,7 +2539,7 @@ export class PdfGenerationService {
 				{ text: 'POLIZA:', bold: true, border: [false, false, false, false] },
 				{ text: 'RECIBO:', bold: true, border: [false, false, false, false] },
 				{ text: 'TIPO MOV.:', bold: true, border: [false, false, false, false] },
-				{ text: 'FECHA:', bold: true, border: [false, false, false, false] },
+				{ text: 'FECHA MOV.:', bold: true, border: [false, false, false, false] },
 				{ text: 'PRIMA BS.:', bold: true, border: [false, false, false, false] },
 				{ text: 'PRIMA EXT.:', bold: true, border: [false, false, false, false] },
 				{ text: '% COM.:', bold: true, border: [false, false, false, false] },
@@ -2561,7 +2561,7 @@ export class PdfGenerationService {
 					{ text: recibo.cnpoliza, border: [false, false, false, false] },
 					{ text: recibo.cnrecibo, border: [false, false, false, false] },
 					{ text: recibo.imovcom, border: [false, false, false, false] },
-					{ text: '02-02-2020', border: [false, false, false, false] },
+					{ text: recibo.femision, border: [false, false, false, false] },
 					{ text: 'Bs. ' + mmontoapag, border: [false, false, false, false] },
 					{ text: '$. ' + mmontoapagext, border: [false, false, false, false] },
 					{ text: recibo.pcomision + '%', border: [false, false, false, false] },
@@ -2662,7 +2662,7 @@ export class PdfGenerationService {
 									{ text: 'CORREDOR:', bold: true, border: [false, false, false, false] },
 									{ text: paymentRequest.cproductor + ' - ' + paymentRequest.xbeneficiario, border: [false, false, false, false], alignment: 'left' },
 									{ text: ``, bold: true, border: [false, false, false, false] },
-									{ text: ``, bold: true, border: [false, false, false, false], alignment: 'right'  },
+									{ text: ``, bold: true, border: [false, false, false, false], alignment: 'right' },
 								],
 								[
 									{ text: 'OBSERVACIONES:', bold: true, border: [false, false, false, false] },
@@ -2716,26 +2716,32 @@ export class PdfGenerationService {
 						style: 'mini',
 						margin: [0, 0, 0, 3],
 						table: {
-							widths: ['*', '*', '*', '*', '*', '*'],
+							widths: ['*', '*', '*', '*', '*', '*', '*', '*', '*'],
 							body: [
 								[
 									{ text: 'MONEDA DE PAGO', bold: true, border: [false, false, false, false] },
+									{ text: 'TOTAL COMISIONES', bold: true, border: [false, false, false, false] },
+									{ text: 'TOTAL BONIFICACIONES', bold: true, border: [false, false, false, false] },
 									{ text: 'MONTO MOVIMIENTO', bold: true, border: [false, false, false, false] },
 									{ text: '% RETENCIÓN', bold: true, border: [false, false, false, false] },
 									{ text: 'MONTO RETENCIÓN', bold: true, border: [false, false, false, false] },
+									{ text: 'SUSTRAENDO', bold: true, border: [false, false, false, false] },
 									{ text: 'MONTO A PAGAR', bold: true, border: [false, false, false, false] },
 									{ text: 'DIFERENCIA CAMBIARIA', bold: true, border: [false, false, false, false] },
 
 								],
 								[
-									{ text: `${paymentRequest.xmoneda} (${paymentRequest.cmoneda})`, border: [false, false, false, false], alignment: 'left'  },
-									{ text: `${paymentRequest.cmoneda}. ${paymentRequest.mmovimiento}`, border: [false, false, false, false], alignment: 'left'  },
+									{ text: `${paymentRequest.xmoneda} (${paymentRequest.cmoneda})`, border: [false, false, false, false], alignment: 'left' },
+									{ text: `${paymentRequest.cmoneda}. ${paymentRequest.mtotalco}`, border: [false, false, false, false], alignment: 'left' },
+									{ text: `${paymentRequest.cmoneda}. ${paymentRequest.mtotalbo}`, border: [false, false, false, false], alignment: 'left' },
+									{ text: `${paymentRequest.cmoneda}. ${paymentRequest.mmovimiento}`, border: [false, false, false, false], alignment: 'left' },
 									{ text: paymentRequest.pislr + ' %', border: [false, false, false, false], alignment: 'left' },
 									{ text: `${paymentRequest.cmoneda}. ${paymentRequest.islr}`, border: [false, false, false, false], alignment: 'left' },
+									{ text: `${paymentRequest.cmoneda}. ${paymentRequest.msustraendo}`, border: [false, false, false, false], alignment: 'left' },
 									{ text: `${paymentRequest.cmoneda}. ${paymentRequest.mmontototal}`, border: [false, false, false, false], alignment: 'left' },
 									{ text: `${paymentRequest.cmoneda}. ${paymentRequest.mmonto_3}`, border: [false, false, false, false], alignment: 'left' },
 								],
-								]
+							]
 						}
 					},
 					{
@@ -2758,13 +2764,13 @@ export class PdfGenerationService {
 									{ text: 'SEGUNDO MOVIMIENTO', bold: true, border: [false, false, false, false] },
 								],
 								[
-									{ text: `${paymentRequest.cmoneda_1} ${paymentRequest.mmonto_1}`, border: [false, false, false, false], alignment: 'left'  },
-									{ text: `${paymentRequest.cmoneda_2}. ${paymentRequest.mmonto_2}`, border: [false, false, false, false], alignment: 'left'  },
+									{ text: `${paymentRequest.cmoneda_1} ${paymentRequest.mmonto_1}`, border: [false, false, false, false], alignment: 'left' },
+									{ text: `${paymentRequest.cmoneda_2}. ${paymentRequest.mmonto_2}`, border: [false, false, false, false], alignment: 'left' },
 								],
-								]
+							]
 						}
 					}
-					
+
 					,
 
 					{
@@ -2776,7 +2782,7 @@ export class PdfGenerationService {
 							]
 						}
 					},
-					{
+										{
 						style: 'mini',
 						margin: [0, 0, 0, 3],
 						table: {
@@ -2785,6 +2791,31 @@ export class PdfGenerationService {
 							body: movimientos
 						}
 					},
+					// {
+					// 	style: 'data',
+					// 	table: {
+					// 		widths: ['*'],
+					// 		body: [
+					// 			[{ text: '', alignment: 'center', bold: true, border: [false, true, false, false] }]
+					// 		]
+					// 	}
+					// },
+					// {
+					// 	style: 'mini',
+					// 	table: {
+					// 		widths: ['*', '*'],
+					// 		body: [
+					// 			[
+					// 				{ text: 'TOTAL BONIFICACIONES DE COBRANZA', border: [false, false, false, false] },
+					// 				{ text: `${paymentRequest.cmoneda}. ${paymentRequest.mtotalbo}`, border: [false, false, false, false], alignment: 'right' },
+					// 			],
+					// 			[
+					// 				{ text: 'TOTAL COMISIONES GENERADAS:', border: [false, false, false, false] },
+					// 				{ text: `${paymentRequest.cmoneda}. ${paymentRequest.mtotalco}`, border: [false, false, false, false], alignment: 'right' },
+					// 			],
+					// 		]
+					// 	}
+					// },
 
 				],
 				styles: {
