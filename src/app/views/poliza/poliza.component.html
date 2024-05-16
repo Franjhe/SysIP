@@ -92,18 +92,9 @@
     </mat-step>
 
     <mat-step [stepControl]="secondFormGroup" label="Información de la Póliza">
-
       <form [formGroup]="secondFormGroup">
-        <mat-form-field class="menosmedium">
-          <mat-label>Nro. Póliza:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-            #nroPolizaInput 
-            readonly>
-          </span>
-        </mat-form-field>
 
-        <mat-form-field class="menosmedium">
+        <mat-form-field style="font-size: 0.9rem;" class="peq">
           <mat-label>C.I. Tomador:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -112,7 +103,7 @@
           </span>
         </mat-form-field>
         
-        <mat-form-field class="medium">
+        <mat-form-field style="font-size: 0.9rem;" class="peq">
           <mat-label>Tomador:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -120,26 +111,8 @@
               readonly>
           </span>
         </mat-form-field>
-         
-        <mat-form-field class="peq">
-          <mat-label>Código del Ramo:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #codigoRamoInput
-              readonly>
-          </span>
-        </mat-form-field>
 
-        <mat-form-field class="peq">
-          <mat-label>Vigencia de Póliza:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #Vigencia
-              readonly>
-          </span>
-        </mat-form-field>
-
-        <mat-form-field class="med">
+        <mat-form-field style="font-size: 0.9rem;" class="peq">
           <mat-label>C.I. Asegurado:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -148,7 +121,7 @@
           </span>
         </mat-form-field>
 
-        <mat-form-field class="med">
+        <mat-form-field style="font-size: 0.9rem;" class="peq">
           <mat-label>Asegurado:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -157,7 +130,7 @@
           </span>
         </mat-form-field>
         
-        <mat-form-field class="med">
+        <mat-form-field style="font-size: 0.9rem;" class="peq">
           <mat-label>C.I. Beneficiario:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -166,7 +139,7 @@
           </span>
         </mat-form-field>
 
-        <mat-form-field class="med">
+        <mat-form-field style="font-size: 0.9rem;" class="peq">
           <mat-label>Beneficiario:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -175,16 +148,35 @@
           </span>
         </mat-form-field>
 
-        <mat-form-field class="peq2">
-          <mat-label>Productor:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #Productor
+        
+          <mat-form-field style="font-size: 1rem;" class="poliza">
+            <mat-label>Nro. Póliza:</mat-label>
+            <span class="readonly-input">
+              <input matInput 
+              #nroPolizaInput 
               readonly>
-          </span>
-        </mat-form-field>
+            </span>
+          </mat-form-field>
 
-        <mat-form-field class="menosmedium">
+          <mat-form-field style="font-size: 0.9rem;" class="maspeq">
+            <mat-label>Cód. del Ramo:</mat-label>
+            <span class="readonly-input">
+              <input matInput 
+                #codigoRamoInput
+                readonly>
+            </span> 
+          </mat-form-field>
+
+          <mat-form-field style="font-size: 0.9rem;" class="maspeq">
+            <mat-label>Vigencia:</mat-label>
+            <span class="readonly-input">
+              <input matInput 
+                #Vigencia
+                readonly>
+            </span>
+          </mat-form-field>
+
+        <mat-form-field style="font-size: 0.9rem;" class="fechas">
           <mat-label>Fecha desde Póliza:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -193,7 +185,7 @@
           </span>
         </mat-form-field>
 
-        <mat-form-field class="menosmedium">
+        <mat-form-field style="font-size: 0.9rem;" class="fechas">
           <mat-label>Fecha hasta Póliza:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -202,7 +194,7 @@
           </span>
         </mat-form-field>
 
-        <mat-form-field class="menosmedium3">
+        <mat-form-field style="font-size: 0.9rem;">
           <mat-label>Descripción del Ramo:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -211,7 +203,7 @@
           </span>
         </mat-form-field>
 
-        <mat-form-field class="menosmedium">
+        <mat-form-field style="font-size: 0.9rem;" class="sucursal">
           <mat-label>Sucursal:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -219,8 +211,17 @@
               readonly>
           </span>
         </mat-form-field>
-        
-        <mat-form-field class="peq">
+
+        <mat-form-field style="font-size: 0.9rem;" class="maspeq">
+          <mat-label>Productor:</mat-label>
+          <span class="readonly-input">
+            <input matInput 
+              #Productor
+              readonly>
+          </span>
+        </mat-form-field>
+
+        <mat-form-field style="font-size: 0.9rem;" class="maspeq">
           <mat-label>Tasa:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -229,7 +230,7 @@
           </span>
         </mat-form-field>
 
-        <mat-form-field class="menosmedium2">
+        <mat-form-field style="font-size: 0.9rem;" class="intermediario">
           <mat-label>Intermediario:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -238,7 +239,7 @@
           </span>
         </mat-form-field>
 
-        <mat-form-field class="peq">
+        <mat-form-field style="font-size: 0.9rem;" class="maspeq">
           <mat-label>Moneda:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -247,8 +248,8 @@
           </span>
         </mat-form-field>
 
-        <mat-form-field class="peq">
-          <mat-label>Tipo Renovacion:</mat-label>
+        <mat-form-field style="font-size: 0.9rem;" class="maspeq">
+          <mat-label>Renovacion:</mat-label>
           <span class="readonly-input">
             <input matInput 
               #Tipo_Renovacion
@@ -256,7 +257,7 @@
           </span>
         </mat-form-field>
 
-        <mat-form-field class="peq">
+        <mat-form-field style="font-size: 0.9rem;" class="maspeq">
           <mat-label>Estatus Poliza:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -265,7 +266,7 @@
           </span>
         </mat-form-field>
         
-        <mat-form-field class="peq">
+        <mat-form-field style="font-size: 0.9rem;" class="emision">
           <mat-label>Fecha de Emisión:</mat-label>
           <span class="readonly-input">
             <input matInput 
@@ -274,7 +275,7 @@
           </span>
         </mat-form-field>
 
-        <mat-form-field class="totalwidth">
+        <mat-form-field style="font-size: 1rem;" class="totalwidth">
           <mat-label>Observaciones:</mat-label>
           <textarea matInput 
           #Observacion

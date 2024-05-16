@@ -21,29 +21,32 @@ table {
 button {
   margin: 4px;
 }
-.medium{
-  width: 25%;
-}
-.menosmedium{
-  width: 17%;
-}
-.menosmedium2{
-  width: 31%;
-}
-.menosmedium3{
-  width: 22%;
+.maspeq{
+  width: 12%;
 }
 .peq{
-  width: 14%;
+  width: 23%;
 }
-.peq2{
+.poliza{
+  width: 20%;
+}
+.fechas{
   width: 15%;
 }
-.med{
-  width: 18%;
+.sucursal{
+  width: 13%;
+}
+.intermediario{
+  width: 34%;
+}
+.emision{
+  width: 20%;
 }
 .totalwidth{
   width: 100%;
+}
+td{
+  font-size: 0.8rem;
 }
 
 // .readonly-input, textarea {

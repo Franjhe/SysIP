@@ -49,6 +49,8 @@ export class PolizaComponent implements AfterViewInit {
 
   dataSource = new MatTableDataSource<any>;
 
+  currentUser!: any
+  token!: any;
   poliza: any;
   recibosData: any;
 
@@ -109,6 +111,7 @@ export class PolizaComponent implements AfterViewInit {
     private snackBar: MatSnackBar
     
   ) {
+
       this.paginator2.firstPageLabel = "Primera Página";
       this.paginator2.itemsPerPageLabel = "Registros por Página";
       this.paginator2.previousPageLabel = "Página Anterior";
@@ -144,9 +147,15 @@ export class PolizaComponent implements AfterViewInit {
     }}
 
     ngOnInit() {
-      const isLoggedIn = localStorage.getItem('user');
-      if (isLoggedIn) {
-        this.http.post(environment.apiUrl + '/api/v1/poliza/searchPoliza', null).subscribe((response: any) => {
+      this.token = localStorage.getItem('user');
+      this.currentUser = JSON.parse(this.token);
+      let ccorredor = this.currentUser.data.ccorredor;
+      console.log(ccorredor)
+      if (this.token) {
+        let corredor = {
+          ccorredor: ccorredor
+        }
+        this.http.post(environment.apiUrl + '/api/v1/poliza/searchPoliza', corredor).subscribe((response: any) => {
           if (response.data && response.data.list) {
             const dataArray = Object.values(response.data.list);
             this.dataSource.data = dataArray;

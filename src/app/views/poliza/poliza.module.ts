@@ -16,7 +16,7 @@ import {MatStepperModule} from '@angular/material/stepper';
 import {MatButtonModule} from '@angular/material/button';
 import { DatePipe } from '@angular/common';
 import {MatSelectModule} from '@angular/material/select';
-
+import {MatCardModule} from '@angular/material/card';
 
 
 @NgModule({
@@ -41,6 +41,7 @@ import {MatSelectModule} from '@angular/material/select';
     MatInputModule,
     DatePipe,
     MatSelectModule,
+    MatCardModule,
   ]
 })
 export class PolizaModule { }
