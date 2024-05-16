@@ -15,6 +15,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatStepperModule} from '@angular/material/stepper';
 import {MatButtonModule} from '@angular/material/button';
 import { DatePipe } from '@angular/common';
+import {MatSelectModule} from '@angular/material/select';
 
 
 
@@ -39,6 +40,7 @@ import { DatePipe } from '@angular/common';
     MatFormFieldModule,
     MatInputModule,
     DatePipe,
+    MatSelectModule,
   ]
 })
 export class PolizaModule { }

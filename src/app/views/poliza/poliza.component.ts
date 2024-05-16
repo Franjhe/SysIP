@@ -50,12 +50,15 @@ export class PolizaComponent implements AfterViewInit {
   dataSource = new MatTableDataSource<any>;
 
   poliza: any;
+  recibosData: any;
 
   defaultDataSource = new MatTableDataSource<any>;
   
-  displayedColumns: string[] = ['select','Nro_Poliza', 'Descripcion_Ramo', 'Sucursal', 'Intermediario', 'Dias_de_vigencia', 'Id_Asegurado', 'Nombre_Asegurado'];
-
+  displayedColumns: string[] = ['select','Nro_Poliza', 'Descripcion_Ramo', 'Intermediario', 'Dias_de_vigencia', 'Id_Asegurado', 'Nombre_Asegurado'];
   
+  ColumnsRecibos: string[] = ['cnrecibo', 'Cuotas', 'Fecha_desde_Rec', 'Fecha_hasta_Rec', 'Monto_Rec', 'Monto_Rec_Ext', 'Status_Rec'];
+
+  // Para las Pólizas
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild('nroPolizaInput') nroPolizaInput!: ElementRef<HTMLInputElement>;
@@ -76,10 +79,17 @@ export class PolizaComponent implements AfterViewInit {
   @ViewChild('Moneda') Moneda!: ElementRef<HTMLInputElement>;
   @ViewChild('Tasa') Tasa!: ElementRef<HTMLInputElement>;
   @ViewChild('Tipo_Renovacion') Tipo_Renovacion!: ElementRef<HTMLInputElement>;
+  @ViewChild('Fecha_Emision') Fecha_Emision!: ElementRef<HTMLInputElement>;
   @ViewChild('Estatus_Poliza') Estatus_Poliza!: ElementRef<HTMLInputElement>;
-
-  
   @ViewChild('Observacion') Observacion!: ElementRef<HTMLInputElement>;
+  // Para Los Recibos
+  @ViewChild('cnrecibo') cnrecibo!: ElementRef<HTMLInputElement>;
+  @ViewChild('Cuotas') Cuotas!: ElementRef<HTMLInputElement>;
+  @ViewChild('Fecha_desde_Rec') Fecha_desde_Rec!: ElementRef<HTMLInputElement>;
+  @ViewChild('Fecha_hasta_Rec') Fecha_hasta_Rec!: ElementRef<HTMLInputElement>;
+  @ViewChild('Monto_Rec') Monto_Rec!: ElementRef<HTMLInputElement>;
+  @ViewChild('Monto_Rec_Ext') Monto_Rec_Ext!: ElementRef<HTMLInputElement>;
+  @ViewChild('Status_Rec') Status_Rec!: ElementRef<HTMLInputElement>;
 
   firstFormGroup = this._formBuilder.group({
     firstCtrl: ['', Validators.required],
@@ -132,19 +142,22 @@ export class PolizaComponent implements AfterViewInit {
       this.dataSource.data = this.defaultDataSource.data;
       return;
     }}
-  ngOnInit() {
-    const isLoggedIn = localStorage.getItem('user');
-    if (isLoggedIn) {
-      this.http.post(environment.apiUrl + '/api/v1/poliza/searchPoliza', null).subscribe((response: any) => {
-        console.log(response)
-        if (response.data.list) {
-          this.dataSource.data = response.data.list;
-          this.defaultDataSource = new MatTableDataSource(response.returnData.search);
-          this.dataSource = new MatTableDataSource(response.returnData.search);
-        }
-      });
+
+    ngOnInit() {
+      const isLoggedIn = localStorage.getItem('user');
+      if (isLoggedIn) {
+        this.http.post(environment.apiUrl + '/api/v1/poliza/searchPoliza', null).subscribe((response: any) => {
+          if (response.data && response.data.list) {
+            const dataArray = Object.values(response.data.list);
+            this.dataSource.data = dataArray;
+            this.defaultDataSource = new MatTableDataSource(dataArray);
+            this.dataSource = new MatTableDataSource(dataArray);
+            this.dataSource.paginator = this.paginator;
+            this.dataSource.sort = this.sort;
+          }
+        });
+      }
     }
-  }
   buscarReporte() {
   if (this.poliza === undefined) {
       this.snackBar.open('La Póliza Seleccionada No fue Encontrada.', 'Cerrar', {
@@ -173,12 +186,14 @@ export class PolizaComponent implements AfterViewInit {
       let Sucursal = row.Sucursal.trim();
       let Intermediario = row.Intermediario.trim();
       let Productor = row.cproductor;
-      let Observacion = row.Observacion;
       let Moneda = row.Moneda.trim();
       let Tasa = row.Tasa_Cambio.toFixed(2);
-      let Tipo_Renovacion = row.Tipo_Renovacion.trim();
-      let Estatus_Poliza = row.Estatus_Poliza.trim();
-      this.nroPolizaInput.nativeElement.value = Nro_Poliza;
+      let Tipo_Renovacion = row.Tipo_Renovacion;
+      let Fecha_Emision = row.Fecha_Emision;
+      let Estatus_Poliza = row.Estatus_Poliza;
+      let Observacion = row.Observacion;
+
+      this.nroPolizaInput.nativeElement.value = Nro_Poliza.trim();
       this.ciTomadorInput.nativeElement.value = CID_T;
       this.tomadorInput.nativeElement.value = Nombre_Tomador;
       this.codigoRamoInput.nativeElement.value = CodigoRamo;
@@ -197,12 +212,43 @@ export class PolizaComponent implements AfterViewInit {
       this.Tasa.nativeElement.value = Tasa;
       this.Tipo_Renovacion.nativeElement.value = Tipo_Renovacion;
       this.Estatus_Poliza.nativeElement.value = Estatus_Poliza;
+      this.Fecha_Emision.nativeElement.value = Fecha_Emision;
       this.Observacion.nativeElement.value = Observacion;
-    });
-    this.http.post(environment.apiUrl + '/api/v1/poliza/searchPoliza', null).subscribe((response: any) => {
-      console.log(response)
+  });
+
+  this.recibosData = [];
+  for (let dataRecibo of this.selection.selected) {
+    for (let recibo of dataRecibo.recibos) {
+      let cnrecibo = recibo.cnrecibo;
+      let Cuotas = recibo.Cuotas;
+      let Fecha_desde_Rec = recibo.Fdesde_Rec;
+      let Fecha_hasta_Rec = recibo.Fhasta_Rec;
+      let Monto_Rec = recibo.Monto_Rec;
+      let Monto_Rec_Ext = recibo.Monto_Rec_Ext;
+      let Status_Rec = recibo.Status_Rec;
+  
+      this.recibosData.push({
+        cnrecibo,
+        Cuotas,
+        Fecha_desde_Rec,
+        Fecha_hasta_Rec,
+        Monto_Rec,
+        Monto_Rec_Ext,
+        Status_Rec
+      });
+    }
+    
+  }
+  
+  this.http.post(environment.apiUrl + '/api/v1/poliza/searchPoliza', null).subscribe((response: any) => {
       if (response.data.list) {
         this.dataSource.data = response.data.list;
+        const dataArray = Object.values(response.data.list);
+            this.dataSource.data = dataArray;
+            this.defaultDataSource = new MatTableDataSource(dataArray);
+            this.dataSource = new MatTableDataSource(dataArray);
+            this.dataSource.paginator = this.paginator;
+            this.dataSource.sort = this.sort;
     }});
   }
   
