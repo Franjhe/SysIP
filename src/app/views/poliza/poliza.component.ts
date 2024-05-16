@@ -66,7 +66,6 @@ export class PolizaComponent implements AfterViewInit {
   @ViewChild('nroPolizaInput') nroPolizaInput!: ElementRef<HTMLInputElement>;
   @ViewChild('ciTomadorInput') ciTomadorInput!: ElementRef<HTMLInputElement>;
   @ViewChild('tomadorInput') tomadorInput!: ElementRef<HTMLInputElement>;
-  @ViewChild('codigoRamoInput') codigoRamoInput!: ElementRef<HTMLInputElement>;
   @ViewChild('ciAseguradoInput') ciAseguradoInput!: ElementRef<HTMLInputElement>;
   @ViewChild('nombreAseguradoInput') nombreAseguradoInput!: ElementRef<HTMLInputElement>;
   @ViewChild('descripcionRamo') descripcionRamo!: ElementRef<HTMLInputElement>;
@@ -183,7 +182,6 @@ export class PolizaComponent implements AfterViewInit {
       let Nro_Poliza = row.Nro_Poliza.trim();
       let CID_T = row.CID.trim();
       let Nombre_Tomador = row.Nombre_del_Tomador.trim();
-      let CodigoRamo = row.Codigo_Ramo;
       let CID_A = row.Id_Asegurado.trim();
       let Nombre_Asegurado = row.Nombre_Asegurado.trim();
       let Descripcion_Ramo = row.Descripcion_Ramo.trim();
@@ -205,7 +203,6 @@ export class PolizaComponent implements AfterViewInit {
       this.nroPolizaInput.nativeElement.value = Nro_Poliza.trim();
       this.ciTomadorInput.nativeElement.value = CID_T;
       this.tomadorInput.nativeElement.value = Nombre_Tomador;
-      this.codigoRamoInput.nativeElement.value = CodigoRamo;
       this.ciAseguradoInput.nativeElement.value = CID_A;
       this.nombreAseguradoInput.nativeElement.value = Nombre_Asegurado;
       this.descripcionRamo.nativeElement.value = Descripcion_Ramo;
