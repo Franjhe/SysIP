@@ -94,7 +94,6 @@ export class PaymentReportComponent {
 
 
 
-
   constructor( private _formBuilder: FormBuilder,
     private http: HttpClient,
     readonly dialog: MatDialog,
@@ -302,14 +301,14 @@ export class PaymentReportComponent {
 
       response.searchReceiptsByCustomer.saldo.forEach((item: any) => {
 
-        if (item.cmoneda_dif == 'BS  ') {
-          sumaBS += item.msaldodif;
+        if (item.cmoneda == 'BS  ') {
+          sumaBS += item.msaldo;
         }  
-        if (item.cmoneda_dif == 'USD ') {
-          sumaUSD += item.msaldodif;
+        if (item.cmoneda == 'USD ') {
+          sumaUSD += item.msaldoext;
 
         }
-        if (item.cmoneda_dif !== null) {
+        if (item.cmoneda !== null) {
           this.PositiveBalanceBool = true
         }
       });
@@ -454,16 +453,14 @@ export class PaymentReportComponent {
     }
   }
 
-  calculateMount(i :any){
+  calculateMount(){
     const creds = this.searchReceipt.get("receipt") as FormArray
 
     const sumaTotal = creds.value.reduce((acumulador: any, 
       recibo: 
       { seleccionado: any; 
         mdiferenciaext: any; 
-        mprimabrutaext: any; 
-        sumaBS: any; 
-        sumaUSD: any; 
+        mprimabrutaext: any
       }) => {
 
       if (recibo.seleccionado && recibo.mdiferenciaext == null) {
@@ -481,7 +478,16 @@ export class PaymentReportComponent {
     let mount 
     if(this.PositiveBalanceBool){      
 
-      mount = Number(sumaTotal) - this.positiveBalanceUSD 
+      if(this.positiveBalanceUSD != 0){
+
+        mount = Number(sumaTotal) - this.positiveBalanceUSD 
+
+      }else{
+
+        let operation = this.positiveBalanceBs / this.bcv
+        mount =  Number(sumaTotal) - operation
+
+      }
   
     }else{
       mount = sumaTotal
@@ -556,7 +562,6 @@ export class PaymentReportComponent {
     this.receiptList = []
     this.transferList = []
 
-
     for(let i = 0; i < receipt.length; i++){
       if(receipt.value[i].seleccionado == true){
         if(receipt.value[i].cdoccob > 0){
@@ -609,57 +614,58 @@ export class PaymentReportComponent {
 
     }   
 
-
     const transfer = this.searchReceipt.get("transfer") as FormArray
     let asegurado = this.searchReceipt.get('xcedula')?.value || ''
     const fecha = new Date()
     let fechaTran = fecha.toISOString().substring(0, 10);
 
-    for(let i = 0; i < transfer.length; i++){
-
-      const fileObject = transfer.at(i).get('ximagen')?.value!
-      const fileType = fileObject.type;
-      const extension = fileType.split('/').pop();
-      let nombre = asegurado +'-' + fechaTran +'-'+ i + transfer.value[i].xreferencia +'.'+ extension;
-
-      if(transfer.at(i).get('cmoneda')?.value == "USD" ){
-
-        this.transferList.push({
-          cmoneda: transfer.value[i].cmoneda,
-          cbanco: transfer.value[i]?.cbanco?.id,
-          ctipopago: transfer.value[i]?.ctipopago.id,
-          cbanco_destino: transfer.value[i]?.cbanco_destino?.id,
-          mpago: 0,
-          mpagoext: transfer.value[i].mpago,
-          mpagoigtf: this.mountBsP,
-          mpagoigtfext: this.mountP ,
-          mtotal: this.mountBsExt,
-          mtotalext: this.mountIGTF,
-          ptasamon: this.bcv,
-          ptasaref: 0,        
-          xreferencia: transfer.value[i].xreferencia,
-          ximage : nombre
-        });
+    if(transfer.length){
+      for(let i = 0; i < transfer.length; i++){
+  
+        const fileObject = transfer.at(i).get('ximagen')?.value!
+        const fileType = fileObject.type;
+        const extension = fileType.split('/').pop();
+        let nombre = asegurado +'-' + fechaTran +'-'+ i + transfer.value[i].xreferencia +'.'+ extension;
+  
+        if(transfer.at(i).get('cmoneda')?.value == "USD" ){
+  
+          this.transferList.push({
+            cmoneda: transfer.value[i]?.cmoneda,
+            cbanco: transfer.value[i]?.cbanco?.id,
+            ctipopago: transfer.value[i]?.ctipopago?.id,
+            cbanco_destino: transfer.value[i]?.cbanco_destino?.id,
+            mpago: 0,
+            mpagoext: transfer.value[i]?.mpago,
+            mpagoigtf: this.mountBsP,
+            mpagoigtfext: this.mountP ,
+            mtotal: this.mountBsExt,
+            mtotalext: this.mountIGTF,
+            ptasamon: this.bcv,
+            ptasaref: 0,        
+            xreferencia: transfer.value[i]?.xreferencia,
+            ximage : nombre
+          });
+        }
+        else if(transfer.at(i).get('cmoneda')?.value == "Bs"){
+          this.transferList.push({
+            cmoneda: transfer.value[i]?.cmoneda,
+            cbanco: transfer.value[i]?.cbanco?.id,
+            ctipopago: transfer.value[i]?.ctipopago?.id,
+            cbanco_destino: transfer.value[i]?.cbanco_destino?.id,
+            mpago: transfer.value[i]?.mpago,
+            mpagoext: 0,
+            mpagoigtf: 0,
+            mpagoigtfext: 0 ,
+            mtotal:this.mountBs,
+            mtotalext: this.mount,
+            ptasaref: 0,
+            ptasamon: this.bcv,        
+            xreferencia: transfer.value[i]?.xreferencia,
+            ximage : nombre
+          });
+        }
+  
       }
-      else if(transfer.at(i).get('cmoneda')?.value == "Bs"){
-        this.transferList.push({
-          cmoneda: transfer.value[i].cmoneda,
-          cbanco: transfer.value[i]?.cbanco.id,
-          ctipopago: transfer.value[i]?.ctipopago.id,
-          cbanco_destino: transfer.value[i]?.cbanco_destino.id,
-          mpago: transfer.value[i].mpago,
-          mpagoext: 0,
-          mpagoigtf: 0,
-          mpagoigtfext: 0 ,
-          mtotal:this.mountBs,
-          mtotalext: this.mount,
-          ptasaref: 0,
-          ptasamon: this.bcv,        
-          xreferencia: transfer.value[i].xreferencia,
-          ximage : nombre
-        });
-      }
-
     }
     
   }
@@ -710,6 +716,7 @@ export class PaymentReportComponent {
 
     }else{
       const savePaymentTrans = {
+
         transaccion : this.idTrans,
         freporte : fecha ,
         casegurado: asegurado,
@@ -724,7 +731,6 @@ export class PaymentReportComponent {
         diference: this.diference,
         recibo : this.receiptList,
         soporte: this.transferList,
-
       }
 
       //primero llenamos el recipo y la tabla de transacciones 
@@ -747,6 +753,59 @@ export class PaymentReportComponent {
 
   }
 
+  collectReceipt(){
+    //cobro de recibo cuando tiene saldo a favor mayor que su recibo y decide usarlo
+    let asegurado = this.searchReceipt.get('xcedula')?.value || ''
+    this.llenarlistas()
+    const fecha = new Date()
+
+    const sumaUSD = this.receiptList.reduce((item: any , recibo : any) => {item += recibo.mprimabrutaext; return item;}, 0);
+    const suma = this.receiptList.reduce((item: any , recibo : any) => {item += recibo.mprimabruta; return item;}, 0);
+
+    let bs = Number(this.mountBs)
+    let usd = Number(this.mount)
+
+    const savePositiveBalance = {
+      transaccion : this.idTrans,
+      freporte : fecha ,
+      casegurado: asegurado,
+      mpago : Math.abs(bs),
+      mpagoext :  Math.abs(usd),
+      ptasamon : this.bcv,
+      cprog : 'PagoConSaldoaFavor',
+      ifuente : 'Web_Sys',
+      cusuario : 13,
+      iestado : 1,
+      recibo : this.receiptList,
+      saldoHaber : suma,
+      saldoHaberExt : sumaUSD,
+      iestadorec : 'C',
+      fcobro : new Date(),
+      soporte : [{
+        cmoneda: '',
+        mpago: 0,
+        mpagoext: 0,
+        mpagoigtf: this.mountBsP,
+        mpagoigtfext: this.mountP ,
+        mtotal: this.mountBsExt,
+        mtotalext: this.mountIGTF,
+        ptasamon: this.bcv,
+        ptasaref: 0,        
+        xreferencia: '',
+        ximage : ''
+      }]
+    }
+
+    this.http.post(environment.apiUrl + '/api/v1/collection/positive-balance', savePositiveBalance).subscribe( (response: any) => {
+      if (response.status) {
+        this.toast.open("Registro de pago éxitoso", "Cerrar", {
+          duration: 3000,
+        });
+      }
+
+    })
+
+  }
 
   uploadFile(){
 

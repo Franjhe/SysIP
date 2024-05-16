@@ -625,6 +625,7 @@ export class PaymentAdministrationComponent {
           cmoneda: transfer.value[i].cmoneda,
           cbanco: transfer.value[i]?.cbanco?.id || '',
           cbanco_destino: transfer.value[i]?.cbanco_destino?.id || '',
+          ctipopago: transfer.value[i]?.ctipopago?.id,
           mpago: 0,
           mpagoext: transfer.value[i].mpago,
           mpagoigtf: this.mountBsP,
@@ -643,6 +644,7 @@ export class PaymentAdministrationComponent {
           cmoneda: transfer.value[i].cmoneda,
           cbanco: transfer.value[i]?.cbanco?.id || '',
           cbanco_destino: transfer.value[i]?.cbanco_destino?.id || '',
+          ctipopago: transfer.value[i]?.ctipopago?.id,
           mpago: transfer.value[i].mpago,
           mpagoext: 0,
           mpagoigtf: 0,
@@ -704,9 +706,6 @@ export class PaymentAdministrationComponent {
               }  
             }
           })   
-          setTimeout(() => {
-            location.reload();
-          }, 3000);
   
         })
       }
@@ -714,9 +713,6 @@ export class PaymentAdministrationComponent {
       if(this.searchReceipt.get('iestadorec')?.value == 'CS'){
         this.selection.selected.forEach(item => {
           const savePaymentTrans = {
-            group : false,
-            msaldodif: this.searchReceipt.get('mdiferencia')?.value,
-            cmoneda_dif: this.searchReceipt.get('cmoneda')?.value,
             casegurado: item.cci_rif,
             mpago : this.mountBs,
             mpagoext : this.mountIGTF,
@@ -734,57 +730,89 @@ export class PaymentAdministrationComponent {
             transaccion : this.idTrans,
             correo : item.xcorreo ,
             fcobro : this.searchReceipt.get('fcobro')?.value,
-
-            idiferencia : "H",
+            balancePositivo:{        
+              msaldodif: this.searchReceipt.get('mdiferencia')?.value,
+              cmoneda_dif: this.searchReceipt.get('cmoneda')?.value,
+              idiferencia : "H",
+            }
           }
   
-          console.log(savePaymentTrans)
-
           //primero llenamos el recipo y la tabla de transacciones 
-          // this.http.post(environment.apiUrl + '/api/v1/collection/admin-positiveBalance',savePaymentTrans).subscribe( (response: any) => {
-          //   if (response.status) {
-          //     this.toast.open("Registro de pago éxitoso", "Cerrar", {
-          //       duration: 3000,
-          //     });
+          this.http.post(environment.apiUrl + '/api/v1/collection/admin-positiveBalance',savePaymentTrans).subscribe( (response: any) => {
+            if (response.status) {
+              this.toast.open("Registro de pago éxitoso", "Cerrar", {
+                duration: 3000,
+              });
   
-          //   }
-          //   if(this.image){
-          //     this.uploadFile()
-          //   }
+            }
+            if(this.image){
+              this.uploadFile()
+            }
   
-          // })   
-          // setTimeout(() => {
-          //   location.reload();
-          // }, 3000);
+          })   
   
         })
       }
 
       else if(this.searchReceipt.get('iestadorec')?.value == 'ER'){
         this.selection.selected.forEach(item => {
-          let data = {
-            group : false,
-            ifuente : 'Web_Sys',
-            transaccion : this.idTrans,
-            casegurado : item.cci_rif,
-            cliente : item.xcliente,
-            correo : item.xcorreo ,
-            tasa : this.bcv,
-            cusuario : item.cci_rif,
-            fcobro : new Date(),
-            reciboConDiferencia: {
-              mdiferencia: this.searchReceipt.get('mdiferencia')?.value,
-              cmoneda: this.searchReceipt.get('cmoneda')?.value,
-              xobservacion: item.xobservacion, //asignar
-              idiferencia : 'D',
-              crecibo : item.crecibo, //asignar
+          let data = {}
+      
+          if(this.searchReceipt.get('cmoneda')?.value == 'BS'){
+            let monto = this.searchReceipt.get('mdiferencia')?.value || 0 / this.bcv
+            data = {
+              transaccion : this.idTrans,
+              ifuente : 'Web_Sys',
+              casegurado : item.cci_rif,
+              cliente : item.xcliente,
+              correo : item.xcorreo,
+              ptasamon : this.bcv,
+              cusuario : this.usuario,
+              fcobro : new Date(),
+              reciboConDiferencia: {
+                mdiferencia: this.searchReceipt.get('mdiferencia')?.value,
+                mdiferenciaext: monto,
+                xobservacion: this.searchReceipt.get('xobservacion')?.value,
+                idiferencia : this.searchReceipt.get('idiferencia')?.value,
+                crecibo : this.searchReceipt.get('crecibo')?.value,
+                cmoneda : this.searchReceipt.get('cmoneda')?.value,
+              }
             }
-   
+    
+          }else{
+            let monto = this.searchReceipt.get('mdiferencia')?.value || 0 * this.bcv
+            data = {
+              transaccion : this.idTrans,
+              ifuente : 'Web_Sys',
+              casegurado : item.cci_rif,
+              cliente : item.xcliente,
+              correo : item.xcorreo,
+              ptasamon : this.bcv,
+              cusuario : this.usuario,
+              fcobro : new Date(),
+              reciboConDiferencia: {
+                mdiferenciaext: this.searchReceipt.get('mdiferencia')?.value,
+                mdiferencia: monto,
+                xobservacion: this.searchReceipt.get('xobservacion')?.value,
+                idiferencia : this.searchReceipt.get('idiferencia')?.value,
+                crecibo : this.searchReceipt.get('crecibo')?.value,
+                cmoneda : this.searchReceipt.get('cmoneda')?.value,
+              }
+            }
+    
           }
 
+          this.http.post(environment.apiUrl + '/api/v1/collection/receipt-under-review/', data ).subscribe((response: any) => {
+            if(response.status){
+              location.reload()
+            }
+          })
+      
         })
 
       }
+
+    
 
     }else{
         const savePaymentTrans = {
@@ -818,9 +846,6 @@ export class PaymentAdministrationComponent {
         //     this.uploadFile()
         //   }
         // })   
-        // setTimeout(() => {
-        //   location.reload();
-        // }, 3000);
 
     } 
 
@@ -843,7 +868,9 @@ export class PaymentAdministrationComponent {
       formData.append('image', transfer.at(i).get('ximagen')?.value!, nombre);
       
     }
-    this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {})
+    this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {
+        location.reload();
+    })
   }
 
   getTargetBank(i : any){

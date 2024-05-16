@@ -98,7 +98,7 @@
                       <div class="col-2">
 
 
-                        <mat-form-field>
+                        <mat-form-field *ngIf="group.value.casegurado != 1300 ">
                           <mat-label>Estado de recibo</mat-label>
                           <mat-select (selectionChange)="validateMov(i)" formControlName="iestadorec" >
                             <mat-option value="C">Cobrado</mat-option>
@@ -106,6 +106,15 @@
                             <mat-option value="CS">Cobrado con saldo a favor</mat-option>
                           </mat-select>
                         </mat-form-field>
+
+                        <mat-form-field *ngIf="group.value.casegurado == 1300 ">
+                          <mat-label>Estado de recibo</mat-label>
+                          <mat-select (selectionChange)="validateMov(i)" formControlName="iestadorec" >
+                            <mat-option value="C">Cobrado</mat-option>
+                            <mat-option value="ER">En revision</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+
     
                         <mat-form-field *ngIf="revision || cobradoSAF">
                           <mat-label>Diferencia</mat-label>
@@ -139,7 +148,7 @@
                         <mat-form-field *ngIf="revision">
                           <mat-label>Seleccione el recibo con diferencia</mat-label>
                           <mat-select formControlName="recibo">
-                            <mat-option *ngFor="let recibo of group.value.poliza"  value="{{ recibo.crecibo }}">{{ recibo.crecibo }}</mat-option>
+                            <mat-option *ngFor="let recibo of group.value.poliza"  value="{{ recibo.crecibo }}">{{ recibo.cnrecibo }}</mat-option>
                           </mat-select>
                         </mat-form-field>
 

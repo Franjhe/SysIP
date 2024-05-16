@@ -205,7 +205,7 @@ export class PaymentCancellationComponent {
           casegurado : creds.at(i).get('casegurado')?.value,
           cliente : creds.at(i).get('xcliente')?.value,
           correo : creds.at(i).get('xcorreo')?.value,
-          tasa : this.bcv,
+          ptasamon : this.bcv,
           cusuario : this.usuario,
           fcobro : new Date(),
           reciboConDiferencia: {
@@ -216,7 +216,6 @@ export class PaymentCancellationComponent {
             crecibo : creds.at(i).get('recibo')?.value,
             cmoneda : creds.at(i).get('cmoneda')?.value,
           }
-
         }
 
       }else{
@@ -226,7 +225,7 @@ export class PaymentCancellationComponent {
           correo : creds.at(i).get('xcorreo')?.value,
           casegurado : creds.at(i).get('casegurado')?.value,
           cliente : creds.at(i).get('xcliente')?.value,
-          tasa : this.bcv,
+          ptasamon : this.bcv,
           cusuario : this.usuario,
           fcobro : new Date(),
           reciboConDiferencia: {
@@ -246,7 +245,6 @@ export class PaymentCancellationComponent {
         if(response.status){
           location.reload()
         }
-  
       })
 
     }
@@ -271,12 +269,12 @@ export class PaymentCancellationComponent {
       }
 
       console.log(data)
-      // this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt-positive-balance', data ).subscribe((response: any) => {
-      //   if(response.status){
-      //     location.reload()
-      //   }
+      this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt-positive-balance', data ).subscribe((response: any) => {
+        if(response.status){
+          //location.reload()
+        }
   
-      // })
+      })
     }
     else if(creds.at(i).get('iestadorec')?.value == 'C' ){
       const data = {
@@ -291,6 +289,7 @@ export class PaymentCancellationComponent {
         fcobro : new Date(),
         cprog : 'normalizacionPago',
         ifuente : 'Web_Sys',
+        iestado_tran : creds.at(i).get('iestado_tran')?.value,
       }
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt/', data ).subscribe((response: any) => {
         if(response.status){
