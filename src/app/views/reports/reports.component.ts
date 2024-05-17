@@ -49,7 +49,11 @@ export class ReportsComponent {
   columnsToDisplay: string[] = ['cedula', 'nombApell', 'correo', 'nrofac', 'hora_emision', 'cantidad_tickes', 'mcosto_ext', 'fingreso'];
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-
+  "paths": {
+    "file-saver-es": [
+      "@types/file-saver"
+    ]
+  } 
   listPending: any = []
   listCollection: any = []
   listCollectedReport: any = []

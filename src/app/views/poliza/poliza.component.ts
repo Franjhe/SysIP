@@ -229,8 +229,8 @@ export class PolizaComponent implements AfterViewInit {
       let Cuotas = recibo.Cuotas;
       let Fecha_desde_Rec = recibo.Fdesde_Rec;
       let Fecha_hasta_Rec = recibo.Fhasta_Rec;
-      let Monto_Rec = recibo.Monto_Rec;
-      let Monto_Rec_Ext = recibo.Monto_Rec_Ext;
+      let Monto_Rec = recibo.Monto_Rec.toFixed(2);
+      let Monto_Rec_Ext = recibo.Monto_Rec_Ext.toFixed(2);
       let Status_Rec = recibo.Status_Rec;
   
       this.recibosData.push({
