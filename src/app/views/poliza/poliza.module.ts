@@ -9,6 +9,14 @@ import { MaterialExampleModule } from './../../material.module'
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { FormBuilder, Validators, FormsModule } from '@angular/forms';
+import {MatInputModule} from '@angular/material/input';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatStepperModule} from '@angular/material/stepper';
+import {MatButtonModule} from '@angular/material/button';
+import { DatePipe } from '@angular/common';
+import {MatSelectModule} from '@angular/material/select';
+import {MatCardModule} from '@angular/material/card';
 
 
 @NgModule({
@@ -25,7 +33,15 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     MaterialExampleModule,
     ReactiveFormsModule,
     MatPaginatorModule,
-
+    MatButtonModule,
+    MatStepperModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    DatePipe,
+    MatSelectModule,
+    MatCardModule,
   ]
 })
 export class PolizaModule { }

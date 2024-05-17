@@ -5,3 +5,54 @@ table {
   th.mat-sort-header-sorted {
     color: black;
   }
+.mat-stepper-horizontal {
+    margin-top: 8px;
+  }
+  
+.mat-mdc-form-field {
+    margin-top: 16px;
+  }
+.mat-form-field-lg {
+    width: 100%;
+  }
+.align-right-button {
+    float: right;
+  }
+button {
+  margin: 4px;
+}
+.maspeq{
+  width: 12%;
+}
+.peq{
+  width: 23%;
+}
+.poliza{
+  width: 28%;
+}
+.vigencia{
+  width: 18%;
+}
+.fechas{
+  width: 16%;
+}
+.sucursal{
+  width: 15%;
+}
+.intermediario{
+  width: 34%;
+}
+.emision{
+  width: 21%;
+}
+.totalwidth{
+  width: 100%;
+}
+td{
+  font-size: 0.8rem;
+}
+
+// .readonly-input, textarea {
+//   pointer-events: none;
+//   opacity: 0.5; 
+// }
