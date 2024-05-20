@@ -48,7 +48,7 @@ export class PolizaComponent implements AfterViewInit {
   selection = new SelectionModel<any>(true, []);
 
   dataSource = new MatTableDataSource<any>;
-
+  descripcionPlan: string = 'No encontrado';
   currentUser!: any
   token!: any;
   poliza: any;
@@ -83,7 +83,7 @@ export class PolizaComponent implements AfterViewInit {
   @ViewChild('Fecha_Emision') Fecha_Emision!: ElementRef<HTMLInputElement>;
   @ViewChild('Estatus_Poliza') Estatus_Poliza!: ElementRef<HTMLInputElement>;
   @ViewChild('Plan') Plan!: ElementRef<HTMLInputElement>;
-  // @ViewChild('Descripcion_Plan') Descripcion_Plan!: ElementRef<HTMLInputElement>;
+  @ViewChild('Descripcion_Plan') Descripcion_Plan!: ElementRef<HTMLInputElement>;
   @ViewChild('Observacion') Observacion!: ElementRef<HTMLInputElement>;
   // Para Los Recibos
   @ViewChild('cnrecibo') cnrecibo!: ElementRef<HTMLInputElement>;
@@ -94,6 +94,7 @@ export class PolizaComponent implements AfterViewInit {
   @ViewChild('Monto_Rec_Ext') Monto_Rec_Ext!: ElementRef<HTMLInputElement>;
   @ViewChild('Status_Rec') Status_Rec!: ElementRef<HTMLInputElement>;
 
+  
   firstFormGroup = this._formBuilder.group({
     firstCtrl: ['', Validators.required],
   });
@@ -146,8 +147,8 @@ export class PolizaComponent implements AfterViewInit {
       this.dataSource.data = this.defaultDataSource.data;
       return;
     }}
-
     ngOnInit() {
+      this.pruebaDialog();
       this.token = localStorage.getItem('user');
       this.currentUser = JSON.parse(this.token);
       let ccorredor = this.currentUser.data.ccorredor;
@@ -177,7 +178,7 @@ export class PolizaComponent implements AfterViewInit {
     window.open(environment.apiUrl_prod + '/sis2000/poliza/' + this.poliza + '/', '_blank');
   }
 }
-  
+
   pruebaDialog() {
     this.selection.selected.forEach((row: any) => {
       this.poliza = row.Nro_Poliza.trim();
@@ -200,8 +201,8 @@ export class PolizaComponent implements AfterViewInit {
       let Tipo_Renovacion = row.Tipo_Renovacion;
       let Fecha_Emision = row.Fecha_Emision;
       let Estatus_Poliza = row.Estatus_Poliza;
-      let Plan = row.Plan.trim();
-      // let Descripcion_Plan = row.Descripcion_Plan.trim();
+      let Plan = row?.Plan?.trim() || "No encontrado";
+      let Descripcion_Plan = row?.Descripcion_Plan?.trim() || 'No Encontrado.';
       let Observacion = row.Observacion;
 
       this.nroPolizaInput.nativeElement.value = Nro_Poliza.trim();
@@ -224,7 +225,7 @@ export class PolizaComponent implements AfterViewInit {
       this.Estatus_Poliza.nativeElement.value = Estatus_Poliza;
       this.Fecha_Emision.nativeElement.value = Fecha_Emision;
       this.Plan.nativeElement.value = Plan;
-      // this.Descripcion_Plan.nativeElement.value = Descripcion_Plan;
+      this.Descripcion_Plan.nativeElement.value = Descripcion_Plan;
       this.Observacion.nativeElement.value = Observacion;
   });
 
