@@ -82,6 +82,8 @@ export class PolizaComponent implements AfterViewInit {
   @ViewChild('Tipo_Renovacion') Tipo_Renovacion!: ElementRef<HTMLInputElement>;
   @ViewChild('Fecha_Emision') Fecha_Emision!: ElementRef<HTMLInputElement>;
   @ViewChild('Estatus_Poliza') Estatus_Poliza!: ElementRef<HTMLInputElement>;
+  @ViewChild('Plan') Plan!: ElementRef<HTMLInputElement>;
+  // @ViewChild('Descripcion_Plan') Descripcion_Plan!: ElementRef<HTMLInputElement>;
   @ViewChild('Observacion') Observacion!: ElementRef<HTMLInputElement>;
   // Para Los Recibos
   @ViewChild('cnrecibo') cnrecibo!: ElementRef<HTMLInputElement>;
@@ -198,6 +200,8 @@ export class PolizaComponent implements AfterViewInit {
       let Tipo_Renovacion = row.Tipo_Renovacion;
       let Fecha_Emision = row.Fecha_Emision;
       let Estatus_Poliza = row.Estatus_Poliza;
+      let Plan = row.Plan.trim();
+      // let Descripcion_Plan = row.Descripcion_Plan.trim();
       let Observacion = row.Observacion;
 
       this.nroPolizaInput.nativeElement.value = Nro_Poliza.trim();
@@ -219,6 +223,8 @@ export class PolizaComponent implements AfterViewInit {
       this.Tipo_Renovacion.nativeElement.value = Tipo_Renovacion;
       this.Estatus_Poliza.nativeElement.value = Estatus_Poliza;
       this.Fecha_Emision.nativeElement.value = Fecha_Emision;
+      this.Plan.nativeElement.value = Plan;
+      // this.Descripcion_Plan.nativeElement.value = Descripcion_Plan;
       this.Observacion.nativeElement.value = Observacion;
   });
 
