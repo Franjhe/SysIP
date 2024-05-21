@@ -191,7 +191,7 @@
                         </div>
                         <div class="col-3">
                             <mat-form-field>
-                                <mat-label>Monto Movimiento Ext:</mat-label>
+                                <mat-label>Monto Movimiento Divisa:</mat-label>
                                 <input matInput type="text"
                                     value="$. {{paymentRequest.mpagoext}}" disabled>
                             </mat-form-field>
@@ -210,7 +210,7 @@
                         </div>
                         <div class="col-3" *ngIf="paymentRequest.cmoneda.toLowerCase().trim() == '$'">
                             <mat-form-field>
-                                <mat-label>Monto Retención Ext:</mat-label>
+                                <mat-label>Monto Retención Divisa:</mat-label>
                                 <input matInput type="text" value="$. {{paymentRequest.mislrext}}" disabled>
                             </mat-form-field>
                         </div>
@@ -234,7 +234,7 @@
                         </div>
                         <div class="col-3" *ngIf="paymentRequest.cmoneda.toLowerCase().trim() == '$'">
                             <mat-form-field>
-                                <mat-label>Monto a Pagar Ext:</mat-label>
+                                <mat-label>Monto a Pagar Divisa:</mat-label>
                                 <input matInput type="text" value="$. {{paymentRequest.mpagosolext}}" disabled>
                             </mat-form-field>
                         </div>
@@ -245,13 +245,13 @@
                             </mat-form-field>
                         </div>
 
-                        <div class="col-3" *ngIf="paymentRequest.mmonto_1 != null">
+                        <div class="col-3" *ngIf="paymentRequest.mmonto_1 != null && paymentRequest.mmonto_1 != 0">
                             <mat-form-field>
                                 <mat-label>Distribucion de pago 1</mat-label>
                                 <input matInput type="text" value="{{paymentRequest.cmoneda_1.toLowerCase()}}{{paymentRequest.mmonto_1}}" disabled>
                             </mat-form-field>
                         </div>
-                        <div class="col-3" *ngIf="paymentRequest.mmonto_2 != null">
+                        <div class="col-3" *ngIf="paymentRequest.mmonto_2 != null && paymentRequest.mmonto_2 != 0">
                             <mat-form-field>
                                 <mat-label>Distribucion de pago 2</mat-label>
                                 <input matInput type="text" value="{{paymentRequest.cmoneda_2.toLowerCase()}}{{paymentRequest.mmonto_2}}" disabled>

@@ -313,7 +313,7 @@
                     </div>
                     <div class="col-3">
                         <mat-form-field>
-                            <mat-label>Monto Movimiento Ext:</mat-label>
+                            <mat-label>Monto Movimiento Divisa:</mat-label>
                             <input matInput type="text" value="{{paymentRequest.cmoneda}}{{paymentRequest.mpagoext}}"
                                 disabled>
                         </mat-form-field>
@@ -333,7 +333,7 @@
                     </div>
                     <div class="col-3" *ngIf="listMonedaOrden[i] == '$'">
                         <mat-form-field>
-                            <mat-label>Monto Retención Ext:</mat-label>
+                            <mat-label>Monto Retención Divisa:</mat-label>
                             <input matInput type="text" value="$. {{paymentRequest.mislrext}}"
                             disabled>
                         </mat-form-field>
@@ -352,7 +352,7 @@
                     </div>
                     <div class="col-3" *ngIf="listMonedaOrden[i] == '$'">
                         <mat-form-field>
-                            <mat-label>Monto a Pagar Ext:</mat-label>
+                            <mat-label>Monto a Pagar Divisa:</mat-label>
                             <input matInput type="text" value="$. {{paymentRequest.mpagosolext}}" disabled>
                         </mat-form-field>
                     </div>

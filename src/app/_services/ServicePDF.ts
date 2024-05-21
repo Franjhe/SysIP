@@ -2530,50 +2530,52 @@ export class PdfGenerationService {
 		console.log('pago pago');
 		console.log(paymentRequest, 'info pdf');
 
-		// Creamos la varabile para el body de los recibos
-		const movimientos = [];
+		try {
 
-		// Insertamos los objetos correspondientes al header
-		movimientos.push(
-			[
-				{ text: 'POLIZA:', bold: true, border: [false, false, false, false] },
-				{ text: 'RECIBO:', bold: true, border: [false, false, false, false] },
-				{ text: 'TIPO MOV.:', bold: true, border: [false, false, false, false] },
-				{ text: 'FECHA MOV.:', bold: true, border: [false, false, false, false] },
-				{ text: 'PRIMA BS.:', bold: true, border: [false, false, false, false] },
-				{ text: 'PRIMA EXT.:', bold: true, border: [false, false, false, false] },
-				{ text: '% COM.:', bold: true, border: [false, false, false, false] },
-				{ text: 'COMISIÓN BS.:', bold: true, border: [false, false, false, false] },
-				{ text: 'COMISIÓN EXT', bold: true, border: [false, false, false, false] },
-				{ text: 'MONEDA\nRECIBO', bold: true, border: [false, false, false, false] },
-				{ text: 'TASA BCV:', bold: true, border: [false, false, false, false] },
-			]
-		);
+			// Creamos la varabile para el body de los recibos
+			const movimientos = [];
 
-		paymentRequest.recibos.forEach((recibo: any) => {
-			var mmontoapag = recibo.mmontoapag.toFixed(2);
-			var mmontoapagext = recibo.mmontoapagext.toFixed(2);
-			var mmovcom = recibo.mmovcom.toFixed(2);
-			var mmovcomext = recibo.mmovcomext.toFixed(2);
-
+			// Insertamos los objetos correspondientes al header
 			movimientos.push(
 				[
-					{ text: recibo.cnpoliza, border: [false, false, false, false] },
-					{ text: recibo.cnrecibo, border: [false, false, false, false] },
-					{ text: recibo.imovcom, border: [false, false, false, false] },
-					{ text: recibo.femision, border: [false, false, false, false] },
-					{ text: 'Bs. ' + mmontoapag, border: [false, false, false, false] },
-					{ text: '$. ' + mmontoapagext, border: [false, false, false, false] },
-					{ text: recibo.pcomision + '%', border: [false, false, false, false] },
-					{ text: 'Bs. ' + mmovcom, border: [false, false, false, false] },
-					{ text: '$. ' + mmovcomext, border: [false, false, false, false] },
-					{ text: recibo.cmoneda, border: [false, false, false, false] },
-					{ text: recibo.ptasamon, border: [false, false, false, false] },
+					{ text: 'POLIZA:', bold: true, border: [false, false, false, false] },
+					{ text: 'RECIBO:', bold: true, border: [false, false, false, false] },
+					{ text: 'TIPO MOV.:', bold: true, border: [false, false, false, false] },
+					{ text: 'FECHA MOV.:', bold: true, border: [false, false, false, false] },
+					{ text: 'PRIMA BS.:', bold: true, border: [false, false, false, false] },
+					{ text: 'PRIMA DIVISAS.:', bold: true, border: [false, false, false, false] },
+					{ text: '% COM.:', bold: true, border: [false, false, false, false] },
+					{ text: 'COMISIÓN BS.:', bold: true, border: [false, false, false, false] },
+					{ text: 'COMISIÓN DIVISAS', bold: true, border: [false, false, false, false] },
+					{ text: 'MONEDA\nRECIBO', bold: true, border: [false, false, false, false] },
+					{ text: 'TASA BCV:', bold: true, border: [false, false, false, false] },
 				]
-			)
-		});
+			);
 
-		try {
+			paymentRequest.recibos.forEach((recibo: any) => {
+				var mmontoapag = recibo.mmontoapag ? recibo.mmontoapag.toFixed(2) : '';
+				var mmontoapagext = recibo.mmontoapagext ? recibo.mmontoapagext.toFixed(2) : '';
+				var mmovcom = recibo.mmovcom ? recibo.mmovcom.toFixed(2) : '';
+				var mmovcomext = recibo.mmovcomext ? recibo.mmovcomext.toFixed(2) : '';
+
+				movimientos.push(
+					[
+						{ text: recibo.cnpoliza, border: [false, false, false, false] },
+						{ text: recibo.cnrecibo, border: [false, false, false, false] },
+						{ text: recibo.imovcom, border: [false, false, false, false] },
+						{ text: recibo.femision, border: [false, false, false, false] },
+						{ text: 'Bs. ' + mmontoapag, border: [false, false, false, false] },
+						{ text: '$. ' + mmontoapagext, border: [false, false, false, false] },
+						{ text: recibo.pcomision + '%', border: [false, false, false, false] },
+						{ text: 'Bs. ' + mmovcom, border: [false, false, false, false] },
+						{ text: '$. ' + mmovcomext, border: [false, false, false, false] },
+						{ text: recibo.cmoneda, border: [false, false, false, false] },
+						{ text: recibo.ptasamon, border: [false, false, false, false] },
+					]
+				)
+			});
+
+
 			const pdfDefinition: any = {
 				// pageSize: 'A5',
 				// pageOrientation: 'landscape',
@@ -2726,8 +2728,8 @@ export class PdfGenerationService {
 									{ text: '% RETENCIÓN', bold: true, border: [false, false, false, false] },
 									{ text: 'MONTO RETENCIÓN', bold: true, border: [false, false, false, false] },
 									{ text: 'SUSTRAENDO', bold: true, border: [false, false, false, false] },
-									{ text: 'MONTO A PAGAR', bold: true, border: [false, false, false, false] },
 									{ text: 'DIFERENCIA CAMBIARIA', bold: true, border: [false, false, false, false] },
+									{ text: 'MONTO NETO A PAGAR', bold: true, border: [false, false, false, false] },
 
 								],
 								[
@@ -2738,8 +2740,8 @@ export class PdfGenerationService {
 									{ text: paymentRequest.pislr + ' %', border: [false, false, false, false], alignment: 'left' },
 									{ text: `${paymentRequest.cmoneda}. ${paymentRequest.islr}`, border: [false, false, false, false], alignment: 'left' },
 									{ text: `${paymentRequest.cmoneda}. ${paymentRequest.msustraendo}`, border: [false, false, false, false], alignment: 'left' },
-									{ text: `${paymentRequest.cmoneda}. ${paymentRequest.mmontototal}`, border: [false, false, false, false], alignment: 'left' },
 									{ text: `${paymentRequest.cmoneda}. ${paymentRequest.mmonto_3}`, border: [false, false, false, false], alignment: 'left' },
+									{ text: `${paymentRequest.cmoneda}. ${paymentRequest.mmontototal}`, border: [false, false, false, false], alignment: 'left' },
 								],
 							]
 						}
@@ -2782,7 +2784,7 @@ export class PdfGenerationService {
 							]
 						}
 					},
-										{
+					{
 						style: 'mini',
 						margin: [0, 0, 0, 3],
 						table: {
@@ -2858,7 +2860,7 @@ export class PdfGenerationService {
 			// 		// Puedes manejar el error aquí
 			// 	});
 		}
-		catch (err) { console.log() }
+		catch (err) { console.log(err) }
 
 	}
 
