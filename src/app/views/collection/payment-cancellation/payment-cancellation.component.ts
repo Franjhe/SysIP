@@ -125,30 +125,6 @@ export class PaymentCancellationComponent {
     return this.groupReceiptsForm.get("agrupado") as FormArray
   }
 
-  updateReceipt = this._formBuilder.group({
-    iestadorec: [{ value: '', disabled: false }],
-    mdiferencia :[{ value: '', disabled: false }],
-    iestado_tra : [{ value: '', disabled: false }],
-    xobservacion: [{ value: '', disabled: false }],
-    itransaccion: [{ value: '', disabled: false }],
-  });
-
-  updateReceiptPending = this._formBuilder.group({
-    itransaccion :'',
-    cmoneda:'',
-    cbanco:'',
-    cbanco_destino: '',
-    mpago: '',
-    mpagoext: '',
-    ptasamon: '',
-    ptasaref: '',
-    freporte: '',
-    xreferencia: '',
-    ximagen: '',
-    iestadorec: '',
-  });
-
-
   constructor( private _formBuilder: FormBuilder,
     private http: HttpClient,
     private sanitizer: DomSanitizer,
