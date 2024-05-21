@@ -697,14 +697,19 @@ export class PaymentAdministrationComponent {
           }  
           //primero llenamos el recipo y la tabla de transacciones 
           this.http.post(environment.apiUrl + '/api/v1/collection/collect-receipt',savePaymentTrans).subscribe( (response: any) => {
-            if (response.status) {
+            if (response.status && !this.image) {
               this.toast.open("Registro de pago éxitoso", "Cerrar", {
                 duration: 3000,
               });
-              if(this.image){
-                this.uploadFile()
-              }  
-            }
+              location.reload();
+            }else if (response.status){
+              this.toast.open("Registro de pago éxitoso", "Cerrar", {
+                duration: 3000,
+              });
+            }              
+            if(this.image){
+              this.uploadFile()
+            } 
           })   
   
         })
@@ -712,6 +717,19 @@ export class PaymentAdministrationComponent {
 
       if(this.searchReceipt.get('iestadorec')?.value == 'CS'){
         this.selection.selected.forEach(item => {
+
+          let monto = 0
+          let montoUSD = 0
+          let numero = Number(this.searchReceipt.get('mdiferencia')?.value)
+    
+          if(this.searchReceipt.get('cmoneda')?.value  == 'BS'){
+            montoUSD = numero / this.bcv
+            monto = numero || 0
+          }else{
+            montoUSD = numero || 0
+            monto = numero * this.bcv
+          }
+          
           const savePaymentTrans = {
             casegurado: item.cci_rif,
             mpago : this.mountBs,
@@ -731,23 +749,28 @@ export class PaymentAdministrationComponent {
             correo : item.xcorreo ,
             fcobro : this.searchReceipt.get('fcobro')?.value,
             balancePositivo:{        
-              msaldodif: this.searchReceipt.get('mdiferencia')?.value,
-              cmoneda_dif: this.searchReceipt.get('cmoneda')?.value,
+              cmoneda: this.searchReceipt.get('cmoneda')?.value,
+              msaldo: monto,
+              msaldoext: montoUSD,
               idiferencia : "H",
             }
           }
   
           //primero llenamos el recipo y la tabla de transacciones 
           this.http.post(environment.apiUrl + '/api/v1/collection/admin-positiveBalance',savePaymentTrans).subscribe( (response: any) => {
-            if (response.status) {
+            if (response.status && !this.image) {
               this.toast.open("Registro de pago éxitoso", "Cerrar", {
                 duration: 3000,
               });
-  
-            }
+              location.reload();
+            }else if (response.status){
+              this.toast.open("Registro de pago éxitoso", "Cerrar", {
+                duration: 3000,
+              });
+            }              
             if(this.image){
               this.uploadFile()
-            }
+            } 
   
           })   
   
@@ -812,8 +835,6 @@ export class PaymentAdministrationComponent {
 
       }
 
-    
-
     }else{
         const savePaymentTrans = {
           transaccion : this.idTrans,
@@ -832,20 +853,22 @@ export class PaymentAdministrationComponent {
           fcobro : this.searchReceipt.get('fcobro')?.value,
         }
 
-        console.log(savePaymentTrans)
+        this.http.post(environment.apiUrl + '/api/v1/collection/collect-receipt',savePaymentTrans).subscribe( (response: any) => {
+          if (response.status && !this.image) {
+            this.toast.open("Registro de pago éxitoso", "Cerrar", {
+              duration: 3000,
+            });
+            location.reload();
+          }else if (response.status){
+            this.toast.open("Registro de pago éxitoso", "Cerrar", {
+              duration: 3000,
+            });
+          }
 
-        //primero llenamos el recipo y la tabla de transacciones 
-        // this.http.post(environment.apiUrl + '/api/v1/collection/collect-receipt',savePaymentTrans).subscribe( (response: any) => {
-        //   if (response.status) {
-        //     this.toast.open("Registro de pago éxitoso", "Cerrar", {
-        //       duration: 3000,
-        //     });
-
-        //   }
-        //   if(this.image){
-        //     this.uploadFile()
-        //   }
-        // })   
+          if(this.image){
+            this.uploadFile()
+          }
+        })   
 
     } 
 

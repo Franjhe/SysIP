@@ -20,22 +20,28 @@
                   [formGroupName]="i" 
                   [id]="'pannel'+i">
                   <ng-template ngbPanelHeader let-opened="opened"  >
-                    <div class="row p-3 button bg-gradient" style="background-color: navy;" [class.bg-danger]="group.value.iestado_tran == 'ER' ">
+                    <div class="row p-3 button" style="background-color: #3662ac;" [class.bg-danger]="group.value.iestado_tran == 'ER' ">
 
                       <div class="col-4 text-light" style="font-size: medium;">
-                        Asegurado {{group.value.casegurado}} {{group.value.xcliente}}<br>
-                        Fecha de notificacion de pago {{group.value.freporte}}<br>
-                        Tasa BCV de cobro {{group.value.ptasamon}}
+                        <a>
+                          Asegurado {{group.value.casegurado}} {{group.value.xcliente}}<br>
+                          Fecha de notificacion de pago {{group.value.freporte}}<br>
+                          Tasa BCV de cobro {{group.value.ptasamon}}
+                        </a>
                       </div>
 
                       <div class="col-4 text-light" style="font-size: medium;">
-                        Pago Bs {{group.value.monto_transaccion}}<br>
-                        Pago $  {{group.value.monto_transaccion_ext}}<br>
+                        <a>
+                          Pago Bs {{group.value.monto_transaccion}}<br>
+                          Pago $  {{group.value.monto_transaccion_ext}}<br>
+                        </a>
                       </div>
 
                       <div *ngIf="group.value.msaldodif > 0" class="col-4 text-light" style="font-size: medium;">
-                        Saldo a favor de {{group.value.msaldodif}} {{group.value.cmoneda_dif}}<br>
-                        Tasa del día {{group.value.tasa_saldo}}<br>
+                        <a>
+                          Saldo a favor de {{group.value.msaldodif}} {{group.value.cmoneda_dif}}<br>
+                          Tasa del día {{group.value.tasa_saldo}}<br>
+                        </a>
 
                       </div>
 
@@ -98,7 +104,7 @@
                       <div class="col-2">
 
 
-                        <mat-form-field *ngIf="group.value.casegurado != 1300 ">
+                        <mat-form-field>
                           <mat-label>Estado de recibo</mat-label>
                           <mat-select (selectionChange)="validateMov(i)" formControlName="iestadorec" >
                             <mat-option value="C">Cobrado</mat-option>
@@ -106,15 +112,6 @@
                             <mat-option value="CS">Cobrado con saldo a favor</mat-option>
                           </mat-select>
                         </mat-form-field>
-
-                        <mat-form-field *ngIf="group.value.casegurado == 1300 ">
-                          <mat-label>Estado de recibo</mat-label>
-                          <mat-select (selectionChange)="validateMov(i)" formControlName="iestadorec" >
-                            <mat-option value="C">Cobrado</mat-option>
-                            <mat-option value="ER">En revision</mat-option>
-                          </mat-select>
-                        </mat-form-field>
-
     
                         <mat-form-field *ngIf="revision || cobradoSAF">
                           <mat-label>Diferencia</mat-label>

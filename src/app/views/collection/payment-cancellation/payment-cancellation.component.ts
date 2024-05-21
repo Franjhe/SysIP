@@ -5,6 +5,8 @@ import { environment } from 'src/environments/environment';
 import {MatDialog } from '@angular/material/dialog';
 import { MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 
 @Component({
   selector: 'app-payment-cancellation',
@@ -46,6 +48,8 @@ export class PaymentCancellationComponent {
   constructor( 
     private _formBuilder: FormBuilder,
     private http: HttpClient,
+    private toast: MatSnackBar,
+
     private sanitizer: DomSanitizer,
     readonly dialog: MatDialog
   ) {}
@@ -249,6 +253,17 @@ export class PaymentCancellationComponent {
 
     }
     else if(creds.at(i).get('iestadorec')?.value == 'CS' ){
+      let monto = 0
+      let montoUSD = 0
+
+      if(creds.at(i).get('cmoneda')?.value  == 'BS'){
+        montoUSD = creds.at(i).get('mdiferencia')?.value / this.bcv
+        monto = creds.at(i).get('mdiferencia')?.value
+      }else{
+        montoUSD = creds.at(i).get('mdiferencia')?.value
+        monto = creds.at(i).get('mdiferencia')?.value * this.bcv
+      }
+
       let data = {
         transaccion : creds.at(i).get('id')?.value,
         iestadorec: 'C',
@@ -262,16 +277,19 @@ export class PaymentCancellationComponent {
         cprog : 'normalizacionPago',
         ifuente : 'Web_Sys',
         balancePositivo:{        
-          cmoneda_dif: creds.at(i).get('cmoneda')?.value,
-          msaldodif: creds.at(i).get('mdiferencia')?.value,
+          cmoneda: creds.at(i).get('cmoneda')?.value,
+          msaldo: monto,
+          msaldoext: montoUSD,
           idiferencia : "H",
         }
       }
 
-      console.log(data)
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt-positive-balance', data ).subscribe((response: any) => {
         if(response.status){
-          //location.reload()
+          this.toast.open("Actualización de pago éxitoso", "Cerrar", {
+            duration: 3000,
+          });
+          location.reload()
         }
   
       })
@@ -293,7 +311,10 @@ export class PaymentCancellationComponent {
       }
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt/', data ).subscribe((response: any) => {
         if(response.status){
-          //location.reload()
+          this.toast.open("Actualización de pago éxitoso", "Cerrar", {
+            duration: 3000,
+          });
+          location.reload()        
         }
   
       })

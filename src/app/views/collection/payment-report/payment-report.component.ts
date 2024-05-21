@@ -704,15 +704,10 @@ export class PaymentReportComponent {
           this.toast.open("Registro de pago éxitoso", "Cerrar", {
             duration: 3000,
           });
-
+          this.uploadFile()
         }
-        this.uploadFile()
   
       })
-            
-      setTimeout(() => {
-        location.reload();
-      }, 3000);
 
     }else{
       const savePaymentTrans = {
@@ -740,14 +735,9 @@ export class PaymentReportComponent {
           this.toast.open("Registro de pago éxitoso", "Cerrar", {
             duration: 3000,
           });
-
+          this.uploadFile()
         }
-        this.uploadFile()
       })   
-  
-      setTimeout(() => {
-        location.reload();
-      }, 3000);
     }
 
 
@@ -828,7 +818,9 @@ export class PaymentReportComponent {
       //cargamos las imagenes con el codigo de transaccion
       
     }
-    this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {})
+    this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {
+      location.reload()
+    })
   }
 
   getTargetBank(i : any){
