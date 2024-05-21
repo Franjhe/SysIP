@@ -611,6 +611,7 @@ export class PaymentCancellationComponent {
         detalle : creds.at(i).get('poliza')?.value,
         cusuario : this.usuario,
         fcobro : new Date(),
+        ptasamon : this.bcv,
 
 
       }
