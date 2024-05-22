@@ -1,17 +1,16 @@
-import { Component, OnInit, OnDestroy, ViewChild, TemplateRef, ElementRef, Inject } from '@angular/core';
-import { FormBuilder, Validators, FormGroup, AbstractControl, FormArray, FormControl } from '@angular/forms';
+import { Component,  ViewChild, TemplateRef } from '@angular/core';
+import { FormBuilder, FormGroup,  FormArray } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatSort , MatSortModule } from '@angular/material/sort';
+import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { SelectionModel } from '@angular/cdk/collections';
 import {MatStepperModule} from '@angular/material/stepper';
-import { Observable, OperatorFunction , fromEvent } from 'rxjs';
+import { Observable, OperatorFunction  } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, filter } from 'rxjs/operators';
-
 
 type Treatments = { id: number; value:string};
 
@@ -31,37 +30,20 @@ export class PaymentAdministrationComponent {
   displayedColumns: string[] = ['select','progress', 'cedula','fruit','correo'];
   dataSource = new MatTableDataSource<any> ;
 
-  //modales de tipos de pago
-  @ViewChild('Transfer') Transfer!: TemplateRef<any>;
-  @ViewChild('Deposit') Deposit!: TemplateRef<any>;
-  @ViewChild('PagoMovil') PagoMovil!: TemplateRef<any>;
-  @ViewChild('DepositoUSD') DepositoUSD!: TemplateRef<any>;
-
-  transaccionUnica : boolean = false
-
-  bcv : any
-  targetBankList : any = []
-  selectedFiles?: FileList;
-  currentFile?: File;
-  typeOfPayList : any = []
-
+  transaccionUnica : boolean = false  //determina si el pago es multiple
   idTrans : any
+
+  targetBankList : any = []
   diference : boolean = false
   asegurado : any
-
   viewData : boolean = false
-  viewBank : boolean = false
-  paymentMix : boolean = false
   Submit : boolean = false 
   puedeAvanzar: boolean = false 
   image: boolean = false 
 
-  usd : boolean = false
-  pmovil : boolean = false
-  depositoUSD : boolean = false
-  trans: boolean = false
-  
   cliente : any = {}
+
+  bcv : any
   mount : any //monto de la suma de los recibos 
   mountIGTF : any //monto con el calculo igtf 
   mountBs : any //monto en bolivares multiplicado por bcv 
@@ -71,14 +53,11 @@ export class PaymentAdministrationComponent {
 
   bankList : any = []
   tipoTrans : any = []
-  backEmitter : any = []
   coinList : any = []
   receiptList : any = []
   transferList : any = []
   tradesList : any = []
   listaNombres: any = []
-  transaccion : any
-
   listaRecibos : any = []
 
   bankInternational : any = []
@@ -88,12 +67,20 @@ export class PaymentAdministrationComponent {
   bankReceptorNational : any = []
   bankReceptorPM : any = []
   bankReceptorCustodia : any = []
-  classText : any 
+
+  messageDiference : any = []
+  PositiveBalance : any
+  PositiveBalanceBool :boolean = false;
+
+  revision : boolean = false
+  cobradoSAF : boolean = false
+  currentUser!: any
+  usuario : any 
+
   searchReceipt = this._formBuilder.group({
     receipt :  this._formBuilder.array([]),
     transfer : this._formBuilder.array([]),
     fcobro : new Date(),
-    xcedula: [''],
     iestadorec : [''],
     xobservacion :[''],
     mdiferencia : [''],
@@ -101,25 +88,6 @@ export class PaymentAdministrationComponent {
     cmoneda :[''],
     recibo: [''],
   });
-
-  itipo!: any ;
-  amountDollar!: any ;
-  amountBs!: any ;
-  montoTotal!: any ;
-  montoDollar!: any ;
-  montoBs!: any ;
-  
-  diferenceBool :boolean = false;
-  messageDiference : any = []
-
-  PositiveBalance : any
-  PositiveBalanceBool :boolean = false;
-  correo : any
-
-  revision : boolean = false
-  cobradoSAF : boolean = false
-  currentUser!: any
-  usuario : any 
 
   constructor( private _formBuilder: FormBuilder,
     private http: HttpClient,
@@ -143,8 +111,6 @@ export class PaymentAdministrationComponent {
     this.currentUser = JSON.parse(token);
     this.usuario = this.currentUser.data.cusuario
 
-
-
     fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv')
     .then((response) => response.json())
     .then(data => {
@@ -165,17 +131,13 @@ export class PaymentAdministrationComponent {
 
     })
 
-    fetch(environment.apiUrl + '/api/v1/valrep/coin')
+    fetch(environment.apiUrl + '/api/v1/collection/search-pending' )
     .then((response) => response.json())
-    .then(coin => {
-
-      this.coinList = []
-      for(let i = 0; i < coin.data.coins.length; i++){
-        this.coinList.push({
-          id: coin.data.coins[i].cmoneda,
-          value: coin.data.coins[i].xdescripcion_l,
-        })
-      }
+    .then(data => {
+      this.dataSource = new MatTableDataSource(data.searchPaymentPendingData.recibo);
+      const listPending = data.searchPaymentPendingData.recibo
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
 
     })
 
@@ -272,15 +234,6 @@ export class PaymentAdministrationComponent {
       }
     })
 
-    fetch(environment.apiUrl + '/api/v1/collection/search-pending' )
-    .then((response) => response.json())
-    .then(data => {
-      this.dataSource = new MatTableDataSource(data.searchPaymentPendingData.recibo);
-      const listPending = data.searchPaymentPendingData.recibo
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-
-    })
 
   }
 
@@ -614,7 +567,6 @@ export class PaymentAdministrationComponent {
             asegurado : receipt.value[i].asegurado,
             cuotas : receipt.value[i].qcuotas,
 
-  
           });
         }else{
           this.asegurado = receipt.value[i].asegurado
@@ -725,9 +677,9 @@ export class PaymentAdministrationComponent {
         this.selection.selected.forEach(item => {
           const savePaymentTrans = {
           group : false,
-          ctransaccion : this.idTrans,
+          transaccion : this.idTrans,
           receipt : this.receiptList,
-          report: this.transferList,
+          soporte: this.transferList,
           casegurado: item.cci_rif,
           mpago : this.mountBs,
           mpagoext : this.mountIGTF,
@@ -738,10 +690,9 @@ export class PaymentAdministrationComponent {
           iestadorec : 'C',
           ifuente : 'Web_Sys',
           iestado : 0,
-          detalle : this.receiptList,
+          recibo : this.receiptList,
           fpago : fecha,
           cliente : item.xcliente,
-          transaccion : this.idTrans,
           correo : item.xcorreo ,
           ccategoria : this.searchReceipt.get('ccategoria')?.value,
           fcobro : this.searchReceipt.get('fcobro')?.value,
@@ -771,30 +722,29 @@ export class PaymentAdministrationComponent {
       if(this.searchReceipt.get('iestadorec')?.value == 'CS'){
         this.selection.selected.forEach(item => {
           const savePaymentTrans = {
-          group : false,
-          msaldodif: this.searchReceipt.get('mdiferencia')?.value,
-          cmoneda_dif: this.searchReceipt.get('cmoneda')?.value,
-          receipt : this.receiptList,
-          report: this.transferList,
-          casegurado: item.cci_rif,
-          mpago : this.mountBs,
-          mpagoext : this.mountIGTF,
-          ptasamon : this.bcv,
-          freporte : fecha ,
-          cprog : 'Pg_admin',
-          cusuario : this.usuario,
-          iestadorec : 'C',
-          ifuente : 'Web_Sys',
-          iestado : 0,
-          detalle : this.receiptList,
-          fpago : fecha,
-          cliente : item.xcliente,
-          transaccion : this.idTrans,
-          ctransaccion: this.idTrans,
-          correo : item.xcorreo ,
-          fcobro : this.searchReceipt.get('fcobro')?.value,
-
-          idiferencia : "H",
+            group : false,
+            casegurado: item.cci_rif,
+            mpago : this.mountBs,
+            mpagoext : this.mountIGTF,
+            ptasamon : this.bcv,
+            freporte : fecha ,
+            cprog : 'Pg_admin',
+            cusuario : this.usuario,
+            iestadorec : 'C',
+            ifuente : 'Web_Sys',
+            iestado : 0,
+            soporte: this.transferList,
+            recibo : this.receiptList,
+            fpago : fecha,
+            cliente : item.xcliente,
+            transaccion : this.idTrans,
+            correo : item.xcorreo ,
+            fcobro : this.searchReceipt.get('fcobro')?.value,
+            balancePositivo:{        
+              cmoneda_dif: this.searchReceipt.get('cmoneda')?.value,
+              msaldodif: this.searchReceipt.get('mdiferencia')?.value,
+              idiferencia : "H",
+            }
           }
   
           //primero llenamos el recipo y la tabla de transacciones 
@@ -820,9 +770,9 @@ export class PaymentAdministrationComponent {
     }else{
         const savePaymentTrans = {
         group : true,
-        ctransaccion : this.idTrans,
+        transaccion : this.idTrans,
         receipt : this.receiptList,
-        report: this.transferList,
+        soporte: this.transferList,
         asegurados: this.listaNombres,
         mpago : this.mountBs,
         mpagoext : this.mountIGTF,
@@ -834,8 +784,7 @@ export class PaymentAdministrationComponent {
         ifuente : 'Web_Sys',
         iestado : 0,
         fpago : fecha,
-        transaccion : this.idTrans,
-        detalle : this.receiptList,
+        recibo : this.receiptList,
         fcobro : this.searchReceipt.get('fcobro')?.value,
 
         ccategoria : this.searchReceipt.get('ccategoria')?.value,
@@ -866,7 +815,7 @@ export class PaymentAdministrationComponent {
   uploadFile(){
     const transfer = this.searchReceipt.get("transfer") as FormArray
 
-    let asegurado = this.searchReceipt.get('xcedula')?.value || ''
+    let asegurado = this.asegurado
     const fecha = new Date()
     let fechaTran = fecha.toISOString().substring(0, 10);
 
