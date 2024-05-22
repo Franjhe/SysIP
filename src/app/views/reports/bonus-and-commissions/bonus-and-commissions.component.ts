@@ -10,7 +10,8 @@ import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition
 import { SelectionModel } from '@angular/cdk/collections';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import { clear } from 'console';
+import { clear, table } from 'console';
+import { Observable, map, startWith } from 'rxjs';
 
 @Component({
   selector: 'app-bonus-and-commissions',
@@ -18,20 +19,34 @@ import { clear } from 'console';
   styleUrls: ['./bonus-and-commissions.component.scss']
 })
 export class BonusAndCommissionsComponent {
+  producerControl = new FormControl('');
+  filteredProducer!: Observable<string[]>;
+
+  intermediarioFormGroup = this._formBuilder.group({
+    intermediario: ['', Validators.required],
+  });
+
+  filterFormGroup = new FormGroup({
+    start: new FormControl<Date | null>(null),
+    end: new FormControl<Date | null>(null),
+    intermediario: new FormControl(null),
+  });
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   @ViewChild('Alerta') InfoReceipt!: TemplateRef<any>;
 
-  displayedColumns: string[] = ['poliza', 'descripcion', 'id-tomador', 'nombre-tomador', 'id-asegurado', 'nombre-asegurado', 'moneda', 'recibo', 'fecha-desde-rec', 'fecha-hasta-rec'];
+  displayedColumns: string[] = ['poliza', 'recibo', 'tipo_mov', 'descripcion', 'intermediario', 'fcobro', 'id-tomador', 'nombre-tomador', 'id-asegurado', 'nombre-asegurado', 'moneda', 'fecha-desde-rec', 'fecha-hasta-rec'];
   itemList: any = [];
   // displayedColumns: string[] = [];
   dataSource = new MatTableDataSource<any>;
   dataSourceindex: any;
   defaultDataSource = new MatTableDataSource<any>;
   filteredData: any;
-  
+
+  producerList: any = [];
+
   constructor(private _formBuilder: FormBuilder,
     private http: HttpClient,
     // private sanitizer: DomSanitizer,
@@ -43,8 +58,9 @@ export class BonusAndCommissionsComponent {
 
   ngOnInit() {
     this.itemList = [];
+    let rangoFecha = {}
 
-    this.http.post(environment.apiUrl + '/api/v1/report/bonusAndCommissions', '').subscribe((response: any) => {
+    this.http.post(environment.apiUrl + '/api/v1/report/bonusAndCommissions', rangoFecha).subscribe((response: any) => {
       var data = response.data.list.search
 
       // console.log(response.data.list.search);
@@ -55,18 +71,40 @@ export class BonusAndCommissionsComponent {
 
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-
-
-      // this.itemList.push(
-      //   {
-      //     poliza: data['Nro. Poliza'],
-      //     descripcion: data['Descripcion del Ramo'],
-      //     identificacion: data['Identificacion'],
-      //     tomador: data['Nombre del Tomador'],
-      //   }
-      // );
     })
 
+    // this.http.post(environment.apiUrl + '/api/v1/valrep/producers', rangoFecha).subscribe((response: any) => {
+    // this.producerList = response.data.producer
+    // })
+    this.getProducers();
+    // console.log(this.filteredProducer);
+
+
+  }
+
+  getProducers() {
+    this.http.post(environment.apiUrl + '/api/v1/valrep/producers', null).subscribe((response: any) => {
+      if (response.data.producer) {
+        for (let i = 0; i < response.data.producer.length; i++) {
+          this.producerList.push({
+            id: response.data.producer[i].cproductor,
+            value: response.data.producer[i].xproductor,
+          });
+        }
+        // this.filteredProducer = this.producerList.data
+        this.filteredProducer = this.producerControl.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filterBroker(value || ''))
+        );
+      }
+    });
+  }
+
+  private _filterBroker(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.producerList
+      .map((producer: any) => producer.value)
+      .filter((producer: any) => producer ? producer.toLowerCase().includes(filterValue) : '');
   }
 
   exportExcel() {
@@ -83,58 +121,61 @@ export class BonusAndCommissionsComponent {
     });
   }
 
-  // makeExcel(){
-  //   this.snackBar.open("Reporte en Excel descargado con Éxito", "Cerrar", {
-  //     duration: 3000,
-  //     panelClass: ['blue-snackbar'],  
-  //   });
-  //   let fecha = new Date()
-  //   let day = fecha.getDate()
-  //   let month = fecha.getMonth() + 1
-  //   let year = fecha.getFullYear()
-  //   var formato_fecha = fecha.toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' });
-  //     // if(this.consulta_reporte.get('estatus')?.value == 'C'){
-  //     //   this.makeExcelCollection()
-  //     // }
-  //     // else{
-  //         const filteredData = this.listPending.map((item :any) => ({
-  //           'Poliza': item.Poliza,
-  //           'Descripción_Ramo': item.Descripcion_Ramo,
-  //           'Fecha_Emision_Rec': item.Fecha_Emision_Rec,
-  //           'Fecha_desde_Pol' : item.Fecha_desde_Pol,
-  //           'Fecha_hasta_Pol': item.Fecha_hasta_Pol,
-  //           'Cedula_Tomador': item.CID,
-  //           'Nombre_del_Tomador': item.Nombre_del_Tomador,
-  //           'Cedula_Asegurado' : item.Id_Asegurado,
-  //           'Nombre_Asegurado' : item.Nombre_Asegurado,
-  //           'Moneda': item.Moneda,
-  //           'Nro_Recibo' : item.Nro_Recibo,
-  //           'Fecha_desde_Recibo' : item.Fecha_desde_Recibo,
-  //           'Fecha_hasta_Recibo' : item.Fecha_hasta_Recibo,
-  //           'Estatus_Recibo' :item.Descripcion_estado_rec,
-  //           'Suma_asegurada': item.Suma_asegurada ? item.Suma_asegurada.toFixed(2) : 0.00,
-  //           'Suma_asegurada_Ext': item.Suma_asegurada_Ext ? item.Suma_asegurada_Ext.toFixed(2) : 0.00,
-  //           'Monto_Recibo' : item.Monto_Recibo,
-  //           'Monto_Recibo_Ext' : item.Monto_Recibo_Ext,
-  //           'Tasa_Cambio' : item.Tasa_Cambio,
-  //           'Dias_de_vigencia' : item.Dias_de_vigencia,
-  //           'Sucursal' :item.Sucursal,
-  //           'Intermediario' :item.Intermediario,
-  //     }));
-  //       const worksheet = XLSX.utils.json_to_sheet(filteredData);
-  //       const workbook = XLSX.utils.book_new();
-  //       XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
-  //       const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  //       const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.  spreadsheetml.sheet' });
-  //       saveAs(excelData, `Reporte de recibos pendientes solicitados.xlsx`);
-  //       // } 
-  // }
-
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
     this.itemList = this.dataSource.filteredData
-    
+  }
+
+  intermediarioFilter(event: any) {
+    const selectedValue = event.option.value;
+    const selectedProducer = this.producerList.find((broker: any) => broker.value === selectedValue);
+    console.log(selectedProducer);
+
+    this.itemList = [];
+    this.dataSource.data = []
+
+    let body = {
+      intermediario: selectedProducer.value
+    }
+
+    this.http.post(environment.apiUrl + '/api/v1/report/bonusAndCommissions', body).subscribe((response: any) => {
+      var data = response.data.list.search
+
+      console.log(response.data.list.search);
+
+      // this.defaultDataSource = new MatTableDataSource(data);
+      this.dataSource.data = response.data.list.search;
+      this.itemList = new MatTableDataSource(data).data;
+    })
+
+  }
+
+  dateFilter(event: any) {
+    // console.log(event);
+    let inicio: Date = this.filterFormGroup.get('start')?.value || new Date()
+    let final = this.filterFormGroup.get('end')?.value || new Date()
+
+    let body = {
+      start: new Date(inicio),
+      end: new Date(final)
+    }
+
+    this.itemList = [];
+    this.dataSource.data = []
+
+    this.http.post(environment.apiUrl + '/api/v1/report/bonusAndCommissions', body).subscribe((response: any) => {
+      var data = response.data.list.search
+
+      console.log(response.data.list.search);
+
+      // this.defaultDataSource = new MatTableDataSource(data);
+      this.dataSource.data = response.data.list.search;
+      this.itemList = new MatTableDataSource(data).data;
+    })
+
+    // console.log(this.itemList);
+
   }
 
   sortData(sort: Sort) {

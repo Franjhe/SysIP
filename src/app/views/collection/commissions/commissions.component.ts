@@ -30,6 +30,9 @@ export interface PaymentRequest {
   pislr: any;
   mislr: any;
   mislrext: any;
+  msustraendo: any;
+  msustraendoext: any;
+  ipersona: any;
   xobservaciones?: any;
   recibos: any;
   cmoneda: any;
@@ -46,6 +49,11 @@ export class CommissionsComponent {
   paymentRequestFormGroup = this._formBuilder.group({
     transfer : this._formBuilder.array([]),
     cmonedaOrden: ['', Validators.required],
+  });
+
+  range = new FormGroup({
+    start: new FormControl<Date | null>(null),
+    end: new FormControl<Date | null>(null),
   });
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -68,6 +76,7 @@ export class CommissionsComponent {
   montoext : any
   restante : any
   diferencia : any
+  msustraendo: any = 0;
   neto : any
   netoBs : any
 
@@ -127,7 +136,13 @@ export class CommissionsComponent {
       this.tasaBcv = data.monitors.usd.price
     })
 
-    this.http.post(environment.apiUrl + '/api/v1/commissions/search', '').subscribe((response: any) => {
+
+    let rangoFecha = {
+      start: new Date(),
+      end : new Date()
+    }
+
+    this.http.post(environment.apiUrl + '/api/v1/commissions/search', rangoFecha).subscribe((response: any) => {
       // ////console.log(response);
 
 
@@ -163,6 +178,25 @@ export class CommissionsComponent {
       // }
     })
 
+  }
+
+  searchCommis(){
+    let inicio : Date = this.range.get('start')?.value || new Date()
+    let final = this.range.get('end')?.value || new Date()
+
+    let rangoFecha = {
+      start: new Date(inicio).toLocaleDateString('fr-CA'),
+      end : new Date(final).toLocaleDateString('fr-CA')
+
+    }
+    this.http.post(environment.apiUrl + '/api/v1/commissions/search',rangoFecha ).subscribe((response: any) => {
+
+      this.defaultDataSource = new MatTableDataSource(response.returnData.search);
+      this.dataSource = new MatTableDataSource(response.returnData.search);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+
+    })
   }
 
   applyFilter(event: Event) {
@@ -202,11 +236,16 @@ export class CommissionsComponent {
   dataCorredor(ccorredor: any, cmoneda: any, index: any) {
     this.clearData();
 
+    let inicio : Date = this.range.get('start')?.value || new Date()
+    let final = this.range.get('end')?.value || new Date()
+
     // ////console.log(index);
     this.dataSourceindex = index;
     let data = {
       "ccorredor": ccorredor,
-      "cmoneda": cmoneda
+      "cmoneda": cmoneda,
+      start: new Date(inicio).toLocaleDateString('fr-CA'),
+      end : new Date(final).toLocaleDateString('fr-CA')
     }
     this.http.post(environment.apiUrl + '/api/v1/commissions/search-insurerCommissions/', data).subscribe((response: any) => {
       // this.tableCommisionPorProductor = new MatTableDataSource<any>;
@@ -342,10 +381,27 @@ export class CommissionsComponent {
     ////console.log(e);
     
     // ////console.log(e.ariaLabel);
+
+    
     
     this.listMonedaOrden[e.source.id] = e.value;
     this.moneda = e.value
     this.addPayment1(e.value)
+
+    
+    
+    // console.log(this.moneda);
+    
+
+    if (this.moneda.trim().toLowerCase() == 'bs') {
+      this.msustraendo = 22.5
+    } else {
+      this.msustraendo = (22.5 / this.tasaBcv).toFixed(2);
+    }
+
+    // this.monto = this.msustraendo
+    // this.montoext = this.msustraendo
+    // console.log(this.msustraendo);
 
   }
 
@@ -452,12 +508,23 @@ export class CommissionsComponent {
           mislr = element.mmovcomtot * (data.pislr / 100);
           mislrext = element.mmovcomexttot * (data.pislr / 100);
         } 
-                
 
         let mpagosol = element.mmovcomtot - mislr;
         let mpagosolext = element.mmovcomexttot - mislrext;
-        this.montoext = mpagosolext
-        this.monto = mpagosol
+        let msustraendo = 0;
+        let msustraendoext = 0;
+
+        if (data.ipersona == 'N') {
+          mpagosol -= 22.5;
+          mpagosolext -= (22.5 / this.tasaBcv);
+          msustraendo = 22.5
+          msustraendoext = (22.5 / this.tasaBcv);
+        } else {
+          this.msustraendo = 0;
+        }
+        
+        this.montoext = mpagosolext 
+        this.monto = mpagosol 
         this.neto = this.montoext
         this.netoBs = this.monto 
 
@@ -482,6 +549,9 @@ export class CommissionsComponent {
             pislr: pislr.toFixed(2),
             mislr: mislr.toFixed(2),
             mislrext: mislrext.toFixed(2),
+            msustraendo: msustraendo,
+            msustraendoext: msustraendoext,
+            ipersona: data.ipersona,
             mpagosol: mpagosol.toFixed(2),
             mpagosolext: mpagosolext.toFixed(2),
             // mmontototal: element.mmovcomexttot,
@@ -493,6 +563,9 @@ export class CommissionsComponent {
           this.listPaymentRequest.push(paymentRequest);
         });
 
+        console.log(this.listPaymentRequest);
+        
+
       });
     });
 
@@ -502,7 +575,9 @@ export class CommissionsComponent {
   }
 
   bcvChange(tasa : any) {
+    
     this.tasaBcv = tasa;
+    this.updateSustraendo();
   }
 
   diferenceChange(mount : any) {
@@ -632,6 +707,23 @@ export class CommissionsComponent {
   //   // ////console.log(this.paymentRequestFormGroup.get('mpago')?.value);
 
   // }
+
+  updateSustraendo() {
+    this.listPaymentRequest.forEach((e: any) => {
+      if (e.ipersona == 'N') {
+        if (this.moneda == 'Bs') {
+          this.msustraendo = 22.5 
+          e.msustraendo = 22.5
+        } else {
+          this.msustraendo = (22.5 / this.tasaBcv).toFixed(2)
+          e.msustraendo = (22.5 / this.tasaBcv).toFixed(2)
+          this.netoBs = e.mpagosolext - this.msustraendo
+        }
+      }
+    })
+    console.log(this.listPaymentRequest);
+    
+  }
 
   cancelPaymentRequests(config?: MatDialogConfig) {
     this.listPaymentRequest = [];

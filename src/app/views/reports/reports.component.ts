@@ -66,12 +66,12 @@ export class ReportsComponent {
   ) {
   }
   availableColors = [
-    { name: 'Recibos Pendientes', color: 'primary', valor: 'P' },
-    { name: 'Recibos Cobrados', color: 'warn', valor: 'C' },
-    { name: 'Recibos Anulados', color: 'accent', valor: 'A' },
-    { name: 'Recibos Notificados', color: 'warn', valor: 'N' },
-    { name: 'Detalle de Cobrados', color: 'accent', valor: 'CD' },
-    { name: 'Ingreso de Caja', color: 'primary', valor: 'I' },
+    { name: 'Recibos Pendientes',  color: 'primary',  valor: 'P' },
+    { name: 'Recibos Cobrados',    color: 'warn',     valor: 'C' },
+    { name: 'Recibos Anulados',    color: 'accent',   valor: 'A' },
+    { name: 'Recibos Notificados', color: 'warn',     valor: 'N' },
+    { name: 'Detalle de Cobrados', color: 'accent',   valor: 'CD' },
+    { name: 'Ingreso de Caja',     color: 'primary',  valor: 'I' },
   ];
 
   ngOnInit() {
@@ -85,11 +85,9 @@ export class ReportsComponent {
       
     });
   }
-
   saveSelection(opcion: string) {
     this.selectedOption = opcion;
     this.consulta_reporte.get('estado')?.setValue(this.selectedOption);
-    
     this.dataReport();
   }
   selectValor(opcion: any) {
@@ -109,7 +107,6 @@ export class ReportsComponent {
       estado: this.consulta_reporte.get('estado')?.value,
       fdesde_pol: this.consulta_reporte.get('fdesde_pol')?.value,
       fhasta_pol: this.consulta_reporte.get('fhasta_pol')?.value,
-
     };
     this.http.post(environment.apiUrl_reporte + '/single_receipts/', data).subscribe((response: any) => {
     });
@@ -124,7 +121,6 @@ export class ReportsComponent {
       fhasta_pol: this.consulta_reporte.get('fhasta_pol')?.value,
       ctransaccion: this.consulta_reporte.get('ctransaccion')?.value,
     };
-
     var mediaType = 'application/pdf';
     try {
       this.http.post(environment.apiUrl_prod + '/single_receipts/', JSON.stringify(data), { responseType: 'blob' }).subscribe(
@@ -132,7 +128,6 @@ export class ReportsComponent {
           var blob = new Blob([response], { type: mediaType });
           saveAs(blob, 'reporte.pdf');
         },
-        // e => { throwError(e); }
       );
     } catch (e) {
       // console.log(e);
@@ -149,7 +144,6 @@ export class ReportsComponent {
       this.sendButton = true;
     }
   }
-  
   dataReport() {
     let estado = this.consulta_reporte.get('estado')?.value;
     let fdesde_pol = this.consulta_reporte.get('fdesde_pol')?.value;
@@ -179,8 +173,7 @@ export class ReportsComponent {
             let fechaHaReceipt = dateHaReceipt.toISOString().substring(0, 10);
             //fecha Cobro Recibo
             let dateFCreceipt = new Date(data.searchPaymentCollected.recibo[i].Fecha_Cobro);
-            let fechaDeCobro = dateFCreceipt.toISOString().substring(0, 10);
-            
+            let fechaDeCobro = dateFCreceipt.toISOString().substring(0, 10); 
             let estado = ''
 
             if (data.searchPaymentCollected.recibo[i].Estado_del_Recibo == 'P') {
@@ -226,8 +219,7 @@ export class ReportsComponent {
               Sucursal: data.searchPaymentCollected.recibo[i].Sucursal,
               Intermediario: data.searchPaymentCollected.recibo[i].Intermediario,
               Fecha_Cobro: fechaDeCobro,
-              Poliza_Origen: data.searchPaymentCollected.recibo[i].Poliza_Origen,
-              
+              Poliza_Origen: data.searchPaymentCollected.recibo[i].Poliza_Origen,     
             })
           }
         })
@@ -236,7 +228,6 @@ export class ReportsComponent {
     }
   }
   makeExcel() {
-    
     this.snackBar.open("Reporte en Excel descargado con Éxito", "Cerrar", {
       duration: 3000,
     });
@@ -248,10 +239,8 @@ export class ReportsComponent {
     let filteredData = []
     let fdesde_pol = this.consulta_reporte.get('fdesde_pol')?.value;
     let fhasta_pol = this.consulta_reporte.get('fhasta_pol')?.value;
-
     fdesde_pol = fdesde_pol ? fdesde_pol : '1900-01-01';
     fhasta_pol = fhasta_pol ? fhasta_pol : '2100-01-01';
-
     if (this.valorList == 'C') {
 
       for (let item of this.listPending) {
@@ -325,7 +314,6 @@ export class ReportsComponent {
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.  spreadsheetml.sheet' });
     saveAs(excelData, `Reporte de Recibos.xlsx`);
-    // } 
   }
   makeExcelCollection() {
     this.snackBar.open("Reporte en Excel descargado con Éxito", "Cerrar", {
@@ -367,7 +355,6 @@ export class ReportsComponent {
     const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.  spreadsheetml.sheet' });
     saveAs(excelData, `Detalle de recibos pendientes Cobrados.xlsx`);
   }
-
   sendMail() {
     let estado = this.consulta_reporte.get('estado')?.value
     let variable = (<HTMLInputElement>document.getElementById("prueba1")).value;
