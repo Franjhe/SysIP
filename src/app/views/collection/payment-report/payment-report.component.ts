@@ -701,7 +701,7 @@ export class PaymentReportComponent {
       this.http.post(environment.apiUrl + '/api/v1/collection/create-report-diference', reporData).subscribe( (response: any) => {
         if (response.status) {
 
-          this.toast.open("Registro de pago éxitoso", "Cerrar", {
+          this.toast.open("Registro de pago éxitoso,su pago sera validado en 48 horas", "Cerrar", {
             duration: 3000,
           });
           this.uploadFile()
@@ -732,7 +732,7 @@ export class PaymentReportComponent {
       this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
         if (response.status) {
 
-          this.toast.open("Registro de pago éxitoso", "Cerrar", {
+          this.toast.open("Registro de pago éxitoso,su pago sera validado en 48 horas", "Cerrar", {
             duration: 3000,
           });
           this.uploadFile()
@@ -788,7 +788,7 @@ export class PaymentReportComponent {
 
     this.http.post(environment.apiUrl + '/api/v1/collection/positive-balance', savePositiveBalance).subscribe( (response: any) => {
       if (response.status) {
-        this.toast.open("Registro de pago éxitoso", "Cerrar", {
+        this.toast.open("Registro de pago éxitoso,su pago sera validado en 48 horas", "Cerrar", {
           duration: 3000,
         });
       }
