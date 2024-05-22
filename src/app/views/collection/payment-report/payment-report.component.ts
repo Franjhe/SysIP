@@ -578,6 +578,7 @@ export class PaymentReportComponent {
     const receipt = this.searchReceipt.get("receipt") as FormArray
 
     this.receiptList = []
+    this.transferList = []
 
     for(let i = 0; i < receipt.length; i++){
       if(receipt.value[i].seleccionado == true){
@@ -686,83 +687,83 @@ export class PaymentReportComponent {
 
   async onSubmit(){
 
-    await this.llenarlistas()
-    this.Submit = true
-    this.searchReceipt.disable()
-
     const transfer = this.searchReceipt.get("transfer") as FormArray
+    if(transfer.length > 0){
+      this.llenarlistas()
 
-    let asegurado = this.searchReceipt.get('xcedula')?.value || ''
-    const fecha = new Date()
+      this.searchReceipt.disable()
 
-    if(this.diference){
-
-      const reporData = {
-        report : this.transferList,
-        ctransaccion : this.idTrans,
-        casegurado: this.searchReceipt.get('xcedula')?.value,
-        diference : this.diference,
-        receipt : this.receiptList,
-        mpago : this.mountBs,
-        mpagoext : this.mountIGTF,
-        ptasamon : this.bcv,
-        freporte : fecha ,
-        positiveBalance : this.PositiveBalanceBool
-      }
-
-      this.http.post(environment.apiUrl + '/api/v1/collection/create-report-diference', reporData).subscribe( (response: any) => {
-        if (response.status) {
-
-          this.toast.open("Registro de pago éxitoso", "Cerrar", {
-            duration: 3000,
-          });
-
-        }
-        this.uploadFile()
+      let asegurado = this.searchReceipt.get('xcedula')?.value || ''
+      const fecha = new Date()
   
-      })
-            
-      setTimeout(() => {
-        location.reload();
-      }, 3000);
-
+      if(this.diference){
+  
+        const reporData = {
+          report : this.transferList,
+          ctransaccion : this.idTrans,
+          casegurado: this.searchReceipt.get('xcedula')?.value,
+          diference : this.diference,
+          receipt : this.receiptList,
+          mpago : this.mountBs,
+          mpagoext : this.mountIGTF,
+          ptasamon : this.bcv,
+          freporte : fecha ,
+          positiveBalance : this.PositiveBalanceBool
+        }
+  
+        this.http.post(environment.apiUrl + '/api/v1/collection/create-report-diference', reporData).subscribe( (response: any) => {
+          if (response.status) {
+  
+            this.toast.open("Registro de pago éxitoso, se verificara en un plazo de 48 horas habiles", "Cerrar", {
+              duration: 3000,
+            });
+  
+            this.uploadFile()
+          }
+    
+        })
+              
+      }else{
+        const savePaymentTrans = {
+          ctransaccion : this.idTrans,
+          receipt : this.receiptList,
+          report: this.transferList,
+          casegurado: asegurado,
+          mpago : this.mountBs,
+          mpagoext : this.mountIGTF,
+          ptasamon : this.bcv,
+          freporte : fecha ,
+          cprog : 'Reporte de pago web',
+          cusuario : 13,
+          iestadorec : 'N',
+          ifuente : 'Web_Sys',
+          iestado : 0,
+          ccategoria : this.searchReceipt.get('ccategoria')?.value,
+          diference: this.diference,
+          positiveBalance : this.PositiveBalanceBool
+  
+        }
+  
+        //primero llenamos el recipo y la tabla de transacciones 
+        this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
+          if (response.status) {
+  
+            this.toast.open("Registro de pago éxitoso, se verificara en un plazo de 48 horas habiles", "Cerrar", {
+              duration: 3000,
+            });
+  
+            this.uploadFile()
+          }
+        })   
+  
+      }
     }else{
-      const savePaymentTrans = {
-        ctransaccion : this.idTrans,
-        receipt : this.receiptList,
-        report: this.transferList,
-        casegurado: asegurado,
-        mpago : this.mountBs,
-        mpagoext : this.mountIGTF,
-        ptasamon : this.bcv,
-        freporte : fecha ,
-        cprog : 'Reporte de pago web',
-        cusuario : 13,
-        iestadorec : 'N',
-        ifuente : 'Web_Sys',
-        iestado : 0,
-        ccategoria : this.searchReceipt.get('ccategoria')?.value,
-        diference: this.diference,
-        positiveBalance : this.PositiveBalanceBool
+      this.toast.open("Debe adjuntar el soporte de pago", "Cerrar", {
+        duration: 3000,
+      });
 
-      }
-
-      //primero llenamos el recipo y la tabla de transacciones 
-      this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
-        if (response.status) {
-
-          this.toast.open("Registro de pago éxitoso", "Cerrar", {
-            duration: 3000,
-          });
-
-        }
-        this.uploadFile()
-      })   
-  
-      setTimeout(() => {
-        location.reload();
-      }, 3000);
     }
+
 
 
   }
