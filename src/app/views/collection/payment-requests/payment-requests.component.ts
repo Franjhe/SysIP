@@ -143,7 +143,7 @@ export class PaymentRequestsComponent {
 
   ngOnInit() {
     this.http.post(environment.apiUrl + '/api/v1/commissions/search-paymentRequests', '').subscribe((response: any) => {
-      console.log(response);
+      // console.log(response);
 
       this.defaultDataSource = new MatTableDataSource(response.returnData.search);
       this.dataSource = new MatTableDataSource(response.returnData.search);
@@ -192,7 +192,7 @@ export class PaymentRequestsComponent {
     }
     this.http.post(environment.apiUrl + '/api/v1/commissions/detail-paymentRequest', data).subscribe((response: any) => {
       this.paymentRequest = response.returnData.search[0]
-      console.log(this.paymentRequest);
+      // console.log(this.paymentRequest);
 
       this.defaultTableDetailReceipts = new MatTableDataSource(response.returnData.search[0].recibos);
       this.tableDetailReceipts = new MatTableDataSource(response.returnData.search[0].recibos);
@@ -276,7 +276,7 @@ export class PaymentRequestsComponent {
     this.reset_moneda_pago();
     let xmoneda = this.paymentRequestFormGroup.get('xmoneda')?.value;
     // let mmpago = (<HTMLInputElement>document.getElementById(`mmpago`)).value;
-    console.log(xmoneda);
+    // console.log(xmoneda);
     // alert(xmoneda);
     // let mpago_bs = (<HTMLInputElement>document.getElementById(`mpago`)).value;
     if (xmoneda == 'Bs') {

@@ -7,7 +7,7 @@
     <mat-step [stepControl]="searchReceipt" >
         <ng-template matStepLabel>Buscar asegurado</ng-template>
         <div class="container row">
-          <div class="mat-elevation-z8">
+          <div class="mat-elevation-z8 mb-5">
 
             <div class="text-center row">
               <mat-form-field>
@@ -31,12 +31,12 @@
                 <th mat-header-cell *matHeaderCellDef>
                     <mat-checkbox (change)="$event ? masterToggle() : null"
                         [checked]="selection.hasValue() && isAllSelected()"
-                        [indeterminate]="selection.hasValue() && !isAllSelected()">
+                        [indeterminate]="selection.hasValue() && !isAllSelected()" color="primary">
                     </mat-checkbox>
                 </th>
                 <td mat-cell *matCellDef="let row">
                     <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
-                        [checked]="selection.isSelected(row)">
+                        [checked]="selection.isSelected(row)" color="primary">
                     </mat-checkbox>
                 </td>
             </ng-container>
@@ -151,8 +151,8 @@
         </div>
 
         <div class="mt-5 text-center">
-          <button mat-button matStepperPrevious class="bg-warning text-light p-3">Atras</button>
-          <button mat-button matStepperNext   [disabled]="!puedeAvanzar" class="bg-primary text-light">Siguiente</button>
+          <button mat-button matStepperPrevious class="bg-warning text-light m-2">Atras</button>
+          <button mat-button matStepperNext   [disabled]="!puedeAvanzar" class="bg-primary text-light m-2">Siguiente</button>
         </div>
 
       </form>
@@ -166,6 +166,7 @@
         <div class="text-center container">
           <strong >
             <h1 class="bold mt-4" style="font-size:2.5rem" >{{mountIGTF}} $   --- {{mountBs}} Bs</h1> 
+            <h2 class="bold mt-4 text-danger" >( Total: {{mount}}$ + IGTF 3%: {{mountP}}$ )</h2>
             <h1 class="bold mt-4" >Tasa de calculo {{bcv}} Bs</h1>
           </strong> 
           <div class="form-group mb-3 row" style="place-content: space-around;">

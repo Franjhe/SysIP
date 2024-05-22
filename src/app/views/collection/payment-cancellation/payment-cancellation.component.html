@@ -6,175 +6,178 @@
 
         <mat-tab-group color="primary" backgroundColor="primary">
           <!-- recibos notificados -->
-          <mat-tab class="bg-success text-light" label="Recibos notificados"> 
+          <mat-tab class="text-light" label="Recibos notificados" > 
             <div class="p-4">
               <h2>Total Notificado {{totalNotificated}} Bs</h2>
               <h2>Total Notificado {{totalNotificatedExt}} $</h2>
-
             </div>
 
-            <div class="mt-5 p-2">
-              <ngb-accordion
-              #accordion formArrayName="agrupado" 
-                [closeOthers]="false" >
-                <ngb-panel
-                    *ngFor="let group of agrupado.controls;let i=index" 
-                    [formGroupName]="i" 
-                    [id]="'pannel'+i">
-                    <ng-template ngbPanelHeader let-opened="opened"  >
-                      <div class="row p-3 button bg-info bg-gradient" [class.bg-danger]="group.value.iestado_tran == 'ER' ">
+            <ngb-accordion
+            #accordion formArrayName="agrupado" 
+              [closeOthers]="false" >
+              <ngb-panel
+                  *ngFor="let group of agrupado.controls;let i=index" 
+                  [formGroupName]="i" 
+                  [id]="'pannel'+i">
+                  <ng-template ngbPanelHeader let-opened="opened"  >
+                    <div class="row p-3 button" style="background-color: #3662ac;" [class.bg-danger]="group.value.iestado_tran == 'ER' ">
 
-                        <div class="col-4 text-light" style="font-size: medium;">
+                      <div class="col-4 text-light" style="font-size: medium;">
+                        <a>
                           Asegurado {{group.value.casegurado}} {{group.value.xcliente}}<br>
                           Fecha de notificacion de pago {{group.value.freporte}}<br>
                           Tasa BCV de cobro {{group.value.ptasamon}}
-                        </div>
+                        </a>
+                      </div>
 
-                        <div class="col-4 text-light" style="font-size: medium;">
+                      <div class="col-4 text-light" style="font-size: medium;">
+                        <a>
                           Pago Bs {{group.value.monto_transaccion}}<br>
                           Pago $  {{group.value.monto_transaccion_ext}}<br>
-                        </div>
+                        </a>
+                      </div>
 
-                        <div *ngIf="group.value.msaldodif > 0" class="col-4 text-light" style="font-size: medium;">
+                      <div *ngIf="group.value.msaldodif > 0" class="col-4 text-light" style="font-size: medium;">
+                        <a>
                           Saldo a favor de {{group.value.msaldodif}} {{group.value.cmoneda_dif}}<br>
                           Tasa del día {{group.value.tasa_saldo}}<br>
-
-                        </div>
-
-                        <div class="col-2">
-                          <button ngbPanelToggle class="btn btn-light">Visualizar detalle de la transacción </button>
-                        </div>
+                        </a>
 
                       </div>
-                    </ng-template>
 
-                    <ng-template ngbPanelContent style="display: initial;">
+                      <div class="col-2">
+                        <button ngbPanelToggle class="btn btn-light">Visualizar detalle de la transacción </button>
+                      </div>
 
-                      <div class="row p-3">
+                    </div>
+                  </ng-template>
 
-                        <div class="col" *ngFor="let poliza of group.value.poliza;let i=index" >
-                          <h2>Detalles del recibo Pagado</h2>
-                            <strong>Poliza</strong>  {{poliza.cnpoliza}}<br>
-                            <strong>Recibo</strong> {{poliza.cnrecibo}}<br>
-                            <strong>Ramo</strong>  {{poliza.xramo}}<br>
-                            <strong>Monto Bs</strong> {{poliza.mmontorec}}<br>
-                            <strong>Monto $</strong>  {{poliza.mmontorecext}}<br>
-                            <strong>Productor</strong> {{poliza.codigo_corredor}} - {{poliza.corredor}}
+                  <ng-template ngbPanelContent style="display: initial;">
 
-                            <div class="row bg-danger " *ngIf="poliza.mdiferenciaext > 1">
-                              <h2 class="text-light">Recibo con diferencia</h2>
-                                <h4 class="text-light">
-                                  <strong>Diferencia de :</strong> {{poliza.mdiferencia}} Bs /{{poliza.mdiferenciaext}} USD <br/>
-                                  <strong>Moneda de cobro de diferencia : </strong>{{poliza.moneda_cobro_diferencia}} <br/>
-                                  <strong>Observacion : </strong>"{{poliza.xobservacion}}" <br/>
-                                  <strong>Tasa de cobro de diferencia: </strong>{{poliza.tasa_diferencia}}
-                                </h4> 
-                            </div> 
-                        </div>
+                    <div class="row p-3">
 
-                        <div  class="col" *ngFor="let recibos of group.value.recibos;let i=index">
-                          <h2>Detalles del Soporte de pago, Número {{i + 1}}</h2> 
-
-                            <strong>Banco remitente</strong>  {{recibos.cbanco_origen}}<br>
-                            <strong>Banco Receptor</strong> {{recibos.cbanco_destino}}<br>
-                            <div *ngIf="recibos.cmoneda == 'Bs  ' ">
-                              <strong> Monto Pagado</strong>  {{recibos.monto_declarado}} {{recibos.cmoneda}}<br>
-                            </div>
-
-                            <div *ngIf="recibos.cmoneda == 'USD ' ">
-                              <strong> Monto Pagado</strong>  {{recibos.monto_declarado_ext}} {{recibos.cmoneda}}<br>
-                              <strong> IGTF</strong> {{recibos.mpagoigtfext}}$ - {{recibos.mpagoigtf}} Bs<br>
-                            </div>
+                      <div class="col" *ngFor="let poliza of group.value.poliza;let i=index" >
+                        <h2>Recibos pagados</h2>
+                          <strong>Poliza</strong>  {{poliza.cnpoliza}}<br>
+                          <strong>Recibo</strong> {{poliza.cnrecibo}}<br>
+                          <strong>Ramo</strong>  {{poliza.xramo}}<br>
+                          <strong>Monto Bs</strong> {{poliza.mprimabruta}}<br>
+                          <strong>Monto $</strong>  {{poliza.mprimabrutaext}}<br>
+                          <strong>Productor</strong> {{poliza.codigo_corredor}} - {{poliza.corredor}}<br>
+                          <strong>Beneficiario</strong> {{poliza.beneficiario}}
 
 
-                            <strong> Referencia</strong> {{recibos.xreferencia}}<br>
+                          <div class="row bg-danger " *ngIf="poliza.mdiferenciaext > 1">
+                            <h2 class="text-light">Recibo con diferencia</h2>
+                              <h4 class="text-light">
+                                <strong>Diferencia de :</strong> {{poliza.mdiferencia}} Bs /{{poliza.mdiferenciaext}} USD <br/>
+                                <strong>Moneda de cobro de diferencia : </strong>{{poliza.moneda_cobro_diferencia}} <br/>
+                                <strong>Observacion : </strong>"{{poliza.xobservacion}}" <br/>
+                                <strong>Tasa de cobro de diferencia: </strong>{{poliza.tasa_diferencia}}
+                              </h4> 
+                          </div> 
+                      </div>
 
-          
-                            
-                            <a mat-button [href]="recibos.xruta" target="_blank" role="button">Visualizar Soporte</a>
+                      <div  class="col" *ngFor="let recibos of group.value.recibos;let i=index">
+                        <h2>Soporte de pago número {{i + 1}}</h2> 
 
-                        </div>
+                          <strong>Banco remitente</strong>  {{recibos.cbanco_origen}}<br>
+                          <strong>Banco Receptor</strong> {{recibos.cbanco_destino}}<br>
+                          <div *ngIf="recibos.cmoneda == 'Bs  ' ">
+                            <strong> Monto Pagado</strong>  {{recibos.monto_declarado}} {{recibos.cmoneda}}<br>
+                          </div>
 
-                        <div class="col">
+                          <div *ngIf="recibos.cmoneda == 'USD ' ">
+                            <strong> Monto Pagado</strong>  {{recibos.monto_declarado_ext}} {{recibos.cmoneda}}<br>
+                            <strong> IGTF</strong> {{recibos.mpagoigtfext}}$ - {{recibos.mpagoigtf}} Bs<br>
+                          </div>
 
 
-                          <mat-form-field>
-                            <mat-label>Estado de recibo</mat-label>
-                            <mat-select (selectionChange)="validateMov(i)" formControlName="iestadorec" >
-                              <mat-option value="C">Cobrado</mat-option>
-                              <mat-option value="ER">En revision</mat-option>
-                              <mat-option value="CS">Cobrado con saldo a favor</mat-option>
-                            </mat-select>
-                          </mat-form-field>
-      
-                          <mat-form-field *ngIf="revision || cobradoSAF">
-                            <mat-label>Diferencia</mat-label>
-                            <input matInput formControlName="mdiferencia" type="number" placeholder="Ingrese la diferencia del recibo" #input>
-                          </mat-form-field>
+                          <strong> Referencia</strong> {{recibos.xreferencia}}<br>
 
-                          <mat-form-field *ngIf="revision">
-                            <mat-label>Tipo de Diferencia</mat-label>
-                            <mat-select formControlName="idiferencia">
-                              <mat-option value="D">En contra</mat-option>
-                              <!-- <mat-option value="H">A favor</mat-option> -->
-                            </mat-select>
-                          </mat-form-field>
+        
+                          
+                          <a mat-button [href]="recibos.xruta" target="_blank" role="button" class="bg-secondary">Visualizar Soporte</a>
 
-                          <mat-form-field *ngIf="revision">
-                            <mat-label>Moneda de cobro de diferencia</mat-label>
-                            <mat-select formControlName="cmoneda">
-                              <mat-option value="BS">BS</mat-option>
-                              <mat-option value="USD">USD</mat-option>
-                            </mat-select>
-                          </mat-form-field>
+                      </div>
 
-                          <mat-form-field *ngIf="cobradoSAF">
-                            <mat-label>Moneda de saldo a favor</mat-label>
-                            <mat-select formControlName="cmoneda">
-                              <mat-option value="BS">BS</mat-option>
-                              <mat-option value="USD">USD</mat-option>
-                            </mat-select>
-                          </mat-form-field>
+                      <div class="col-2">
 
-                          <mat-form-field *ngIf="revision">
-                            <mat-label>Seleccione el recibo con diferencia</mat-label>
-                            <mat-select formControlName="recibo">
-                              <mat-option *ngFor="let recibo of group.value.poliza"  value="{{ recibo.crecibo }}">{{ recibo.crecibo }}</mat-option>
-                            </mat-select>
-                          </mat-form-field>
 
-      
-                          <mat-form-field *ngIf="revision">
-                            <mat-label>Observacion</mat-label>
-                            <textarea matInput placeholder="Observacion" formControlName="xobservacion"></textarea>
-                          </mat-form-field>
-      
-                        </div>
-                    
+                        <mat-form-field>
+                          <mat-label>Estado de recibo</mat-label>
+                          <mat-select (selectionChange)="validateMov(i)" formControlName="iestadorec" >
+                            <mat-option value="C">Cobrado</mat-option>
+                            <mat-option value="ER">En revision</mat-option>
+                            <mat-option value="CS">Cobrado con saldo a favor</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+    
+                        <mat-form-field *ngIf="revision || cobradoSAF">
+                          <mat-label>Diferencia</mat-label>
+                          <input matInput formControlName="mdiferencia" type="number" placeholder="Ingrese la diferencia del recibo" #input>
+                        </mat-form-field>
+
+                        <mat-form-field *ngIf="revision">
+                          <mat-label>Tipo de Diferencia</mat-label>
+                          <mat-select formControlName="idiferencia">
+                            <mat-option value="D">En contra</mat-option>
+                            <!-- <mat-option value="H">A favor</mat-option> -->
+                          </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field *ngIf="revision">
+                          <mat-label>Moneda de cobro de diferencia</mat-label>
+                          <mat-select formControlName="cmoneda">
+                            <mat-option value="BS">BS</mat-option>
+                            <mat-option value="USD">USD</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field *ngIf="cobradoSAF">
+                          <mat-label>Moneda de saldo a favor</mat-label>
+                          <mat-select formControlName="cmoneda">
+                            <mat-option value="BS">BS</mat-option>
+                            <mat-option value="USD">USD</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field *ngIf="revision">
+                          <mat-label>Seleccione el recibo con diferencia</mat-label>
+                          <mat-select formControlName="recibo">
+                            <mat-option *ngFor="let recibo of group.value.poliza"  value="{{ recibo.crecibo }}">{{ recibo.cnrecibo }}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+
+    
+                        <mat-form-field *ngIf="revision">
+                          <mat-label>Observacion</mat-label>
+                          <textarea matInput placeholder="Observacion" formControlName="xobservacion"></textarea>
+                        </mat-form-field>
+    
+                      </div> 
+                      
+                      <div class="col-2">
                         <div class="text-center">
-                          <button  class="btn btn-primary" (click)="updateReceiptNotificated(i)">Actualizar recibo</button>
+                          <button  class="btn btn-primary" (click)="onSubmit(i)">Actualizar recibo</button>
                         </div>
-
                       </div>
 
-                    </ng-template>
-                </ngb-panel>
-              </ngb-accordion>  
+                    </div>
 
-            </div>
-
-
-
+                  </ng-template>
+              </ngb-panel>
+            </ngb-accordion>  
             
           </mat-tab>
 
-          <mat-tab class="bg-info text-light" label="Recibos Pendientes"> 
+          <mat-tab class="text-light" label="Recibos Pendientes"  > 
 
             <app-payment-administration></app-payment-administration>
 
           </mat-tab>
 
-          <mat-tab class="bg-info text-light" label="Recibos Cobrados"> 
+          <mat-tab class="text-light" label="Recibos Cobrados"  > 
 
             <app-receipts-collected></app-receipts-collected>
 

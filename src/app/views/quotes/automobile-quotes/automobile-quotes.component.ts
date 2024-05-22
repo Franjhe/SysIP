@@ -554,7 +554,7 @@ export class AutomobileQuotesComponent {
             email_user: this.xcorreo_emisor
           }
           this.http.post('https://api.lamundialdeseguros.com/get_quote/', data2).subscribe((response: any) => {
-            console.log(response.status)
+            // console.log(response.status)
           })
         }
 
@@ -1025,7 +1025,7 @@ export class AutomobileQuotesComponent {
       (data) => {
       },
       (error) => {
-        console.log(error)
+        // console.log(error)
       }
     );
   }

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CertificatesComponent } from './certificates/certificates.component'
 import { AutomobilePolicyComponent } from './automobile-policy/automobile-policy.component'
+import { AuthGuard } from 'src/app/_helpers/auth.guard';
 
 const routes: Routes = [
   {
@@ -9,6 +10,8 @@ const routes: Routes = [
     data: {
       title: 'certificates',
     },
+    canActivate: [AuthGuard],
+
     children: [
       {
         path: '',

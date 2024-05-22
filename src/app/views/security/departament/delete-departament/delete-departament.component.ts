@@ -90,7 +90,7 @@ export class DeleteDepartamentComponent {
           });
         },
         (err) => {
-          console.log(err.error.data.message)
+          // console.log(err.error.data.message)
           let code = err.error.data.code;
         });
       }

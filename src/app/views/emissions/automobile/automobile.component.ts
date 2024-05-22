@@ -551,6 +551,18 @@ export class AutomobileComponent {
     }
   }
 
+
+  valueIdentification(value: any){
+    var ExpRegSoloLetras="^[A-Za-z0-9\s]+$";
+    if(value.data.match(ExpRegSoloLetras)==null){
+      const formulario = this.vehicleFormGroup.get('xserialmotor')?.value  || ''
+      const newValue = formulario.replace(new RegExp(`[^A-Za-z0-9\\s]`, 'g'), '');
+    
+      // Actualiza el valor en el formulario
+      this.vehicleFormGroup.get('xserialmotor')?.setValue(newValue);
+
+    }
+  }
   searchVehicle(){
     let data = {
       xplaca: this.vehicleFormGroup.get('xplaca')?.value
@@ -1166,7 +1178,7 @@ export class AutomobileComponent {
     if(this.currentUser.data.crol == 7){
       this.vehicleFormGroup.get('cclasificacion')?.setValue(xclasificacion || '')
     }
-    console.log(this.vehicleFormGroup.get('cclasificacion')?.value)
+    // console.log(this.vehicleFormGroup.get('cclasificacion')?.value)
   }
 
   getClass(){
@@ -1675,8 +1687,8 @@ export class AutomobileComponent {
   
         const cascoNumero = parseFloat(casco);
 
-        console.log(sumRecharge)
-        console.log(this.planFormGroup.get('msuma_aseg')?.value)
+        // console.log(sumRecharge)
+        // console.log(this.planFormGroup.get('msuma_aseg')?.value)
         
         // division = sumRecharge / 100;
         // multiplicacion = cascoNumero * division;
@@ -2523,7 +2535,7 @@ export class AutomobileComponent {
         }) 
       });
       let res = await response.json();
-      console.log(res)
+      // console.log(res)
       if (res.data) {
         this.ccontratoflota = res.data.ccontratoflota;
         this.buttonEmissions = false;
@@ -2631,7 +2643,7 @@ export class AutomobileComponent {
     let data;
 
     if(this.vehicleFormGroup.get('xcobertura')?.value == 'Rcv'){
-      console.log('sisas')
+      // console.log('sisas')
       data = {
         icedula: this.personsFormGroup.get('icedula')?.value,
         xrif_cliente: this.personsFormGroup.get('xrif_cliente')?.value,
@@ -2710,8 +2722,8 @@ export class AutomobileComponent {
         mprima_aditamento: 0,
       }
     }else{
-      console.log('pasa por aqui y da error')
-      console.log('Que error les dio?')
+      // console.log('pasa por aqui y da error')
+      // console.log('Que error les dio?')
       data = {
         icedula: this.personsFormGroup.get('icedula')?.value,
         xrif_cliente: this.personsFormGroup.get('xrif_cliente')?.value,
@@ -2932,7 +2944,7 @@ export class AutomobileComponent {
     const dialogRef = this.dialog.open(this.alertConfirmation);
   
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result)
+      // console.log(result)
       if (result === 'confirm') {
         this.onSubmitGroup();
       }
