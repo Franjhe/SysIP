@@ -64,7 +64,7 @@ export class ModalReceiptsComponent {
 
     this.http.post(environment.apiUrl + '/api/v1/commissions/detail-paymentRequest', data).subscribe((response: any) => {
       this.paymentRequest = response.returnData.search[0]
-      console.log(this.paymentRequest);
+      // console.log(this.paymentRequest);
 
       this.defaultTableDetailReceipts = new MatTableDataSource(response.returnData.search[0].recibos);
       this.tableDetailReceipts = new MatTableDataSource(response.returnData.search[0].recibos);
