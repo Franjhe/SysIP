@@ -148,11 +148,12 @@
               </div>
               <div class="container text-center">
                   <h2>Tasa de cobro {{bcv}} Bs</h2> 
-                  <h2 >Total a Pagar {{mount}} $  -- {{mountBs}} Bs</h2>
-              </div>
+                  <h2 *ngIf="mount > 0">Total a Pagar {{mount}} $  -- {{mountBs}} Bs</h2>
+                </div>
   
               <div class="mt-5 text-center">
                 <button mat-button matStepperPrevious class="bg-warning text-light m-2">Atras</button>
+                <button mat-button class="bg-success text-light m-2" *ngIf="mount < 0 && aplicaPositiveBalance" (click)="collectReceipt()">Pagar Recibo</button>
                 <button mat-button matStepperNext   [disabled]="!puedeAvanzar" class="bg-primary text-light m-2">Siguiente</button>
               </div>
   
