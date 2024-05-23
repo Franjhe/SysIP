@@ -619,13 +619,15 @@ export class PaymentReportComponent {
     const fecha = new Date()
     let fechaTran = fecha.toISOString().substring(0, 10);
 
-    if(transfer.length){
-      for(let i = 0; i < transfer.length; i++){
-  
-        const fileObject = transfer.at(i).get('ximagen')?.value!
+    for(let i = 0; i < transfer.length; i++){
+
+      let fileObject = transfer.at(i).get('ximagen')?.value!
+      if(transfer.at(i).get('ximagen')?.value != null && transfer.at(i).get('ximagen')?.value != ''){
         const fileType = fileObject.type;
         const extension = fileType.split('/').pop();
         let nombre = asegurado +'-' + fechaTran +'-'+ i + transfer.value[i].xreferencia +'.'+ extension;
+        this.searchReceipt.disable()
+        this.Submit = true
   
         if(transfer.at(i).get('cmoneda')?.value == "USD" ){
   
@@ -664,18 +666,20 @@ export class PaymentReportComponent {
             ximage : nombre
           });
         }
-  
+
+      }else{
+        window.alert('Necesita registrar el soporte de pago.');
       }
+
+
     }
+
     
   }
 
   async onSubmit(){
 
     await this.llenarlistas()
-    this.Submit = true
-    this.searchReceipt.disable()
-
     let asegurado = this.searchReceipt.get('xcedula')?.value || ''
     const fecha = new Date()
 
@@ -698,16 +702,16 @@ export class PaymentReportComponent {
         recibo : this.receiptList,
       }
 
-      this.http.post(environment.apiUrl + '/api/v1/collection/create-report-diference', reporData).subscribe( (response: any) => {
-        if (response.status) {
+      // this.http.post(environment.apiUrl + '/api/v1/collection/create-report-diference', reporData).subscribe( (response: any) => {
+      //   if (response.status) {
 
-          this.toast.open("Registro de pago éxitoso,su pago sera validado en 48 horas", "Cerrar", {
-            duration: 3000,
-          });
-          this.uploadFile()
-        }
+      //     this.toast.open("Registro de pago éxitoso,su pago sera validado en 48 horas", "Cerrar", {
+      //       duration: 3000,
+      //     });
+      //     this.uploadFile()
+      //   }
   
-      })
+      // })
 
     }else{
       const savePaymentTrans = {
@@ -728,16 +732,16 @@ export class PaymentReportComponent {
         soporte: this.transferList,
       }
 
-      //primero llenamos el recipo y la tabla de transacciones 
-      this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
-        if (response.status) {
+      // //primero llenamos el recipo y la tabla de transacciones 
+      // this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
+      //   if (response.status) {
 
-          this.toast.open("Registro de pago éxitoso,su pago sera validado en 48 horas", "Cerrar", {
-            duration: 3000,
-          });
-          this.uploadFile()
-        }
-      })   
+      //     this.toast.open("Registro de pago éxitoso,su pago sera validado en 48 horas", "Cerrar", {
+      //       duration: 3000,
+      //     });
+      //     this.uploadFile()
+      //   }
+      // })   
     }
 
 
@@ -919,6 +923,26 @@ export class PaymentReportComponent {
         }
       ) 
     }
+
+  }
+
+  validation(i : any){
+
+    const trasnfer = this.searchReceipt.get("transfer") as FormArray
+    let   referencia = trasnfer.at(i).get('xreferencia')?.value 
+
+    this.http.post(environment.apiUrl + '/api/v1/collection/validate-reference', {valor : referencia}).subscribe((response: any) => {
+      if(!response.status){
+        this.toast.open(response.message, '', {
+          duration: 5000,
+          verticalPosition: 'top',
+          panelClass: ['error-toast']
+        }); 
+
+        trasnfer.at(i).get('xreferencia')?.setValue('') 
+      }
+
+    })
 
   }
 
