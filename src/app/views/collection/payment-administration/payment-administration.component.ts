@@ -309,14 +309,15 @@ export class PaymentAdministrationComponent {
         let sumaUSD = 0;
   
         response.searchReceiptsByCustomer.saldo.forEach((item: any) => {
-          if (item.cmoneda_dif == 'BS  ') {
-            sumaBS += item.msaldodif;
+
+          if (item.cmoneda == 'BS  ') {
+            sumaBS += item.msaldo;
           }  
-          if (item.cmoneda_dif == 'USD ') {
-            sumaUSD += item.msaldodif;
+          if (item.cmoneda == 'USD ') {
+            sumaUSD += item.msaldoext;
   
           }
-          if (item.cmoneda_dif !== null) {
+          if (item.cmoneda !== null) {
             this.PositiveBalanceBool = true
           }
         });
@@ -716,6 +717,7 @@ export class PaymentAdministrationComponent {
       }
 
       if(this.searchReceipt.get('iestadorec')?.value == 'CS'){
+        
         this.selection.selected.forEach(item => {
 
           let monto = 0
@@ -1011,6 +1013,73 @@ export class PaymentAdministrationComponent {
         this.dataSource.data.forEach(row => this.selection.select(row));
    
       }
+  }
+
+  collectReceipt(){
+
+    if(this.transaccionUnica){
+      this.selection.selected.forEach(item => {
+
+        //cobro de recibo cuando tiene saldo a favor mayor que su recibo y decide usarlo
+        let asegurado = item.cci_rif
+        this.llenarlistas()
+        const fecha = new Date()
+    
+        const sumaUSD = this.receiptList.reduce((item: any , recibo : any) => {item += recibo.mprimabrutaext; return item;}, 0);
+        const suma = this.receiptList.reduce((item: any , recibo : any) => {item += recibo.mprimabruta; return item;}, 0);
+    
+        let bs = Number(this.mountBs)
+        let usd = Number(this.mount)
+    
+        const savePositiveBalance = {
+          transaccion : this.idTrans,
+          freporte : fecha ,
+          casegurado: asegurado,
+          mpago : Math.abs(bs),
+          mpagoext :  Math.abs(usd),
+          ptasamon : this.bcv,
+          cprog : 'PagoConSaldoaFavor',
+          ifuente : 'Web_Sys',
+          cusuario : 13,
+          iestado : 1,
+          recibo : this.receiptList,
+          saldoHaber : suma,
+          saldoHaberExt : sumaUSD,
+          iestadorec : 'C',
+          fcobro : new Date(),
+          soporte : [{
+            cmoneda: '',
+            mpago: 0,
+            mpagoext: 0,
+            mpagoigtf: this.mountBsP,
+            mpagoigtfext: this.mountP ,
+            mtotal: this.mountBsExt,
+            mtotalext: this.mountIGTF,
+            ptasamon: this.bcv,
+            ptasaref: 0,        
+            xreferencia: '',
+            ximage : ''
+          }]
+        }
+        this.http.post(environment.apiUrl + '/api/v1/collection/positive-balance', savePositiveBalance).subscribe( (response: any) => {
+          if (response.status) {
+            this.toast.open("Registro de pago éxitoso,su pago sera validado en 48 horas", "Cerrar", {
+              duration: 3000,
+            });
+            location.reload()
+          }
+    
+        })
+
+      })
+    }else{
+
+      this.toast.open("Solo puede usar el saldo a favor para clientes individuales", "Cerrar", {
+        duration: 3000,
+      });
+
+    }
+
   }
 
   isAllSelected() {

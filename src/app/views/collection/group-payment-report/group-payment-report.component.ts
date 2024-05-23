@@ -324,19 +324,35 @@ export class GroupPaymentReportComponent {
           this.idTrans = response.searchReceiptsByCustomer.transaccion
         }
   
+        let cliente ;
+          // lista de nombres de los clientes
+        response.searchReceiptsByCustomer.receipt.forEach((item : any) => {
+            const cid = item.cid;
+            if (!resultado[cid]) {
+              resultado[cid] = { 
+                  cedula: item.cid,
+                  nombre:item.xcliente
+              };
+            }
+
+            cliente = item.xcliente
+        });
+
+        this.cliente = Object.values(resultado);
+
         let sumaBS = 0;
         let sumaUSD = 0;
   
         response.searchReceiptsByCustomer.saldo.forEach((item: any) => {
-  
-          if (item.cmoneda_dif == 'BS  ') {
-            sumaBS += item.msaldodif;
+
+          if (item.cmoneda == 'BS  ') {
+            sumaBS += item.msaldo;
           }  
-          if (item.cmoneda_dif == 'USD ') {
-            sumaUSD += item.msaldodif;
+          if (item.cmoneda == 'USD ') {
+            sumaUSD += item.msaldoext;
   
           }
-          if (item.cmoneda_dif !== null) {
+          if (item.cmoneda !== null) {
             this.PositiveBalanceBool = true
           }
         });
@@ -344,7 +360,7 @@ export class GroupPaymentReportComponent {
         this.positiveBalanceBs = sumaBS
         this.positiveBalanceUSD = sumaUSD
   
-        this.PositiveBalance = 'Saldo a favor en Bs ' + sumaBS + '/' + 'Saldo  en USD ' + sumaUSD
+        this.PositiveBalance = cliente+' tiene un saldo a favor en Bs ' + sumaBS + '/' + 'Saldo  en USD ' + sumaUSD
         this.viewData = false;
         this.diference = false
   
@@ -359,19 +375,6 @@ export class GroupPaymentReportComponent {
             this.diference = true
           }
 
-
-          // lista de nombres de los clientes
-          response.searchReceiptsByCustomer.receipt.forEach((item : any) => {
-              const cid = item.cid;
-              if (!resultado[cid]) {
-                resultado[cid] = { 
-                    cedula: item.cid,
-                    nombre:item.xcliente
-                  };
-              }
-          });
-
-          this.cliente = Object.values(resultado);
 
           const fdesdeP = new Date(response.searchReceiptsByCustomer.receipt[i].fdesde);
           let ISOFdesdeP = fdesdeP.toISOString().substring(0, 10);
@@ -885,6 +888,60 @@ export class GroupPaymentReportComponent {
         }
       ) 
     }
+
+  }
+
+  collectReceipt(){
+    //cobro de recibo cuando tiene saldo a favor mayor que su recibo y decide usarlo
+    let asegurado = this.searchReceipt.get('xcedula')?.value || ''
+    this.llenarlistas()
+    const fecha = new Date()
+
+    const sumaUSD = this.receiptList.reduce((item: any , recibo : any) => {item += recibo.mprimabrutaext; return item;}, 0);
+    const suma = this.receiptList.reduce((item: any , recibo : any) => {item += recibo.mprimabruta; return item;}, 0);
+
+    let bs = Number(this.mountBs)
+    let usd = Number(this.mount)
+
+    const savePositiveBalance = {
+      transaccion : this.idTrans,
+      freporte : fecha ,
+      casegurado: asegurado,
+      mpago : Math.abs(bs),
+      mpagoext :  Math.abs(usd),
+      ptasamon : this.bcv,
+      cprog : 'PagoConSaldoaFavor',
+      ifuente : 'Web_Sys',
+      cusuario : 13,
+      iestado : 1,
+      recibo : this.receiptList,
+      saldoHaber : suma,
+      saldoHaberExt : sumaUSD,
+      iestadorec : 'C',
+      fcobro : new Date(),
+      soporte : [{
+        cmoneda: '',
+        mpago: 0,
+        mpagoext: 0,
+        mpagoigtf: this.mountBsP,
+        mpagoigtfext: this.mountP ,
+        mtotal: this.mountBsExt,
+        mtotalext: this.mountIGTF,
+        ptasamon: this.bcv,
+        ptasaref: 0,        
+        xreferencia: '',
+        ximage : ''
+      }]
+    }
+    // this.http.post(environment.apiUrl + '/api/v1/collection/positive-balance', savePositiveBalance).subscribe( (response: any) => {
+    //   if (response.status) {
+    //     this.toast.open("Registro de pago éxitoso,su pago sera validado en 48 horas", "Cerrar", {
+    //       duration: 3000,
+    //     });
+    //     location.reload()
+    //   }
+
+    // })
 
   }
 

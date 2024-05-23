@@ -619,67 +619,71 @@ export class PaymentReportComponent {
     const fecha = new Date()
     let fechaTran = fecha.toISOString().substring(0, 10);
 
-    for(let i = 0; i < transfer.length; i++){
-
-      let fileObject = transfer.at(i).get('ximagen')?.value!
-      if(transfer.at(i).get('ximagen')?.value != null && transfer.at(i).get('ximagen')?.value != ''){
-        const fileType = fileObject.type;
-        const extension = fileType.split('/').pop();
-        let nombre = asegurado +'-' + fechaTran +'-'+ i + transfer.value[i].xreferencia +'.'+ extension;
-        this.searchReceipt.disable()
-        this.Submit = true
+    if(this.mount > 0){
+      for(let i = 0; i < transfer.length; i++){
   
-        if(transfer.at(i).get('cmoneda')?.value == "USD" ){
+        if(transfer.at(i).get('ximagen')?.value != null && transfer.at(i).get('ximagen')?.value != ''){
   
-          this.transferList.push({
-            cmoneda: transfer.value[i]?.cmoneda,
-            cbanco: transfer.value[i]?.cbanco?.id,
-            ctipopago: transfer.value[i]?.ctipopago?.id,
-            cbanco_destino: transfer.value[i]?.cbanco_destino?.id,
-            mpago: 0,
-            mpagoext: transfer.value[i]?.mpago,
-            mpagoigtf: this.mountBsP,
-            mpagoigtfext: this.mountP ,
-            mtotal: this.mountBsExt,
-            mtotalext: this.mountIGTF,
-            ptasamon: this.bcv,
-            ptasaref: 0,        
-            xreferencia: transfer.value[i]?.xreferencia,
-            ximage : nombre
-          });
-        }
-        else if(transfer.at(i).get('cmoneda')?.value == "Bs"){
-          this.transferList.push({
-            cmoneda: transfer.value[i]?.cmoneda,
-            cbanco: transfer.value[i]?.cbanco?.id,
-            ctipopago: transfer.value[i]?.ctipopago?.id,
-            cbanco_destino: transfer.value[i]?.cbanco_destino?.id,
-            mpago: transfer.value[i]?.mpago,
-            mpagoext: 0,
-            mpagoigtf: 0,
-            mpagoigtfext: 0 ,
-            mtotal:this.mountBs,
-            mtotalext: this.mount,
-            ptasaref: 0,
-            ptasamon: this.bcv,        
-            xreferencia: transfer.value[i]?.xreferencia,
-            ximage : nombre
-          });
-        }
+          let fileObject = transfer.at(i).get('ximagen')?.value!
+          const fileType = fileObject.type;
+          const extension = fileType.split('/').pop();
+          let nombre = asegurado +'-' + fechaTran +'-'+ i + transfer.value[i].xreferencia +'.'+ extension;
+          this.searchReceipt.disable()
+          this.Submit = true
+    
+          if(transfer.at(i).get('cmoneda')?.value == "USD" ){
+    
+            this.transferList.push({
+              cmoneda: transfer.value[i]?.cmoneda,
+              cbanco: transfer.value[i]?.cbanco?.id,
+              ctipopago: transfer.value[i]?.ctipopago?.id,
+              cbanco_destino: transfer.value[i]?.cbanco_destino?.id,
+              mpago: 0,
+              mpagoext: transfer.value[i]?.mpago,
+              mpagoigtf: this.mountBsP,
+              mpagoigtfext: this.mountP ,
+              mtotal: this.mountBsExt,
+              mtotalext: this.mountIGTF,
+              ptasamon: this.bcv,
+              ptasaref: 0,        
+              xreferencia: transfer.value[i]?.xreferencia,
+              ximage : nombre
+            });
+          }
+          else if(transfer.at(i).get('cmoneda')?.value == "Bs"){
+            this.transferList.push({
+              cmoneda: transfer.value[i]?.cmoneda,
+              cbanco: transfer.value[i]?.cbanco?.id,
+              ctipopago: transfer.value[i]?.ctipopago?.id,
+              cbanco_destino: transfer.value[i]?.cbanco_destino?.id,
+              mpago: transfer.value[i]?.mpago,
+              mpagoext: 0,
+              mpagoigtf: 0,
+              mpagoigtfext: 0 ,
+              mtotal:this.mountBs,
+              mtotalext: this.mount,
+              ptasaref: 0,
+              ptasamon: this.bcv,        
+              xreferencia: transfer.value[i]?.xreferencia,
+              ximage : nombre
+            });
+          }
 
-      }else{
-        window.alert('Necesita registrar el soporte de pago.');
+          await this.onSubmit()
+
+  
+        }else{
+          window.alert('Necesita registrar el soporte de pago.');
+        }
+  
+  
       }
-
-
     }
 
-    
   }
 
   async onSubmit(){
 
-    await this.llenarlistas()
     let asegurado = this.searchReceipt.get('xcedula')?.value || ''
     const fecha = new Date()
 
@@ -732,19 +736,17 @@ export class PaymentReportComponent {
         soporte: this.transferList,
       }
 
-      // //primero llenamos el recipo y la tabla de transacciones 
-      // this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
-      //   if (response.status) {
+      //primero llenamos el recipo y la tabla de transacciones 
+      this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
+        if (response.status) {
 
-      //     this.toast.open("Registro de pago éxitoso,su pago sera validado en 48 horas", "Cerrar", {
-      //       duration: 3000,
-      //     });
-      //     this.uploadFile()
-      //   }
-      // })   
+          this.toast.open("Registro de pago éxitoso,su pago sera validado en 48 horas", "Cerrar", {
+            duration: 3000,
+          });
+          this.uploadFile()
+        }
+      })   
     }
-
-
 
   }
 
@@ -790,12 +792,12 @@ export class PaymentReportComponent {
         ximage : ''
       }]
     }
-
     this.http.post(environment.apiUrl + '/api/v1/collection/positive-balance', savePositiveBalance).subscribe( (response: any) => {
       if (response.status) {
         this.toast.open("Registro de pago éxitoso,su pago sera validado en 48 horas", "Cerrar", {
           duration: 3000,
         });
+        location.reload()
       }
 
     })
