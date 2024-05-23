@@ -105,7 +105,7 @@ export class PaymentCancellationComponent {
           });
 
           const polizaArray = transactionGroup.get('poliza') as FormArray;
-          transaction.poliza.forEach((poliza:any) => {
+          transaction.poliza.forEach((poliza:any) => {            
             polizaArray.push(this._formBuilder.group({
               beneficiario : poliza.beneficiario,
               crecibo: poliza.crecibo,
@@ -302,6 +302,9 @@ export class PaymentCancellationComponent {
         cliente : creds.at(i).get('xcliente')?.value,
         fpago : creds.at(i).get('freporte')?.value,
         recibo : creds.at(i).get('poliza')?.value,
+        soporte : creds.at(i).get('recibos')?.value,
+        mpago : creds.at(i).get('monto_transaccion')?.value,
+        mpagoext : creds.at(i).get('monto_transaccion_ext')?.value,
         ptasamon : creds.at(i).get('ptasamon')?.value,
         cusuario : this.usuario,
         fcobro : new Date(),
