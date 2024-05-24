@@ -205,12 +205,12 @@
     </mat-step>
 
     <mat-step>
-      <ng-template matStepLabel>Como vas a pagar</ng-template>
+      <ng-template matStepLabel>Datos a utilizar</ng-template>
       <div class="row text-center">
 
         <strong >Para reportar tu pago debes transferir un TOTAL de  
           <h1 class="bold mt-4" style="font-size:2.5rem" >{{mountIGTF}} $   --- {{mountBs}} Bs</h1> 
-          <h2 class="bold mt-4" >( Total: {{mount}}$ + IGTF 3%: {{mountP}}$ )</h2>
+          <h2 class="bold mt-4 text-danger" >( Total: {{mount}}$ + IGTF 3%: {{mountP}}$ )</h2>
           <h1 class="bold mt-4" >Tasa de calculo {{bcv}} Bs</h1>
         </strong>  
 
@@ -281,7 +281,7 @@
 
                     <div class="form-outline col-2" >
                         <label class="form-label required">Referencia</label>
-                        <input  type="text"  class="form-control " placeholder="Ingrese la referencia" formControlName="xreferencia" maxlength="7">
+                        <input  type="text"  class="form-control " placeholder="Ingrese la referencia" formControlName="xreferencia" maxlength="7" (change)="validation(i)">
                     </div>
 
                     <div class="form-outline col-2" >
@@ -333,7 +333,7 @@
                 <div class="mt-5" >
                   <button mat-button [disabled]="Submit" class="bg-warning text-light m-2 " (click)="addPayment()">Añadir movimiento</button>
                   
-                  <button mat-button [disabled]="Submit" class="bg-success text-light" (click)="onSubmit()">Registrar Pago</button>
+                  <button mat-button [disabled]="Submit" class="bg-success text-light" (click)="llenarlistas()">Registrar Pago</button>
                 </div>
             </div>
 

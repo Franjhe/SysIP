@@ -291,17 +291,17 @@
     
                           <div class="form-outline" >
                             <label class="form-label required">Monto</label>
-                            <input  type="text"  class="form-control rounded-input " placeholder="Ingresar monto" formControlName="mpago">
+                            <input  type="text"  class="form-control " placeholder="Ingresar monto" formControlName="mpago">
                           </div>
     
                           <div class="form-outline" >
                             <label class="form-label required">Referencia</label>
-                            <input  type="text"  class="form-control rounded-input " placeholder="Ingrese la referencia" formControlName="xreferencia" maxlength="7" (change)="validation(i)">
+                            <input  type="text"  class="form-control " placeholder="Ingrese la referencia" formControlName="xreferencia" maxlength="7" (change)="validation(i)">
                           </div>
     
                           <div class="form-outline" >
                             <label class="form-label required">Comprobante</label>
-                            <input type="file"  accept="image/png, image/jpeg, image/jpg" class="form-control rounded-input" name="ximagen" formControlName="ximagen" (change)="onFileSelect($event ,i)" #Ximagen>
+                            <input type="file"  accept="image/png, image/jpeg, image/jpg" class="form-control" name="ximagen" formControlName="ximagen" (change)="onFileSelect($event ,i)" #Ximagen>
                           </div>
     
                       </div>

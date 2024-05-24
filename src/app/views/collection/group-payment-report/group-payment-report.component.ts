@@ -622,7 +622,6 @@ export class GroupPaymentReportComponent {
             cuotas : receipt.value[i].qcuotas,
             asegurado : receipt.value[i].asegurado,
 
-
           });
         }
 
@@ -638,49 +637,59 @@ export class GroupPaymentReportComponent {
 
     if(this.mount > 0){
       for(let i = 0; i < transfer.length; i++){
-  
-        const fileObject = transfer.at(i).get('ximagen')?.value!
-        const fileType = fileObject.type;
-        const extension = fileType.split('/').pop();
-        let nombre = asegurado +'-' + fechaTran +'-'+ i + transfer.value[i].xreferencia +'.'+ extension;
-  
-        if(transfer.at(i).get('cmoneda')?.value == "USD" ){
-  
-          this.transferList.push({
-            cmoneda: transfer.value[i].cmoneda,
-            cbanco: transfer.value[i]?.cbanco?.id,
-            ctipopago: transfer.value[i]?.ctipopago.id,
-            cbanco_destino: transfer.value[i]?.cbanco_destino?.id,
-            mpago: 0,
-            mpagoext: transfer.value[i].mpago,
-            mpagoigtf: this.mountBsP,
-            mpagoigtfext: this.mountP ,
-            mtotal: this.mountBsExt,
-            mtotalext: this.mountIGTF,
-            ptasamon: this.bcv,
-            ptasaref: 0,        
-            xreferencia: transfer.value[i].xreferencia,
-            ximage : nombre
-          });
+
+        if(transfer.at(i).get('ximagen')?.value != null && transfer.at(i).get('ximagen')?.value != ''){
+          const fileObject = transfer.at(i).get('ximagen')?.value!
+          const fileType = fileObject.type;
+          const extension = fileType.split('/').pop();
+          let nombre = asegurado +'-' + fechaTran +'-'+ i + transfer.value[i].xreferencia +'.'+ extension;
+    
+          this.searchReceipt.disable()
+          this.Submit = true
+
+          if(transfer.at(i).get('cmoneda')?.value == "USD" ){
+    
+            this.transferList.push({
+              cmoneda: transfer.value[i].cmoneda,
+              cbanco: transfer.value[i]?.cbanco?.id,
+              ctipopago: transfer.value[i]?.ctipopago.id,
+              cbanco_destino: transfer.value[i]?.cbanco_destino?.id,
+              mpago: 0,
+              mpagoext: transfer.value[i].mpago,
+              mpagoigtf: this.mountBsP,
+              mpagoigtfext: this.mountP ,
+              mtotal: this.mountBsExt,
+              mtotalext: this.mountIGTF,
+              ptasamon: this.bcv,
+              ptasaref: 0,        
+              xreferencia: transfer.value[i].xreferencia,
+              ximage : nombre
+            });
+          }
+          else if(transfer.at(i).get('cmoneda')?.value == "Bs"){
+            this.transferList.push({
+              cmoneda: transfer.value[i].cmoneda,
+              cbanco: transfer.value[i]?.cbanco?.id,
+              ctipopago: transfer.value[i]?.ctipopago.id,
+              cbanco_destino: transfer.value[i]?.cbanco_destino?.id,
+              mpago: transfer.value[i].mpago,
+              mpagoext: 0,
+              mpagoigtf: 0,
+              mpagoigtfext: 0 ,
+              mtotal:this.mountBs,
+              mtotalext: this.mount,
+              ptasaref: 0,
+              ptasamon: this.bcv,        
+              xreferencia: transfer.value[i].xreferencia,
+              ximage : nombre
+            });
+          }
+          await this.onSubmit()
+        }else{
+          window.alert('Necesita registrar el soporte de pago.');
+
         }
-        else if(transfer.at(i).get('cmoneda')?.value == "Bs"){
-          this.transferList.push({
-            cmoneda: transfer.value[i].cmoneda,
-            cbanco: transfer.value[i]?.cbanco?.id,
-            ctipopago: transfer.value[i]?.ctipopago.id,
-            cbanco_destino: transfer.value[i]?.cbanco_destino?.id,
-            mpago: transfer.value[i].mpago,
-            mpagoext: 0,
-            mpagoigtf: 0,
-            mpagoigtfext: 0 ,
-            mtotal:this.mountBs,
-            mtotalext: this.mount,
-            ptasaref: 0,
-            ptasamon: this.bcv,        
-            xreferencia: transfer.value[i].xreferencia,
-            ximage : nombre
-          });
-        }
+  
   
       }
     }
@@ -688,10 +697,6 @@ export class GroupPaymentReportComponent {
   }
 
   async onSubmit(){
-
-    await this.llenarlistas()
-    this.Submit = true
-    this.searchReceipt.disable()
 
     const fecha = new Date()
 
@@ -708,9 +713,7 @@ export class GroupPaymentReportComponent {
         ifuente : 'Web_Sys',
         cusuario : 13,
         iestado : 0,
-        positiveBalance : this.PositiveBalanceBool,
         clientes:this.cliente ,
-        diference : this.diference,
         soporte : this.transferList,
         recibo : this.receiptList,
       }
@@ -740,15 +743,12 @@ export class GroupPaymentReportComponent {
         ifuente : 'Web_Sys',
         cusuario : 13,
         iestado : 0,
-        positiveBalance : this.PositiveBalanceBool,  
-        clientes:this.cliente ,
-        diference: this.diference,
         recibo : this.receiptList,
         soporte: this.transferList,
 
       }
 
-      //primero llenamos el recipo y la tabla de transacciones 
+     //primero llenamos el recipo y la tabla de transacciones 
       this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
         if (response.status) {
 
@@ -947,6 +947,26 @@ export class GroupPaymentReportComponent {
 
     this.aplicaPositiveBalance = this.searchReceipt.get('aplica')?.value || false
     this.calculateMount()
+  }
+
+  validation(i : any){
+
+    const trasnfer = this.searchReceipt.get("transfer") as FormArray
+    let   referencia = trasnfer.at(i).get('xreferencia')?.value 
+
+    this.http.post(environment.apiUrl + '/api/v1/collection/validate-reference', {valor : referencia}).subscribe((response: any) => {
+      if(!response.status){
+        this.toast.open(response.message, '', {
+          duration: 5000,
+          verticalPosition: 'top',
+          panelClass: ['error-toast']
+        }); 
+
+        trasnfer.at(i).get('xreferencia')?.setValue('') 
+      }
+
+    })
+
   }
 
   //Treatments

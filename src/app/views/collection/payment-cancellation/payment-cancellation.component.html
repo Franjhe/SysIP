@@ -104,12 +104,20 @@
                       <div class="col-2">
 
 
-                        <mat-form-field>
+                        <mat-form-field *ngIf="group.value.casegurado != 1300 ">
                           <mat-label>Estado de recibo</mat-label>
                           <mat-select (selectionChange)="validateMov(i)" formControlName="iestadorec" >
                             <mat-option value="C">Cobrado</mat-option>
                             <mat-option value="ER">En revision</mat-option>
                             <mat-option value="CS">Cobrado con saldo a favor</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field *ngIf="group.value.casegurado == 1300 ">
+                          <mat-label>Estado de recibo</mat-label>
+                          <mat-select (selectionChange)="validateMov(i)" formControlName="iestadorec" >
+                            <mat-option value="C">Cobrado</mat-option>
+                            <mat-option value="ER">En revision</mat-option>
                           </mat-select>
                         </mat-form-field>
     
