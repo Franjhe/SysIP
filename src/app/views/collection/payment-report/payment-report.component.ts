@@ -473,7 +473,7 @@ export class PaymentReportComponent {
       return acumulador;
     }, 0);
 
-    this.determinarSiPuedeAvanzar()
+
 
     let mount 
     if(this.PositiveBalanceBool){      
@@ -494,7 +494,7 @@ export class PaymentReportComponent {
     }
   
 
-    this.mount = mount.toFixed(2) //suma de los dolares brutos
+    this.mount = mount.toFixed(4) //suma de los dolares brutos
 
     const operation = mount * this.bcv
     this.mountBs = operation.toFixed(2)  //dolares brutos convertidos en bolivares 
@@ -510,6 +510,8 @@ export class PaymentReportComponent {
 
     const porcentaje = (3/100)*mount
     this.mountP = porcentaje.toFixed(2) //porcentaje del igtf en dolares  
+
+    this.determinarSiPuedeAvanzar()
 
   }
 
