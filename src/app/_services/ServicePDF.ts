@@ -2722,9 +2722,9 @@ export class PdfGenerationService {
 							body: [
 								[
 									{ text: 'MONEDA DE PAGO', bold: true, border: [false, false, false, false] },
-									{ text: 'TOTAL COMISIONES', bold: true, border: [false, false, false, false] },
-									{ text: 'TOTAL BONIFICACIONES', bold: true, border: [false, false, false, false] },
-									{ text: 'MONTO MOVIMIENTO', bold: true, border: [false, false, false, false] },
+									{ text: 'MONTO BRUTO COMISIONES', bold: true, border: [false, false, false, false] },
+									{ text: 'MONTO BRUTO BONIFICACIONES', bold: true, border: [false, false, false, false] },
+									{ text: 'MONTO BRUTO MOVIMIENTO', bold: true, border: [false, false, false, false] },
 									{ text: '% RETENCIÓN', bold: true, border: [false, false, false, false] },
 									{ text: 'MONTO RETENCIÓN', bold: true, border: [false, false, false, false] },
 									{ text: 'SUSTRAENDO', bold: true, border: [false, false, false, false] },

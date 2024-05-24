@@ -16,8 +16,8 @@ import {
 import { MatDatepicker } from '@angular/material/datepicker';
 import { ChangeDetectorRef } from '@angular/core';
 import { format, addYears } from 'date-fns';
-import { initUbii } from '@ubiipagos/boton-ubii-dc';
-// import { initUbii } from '@ubiipagos/boton-ubii';
+// import { initUbii } from '@ubiipagos/boton-ubii-dc';
+import { initUbii } from '@ubiipagos/boton-ubii';
 import * as Papa from 'papaparse';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';

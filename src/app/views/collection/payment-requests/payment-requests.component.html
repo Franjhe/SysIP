@@ -185,13 +185,13 @@
                         </div>
                         <div class="col-3">
                             <mat-form-field>
-                                <mat-label>Monto Movimiento Bs:</mat-label>
+                                <mat-label>Monto Bruto Mov. Bs:</mat-label>
                                 <input matInput type="text" value="Bs. {{paymentRequest.mpago}}" disabled>
                             </mat-form-field>
                         </div>
                         <div class="col-3">
                             <mat-form-field>
-                                <mat-label>Monto Movimiento Divisa:</mat-label>
+                                <mat-label>Monto Bruto Mov. Divisa:</mat-label>
                                 <input matInput type="text"
                                     value="$. {{paymentRequest.mpagoext}}" disabled>
                             </mat-form-field>
@@ -228,13 +228,13 @@
                         </div>
                         <div class="col-3" *ngIf="paymentRequest.cmoneda.toLowerCase().trim() == 'bs'">
                             <mat-form-field>
-                                <mat-label>Monto a Pagar Bs.:</mat-label>
+                                <mat-label>Monto Neto a Pagar Bs.:</mat-label>
                                 <input matInput type="text" value="Bs. {{paymentRequest.mpagosol}}" disabled>
                             </mat-form-field>
                         </div>
                         <div class="col-3" *ngIf="paymentRequest.cmoneda.toLowerCase().trim() == '$'">
                             <mat-form-field>
-                                <mat-label>Monto a Pagar Divisa:</mat-label>
+                                <mat-label>Monto Neto a Pagar Divisa:</mat-label>
                                 <input matInput type="text" value="$. {{paymentRequest.mpagosolext}}" disabled>
                             </mat-form-field>
                         </div>
