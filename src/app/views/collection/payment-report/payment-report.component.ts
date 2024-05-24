@@ -806,7 +806,7 @@ export class PaymentReportComponent {
 
   }
 
-  uploadFile(){
+  async uploadFile(){
 
     const transfer = this.searchReceipt.get("transfer") as FormArray
 
@@ -827,9 +827,9 @@ export class PaymentReportComponent {
       //cargamos las imagenes con el codigo de transaccion
       
     }
-    this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {
-      location.reload()
-    })
+    const imagen = this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {})
+    await imagen 
+    location.reload()
   }
 
   getTargetBank(i : any){
