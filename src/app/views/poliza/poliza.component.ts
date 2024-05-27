@@ -167,7 +167,19 @@ export class PolizaComponent implements AfterViewInit {
             this.dataSource.sort = this.sort;
           }
         });
+      }else{
+        this.http.post(environment.apiUrl + '/api/v1/poliza/searchPoliza', null).subscribe((response: any) => {
+          if (response.data.list) {
+            this.dataSource.data = response.data.list;
+            const dataArray = Object.values(response.data.list);
+                this.dataSource.data = dataArray;
+                this.defaultDataSource = new MatTableDataSource(dataArray);
+                this.dataSource = new MatTableDataSource(dataArray);
+                this.dataSource.paginator = this.paginator;
+                this.dataSource.sort = this.sort;
+        }});
       }
+
     }
   buscarReporte() {
   if (this.poliza === undefined) {
@@ -253,16 +265,7 @@ export class PolizaComponent implements AfterViewInit {
     
   }
   
-  this.http.post(environment.apiUrl + '/api/v1/poliza/searchPoliza', null).subscribe((response: any) => {
-      if (response.data.list) {
-        this.dataSource.data = response.data.list;
-        const dataArray = Object.values(response.data.list);
-            this.dataSource.data = dataArray;
-            this.defaultDataSource = new MatTableDataSource(dataArray);
-            this.dataSource = new MatTableDataSource(dataArray);
-            this.dataSource.paginator = this.paginator;
-            this.dataSource.sort = this.sort;
-    }});
+  
   }
   
   applyFilter(event: Event) {
