@@ -413,6 +413,8 @@ export class AutomobileComponent {
 
   ngOnInit(){
 
+    console.log('estoy')
+
     this.getState();
     this.getColor();
     this.getRates();
@@ -1291,7 +1293,7 @@ export class AutomobileComponent {
         for (let i = 0; i < response.data.broker.length; i++) {
           this.brokerList.push({
             id: response.data.broker[i].cproductor,
-            value: response.data.broker[i].xintermediario,
+            value: response.data.broker[i].xproductor,
           });
         }
         this.filteredBroker = this.brokerControl.valueChanges.pipe(
@@ -1299,6 +1301,8 @@ export class AutomobileComponent {
           map(value => this._filterBroker(value || ''))
         );
       }
+
+      console.log(this.brokerList)
     });
   }
 

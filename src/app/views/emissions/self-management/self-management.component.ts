@@ -1141,7 +1141,7 @@ export class SelfManagementComponent {
         for (let i = 0; i < response.data.broker.length; i++) {
           this.brokerList.push({
             id: response.data.broker[i].cproductor,
-            value: response.data.broker[i].xintermediario,
+            value: response.data.broker[i].xproductor,
           });
         }
         this.filteredBroker = this.brokerControl.valueChanges.pipe(
