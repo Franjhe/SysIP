@@ -16,8 +16,8 @@ import {
 import { MatDatepicker } from '@angular/material/datepicker';
 import { ChangeDetectorRef } from '@angular/core';
 import { format, addYears } from 'date-fns';
-import { initUbii } from '@ubiipagos/boton-ubii-dc';
-// import { initUbii } from '@ubiipagos/boton-ubii';
+// import { initUbii } from '@ubiipagos/boton-ubii-dc';
+import { initUbii } from '@ubiipagos/boton-ubii';
 import * as Papa from 'papaparse';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
@@ -2436,7 +2436,8 @@ export class AutomobileComponent {
           amount_bs:  prima_bs,
           concept: "COMPRA",
           principal: "ds",
-          clientId:"f2514eda-610b-11ed-8e56-000c29b62ba1",
+          // clientId:"f2514eda-610b-11ed-8e56-000c29b62ba1",
+          clientId:"1c134b42-70e1-11ed-ae36-005056967039",
           orderId: orden
         },
         this.callbackFn.bind(this),
