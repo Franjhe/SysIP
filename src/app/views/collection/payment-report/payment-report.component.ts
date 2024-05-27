@@ -473,7 +473,7 @@ export class PaymentReportComponent {
       return acumulador;
     }, 0);
 
-    this.determinarSiPuedeAvanzar()
+
 
     let mount 
     if(this.PositiveBalanceBool){      
@@ -494,7 +494,7 @@ export class PaymentReportComponent {
     }
   
 
-    this.mount = mount.toFixed(2) //suma de los dolares brutos
+    this.mount = mount.toFixed(4) //suma de los dolares brutos
 
     const operation = mount * this.bcv
     this.mountBs = operation.toFixed(2)  //dolares brutos convertidos en bolivares 
@@ -510,6 +510,8 @@ export class PaymentReportComponent {
 
     const porcentaje = (3/100)*mount
     this.mountP = porcentaje.toFixed(2) //porcentaje del igtf en dolares  
+
+    this.determinarSiPuedeAvanzar()
 
   }
 
@@ -700,26 +702,23 @@ export class PaymentReportComponent {
         ifuente : 'Web_Sys',
         cusuario : 13,
         iestado : 0,
-        positiveBalance : this.PositiveBalanceBool,
-        diference : this.diference,
         soporte : this.transferList,
         recibo : this.receiptList,
       }
 
-      // this.http.post(environment.apiUrl + '/api/v1/collection/create-report-diference', reporData).subscribe( (response: any) => {
-      //   if (response.status) {
+      this.http.post(environment.apiUrl + '/api/v1/collection/create-report-diference', reporData).subscribe( (response: any) => {
+        if (response.status) {
 
-      //     this.toast.open("Registro de pago éxitoso,su pago sera validado en 48 horas", "Cerrar", {
-      //       duration: 3000,
-      //     });
-      //     this.uploadFile()
-      //   }
+          this.toast.open("Registro de pago éxitoso,su pago sera validado en 48 horas", "Cerrar", {
+            duration: 3000,
+          });
+          this.uploadFile()
+        }
   
-      // })
+      })
 
     }else{
       const savePaymentTrans = {
-
         transaccion : this.idTrans,
         freporte : fecha ,
         casegurado: asegurado,
@@ -730,8 +729,6 @@ export class PaymentReportComponent {
         ifuente : 'Web_Sys',
         cusuario : 13,
         iestado : 0,
-        positiveBalance : this.PositiveBalanceBool,      
-        diference: this.diference,
         recibo : this.receiptList,
         soporte: this.transferList,
       }
@@ -804,7 +801,7 @@ export class PaymentReportComponent {
 
   }
 
-  uploadFile(){
+  async uploadFile(){
 
     const transfer = this.searchReceipt.get("transfer") as FormArray
 
@@ -825,9 +822,9 @@ export class PaymentReportComponent {
       //cargamos las imagenes con el codigo de transaccion
       
     }
-    this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {
-      location.reload()
-    })
+    const imagen = this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {})
+    await imagen 
+    location.reload()
   }
 
   getTargetBank(i : any){

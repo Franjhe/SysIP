@@ -85,17 +85,20 @@
                   <h1> Sus recibos pendientes </h1>
   
                 </div>
-                <div class="col-lg-5 mt-4">
-                  <h1 class="text-success" style=" font-weight: 500;" *ngIf="PositiveBalanceBool">
-                     {{PositiveBalance}}
-                     <mat-checkbox  formControlName="aplica" (change)="changeAplicaPositiveBalance()"> <h2 class="mt-3">Aplicar Saldo Positivo</h2></mat-checkbox>
-                  </h1>
-
+                <div class="col-lg-5 mt-4" *ngIf="PositiveBalanceBool">
+          
+                  <div *ngFor="let message of PositiveBalance" >
+                    <h1 class="text-success" > {{message.ctenedor}}</h1>
+                  </div>
+            
                   <div *ngIf="viewData">
                     <div *ngFor="let message of messageDiference" >
                       <h1  class="{{message.class_text}}" > {{message.messaje}}</h1>
                     </div>
                   </div>
+                </div>
+                <div *ngIf="PositiveBalanceBool">
+                  <mat-checkbox  formControlName="aplica" (change)="changeAplicaPositiveBalance()"> <h2 class="mt-3 text-secondary">Aplicar Saldo Positivo</h2></mat-checkbox>
                 </div>
               </div>
   
@@ -153,8 +156,8 @@
   
               <div class="mt-5 text-center">
                 <button mat-button matStepperPrevious class="bg-warning text-light m-2">Atras</button>
-                <button mat-button class="bg-success text-light m-2" *ngIf="mount < 0 && aplicaPositiveBalance" (click)="collectReceipt()">Pagar Recibo</button>
-                <button mat-button matStepperNext   [disabled]="!puedeAvanzar" class="bg-primary text-light m-2">Siguiente</button>
+                <button mat-button class="bg-success text-light m-2" *ngIf="mount < 0 && aplicaPositiveBalance || mount == 0 " (click)="collectReceipt()">Pagar Recibo</button>
+                <button mat-button matStepperNext   *ngIf="!aplicaPositiveBalance" [disabled]="!puedeAvanzar" class="bg-primary text-light m-2">Siguiente</button>
               </div>
   
             </form>
@@ -202,12 +205,12 @@
     </mat-step>
 
     <mat-step>
-      <ng-template matStepLabel>Como vas a pagar</ng-template>
+      <ng-template matStepLabel>Datos a utilizar</ng-template>
       <div class="row text-center">
 
         <strong >Para reportar tu pago debes transferir un TOTAL de  
           <h1 class="bold mt-4" style="font-size:2.5rem" >{{mountIGTF}} $   --- {{mountBs}} Bs</h1> 
-          <h2 class="bold mt-4" >( Total: {{mount}}$ + IGTF 3%: {{mountP}}$ )</h2>
+          <h2 class="bold mt-4 text-danger" >( Total: {{mount}}$ + IGTF 3%: {{mountP}}$ )</h2>
           <h1 class="bold mt-4" >Tasa de calculo {{bcv}} Bs</h1>
         </strong>  
 
@@ -278,7 +281,7 @@
 
                     <div class="form-outline col-2" >
                         <label class="form-label required">Referencia</label>
-                        <input  type="text"  class="form-control " placeholder="Ingrese la referencia" formControlName="xreferencia" maxlength="7">
+                        <input  type="text"  class="form-control " placeholder="Ingrese la referencia" formControlName="xreferencia" maxlength="7" (change)="validation(i)">
                     </div>
 
                     <div class="form-outline col-2" >
@@ -330,7 +333,7 @@
                 <div class="mt-5" >
                   <button mat-button [disabled]="Submit" class="bg-warning text-light m-2 " (click)="addPayment()">Añadir movimiento</button>
                   
-                  <button mat-button [disabled]="Submit" class="bg-success text-light" (click)="onSubmit()">Registrar Pago</button>
+                  <button mat-button [disabled]="Submit" class="bg-success text-light" (click)="llenarlistas()">Registrar Pago</button>
                 </div>
             </div>
 
