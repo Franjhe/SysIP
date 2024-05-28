@@ -635,6 +635,8 @@ export class GroupPaymentReportComponent {
     const fecha = new Date()
     let fechaTran = fecha.toISOString().substring(0, 10);
 
+    let avanza : boolean = false
+
     if(this.mount > 0){
       for(let i = 0; i < transfer.length; i++){
 
@@ -684,13 +686,17 @@ export class GroupPaymentReportComponent {
               ximage : nombre
             });
           }
-          await this.onSubmit()
+          avanza = true
         }else{
           window.alert('Necesita registrar el soporte de pago.');
+          avanza = false
 
         }
   
   
+      }
+      if(avanza){
+        await this.onSubmit()
       }
     }
     

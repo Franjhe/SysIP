@@ -621,6 +621,8 @@ export class PaymentReportComponent {
     const fecha = new Date()
     let fechaTran = fecha.toISOString().substring(0, 10);
 
+    let avanza : boolean = false
+    
     if(this.mount > 0){
       for(let i = 0; i < transfer.length; i++){
   
@@ -670,15 +672,17 @@ export class PaymentReportComponent {
               ximage : nombre
             });
           }
-
-          await this.onSubmit()
-
+          avanza = true
   
         }else{
           window.alert('Necesita registrar el soporte de pago.');
+          avanza = false
         }
   
   
+      }
+      if(avanza){
+        await this.onSubmit()
       }
     }
 
@@ -794,7 +798,7 @@ export class PaymentReportComponent {
         this.toast.open("Registro de pago éxitoso,su pago sera validado en 48 horas", "Cerrar", {
           duration: 3000,
         });
-        location.reload()
+        // location.reload()
       }
 
     })
@@ -824,7 +828,7 @@ export class PaymentReportComponent {
     }
     const imagen = this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {})
     await imagen 
-    location.reload()
+    // location.reload()
   }
 
   getTargetBank(i : any){
