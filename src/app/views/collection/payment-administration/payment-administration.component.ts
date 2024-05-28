@@ -841,6 +841,7 @@ export class PaymentAdministrationComponent {
         const savePaymentTrans = {
           transaccion : this.idTrans,
           soporte: this.transferList,
+          casegurado: 1300,
           asegurados: this.listaNombres,
           mpago : this.mountBs,
           mpagoext : this.mountIGTF,
