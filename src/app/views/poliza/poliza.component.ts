@@ -187,7 +187,7 @@ export class PolizaComponent implements AfterViewInit {
       duration: 3000
     });
   } else {
-    window.open(environment.apiUrl_prod + '/sis2000_des/poliza/' + this.poliza + '/', '_blank');
+    window.open(environment.apiUrl_prod + '/sis2000/poliza/' + this.poliza + '/', '_blank');
   }
 }
 
