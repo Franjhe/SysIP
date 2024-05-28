@@ -413,7 +413,6 @@ export class AutomobileComponent {
 
   ngOnInit(){
 
-    console.log('estoy')
 
     this.getState();
     this.getColor();
@@ -1293,16 +1292,15 @@ export class AutomobileComponent {
         for (let i = 0; i < response.data.broker.length; i++) {
           this.brokerList.push({
             id: response.data.broker[i].cproductor,
-            value: response.data.broker[i].xproductor,
+            value: response.data.broker[i].xproductor.trim(),
           });
         }
         this.filteredBroker = this.brokerControl.valueChanges.pipe(
-          startWith(''),
+          
           map(value => this._filterBroker(value || ''))
         );
       }
 
-      console.log(this.brokerList)
     });
   }
 
