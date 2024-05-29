@@ -79,6 +79,7 @@ export class PolizaComponent implements AfterViewInit {
   @ViewChild('Tasa') Tasa!: ElementRef<HTMLInputElement>;
   @ViewChild('Tipo_Renovacion') Tipo_Renovacion!: ElementRef<HTMLInputElement>;
   @ViewChild('Fecha_Emision') Fecha_Emision!: ElementRef<HTMLInputElement>;
+  @ViewChild('Estatus_Poliza') Estatus_Poliza!: ElementRef<HTMLInputElement>;
   @ViewChild('Plan') Plan!: ElementRef<HTMLInputElement>;
   @ViewChild('Descripcion_Plan') Descripcion_Plan!: ElementRef<HTMLInputElement>;
   @ViewChild('Observacion') Observacion!: ElementRef<HTMLInputElement>;
@@ -199,6 +200,7 @@ export class PolizaComponent implements AfterViewInit {
       let Vigencia = row.Dias_de_vigencia;
       let Sucursal = row.Sucursal.trim();
       let Intermediario = row.Intermediario.trim();
+      let Estatus_Poliza = row.Estatus_Poliza.trim();
       let cproductor = row.cproductor;
       let Moneda = row.Moneda.trim();
       let Tasa = row.Tasa_Cambio.toFixed(2);
@@ -221,6 +223,7 @@ export class PolizaComponent implements AfterViewInit {
       this.Vigencia.nativeElement.value = Vigencia;
       this.Sucursal.nativeElement.value = Sucursal;
       this.Intermediario.nativeElement.value = Intermediario;
+      this.Estatus_Poliza.nativeElement.value = Estatus_Poliza;
       this.cproductor.nativeElement.value = cproductor;
       this.Moneda.nativeElement.value = Moneda;
       this.Tasa.nativeElement.value = Tasa;
