@@ -71,6 +71,8 @@ export class PaymentAdministrationComponent {
   messageDiference : any = []
   PositiveBalance : any
   PositiveBalanceBool :boolean = false;
+  positiveBalanceBs! : number
+  positiveBalanceUSD! : number
 
   revision : boolean = false
   cobradoSAF : boolean = false
@@ -268,6 +270,7 @@ export class PaymentAdministrationComponent {
   }
   
   searchDataReceipt(){
+    let positiveBalance : any = {}
 
     const receipt = this.searchReceipt.get("receipt") as FormArray
 
@@ -320,10 +323,19 @@ export class PaymentAdministrationComponent {
           if (item.cmoneda !== null) {
             this.PositiveBalanceBool = true
           }
+
+          const ctenedor = item.ctenedor;
+          if (!positiveBalance[ctenedor]) {
+            positiveBalance[ctenedor] = { 
+              cid : ctenedor,
+              ctenedor: item.xcliente + ' tiene un saldo a favor en Bs ' + sumaBS + '/' + 'Saldo  en USD ' + sumaUSD
+            };
+          }
         });
   
-  
-        this.PositiveBalance = 'Saldo a favor en Bs ' + sumaBS + '/' + 'Saldo  en USD ' + sumaUSD
+        this.positiveBalanceBs = sumaBS 
+        this.positiveBalanceUSD = sumaUSD
+        this.PositiveBalance = Object.values(positiveBalance);
         this.viewData = false;
         this.diference = false
   
@@ -475,54 +487,129 @@ export class PaymentAdministrationComponent {
     }
   }
 
-  calculateMount(i :any){
+  calculateMount(){
     const creds = this.searchReceipt.get("receipt") as FormArray
 
-    const sumaTotal = creds.value.reduce((acumulador: any, 
+    let sumaTotal = creds.value.reduce((acumulador: any,  
       recibo: 
       { seleccionado: any; 
         mdiferenciaext: any; 
-        mprimabrutaext: any; 
-        sumaBS: any; 
-        sumaUSD: any; 
+        mdiferencia : any;
+        mprimabrutaext: any,
       }) => {
 
-      if (recibo.seleccionado && recibo.mdiferenciaext == null) {
-          acumulador += recibo.mprimabrutaext;
-      }
-      if(recibo.seleccionado && recibo.mdiferenciaext !== 0){
-        acumulador += recibo.mdiferenciaext;
-      }
-      if(recibo.seleccionado && recibo.sumaBS !== 0){
-        let montoBolivares = recibo.sumaBS / this.bcv
-        acumulador -= montoBolivares;
-      }
-      if(recibo.seleccionado && recibo.sumaUSD !== 0){
-        acumulador -= recibo.sumaUSD;
-      }
+          if (recibo.seleccionado && recibo.mdiferenciaext == null) {
+              acumulador += recibo.mprimabrutaext;
+          }
+          if(recibo.seleccionado && recibo.mdiferenciaext > 0){
+            acumulador += recibo.mdiferenciaext;
+          }
+
       return acumulador;
     }, 0);
 
-    this.determinarSiPuedeAvanzar()
-    let mount = sumaTotal
+    let sumaTotalBs = creds.value.reduce((acumulador: any,  
+      recibo: 
+      { seleccionado: any; 
+        mdiferencia: any; 
+        mprimabruta: any;
+        cmoneda : any
+      }) => {
+        
+        if (recibo.seleccionado && recibo.mdiferencia == null && recibo.cmoneda =='BS  ') {
+            acumulador += recibo.mprimabruta;
+        }
+        if(recibo.seleccionado && recibo.mdiferencia > 0 && recibo.cmoneda =='BS  '){
 
-    this.mount = sumaTotal.toFixed(2) //suma de los dolares brutos
+          acumulador += recibo.mprimabruta;
+        }
 
-    const operation = mount * this.bcv
-    this.mountBs = operation.toFixed(2)  //dolares brutos convertidos en bolivares 
+      return acumulador;
+    }, 0);
 
-    const mountIGTF = mount + ((3/100)*mount) 
-    this.mountIGTF = mountIGTF.toFixed(2) //dolares netos
+    if(this.PositiveBalanceBool){      
 
-    const mountBs = this.mountIGTF*this.bcv
-    this.mountBsExt = mountBs.toFixed(2) //bolivares netos
+      if(this.positiveBalanceUSD > 0){
 
-    const porcentajeBs = this.bcv * ((3/100)*mount) 
-    this.mountBsP = porcentajeBs.toFixed(2) //porcentaje del igtf en bolivares 
+        sumaTotal = Number(sumaTotal) - this.positiveBalanceUSD 
 
-    const porcentaje = (3/100)*mount
-    this.mountP = porcentaje.toFixed(2) //porcentaje del igtf en dolares  
+      }else{
 
+        let operation = this.positiveBalanceBs / this.bcv
+        sumaTotal =  Number(sumaTotal) - operation
+
+      }
+  
+    }
+
+    if (sumaTotalBs > 0 && sumaTotal > 0){
+      let dolares = sumaTotalBs / this.bcv
+      let monto = dolares + sumaTotal
+
+      this.mount = monto.toFixed(4) //suma de los dolares brutos
+
+      const operation = monto * this.bcv //dolares brutos convertidos en bolivares 
+      this.mountBs = operation.toFixed(2) 
+
+      const mountIGTF = monto + ((3/100)*monto) //dolares netos
+      this.mountIGTF = mountIGTF.toFixed(2) 
+
+      const mountBs = this.mountIGTF*this.bcv //bolivares netos
+      this.mountBsExt = mountBs.toFixed(2) 
+
+      const porcentajeBs = this.bcv * ((3/100)*monto) //porcentaje del igtf en bolivares 
+      this.mountBsP = porcentajeBs.toFixed(2) 
+
+      const porcentaje = (3/100)*monto //porcentaje del igtf en dolares  
+      this.mountP = porcentaje.toFixed(2)
+
+      this.determinarSiPuedeAvanzar()
+
+    }
+    else if (sumaTotalBs > 0){
+
+      this.mountBs = sumaTotalBs.toFixed(4) //suma de los bolivares
+
+      const operation = sumaTotalBs / this.bcv  //bolivares brutos convertidos en dolares
+      this.mount = operation.toFixed(2) 
+  
+      const mountIGTF = operation + ((3/100)* operation)  //dolares igtf
+      this.mountIGTF = mountIGTF.toFixed(2)
+  
+      const mountBs = this.mountIGTF*this.bcv //bolivares netos
+      this.mountBsExt = mountBs.toFixed(2)
+  
+      const porcentajeBs = this.bcv * ((3/100)*operation)  //porcentaje del igtf en bolivares 
+      this.mountBsP = porcentajeBs.toFixed(2)
+  
+      const porcentaje = (3/100)*operation //porcentaje del igtf en dolares  
+      this.mountP = porcentaje.toFixed(2)
+  
+      this.determinarSiPuedeAvanzar()
+    }
+    else if(sumaTotal > 0){
+
+      this.mount = sumaTotal.toFixed(4) //suma de los dolares brutos
+
+      const operation = sumaTotal * this.bcv //dolares brutos convertidos en bolivares 
+      this.mountBs = operation.toFixed(2) 
+
+      const mountIGTF = sumaTotal + ((3/100)*sumaTotal) //dolares netos
+      this.mountIGTF = mountIGTF.toFixed(2) 
+
+      const mountBs = this.mountIGTF*this.bcv //bolivares netos
+      this.mountBsExt = mountBs.toFixed(2) 
+
+      const porcentajeBs = this.bcv * ((3/100)*sumaTotal) //porcentaje del igtf en bolivares 
+      this.mountBsP = porcentajeBs.toFixed(2) 
+
+      const porcentaje = (3/100)*sumaTotal //porcentaje del igtf en dolares  
+      this.mountP = porcentaje.toFixed(2)
+
+      this.determinarSiPuedeAvanzar()
+
+    } 
+ 
   }
 
   Found(config?: MatDialogConfig) {

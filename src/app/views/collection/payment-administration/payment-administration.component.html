@@ -90,9 +90,10 @@
             </div>
           </div>
           <div class="col-lg-4">
-            <h1 class="text-success" style=" font-weight: 500;" *ngIf="PositiveBalanceBool">
-               {{PositiveBalance}}
-            </h1>
+            <div *ngFor="let message of PositiveBalance" >
+              <h1 class="text-success" > {{message.ctenedor}}</h1>
+            </div>
+
             <div *ngIf="viewData">
               <div *ngFor="let message of messageDiference" >
                 <h1  class="{{message.class_text}}" > {{message.messaje}}</h1>
@@ -139,7 +140,7 @@
                 </td>
                 <td>
                   <div *ngIf="creds.cdoccob > 0 "></div> 
-                  <div *ngIf="creds.cdoccob == 0 || creds.mdiferencia > 0 "> <mat-checkbox formControlName="seleccionado" (change)="calculateMount(i)"> </mat-checkbox></div>
+                  <div *ngIf="creds.cdoccob == 0 || creds.mdiferencia > 0 "> <mat-checkbox formControlName="seleccionado" (change)="calculateMount()"> </mat-checkbox></div>
                 </td>
               </tr>
             </tbody>
