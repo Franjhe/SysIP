@@ -862,7 +862,7 @@ export class PaymentReportComponent {
         this.toast.open("Registro de pago éxitoso,su pago sera validado en 48 horas", "Cerrar", {
           duration: 3000,
         });
-        // location.reload()
+       location.reload()
       }
 
     })
@@ -892,7 +892,7 @@ export class PaymentReportComponent {
     }
     const imagen = this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {})
     await imagen 
-    // location.reload()
+     location.reload()
   }
 
   getTargetBank(i : any){

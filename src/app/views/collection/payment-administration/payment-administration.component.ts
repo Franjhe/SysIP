@@ -965,7 +965,7 @@ export class PaymentAdministrationComponent {
 
   }
 
-  uploadFile(){
+  async uploadFile(){
     const transfer = this.searchReceipt.get("transfer") as FormArray
 
     let asegurado = this.asegurado
@@ -982,9 +982,9 @@ export class PaymentAdministrationComponent {
       formData.append('image', transfer.at(i).get('ximagen')?.value!, nombre);
       
     }
-    this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {
-        location.reload();
-    })
+    const imagen = this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {})
+    await imagen 
+    location.reload()
   }
 
   getTargetBank(i : any){
