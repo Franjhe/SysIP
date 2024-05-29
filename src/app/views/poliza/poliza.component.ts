@@ -55,7 +55,7 @@ export class PolizaComponent implements AfterViewInit {
   poliza: any;
   recibosData: any;
   defaultDataSource = new MatTableDataSource<any>;
-  displayedColumns: string[] = ['select','Nro_Poliza', 'Descripcion_Ramo', 'Intermediario', 'Dias_de_vigencia', 'Id_Asegurado', 'Nombre_Asegurado'];
+  displayedColumns: string[] = ['select','Nro_Poliza', 'Descripcion_Ramo', 'Intermediario', 'Dias_de_vigencia', 'Id_Asegurado', 'Nombre_Asegurado', 'Estatus_Poliza'];
   ColumnsRecibos: string[] = ['cnrecibo', 'Cuotas', 'Fecha_desde_Rec', 'Fecha_hasta_Rec', 'Monto_Rec', 'Monto_Rec_Ext', 'Status_Rec'];
   
   // Para las Pólizas
@@ -74,11 +74,12 @@ export class PolizaComponent implements AfterViewInit {
   @ViewChild('Vigencia') Vigencia!: ElementRef<HTMLInputElement>;
   @ViewChild('Sucursal') Sucursal!: ElementRef<HTMLInputElement>;
   @ViewChild('Intermediario') Intermediario!: ElementRef<HTMLInputElement>;
+  @ViewChild('cproductor') cproductor!: ElementRef<HTMLInputElement>;
   @ViewChild('Moneda') Moneda!: ElementRef<HTMLInputElement>;
   @ViewChild('Tasa') Tasa!: ElementRef<HTMLInputElement>;
   @ViewChild('Tipo_Renovacion') Tipo_Renovacion!: ElementRef<HTMLInputElement>;
   @ViewChild('Fecha_Emision') Fecha_Emision!: ElementRef<HTMLInputElement>;
-  @ViewChild('Estatus_Poliza2') Estatus_Poliza2!: ElementRef<HTMLInputElement>;
+  @ViewChild('Estatus_Poliza') Estatus_Poliza!: ElementRef<HTMLInputElement>;
   @ViewChild('Plan') Plan!: ElementRef<HTMLInputElement>;
   @ViewChild('Descripcion_Plan') Descripcion_Plan!: ElementRef<HTMLInputElement>;
   @ViewChild('Observacion') Observacion!: ElementRef<HTMLInputElement>;
@@ -199,11 +200,12 @@ export class PolizaComponent implements AfterViewInit {
       let Vigencia = row.Dias_de_vigencia;
       let Sucursal = row.Sucursal.trim();
       let Intermediario = row.Intermediario.trim();
+      let Estatus_Poliza = row.Estatus_Poliza.trim();
+      let cproductor = row.cproductor;
       let Moneda = row.Moneda.trim();
       let Tasa = row.Tasa_Cambio.toFixed(2);
       let Tipo_Renovacion = row.Tipo_Renovacion;
       let Fecha_Emision = row.Fecha_Emision;
-      let Estatus_Poliza2 = row.Estatus_Poliza;
       let Plan = row?.Plan?.trim() || "N/A.";
       let Descripcion_Plan = row?.Descripcion_Plan?.trim() || 'N/A.';
       let Observacion = row.Observacion;
@@ -221,10 +223,11 @@ export class PolizaComponent implements AfterViewInit {
       this.Vigencia.nativeElement.value = Vigencia;
       this.Sucursal.nativeElement.value = Sucursal;
       this.Intermediario.nativeElement.value = Intermediario;
+      this.Estatus_Poliza.nativeElement.value = Estatus_Poliza;
+      this.cproductor.nativeElement.value = cproductor;
       this.Moneda.nativeElement.value = Moneda;
       this.Tasa.nativeElement.value = Tasa;
       this.Tipo_Renovacion.nativeElement.value = Tipo_Renovacion;
-      this.Estatus_Poliza2.nativeElement.value = Estatus_Poliza2;
       this.Fecha_Emision.nativeElement.value = Fecha_Emision;
       this.Plan.nativeElement.value = Plan;
       this.Descripcion_Plan.nativeElement.value = Descripcion_Plan;
