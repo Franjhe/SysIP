@@ -963,7 +963,7 @@ export class PaymentReportComponent {
       this.tipoTrans.push(
         {
         id: 2,
-        value: "Tranferencias",
+        value: "Transferencias",
         },
         {
         id: 3,
@@ -982,7 +982,7 @@ export class PaymentReportComponent {
       this.tipoTrans.push(
         {
         id: 1,
-        value: "Tranferencias USD",
+        value: "Transferencias USD",
         },
         {
         id: 7,
