@@ -404,6 +404,7 @@ export class PaymentAdministrationComponent {
                 cliente : item.xcliente,
                 asegurado: item.cci_rif,
                 cdoccob: response.searchReceiptsByCustomer.receipt[i].cdoccob,
+                recibo: response.searchReceiptsByCustomer.receipt[i].recibo,
                 sumaBS  : sumaBS,
                 sumaUSD : sumaUSD,
                 positiveBalance:this.PositiveBalanceBool
