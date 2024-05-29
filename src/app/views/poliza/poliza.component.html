@@ -73,6 +73,12 @@
               </td>
             </ng-container>
 
+            <ng-container matColumnDef="Estatus_Poliza">
+              <th mat-header-cell *matHeaderCellDef> Estado </th>
+              <td mat-cell *matCellDef="let element"> {{element.Estatus_Poliza}}
+              </td>
+            </ng-container>
+
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
           </table>
@@ -215,21 +221,22 @@
             </mat-form-field>
 
             <mat-form-field style="font-size: 0.9rem;" class="peq">
-              <mat-label>Tasa:</mat-label>
+              <mat-label>Código del Productor:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #Tasa
+                  #cproductor
                   readonly>
               </span>
             </mat-form-field>
-
+            
             <mat-form-field style="font-size: 0.9rem;" class="peq">
               <mat-label>Intermediario:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #Intermediario
-                  readonly>
+                #Intermediario
+                readonly>
               </span>
+              
             </mat-form-field>
 
             <mat-form-field style="font-size: 0.9rem;" class="peq">
@@ -251,10 +258,10 @@
             </mat-form-field>
 
             <mat-form-field style="font-size: 0.9rem;" class="peq">
-              <mat-label>Estatus Póliza:</mat-label>
+              <mat-label>Tasa:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #Estatus_Poliza
+                  #Tasa
                   readonly>
               </span>
             </mat-form-field>
@@ -282,6 +289,15 @@
               <span class="readonly-input">
                 <input matInput
                   #Descripcion_Plan
+                  readonly>
+              </span>
+            </mat-form-field>
+
+            <mat-form-field style="font-size: 0.9rem;" class="peq">
+              <mat-label>Estado de Póliza:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #Estatus_Poliza2
                   readonly>
               </span>
             </mat-form-field>

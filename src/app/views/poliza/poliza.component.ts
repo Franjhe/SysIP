@@ -78,7 +78,7 @@ export class PolizaComponent implements AfterViewInit {
   @ViewChild('Tasa') Tasa!: ElementRef<HTMLInputElement>;
   @ViewChild('Tipo_Renovacion') Tipo_Renovacion!: ElementRef<HTMLInputElement>;
   @ViewChild('Fecha_Emision') Fecha_Emision!: ElementRef<HTMLInputElement>;
-  @ViewChild('Estatus_Poliza') Estatus_Poliza!: ElementRef<HTMLInputElement>;
+  @ViewChild('Estatus_Poliza2') Estatus_Poliza2!: ElementRef<HTMLInputElement>;
   @ViewChild('Plan') Plan!: ElementRef<HTMLInputElement>;
   @ViewChild('Descripcion_Plan') Descripcion_Plan!: ElementRef<HTMLInputElement>;
   @ViewChild('Observacion') Observacion!: ElementRef<HTMLInputElement>;
@@ -203,7 +203,7 @@ export class PolizaComponent implements AfterViewInit {
       let Tasa = row.Tasa_Cambio.toFixed(2);
       let Tipo_Renovacion = row.Tipo_Renovacion;
       let Fecha_Emision = row.Fecha_Emision;
-      let Estatus_Poliza = row.Estatus_Poliza;
+      let Estatus_Poliza2 = row.Estatus_Poliza;
       let Plan = row?.Plan?.trim() || "N/A.";
       let Descripcion_Plan = row?.Descripcion_Plan?.trim() || 'N/A.';
       let Observacion = row.Observacion;
@@ -224,7 +224,7 @@ export class PolizaComponent implements AfterViewInit {
       this.Moneda.nativeElement.value = Moneda;
       this.Tasa.nativeElement.value = Tasa;
       this.Tipo_Renovacion.nativeElement.value = Tipo_Renovacion;
-      this.Estatus_Poliza.nativeElement.value = Estatus_Poliza;
+      this.Estatus_Poliza2.nativeElement.value = Estatus_Poliza2;
       this.Fecha_Emision.nativeElement.value = Fecha_Emision;
       this.Plan.nativeElement.value = Plan;
       this.Descripcion_Plan.nativeElement.value = Descripcion_Plan;
