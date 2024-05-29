@@ -1,6 +1,6 @@
 import { saveAs } from 'file-saver';
-import {LiveAnnouncer} from '@angular/cdk/a11y';
-import {AfterViewInit, Component, ViewChild} from '@angular/core';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { AfterViewInit, Component, ViewChild, OnChanges, SimpleChanges} from '@angular/core';
 import { MatTableModule} from '@angular/material/table';
 import { TemplateRef } from '@angular/core';
 import { FormBuilder, Validators, FormGroup, FormControl, FormArray, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -17,6 +17,9 @@ import {MatPaginatorIntl, PageEvent} from "@angular/material/paginator";
 import {ThemePalette} from '@angular/material/core';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import { ElementRef } from '@angular/core';
+import { MatStepper } from '@angular/material/stepper';
+// import {STEPPER_GLOBAL_OPTIONS} from '@angular/cdk/stepper';
+
 
 export interface polizaDate {
   Nro_Poliza: string;
@@ -40,26 +43,21 @@ export interface polizaDate {
   styleUrls: ['./poliza.component.scss']
 })
 export class PolizaComponent implements AfterViewInit {
-
+  // @ViewChild('stepper') stepper?: MatStepper;
+  currentStep = 0;
   consulta_reporte!: FormGroup;
-  
   showButton: boolean = true;
-  
   selection = new SelectionModel<any>(true, []);
-
   dataSource = new MatTableDataSource<any>;
   descripcionPlan: string = 'No encontrado';
   currentUser!: any
   token!: any;
   poliza: any;
   recibosData: any;
-
   defaultDataSource = new MatTableDataSource<any>;
-  
   displayedColumns: string[] = ['select','Nro_Poliza', 'Descripcion_Ramo', 'Intermediario', 'Dias_de_vigencia', 'Id_Asegurado', 'Nombre_Asegurado'];
-  
   ColumnsRecibos: string[] = ['cnrecibo', 'Cuotas', 'Fecha_desde_Rec', 'Fecha_hasta_Rec', 'Monto_Rec', 'Monto_Rec_Ext', 'Status_Rec'];
-
+  
   // Para las Pólizas
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -76,7 +74,6 @@ export class PolizaComponent implements AfterViewInit {
   @ViewChild('Vigencia') Vigencia!: ElementRef<HTMLInputElement>;
   @ViewChild('Sucursal') Sucursal!: ElementRef<HTMLInputElement>;
   @ViewChild('Intermediario') Intermediario!: ElementRef<HTMLInputElement>;
-  @ViewChild('Productor') Productor!: ElementRef<HTMLInputElement>;
   @ViewChild('Moneda') Moneda!: ElementRef<HTMLInputElement>;
   @ViewChild('Tasa') Tasa!: ElementRef<HTMLInputElement>;
   @ViewChild('Tipo_Renovacion') Tipo_Renovacion!: ElementRef<HTMLInputElement>;
@@ -94,7 +91,6 @@ export class PolizaComponent implements AfterViewInit {
   @ViewChild('Monto_Rec_Ext') Monto_Rec_Ext!: ElementRef<HTMLInputElement>;
   @ViewChild('Status_Rec') Status_Rec!: ElementRef<HTMLInputElement>;
 
-  
   firstFormGroup = this._formBuilder.group({
     firstCtrl: ['', Validators.required],
   });
@@ -111,9 +107,7 @@ export class PolizaComponent implements AfterViewInit {
     private http: HttpClient,
     readonly dialog: MatDialog,
     private snackBar: MatSnackBar
-    
   ) {
-
       this.paginator2.firstPageLabel = "Primera Página";
       this.paginator2.itemsPerPageLabel = "Registros por Página";
       this.paginator2.previousPageLabel = "Página Anterior";
@@ -179,7 +173,6 @@ export class PolizaComponent implements AfterViewInit {
                 this.dataSource.sort = this.sort;
         }});
       }
-
     }
   buscarReporte() {
   if (this.poliza === undefined) {
@@ -190,7 +183,6 @@ export class PolizaComponent implements AfterViewInit {
     window.open(environment.apiUrl_prod + '/sis2000/poliza/' + this.poliza + '/', '_blank');
   }
 }
-
   pruebaDialog() {
     this.selection.selected.forEach((row: any) => {
       this.poliza = row.Nro_Poliza.trim();
@@ -207,14 +199,13 @@ export class PolizaComponent implements AfterViewInit {
       let Vigencia = row.Dias_de_vigencia;
       let Sucursal = row.Sucursal.trim();
       let Intermediario = row.Intermediario.trim();
-      let Productor = row.cproductor;
       let Moneda = row.Moneda.trim();
       let Tasa = row.Tasa_Cambio.toFixed(2);
       let Tipo_Renovacion = row.Tipo_Renovacion;
       let Fecha_Emision = row.Fecha_Emision;
       let Estatus_Poliza = row.Estatus_Poliza;
-      let Plan = row?.Plan?.trim() || "No encontrado";
-      let Descripcion_Plan = row?.Descripcion_Plan?.trim() || 'No Encontrado.';
+      let Plan = row?.Plan?.trim() || "N/A.";
+      let Descripcion_Plan = row?.Descripcion_Plan?.trim() || 'N/A.';
       let Observacion = row.Observacion;
 
       this.nroPolizaInput.nativeElement.value = Nro_Poliza.trim();
@@ -230,7 +221,6 @@ export class PolizaComponent implements AfterViewInit {
       this.Vigencia.nativeElement.value = Vigencia;
       this.Sucursal.nativeElement.value = Sucursal;
       this.Intermediario.nativeElement.value = Intermediario;
-      this.Productor.nativeElement.value = Productor;
       this.Moneda.nativeElement.value = Moneda;
       this.Tasa.nativeElement.value = Tasa;
       this.Tipo_Renovacion.nativeElement.value = Tipo_Renovacion;
@@ -262,14 +252,11 @@ export class PolizaComponent implements AfterViewInit {
         Status_Rec
       });
     }
-    
   }
-  
-  
-  }
-  
+}
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
+  
 }
