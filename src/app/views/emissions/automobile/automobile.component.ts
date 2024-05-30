@@ -413,6 +413,7 @@ export class AutomobileComponent {
 
   ngOnInit(){
 
+
     this.getState();
     this.getColor();
     this.getRates();
@@ -1291,14 +1292,15 @@ export class AutomobileComponent {
         for (let i = 0; i < response.data.broker.length; i++) {
           this.brokerList.push({
             id: response.data.broker[i].cproductor,
-            value: response.data.broker[i].xintermediario,
+            value: response.data.broker[i].xproductor.trim(),
           });
         }
         this.filteredBroker = this.brokerControl.valueChanges.pipe(
-          startWith(''),
+          
           map(value => this._filterBroker(value || ''))
         );
       }
+
     });
   }
 

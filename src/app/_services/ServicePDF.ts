@@ -41,7 +41,7 @@ export class PdfGenerationService {
 	xsucursal: string | undefined;
 	canal_venta: string | undefined;
 	xfrecuencia: string | undefined;
-	xintermediario: string | undefined;
+	xproductor: string | undefined;
 	xparticipacion: string | undefined;
 	xrecibo: string | undefined;
 	femision_rec: string | undefined;
@@ -290,7 +290,7 @@ export class PdfGenerationService {
 				this.xciudad_tomador = response.data.poliza[0][0].xciudad_tomador;
 				this.xestado_asegurado = response.data.poliza[0][0].xestado_asegurado;
 				this.xestado_tomador = response.data.poliza[0][0].xestado_tomador;
-				this.xintermediario = response.data.poliza[0][0].xintermediario;
+				this.xproductor = response.data.poliza[0][0].xproductor;
 				this.xmoneda = response.data.poliza[0][0].xmoneda;
 				this.xnombre_ben = response.data.poliza[0][0].xnombre_ben;
 				this.xrecibo = response.data.poliza[0][0].xrecibo;
@@ -572,7 +572,7 @@ export class PdfGenerationService {
 
 											},],
 											[{
-												fontSize: 10, text: 'Intermediario(s):\n\n ' + `${this.xintermediario}`,
+												fontSize: 10, text: 'Intermediario(s):\n\n ' + `${this.xproductor}`,
 
 
 											}, {
@@ -2669,6 +2669,12 @@ export class PdfGenerationService {
 								[
 									{ text: 'OBSERVACIONES:', bold: true, border: [false, false, false, false] },
 									{ text: paymentRequest.xobservaciones, border: [false, false, false, false], alignment: 'left' },
+									{ text: '', bold: true, border: [false, false, false, false], alignment: 'right' },
+									{ text: '', border: [false, false, false, false], alignment: 'right' },
+								],
+								[
+									{ text: 'CUENTA BANCARIA:', bold: true, border: [false, false, false, false] },
+									{ text: paymentRequest.ccuentaban, border: [false, false, false, false], alignment: 'left' },
 									{ text: '', bold: true, border: [false, false, false, false], alignment: 'right' },
 									{ text: '', border: [false, false, false, false], alignment: 'right' },
 								],

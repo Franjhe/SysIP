@@ -112,7 +112,7 @@
                           <td >
                             <div class="row">
                               <div class="col">
-                                {{creds.mprimabrutaext}} {{creds.cmoneda}}
+                                {{creds.recibo}}
                               </div>
                               <div *ngIf="creds.mdiferencia > 0" style=" background-color: #ff7272;color: white;">
                                 Diferencia {{creds.idiferencia}} : <br>
@@ -136,7 +136,7 @@
       
                   <div class="mt-5 text-center">
                     <button mat-button matStepperPrevious class="bg-warning text-light m-2">Atras</button>
-                    <button mat-button class="bg-success text-light m-2" *ngIf="mount < 0" (click)="collectReceipt()">Pagar Recibo</button>
+                    <button mat-button class="bg-success text-light m-2" *ngIf="mount < 0 || mount == 0 && PositiveBalanceBool " (click)="collectReceipt()">Pagar Recibo</button>
                     <button mat-button matStepperNext   [disabled]="!puedeAvanzar" class="bg-primary text-light m-2" *ngIf="mount > 0">Siguiente</button>
                   </div>
       
@@ -162,7 +162,7 @@
                     <td >
                       <div class="row">
                         <div class="col">
-                          {{creds.mprimabrutaext}} {{creds.cmoneda}}
+                          {{creds.recibo}}
                         </div>
                       </div>
             
@@ -291,17 +291,17 @@
     
                           <div class="form-outline" >
                             <label class="form-label required">Monto</label>
-                            <input  type="text"  class="form-control rounded-input " placeholder="Ingresar monto" formControlName="mpago">
+                            <input  type="text"  class="form-control " placeholder="Ingresar monto" formControlName="mpago">
                           </div>
     
                           <div class="form-outline" >
                             <label class="form-label required">Referencia</label>
-                            <input  type="text"  class="form-control rounded-input " placeholder="Ingrese la referencia" formControlName="xreferencia" maxlength="7" (change)="validation(i)">
+                            <input  type="text"  class="form-control " placeholder="Ingrese la referencia" formControlName="xreferencia" maxlength="7" (change)="validation(i)">
                           </div>
     
                           <div class="form-outline" >
                             <label class="form-label required">Comprobante</label>
-                            <input type="file"  accept="image/png, image/jpeg, image/jpg" class="form-control rounded-input" name="ximagen" formControlName="ximagen" (change)="onFileSelect($event ,i)" #Ximagen>
+                            <input type="file"  accept="image/png, image/jpeg, image/jpg" class="form-control" name="ximagen" formControlName="ximagen" (change)="onFileSelect($event ,i)" #Ximagen>
                           </div>
     
                       </div>

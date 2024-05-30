@@ -49,6 +49,7 @@ export interface PaymentRequest {
   cmoneda_1: any;
   mmonto_3: any;
   msustraendo: any;
+  ccuentaban : any
 }
 
 
@@ -480,6 +481,7 @@ export class PaymentRequestsComponent {
       cmoneda_2: this.paymentRequest.cmoneda_2,
       cmoneda_1: this.paymentRequest.cmoneda_1,
       mmonto_3: this.paymentRequest.mmonto_3,
+      ccuentaban: this.paymentRequest.ccuentaban,
       msustraendo: msustraendo,
 
     }

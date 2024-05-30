@@ -293,6 +293,8 @@ export class GroupPaymentReportComponent {
   
   searchDataReceipt(){
     let resultado : any = {}
+    let positiveBalance : any = {}
+
     const receipt = this.searchReceipt.get("receipt") as FormArray
 
     while (receipt.length !== 0) {
@@ -324,7 +326,7 @@ export class GroupPaymentReportComponent {
           this.idTrans = response.searchReceiptsByCustomer.transaccion
         }
   
-        let cliente ;
+        let cliente : any ;
           // lista de nombres de los clientes
         response.searchReceiptsByCustomer.receipt.forEach((item : any) => {
             const cid = item.cid;
@@ -342,25 +344,34 @@ export class GroupPaymentReportComponent {
 
         let sumaBS = 0;
         let sumaUSD = 0;
-  
-        response.searchReceiptsByCustomer.saldo.forEach((item: any) => {
 
-          if (item.cmoneda == 'BS  ') {
-            sumaBS += item.msaldo;
+        response.searchReceiptsByCustomer.saldo.forEach((saldo: any) => {
+
+          if (saldo.cmoneda == 'BS  ') {
+            sumaBS += saldo.msaldo;
           }  
-          if (item.cmoneda == 'USD ') {
-            sumaUSD += item.msaldoext;
+          if (saldo.cmoneda == 'USD ') {
+            sumaUSD += saldo.msaldoext;
   
           }
-          if (item.cmoneda !== null) {
+          if (saldo.cmoneda !== null) {
             this.PositiveBalanceBool = true
           }
+
+          const ctenedor = saldo.ctenedor;
+          if (!positiveBalance[ctenedor]) {
+            positiveBalance[ctenedor] = { 
+              cid : ctenedor,
+              ctenedor: cliente + ' tiene un saldo a favor en Bs ' + sumaBS + '/' + 'Saldo  en USD ' + sumaUSD
+            };
+          }
+
         });
   
-        this.positiveBalanceBs = sumaBS
+        this.positiveBalanceBs = sumaBS 
         this.positiveBalanceUSD = sumaUSD
-  
-        this.PositiveBalance = cliente+' tiene un saldo a favor en Bs ' + sumaBS + '/' + 'Saldo  en USD ' + sumaUSD
+        this.PositiveBalance = Object.values(positiveBalance);
+
         this.viewData = false;
         this.diference = false
   
@@ -428,22 +439,16 @@ export class GroupPaymentReportComponent {
               xobservacion: response.searchReceiptsByCustomer.receipt[i].xobservacion,
               idiferencia: messaje,
               cdoccob: response.searchReceiptsByCustomer.receipt[i].cdoccob,
+              recibo : response.searchReceiptsByCustomer.receipt[i].recibo,
               cliente  : response.searchReceiptsByCustomer.receipt[i].xcliente
             })
           )
 
-
-        }
-
-
-  
-        
-  
+        }  
       });
     });
 
     this.addPayment()
-
 
   }
 
@@ -475,57 +480,126 @@ export class GroupPaymentReportComponent {
   calculateMount(){
     const creds = this.searchReceipt.get("receipt") as FormArray
 
-    const sumaTotal = creds.value.reduce((acumulador: any, 
+    let sumaTotal = creds.value.reduce((acumulador: any,  
       recibo: 
       { seleccionado: any; 
         mdiferenciaext: any; 
-        mprimabrutaext: any; 
-        aplica: any; 
-
+        mdiferencia : any;
+        mprimabrutaext: any,
       }) => {
 
-      if (recibo.seleccionado && recibo.mdiferenciaext == null) {
-          acumulador += recibo.mprimabrutaext;
-      }
-      if(recibo.seleccionado && recibo.mdiferenciaext !== 0){
-        acumulador += recibo.mdiferenciaext;
-      }
+          if (recibo.seleccionado && recibo.mdiferenciaext == null) {
+              acumulador += recibo.mprimabrutaext;
+          }
+          if(recibo.seleccionado && recibo.mdiferenciaext > 0){
+            acumulador += recibo.mdiferenciaext;
+          }
 
       return acumulador;
     }, 0);
 
-    this.determinarSiPuedeAvanzar()
+    let sumaTotalBs = creds.value.reduce((acumulador: any,  
+      recibo: 
+      { seleccionado: any; 
+        mdiferencia: any; 
+        mprimabruta: any;
+        cmoneda : any
+      }) => {
+        
+        if (recibo.seleccionado && recibo.mdiferencia == null && recibo.cmoneda =='BS  ') {
+            acumulador += recibo.mprimabruta;
+        }
+        if(recibo.seleccionado && recibo.mdiferencia > 0 && recibo.cmoneda =='BS  '){
 
-    let mount 
+          acumulador += recibo.mprimabruta;
+        }
+
+      return acumulador;
+    }, 0);
+
     if(this.PositiveBalanceBool){      
-      if(this.aplicaPositiveBalance){
-        mount = Number(sumaTotal) - this.positiveBalanceUSD 
+
+      if(this.positiveBalanceUSD > 0){
+
+        sumaTotal = Number(sumaTotal) - this.positiveBalanceUSD 
+
       }else{
-        mount = sumaTotal
+
+        let operation = this.positiveBalanceBs / this.bcv
+        sumaTotal =  Number(sumaTotal) - operation
+
       }
-     
-    }else{
-      mount = sumaTotal
-    }
   
+    }
 
-    this.mount = mount.toFixed(2) //suma de los dolares brutos
+    if (sumaTotalBs > 0 && sumaTotal > 0){
+      let dolares = sumaTotalBs / this.bcv
+      let monto = dolares + sumaTotal
 
-    const operation = mount * this.bcv
-    this.mountBs = operation.toFixed(2)  //dolares brutos convertidos en bolivares 
+      this.mount = monto.toFixed(4) //suma de los dolares brutos
 
-    const mountIGTF = mount + ((3/100)*mount) 
-    this.mountIGTF = mountIGTF.toFixed(2) //dolares netos
+      const operation = monto * this.bcv //dolares brutos convertidos en bolivares 
+      this.mountBs = operation.toFixed(2) 
 
-    const mountBs = this.mountIGTF*this.bcv
-    this.mountBsExt = mountBs.toFixed(2) //bolivares netos
+      const mountIGTF = monto + ((3/100)*monto) //dolares netos
+      this.mountIGTF = mountIGTF.toFixed(2) 
 
-    const porcentajeBs = this.bcv * ((3/100)*mount) 
-    this.mountBsP = porcentajeBs.toFixed(2) //porcentaje del igtf en bolivares 
+      const mountBs = this.mountIGTF*this.bcv //bolivares netos
+      this.mountBsExt = mountBs.toFixed(2) 
 
-    const porcentaje = (3/100)*mount
-    this.mountP = porcentaje.toFixed(2) //porcentaje del igtf en dolares  
+      const porcentajeBs = this.bcv * ((3/100)*monto) //porcentaje del igtf en bolivares 
+      this.mountBsP = porcentajeBs.toFixed(2) 
 
+      const porcentaje = (3/100)*monto //porcentaje del igtf en dolares  
+      this.mountP = porcentaje.toFixed(2)
+
+      this.determinarSiPuedeAvanzar()
+
+    }
+    else if (sumaTotalBs > 0){
+
+      this.mountBs = sumaTotalBs.toFixed(4) //suma de los bolivares
+
+      const operation = sumaTotalBs / this.bcv  //bolivares brutos convertidos en dolares
+      this.mount = operation.toFixed(2) 
+  
+      const mountIGTF = operation + ((3/100)* operation)  //dolares igtf
+      this.mountIGTF = mountIGTF.toFixed(2)
+  
+      const mountBs = this.mountIGTF*this.bcv //bolivares netos
+      this.mountBsExt = mountBs.toFixed(2)
+  
+      const porcentajeBs = this.bcv * ((3/100)*operation)  //porcentaje del igtf en bolivares 
+      this.mountBsP = porcentajeBs.toFixed(2)
+  
+      const porcentaje = (3/100)*operation //porcentaje del igtf en dolares  
+      this.mountP = porcentaje.toFixed(2)
+  
+      this.determinarSiPuedeAvanzar()
+    }
+    else if(sumaTotal > 0){
+
+      this.mount = sumaTotal.toFixed(4) //suma de los dolares brutos
+
+      const operation = sumaTotal * this.bcv //dolares brutos convertidos en bolivares 
+      this.mountBs = operation.toFixed(2) 
+
+      const mountIGTF = sumaTotal + ((3/100)*sumaTotal) //dolares netos
+      this.mountIGTF = mountIGTF.toFixed(2) 
+
+      const mountBs = this.mountIGTF*this.bcv //bolivares netos
+      this.mountBsExt = mountBs.toFixed(2) 
+
+      const porcentajeBs = this.bcv * ((3/100)*sumaTotal) //porcentaje del igtf en bolivares 
+      this.mountBsP = porcentajeBs.toFixed(2) 
+
+      const porcentaje = (3/100)*sumaTotal //porcentaje del igtf en dolares  
+      this.mountP = porcentaje.toFixed(2)
+
+      this.determinarSiPuedeAvanzar()
+
+    } 
+ 
   }
 
   Alert(config?: MatDialogConfig) {
@@ -621,7 +695,6 @@ export class GroupPaymentReportComponent {
             cuotas : receipt.value[i].qcuotas,
             asegurado : receipt.value[i].asegurado,
 
-
           });
         }
 
@@ -635,60 +708,74 @@ export class GroupPaymentReportComponent {
     const fecha = new Date()
     let fechaTran = fecha.toISOString().substring(0, 10);
 
-    for(let i = 0; i < transfer.length; i++){
+    let avanza : boolean = false
 
-      const fileObject = transfer.at(i).get('ximagen')?.value!
-      const fileType = fileObject.type;
-      const extension = fileType.split('/').pop();
-      let nombre = asegurado +'-' + fechaTran +'-'+ i + transfer.value[i].xreferencia +'.'+ extension;
+    if(this.mount > 0){
+      for(let i = 0; i < transfer.length; i++){
 
-      if(transfer.at(i).get('cmoneda')?.value == "USD" ){
+        if(transfer.at(i).get('ximagen')?.value != null && transfer.at(i).get('ximagen')?.value != ''){
+          const fileObject = transfer.at(i).get('ximagen')?.value!
+          const fileType = fileObject.type;
+          const extension = fileType.split('/').pop();
+          let nombre = asegurado +'-' + fechaTran +'-'+ i + transfer.value[i].xreferencia +'.'+ extension;
+    
+          this.searchReceipt.disable()
+          this.Submit = true
 
-        this.transferList.push({
-          cmoneda: transfer.value[i].cmoneda,
-          cbanco: transfer.value[i]?.cbanco?.id,
-          ctipopago: transfer.value[i]?.ctipopago.id,
-          cbanco_destino: transfer.value[i]?.cbanco_destino?.id,
-          mpago: 0,
-          mpagoext: transfer.value[i].mpago,
-          mpagoigtf: this.mountBsP,
-          mpagoigtfext: this.mountP ,
-          mtotal: this.mountBsExt,
-          mtotalext: this.mountIGTF,
-          ptasamon: this.bcv,
-          ptasaref: 0,        
-          xreferencia: transfer.value[i].xreferencia,
-          ximage : nombre
-        });
+          if(transfer.at(i).get('cmoneda')?.value == "USD" ){
+    
+            this.transferList.push({
+              cmoneda: transfer.value[i].cmoneda,
+              cbanco: transfer.value[i]?.cbanco?.id,
+              ctipopago: transfer.value[i]?.ctipopago.id,
+              cbanco_destino: transfer.value[i]?.cbanco_destino?.id,
+              mpago: 0,
+              mpagoext: transfer.value[i].mpago,
+              mpagoigtf: this.mountBsP,
+              mpagoigtfext: this.mountP ,
+              mtotal: this.mountBsExt,
+              mtotalext: this.mountIGTF,
+              ptasamon: this.bcv,
+              ptasaref: 0,        
+              xreferencia: transfer.value[i].xreferencia,
+              ximage : nombre
+            });
+          }
+          else if(transfer.at(i).get('cmoneda')?.value == "Bs"){
+            this.transferList.push({
+              cmoneda: transfer.value[i].cmoneda,
+              cbanco: transfer.value[i]?.cbanco?.id,
+              ctipopago: transfer.value[i]?.ctipopago.id,
+              cbanco_destino: transfer.value[i]?.cbanco_destino?.id,
+              mpago: transfer.value[i].mpago,
+              mpagoext: 0,
+              mpagoigtf: 0,
+              mpagoigtfext: 0 ,
+              mtotal:this.mountBs,
+              mtotalext: this.mount,
+              ptasaref: 0,
+              ptasamon: this.bcv,        
+              xreferencia: transfer.value[i].xreferencia,
+              ximage : nombre
+            });
+          }
+          avanza = true
+        }else{
+          window.alert('Necesita registrar el soporte de pago.');
+          avanza = false
+
+        }
+  
+  
       }
-      else if(transfer.at(i).get('cmoneda')?.value == "Bs"){
-        this.transferList.push({
-          cmoneda: transfer.value[i].cmoneda,
-          cbanco: transfer.value[i]?.cbanco?.id,
-          ctipopago: transfer.value[i]?.ctipopago.id,
-          cbanco_destino: transfer.value[i]?.cbanco_destino?.id,
-          mpago: transfer.value[i].mpago,
-          mpagoext: 0,
-          mpagoigtf: 0,
-          mpagoigtfext: 0 ,
-          mtotal:this.mountBs,
-          mtotalext: this.mount,
-          ptasaref: 0,
-          ptasamon: this.bcv,        
-          xreferencia: transfer.value[i].xreferencia,
-          ximage : nombre
-        });
+      if(avanza){
+        await this.onSubmit()
       }
-
     }
     
   }
 
   async onSubmit(){
-
-    await this.llenarlistas()
-    this.Submit = true
-    this.searchReceipt.disable()
 
     const fecha = new Date()
 
@@ -705,9 +792,7 @@ export class GroupPaymentReportComponent {
         ifuente : 'Web_Sys',
         cusuario : 13,
         iestado : 0,
-        positiveBalance : this.PositiveBalanceBool,
         clientes:this.cliente ,
-        diference : this.diference,
         soporte : this.transferList,
         recibo : this.receiptList,
       }
@@ -724,9 +809,6 @@ export class GroupPaymentReportComponent {
   
       })
             
-      // setTimeout(() => {
-      //   location.reload();
-      // }, 3000);
 
     }else{
       const savePaymentTrans = {
@@ -740,15 +822,12 @@ export class GroupPaymentReportComponent {
         ifuente : 'Web_Sys',
         cusuario : 13,
         iestado : 0,
-        positiveBalance : this.PositiveBalanceBool,  
-        clientes:this.cliente ,
-        diference: this.diference,
         recibo : this.receiptList,
         soporte: this.transferList,
 
       }
 
-      //primero llenamos el recipo y la tabla de transacciones 
+     //primero llenamos el recipo y la tabla de transacciones 
       this.http.post(environment.apiUrl + '/api/v1/collection/create-trans',savePaymentTrans).subscribe( (response: any) => {
         if (response.status) {
 
@@ -760,16 +839,13 @@ export class GroupPaymentReportComponent {
         this.uploadFile()
       })   
   
-      // setTimeout(() => {
-      //   location.reload();
-      // }, 3000);
     }
 
 
   }
 
 
-  uploadFile(){
+  async uploadFile(){
 
     const transfer = this.searchReceipt.get("transfer") as FormArray
 
@@ -790,7 +866,9 @@ export class GroupPaymentReportComponent {
       //cargamos las imagenes con el codigo de transaccion
       
     }
-    this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {})
+    const imagen = this.http.post(environment.apiUrl + '/api/upload/image', formData).subscribe((image: any) => {})
+    await imagen 
+    location.reload()  
   }
 
   getTargetBank(i : any){
@@ -861,7 +939,7 @@ export class GroupPaymentReportComponent {
       this.tipoTrans.push(
         {
         id: 2,
-        value: "Tranferencias",
+        value: "Transferencias",
         },
         {
         id: 3,
@@ -880,7 +958,7 @@ export class GroupPaymentReportComponent {
       this.tipoTrans.push(
         {
         id: 1,
-        value: "Tranferencias USD",
+        value: "Transferencias USD",
         },
         {
         id: 7,
@@ -893,7 +971,6 @@ export class GroupPaymentReportComponent {
 
   collectReceipt(){
     //cobro de recibo cuando tiene saldo a favor mayor que su recibo y decide usarlo
-    let asegurado = this.searchReceipt.get('xcedula')?.value || ''
     this.llenarlistas()
     const fecha = new Date()
 
@@ -906,7 +983,7 @@ export class GroupPaymentReportComponent {
     const savePositiveBalance = {
       transaccion : this.idTrans,
       freporte : fecha ,
-      casegurado: asegurado,
+      casegurado: this.PositiveBalance[0].cid,
       mpago : Math.abs(bs),
       mpagoext :  Math.abs(usd),
       ptasamon : this.bcv,
@@ -933,15 +1010,15 @@ export class GroupPaymentReportComponent {
         ximage : ''
       }]
     }
-    // this.http.post(environment.apiUrl + '/api/v1/collection/positive-balance', savePositiveBalance).subscribe( (response: any) => {
-    //   if (response.status) {
-    //     this.toast.open("Registro de pago éxitoso,su pago sera validado en 48 horas", "Cerrar", {
-    //       duration: 3000,
-    //     });
-    //     location.reload()
-    //   }
+    this.http.post(environment.apiUrl + '/api/v1/collection/positive-balance', savePositiveBalance).subscribe( (response: any) => {
+      if (response.status) {
+        this.toast.open("Registro de pago éxitoso,su pago sera validado en 48 horas", "Cerrar", {
+          duration: 3000,
+        });
+        location.reload()
+      }
 
-    // })
+    })
 
   }
 
@@ -949,6 +1026,26 @@ export class GroupPaymentReportComponent {
 
     this.aplicaPositiveBalance = this.searchReceipt.get('aplica')?.value || false
     this.calculateMount()
+  }
+
+  validation(i : any){
+
+    const trasnfer = this.searchReceipt.get("transfer") as FormArray
+    let   referencia = trasnfer.at(i).get('xreferencia')?.value 
+
+    this.http.post(environment.apiUrl + '/api/v1/collection/validate-reference', {valor : referencia}).subscribe((response: any) => {
+      if(!response.status){
+        this.toast.open(response.message, '', {
+          duration: 5000,
+          verticalPosition: 'top',
+          panelClass: ['error-toast']
+        }); 
+
+        trasnfer.at(i).get('xreferencia')?.setValue('') 
+      }
+
+    })
+
   }
 
   //Treatments
