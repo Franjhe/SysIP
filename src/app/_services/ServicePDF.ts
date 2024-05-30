@@ -2672,6 +2672,12 @@ export class PdfGenerationService {
 									{ text: '', bold: true, border: [false, false, false, false], alignment: 'right' },
 									{ text: '', border: [false, false, false, false], alignment: 'right' },
 								],
+								[
+									{ text: 'CUENTA BANCARIA:', bold: true, border: [false, false, false, false] },
+									{ text: paymentRequest.ccuentaban, border: [false, false, false, false], alignment: 'left' },
+									{ text: '', bold: true, border: [false, false, false, false], alignment: 'right' },
+									{ text: '', border: [false, false, false, false], alignment: 'right' },
+								],
 								// [
 								// 	{ text: `MONEDA DE PAGO`, bold: true, border: [false, false, false, false], alignment: 'left'  },
 								// 	{ text: `${paymentRequest.xmoneda} (${paymentRequest.cmoneda})`, border: [false, false, false, false], alignment: 'left'  },
