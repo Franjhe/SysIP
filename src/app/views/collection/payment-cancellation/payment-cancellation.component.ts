@@ -100,6 +100,7 @@ export class PaymentCancellationComponent {
             tasa_saldo:transaction.tasa_saldo,
             cmoneda_dif:transaction.cmoneda_dif,   
             ptasamon: transaction.ptasamon,
+            saldoCliente: transaction.saldoCliente,
             poliza: this._formBuilder.array([]),
             recibos: this._formBuilder.array([])
           });
