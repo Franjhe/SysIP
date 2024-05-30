@@ -39,7 +39,13 @@ td{
 .mat-mdc-form-field {
   margin-top: 16px;
 }
+.readonly-input input.green {
+  color: green;
+}
 
+.readonly-input input.red {
+  color: red;
+}
 // .readonly-input, textarea {
 //   pointer-events: none;
 //   opacity: 0.5; 
