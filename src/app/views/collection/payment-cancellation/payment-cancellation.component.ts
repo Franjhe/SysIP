@@ -95,12 +95,9 @@ export class PaymentCancellationComponent {
             cdoccob: transaction.cdoccob,
             monto_transaccion: transaction.monto_transaccion,
             monto_transaccion_ext: transaction.monto_transaccion_ext,
-            diferencia_saldo:transaction.diferencia_saldo,
+            saldoCliente:transaction.saldoCliente,
             msaldodif:transaction.msaldodif,
-            tasa_saldo:transaction.tasa_saldo,
-            cmoneda_dif:transaction.cmoneda_dif,   
             ptasamon: transaction.ptasamon,
-            saldoCliente: transaction.saldoCliente,
             poliza: this._formBuilder.array([]),
             recibos: this._formBuilder.array([])
           });

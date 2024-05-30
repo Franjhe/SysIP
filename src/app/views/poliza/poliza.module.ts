@@ -17,13 +17,14 @@ import {MatButtonModule} from '@angular/material/button';
 import { DatePipe } from '@angular/common';
 import {MatSelectModule} from '@angular/material/select';
 import {MatCardModule} from '@angular/material/card';
+// import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 
 
 @NgModule({
+  
   declarations: [
     SearchComponent,
-    PolizaComponent,
-    
+    PolizaComponent, 
   ],
   imports: [
     CommonModule,
@@ -42,6 +43,12 @@ import {MatCardModule} from '@angular/material/card';
     DatePipe,
     MatSelectModule,
     MatCardModule,
-  ]
+  ],
+  // providers: [
+  //   {
+  //     provide: STEPPER_GLOBAL_OPTIONS,
+  //     useValue: { showError: true }
+  //   }
+  // ]
 })
 export class PolizaModule { }

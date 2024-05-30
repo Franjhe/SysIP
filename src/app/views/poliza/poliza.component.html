@@ -1,35 +1,40 @@
 <div class="card container-fluid">
 
-  <div class="text-center">
-    <h1>Consulta de Pólizas</h1>
-  </div>
+  <h2 style="text-align: center; font-size: 1.2rem;"><strong>CONSULTA DE
+      PÓLIZAS</strong></h2>
+
   <!-- <div class="text-center">
     <h3>Ingrese Datos de la Póliza</h3>
   </div> -->
-
-    <mat-stepper [linear]="isLinear" #stepper>
+  <mat-stepper [linear]="isLinear" #stepper>
     <mat-step [stepControl]="firstFormGroup">
       <form [formGroup]="firstFormGroup">
-        <ng-template matStepLabel>Selección de Póliza</ng-template>
+        <ng-template matStepLabel>Selección de la Póliza</ng-template>
 
+        <div style="text-align: center;">
+          <h2 style="margin-bottom: 0.1px; font-size: 1rem;">SELECCIONE LA
+            PÓLIZA</h2>
+        </div>
         <mat-form-field class="mat-form-field-lg">
           <mat-label>Buscar</mat-label>
           <input matInput (keyup)="applyFilter($event)" #input>
         </mat-form-field>
-        
         <div class="mat-elevation-z8">
           <table mat-table [dataSource]="dataSource">
-            
+
             <ng-container matColumnDef="select">
               <th mat-header-cell *matHeaderCellDef>
                 <mat-checkbox (change)="$event ? masterToggle(null) : null"
-                              [checked]="selection.hasValue() && isAllSelected()"
-                              [indeterminate]="selection.hasValue() && !isAllSelected()">
+                  [checked]="selection.hasValue() && isAllSelected()"
+                  [indeterminate]="selection.hasValue() && !isAllSelected()"
+                  >
                 </mat-checkbox>
               </th>
+
               <td mat-cell *matCellDef="let row">
-                <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? masterToggle(row) : null"
-                              [checked]="selection.isSelected(row)">
+                <mat-checkbox (click)="$event.stopPropagation()"
+                  (change)="$event ? masterToggle(row) : null"
+                  [checked]="selection.isSelected(row)">
                 </mat-checkbox>
               </td>
             </ng-container>
@@ -68,6 +73,12 @@
               </td>
             </ng-container>
 
+            <ng-container matColumnDef="Estatus_Poliza">
+              <th mat-header-cell *matHeaderCellDef> Estado </th>
+              <td mat-cell *matCellDef="let element"> {{element.Estatus_Poliza}}
+              </td>
+            </ng-container>
+
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
           </table>
@@ -80,224 +91,239 @@
 
         <br>
         <div>
-          <button class="align-right-button" mat-flat-button color="primary" mat-button matStepperNext (click)="pruebaDialog()"> 
+          <button class="align-right-button" mat-flat-button color="primary"
+            mat-button matStepperNext (click)="pruebaDialog()">
             Siguiente
           </button>
         </div>
       </form>
     </mat-step>
-
-    <mat-step [stepControl]="secondFormGroup" label="Información de la Póliza">
+    <mat-step [stepControl]="secondFormGroup" label="Información de la Póliza" #stepper>
       <form [formGroup]="secondFormGroup">
-
-        <mat-form-field style="font-size: 0.9rem;" class="peq">
-          <mat-label>C.I. Tomador:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #ciTomadorInput
-              readonly>
-          </span>
-        </mat-form-field>
         
-        <mat-form-field style="font-size: 0.9rem;" class="peq">
-          <mat-label>Tomador:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #tomadorInput
-              readonly>
-          </span>
-        </mat-form-field>
+        <br>
+        <div class="card" style="background-color: #fff;">
+          <div class="card-header" style="background-color: #fff;">
+            <h2 style="text-align: center; font-size: 1.1rem;"><strong>DATOS DEL TOMADOR -
+                ASEGURADO</strong></h2>
+          </div>
+          <div class="row">
 
-        <mat-form-field style="font-size: 0.9rem;" class="peq">
-          <mat-label>C.I. Asegurado:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #ciAseguradoInput
-              readonly>
-          </span>
-        </mat-form-field>
+            <mat-form-field style="font-size: 0.9rem;" class="peq">
+              <mat-label>C.I. Tomador:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #ciTomadorInput
+                  readonly>
+              </span>
+            </mat-form-field>
 
-        <mat-form-field style="font-size: 0.9rem;" class="peq">
-          <mat-label>Asegurado:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #nombreAseguradoInput
-              readonly>
-          </span>
-        </mat-form-field>
-        
-        <mat-form-field style="font-size: 0.9rem;" class="peq">
-          <mat-label>C.I. Beneficiario:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #ciBeneficiarioInput
-              readonly>
-          </span>
-        </mat-form-field>
+            <mat-form-field style="font-size: 0.9rem;" class="peq">
+              <mat-label>Tomador:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #tomadorInput
+                  readonly>
+              </span>
+            </mat-form-field>
 
-        <mat-form-field style="font-size: 0.9rem;" class="peq">
-          <mat-label>Beneficiario:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #nombreBeneficiarioInput
-              readonly>
-          </span>
-        </mat-form-field>
+            <mat-form-field style="font-size: 0.9rem;" class="peq">
+              <mat-label>C.I. Asegurado:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #ciAseguradoInput
+                  readonly>
+              </span>
+            </mat-form-field>
 
-        
-          <mat-form-field style="font-size: 1rem;" class="poliza">
-            <mat-label>Nro. Póliza:</mat-label>
-            <span class="readonly-input">
-              <input matInput 
-              #nroPolizaInput 
-              readonly>
-            </span>
-          </mat-form-field>
+            <mat-form-field style="font-size: 0.9rem;" class="peq">
+              <mat-label>Asegurado:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #nombreAseguradoInput
+                  readonly>
+              </span>
+            </mat-form-field>
 
-          <mat-form-field style="font-size: 0.9rem;" class="vigencia">
-            <mat-label>Vigencia:</mat-label>
-            <span class="readonly-input">
-              <input matInput 
-                #Vigencia
+            <mat-form-field style="font-size: 0.9rem;" class="peq">
+              <mat-label>C.I. Beneficiario:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #ciBeneficiarioInput
+                  readonly>
+              </span>
+            </mat-form-field>
+
+            <mat-form-field style="font-size: 0.9rem;" class="peq">
+              <mat-label>Beneficiario:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #nombreBeneficiarioInput
+                  readonly>
+              </span>
+            </mat-form-field>
+
+            <mat-form-field style="font-size: 1rem;" class="peq">
+              <mat-label>Nro. Póliza:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #nroPolizaInput
+                  readonly>
+              </span>
+            </mat-form-field>
+
+            <mat-form-field style="font-size: 0.9rem;" class="peq">
+              <mat-label>Descripción del Ramo:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #descripcionRamo
+                  readonly>
+              </span>
+            </mat-form-field>
+
+            <h2 style="text-align: center; font-size: 1.1rem;"><strong>DATOS DE LA
+                PÓLIZA</strong></h2>
+
+            <mat-form-field style="font-size: 0.9rem;" class="peq">
+              <mat-label>Vigencia:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #Vigencia
+                  readonly>
+              </span>
+            </mat-form-field>
+
+            <mat-form-field style="font-size: 0.9rem;" class="peq">
+              <mat-label>Fecha desde Póliza:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #FechaDesdePol
+                  readonly>
+              </span>
+            </mat-form-field>
+
+            <mat-form-field style="font-size: 0.9rem;" class="peq">
+              <mat-label>Fecha hasta Póliza:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #FechaHastaPol
+                  readonly>
+              </span>
+            </mat-form-field>
+
+            <mat-form-field style="font-size: 0.9rem;" class="peq">
+              <mat-label>Sucursal:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #Sucursal
+                  readonly>
+              </span>
+            </mat-form-field>
+
+            <mat-form-field style="font-size: 0.9rem;" class="peq">
+              <mat-label>Código del Productor:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #cproductor
+                  readonly>
+              </span>
+            </mat-form-field>
+            
+            <mat-form-field style="font-size: 0.9rem;" class="peq">
+              <mat-label>Intermediario:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                #Intermediario
                 readonly>
-            </span>
-          </mat-form-field>
+              </span>
+              
+            </mat-form-field>
 
-        <mat-form-field style="font-size: 0.9rem;" class="fechas">
-          <mat-label>Fecha desde Póliza:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #FechaDesdePol
-              readonly>
-          </span>
-        </mat-form-field>
+            <mat-form-field style="font-size: 0.9rem;" class="peq">
+              <mat-label>Moneda:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #Moneda
+                  readonly>
+              </span>
+            </mat-form-field>
 
-        <mat-form-field style="font-size: 0.9rem;" class="fechas">
-          <mat-label>Fecha hasta Póliza:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #FechaHastaPol
-              readonly>
-          </span>
-        </mat-form-field>
+            <mat-form-field style="font-size: 0.9rem;" class="peq">
+              <mat-label>Renovación:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #Tipo_Renovacion
+                  readonly>
+              </span>
+            </mat-form-field>
 
-        <mat-form-field style="font-size: 0.9rem;">
-          <mat-label>Descripción del Ramo:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #descripcionRamo
-              readonly>
-          </span>
-        </mat-form-field>
+            <mat-form-field style="font-size: 0.9rem;" class="peq2">
+              <mat-label>Tasa:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #Tasa
+                  readonly>
+              </span>
+            </mat-form-field>
 
-        <mat-form-field style="font-size: 0.9rem;" class="sucursal">
-          <mat-label>Sucursal:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #Sucursal
-              readonly>
-          </span>
-        </mat-form-field>
+            <mat-form-field style="font-size: 0.9rem;" class="emision">
+              <mat-label>Fecha de Emisión:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #Fecha_Emision
+                  readonly>
+              </span>
+            </mat-form-field>
 
-        <mat-form-field style="font-size: 0.9rem;" class="maspeq">
-          <mat-label>Productor:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #Productor
-              readonly>
-          </span>
-        </mat-form-field>
+            <mat-form-field style="font-size: 0.9rem;" class="peq">
+              <mat-label>Código del Plan:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #Plan
+                  readonly>
+              </span>
+            </mat-form-field>
 
-        <mat-form-field style="font-size: 0.9rem;" class="maspeq">
-          <mat-label>Tasa:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #Tasa
-              readonly>
-          </span>
-        </mat-form-field>
+            <mat-form-field style="font-size: 0.9rem;" class="peq">
+              <mat-label>Descripción del Plan:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #Descripcion_Plan
+                  readonly>
+              </span>
+            </mat-form-field>
 
-        <mat-form-field style="font-size: 0.9rem;" class="intermediario">
-          <mat-label>Intermediario:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #Intermediario
-              readonly>
-          </span>
-        </mat-form-field>
+            <mat-form-field style="font-size: 0.9rem;" class="peq">
+              <mat-label>Estado de Póliza:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #Estatus_Poliza
+                  readonly>
+              </span>
+            </mat-form-field>
 
-        <mat-form-field style="font-size: 0.9rem;" class="maspeq">
-          <mat-label>Moneda:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #Moneda
-              readonly>
-          </span>
-        </mat-form-field>
-
-        <mat-form-field style="font-size: 0.9rem;" class="maspeq2">
-          <mat-label>Renovacion:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #Tipo_Renovacion
-              readonly>
-          </span>
-        </mat-form-field>
-
-        <mat-form-field style="font-size: 0.9rem;" class="maspeq2">
-          <mat-label>Estatus Poliza:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #Estatus_Poliza
-              readonly>
-          </span>
-        </mat-form-field>
-        
-        <mat-form-field style="font-size: 0.9rem;" class="emision">
-          <mat-label>Fecha de Emisión:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #Fecha_Emision
-              readonly>
-          </span>
-        </mat-form-field>
-
-        <mat-form-field style="font-size: 0.9rem;" class="vigencia">
-          <mat-label>Cód. Plan:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #Plan
-              readonly>
-          </span>
-        </mat-form-field>
-        
-        <mat-form-field style="font-size: 0.9rem;" class = "descripcion_plan">
-          <mat-label>Descripción Plan:</mat-label>
-          <span class="readonly-input">
-            <input matInput 
-              #Descripcion_Plan
-              readonly>
-          </span>
-        </mat-form-field>
-
-        <mat-form-field style="font-size: 1rem;" class="totalwidth">
-          <mat-label>Observaciones:</mat-label>
-          <textarea matInput 
-          #Observacion
-          readonly>
+            <mat-form-field style="font-size: 1rem;" class="totalwidth">
+              <mat-label>Observaciones:</mat-label>
+              <textarea matInput
+                #Observacion
+                readonly>
           </textarea>
-        </mat-form-field>
+            </mat-form-field>
 
+          </div>
+        </div>
+        <br>
         <div>
-          <button *ngIf="showButton" 
-                    (click)="buscarReporte()"
-                    [disabled]="!showButton" mat-raised-button
-                    class="mat-raised-button"
-                    style="color: #fff; background-color: #db2a13fb;"
-                    >Cuadro Póliza
+          <button *ngIf="showButton"
+            (click)="buscarReporte()"
+            [disabled]="!showButton" mat-raised-button
+            class="mat-raised-button"
+            style="color: #fff; background-color: #db2a13fb;">Cuadro Póliza
           </button>
-          <button class="align-right-button" mat-flat-button color = "primary" mat-button matStepperNext>Siguiente</button>
-          <button class="align-right-button" mat-flat-button color = "warn" mat-button matStepperPrevious>Regresar</button>
+          <button class="align-right-button" mat-flat-button color="primary"
+            mat-button matStepperNext>Siguiente</button>
+          <button class="align-right-button" mat-flat-button color="warn"
+            mat-button matStepperPrevious>Regresar</button>
         </div>
       </form>
     </mat-step>
@@ -305,8 +331,8 @@
     <mat-step>
       <ng-template matStepLabel>Recibos Asociados</ng-template>
       <div>
-        
-        
+        <h2 style="text-align: center;"><strong>INFORMACIÓN DE LOS
+            RECIBOS</strong></h2>
         <div class="mat-elevation-z8">
           <br>
           <table mat-table [dataSource]="recibosData">
@@ -324,11 +350,13 @@
             </ng-container>
             <ng-container matColumnDef="Fecha_desde_Rec">
               <th mat-header-cell *matHeaderCellDef> Fecha desde Recibo </th>
-              <td mat-cell *matCellDef="let element"> {{element.Fecha_desde_Rec}} </td>
+              <td mat-cell *matCellDef="let element">
+                {{element.Fecha_desde_Rec}} </td>
             </ng-container>
             <ng-container matColumnDef="Fecha_hasta_Rec">
               <th mat-header-cell *matHeaderCellDef> Fecha hasta Recibo </th>
-              <td mat-cell *matCellDef="let element"> {{element.Fecha_hasta_Rec}}
+              <td mat-cell *matCellDef="let element">
+                {{element.Fecha_hasta_Rec}}
               </td>
             </ng-container>
             <ng-container matColumnDef="Monto_Rec">
@@ -352,8 +380,10 @@
           </table>
         </div>
         <br>
-        <button class="align-right-button" mat-flat-button color="primary" mat-button (click)="stepper.reset()">Inicio</button>
-        <button class="align-right-button" mat-flat-button color="warn" mat-button matStepperPrevious>Regresar</button>
+        <button class="align-right-button" mat-flat-button color="primary"
+          mat-button (click)="stepper.reset()">Inicio</button>
+        <button class="align-right-button" mat-flat-button color="warn"
+          mat-button matStepperPrevious>Regresar</button>
       </div>
     </mat-step>
   </mat-stepper>

@@ -41,7 +41,7 @@ export class PdfGenerationService {
 	xsucursal: string | undefined;
 	canal_venta: string | undefined;
 	xfrecuencia: string | undefined;
-	xintermediario: string | undefined;
+	xproductor: string | undefined;
 	xparticipacion: string | undefined;
 	xrecibo: string | undefined;
 	femision_rec: string | undefined;
@@ -290,7 +290,7 @@ export class PdfGenerationService {
 				this.xciudad_tomador = response.data.poliza[0][0].xciudad_tomador;
 				this.xestado_asegurado = response.data.poliza[0][0].xestado_asegurado;
 				this.xestado_tomador = response.data.poliza[0][0].xestado_tomador;
-				this.xintermediario = response.data.poliza[0][0].xintermediario;
+				this.xproductor = response.data.poliza[0][0].xproductor;
 				this.xmoneda = response.data.poliza[0][0].xmoneda;
 				this.xnombre_ben = response.data.poliza[0][0].xnombre_ben;
 				this.xrecibo = response.data.poliza[0][0].xrecibo;
@@ -572,7 +572,7 @@ export class PdfGenerationService {
 
 											},],
 											[{
-												fontSize: 10, text: 'Intermediario(s):\n\n ' + `${this.xintermediario}`,
+												fontSize: 10, text: 'Intermediario(s):\n\n ' + `${this.xproductor}`,
 
 
 											}, {
@@ -2543,7 +2543,7 @@ export class PdfGenerationService {
 					{ text: 'TIPO MOV.:', bold: true, border: [false, false, false, false] },
 					{ text: 'FECHA MOV.:', bold: true, border: [false, false, false, false] },
 					{ text: 'PRIMA BS.:', bold: true, border: [false, false, false, false] },
-					{ text: 'PRIMA DIVISAS.:', bold: true, border: [false, false, false, false] },
+					{ text: 'PRIMA \nDIVISAS.:', bold: true, border: [false, false, false, false] },
 					{ text: '% COM.:', bold: true, border: [false, false, false, false] },
 					{ text: 'COMISIÓN BS.:', bold: true, border: [false, false, false, false] },
 					{ text: 'COMISIÓN DIVISAS', bold: true, border: [false, false, false, false] },
@@ -2672,6 +2672,12 @@ export class PdfGenerationService {
 									{ text: '', bold: true, border: [false, false, false, false], alignment: 'right' },
 									{ text: '', border: [false, false, false, false], alignment: 'right' },
 								],
+								[
+									{ text: 'CUENTA BANCARIA:', bold: true, border: [false, false, false, false] },
+									{ text: paymentRequest.ccuentaban, border: [false, false, false, false], alignment: 'left' },
+									{ text: '', bold: true, border: [false, false, false, false], alignment: 'right' },
+									{ text: '', border: [false, false, false, false], alignment: 'right' },
+								],
 								// [
 								// 	{ text: `MONEDA DE PAGO`, bold: true, border: [false, false, false, false], alignment: 'left'  },
 								// 	{ text: `${paymentRequest.xmoneda} (${paymentRequest.cmoneda})`, border: [false, false, false, false], alignment: 'left'  },
@@ -2722,9 +2728,9 @@ export class PdfGenerationService {
 							body: [
 								[
 									{ text: 'MONEDA DE PAGO', bold: true, border: [false, false, false, false] },
-									{ text: 'TOTAL COMISIONES', bold: true, border: [false, false, false, false] },
-									{ text: 'TOTAL BONIFICACIONES', bold: true, border: [false, false, false, false] },
-									{ text: 'MONTO MOVIMIENTO', bold: true, border: [false, false, false, false] },
+									{ text: 'MONTO BRUTO COMISIONES', bold: true, border: [false, false, false, false] },
+									{ text: 'MONTO BRUTO BONIFICACIONES', bold: true, border: [false, false, false, false] },
+									{ text: 'MONTO BRUTO MOVIMIENTO', bold: true, border: [false, false, false, false] },
 									{ text: '% RETENCIÓN', bold: true, border: [false, false, false, false] },
 									{ text: 'MONTO RETENCIÓN', bold: true, border: [false, false, false, false] },
 									{ text: 'SUSTRAENDO', bold: true, border: [false, false, false, false] },
@@ -2789,7 +2795,7 @@ export class PdfGenerationService {
 						margin: [0, 0, 0, 3],
 						table: {
 							headerRows: 1,
-							widths: [37, '*', 20, 35, '*', '*', 25, '*', 30, 25, 22],
+							widths: [47, '*', 20, 35, '*', '*', 25, '*', 30, 25, 22],
 							body: movimientos
 						}
 					},
