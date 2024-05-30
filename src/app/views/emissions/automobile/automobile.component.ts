@@ -2428,6 +2428,9 @@ export class AutomobileComponent {
       let orden: string = "UB_" + this.ubii;
 
       this.bpagarubii = true;
+      console.log(prima_ds);
+      console.log(prima_bs);
+      console.log(orden);    
 
       initUbii(
         'ubiiboton',

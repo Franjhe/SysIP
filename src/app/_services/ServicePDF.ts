@@ -2543,7 +2543,7 @@ export class PdfGenerationService {
 					{ text: 'TIPO MOV.:', bold: true, border: [false, false, false, false] },
 					{ text: 'FECHA MOV.:', bold: true, border: [false, false, false, false] },
 					{ text: 'PRIMA BS.:', bold: true, border: [false, false, false, false] },
-					{ text: 'PRIMA DIVISAS.:', bold: true, border: [false, false, false, false] },
+					{ text: 'PRIMA \nDIVISAS.:', bold: true, border: [false, false, false, false] },
 					{ text: '% COM.:', bold: true, border: [false, false, false, false] },
 					{ text: 'COMISIÓN BS.:', bold: true, border: [false, false, false, false] },
 					{ text: 'COMISIÓN DIVISAS', bold: true, border: [false, false, false, false] },
@@ -2789,7 +2789,7 @@ export class PdfGenerationService {
 						margin: [0, 0, 0, 3],
 						table: {
 							headerRows: 1,
-							widths: [37, '*', 20, 35, '*', '*', 25, '*', 30, 25, 22],
+							widths: [47, '*', 20, 35, '*', '*', 25, '*', 30, 25, 22],
 							body: movimientos
 						}
 					},
