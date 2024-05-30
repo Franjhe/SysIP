@@ -599,6 +599,29 @@ export class GroupPaymentReportComponent {
       this.determinarSiPuedeAvanzar()
 
     } 
+
+    else if(sumaTotal < 0){
+      
+      this.mount = sumaTotal.toFixed(4) //suma de los dolares brutos
+
+      const operation = sumaTotal * this.bcv //dolares brutos convertidos en bolivares 
+      this.mountBs = operation.toFixed(2) 
+
+      const mountIGTF = sumaTotal + ((3/100)*sumaTotal) //dolares netos
+      this.mountIGTF = mountIGTF.toFixed(2) 
+
+      const mountBs = this.mountIGTF*this.bcv //bolivares netos
+      this.mountBsExt = mountBs.toFixed(2) 
+
+      const porcentajeBs = this.bcv * ((3/100)*sumaTotal) //porcentaje del igtf en bolivares 
+      this.mountBsP = porcentajeBs.toFixed(2) 
+
+      const porcentaje = (3/100)*sumaTotal //porcentaje del igtf en dolares  
+      this.mountP = porcentaje.toFixed(2)
+
+      this.determinarSiPuedeAvanzar()
+
+    }
  
   }
 
