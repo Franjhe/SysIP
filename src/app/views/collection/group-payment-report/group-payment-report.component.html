@@ -85,7 +85,7 @@
                   <h1> Sus recibos pendientes </h1>
   
                 </div>
-                <div class="col-lg-5 mt-4" *ngIf="PositiveBalanceBool">
+                <div class="col-lg-5 mt-4" *ngIf="PositiveBalanceBool && PositiveBalance.length ==  1">
           
                   <div *ngFor="let message of PositiveBalance" >
                     <h1 class="text-success" > {{message.ctenedor}}</h1>
@@ -97,7 +97,7 @@
                     </div>
                   </div>
                 </div>
-                <div *ngIf="PositiveBalanceBool">
+                <div *ngIf="PositiveBalanceBool && PositiveBalance.length ==  1">
                   <mat-checkbox  formControlName="aplica" (change)="changeAplicaPositiveBalance()"> <h2 class="mt-3 text-secondary">Aplicar Saldo Positivo</h2></mat-checkbox>
                 </div>
               </div>
