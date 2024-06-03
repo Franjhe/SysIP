@@ -74,39 +74,30 @@
                   </div>
               </div>
               <div class="example-button-row">
-                  <button *ngIf="!showButton" (click)="makeExcel()"
-                  [disabled]="!showButton"
-                  mat-raised-button class="mat-raised-button"
-                  style="color: #fff; background-color: #adadadfb;">
-                  <img class="izquierda_op"
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/1101px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png"
-                  width="20px" height="20px" margin-right="2px">Excel
-                  </button>
-                  <button *ngIf="showButton" (click)="makeExcel()"
-                  mat-raised-button class="mat-raised-button"
-                  style="color: #fff; background-color: #13ad34fb;">
-                  <img class="izquierda"
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/1101px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png"
-                  width="20px" height="20px" margin-right="2px">Excel
-                  </button>
-                  <button *ngIf="!showButton" (click)="buscarReporte()"
-                  [disabled]="!showButton" mat-raised-button
-                  class="mat-raised-button"
-                  style="color: #fff; background-color: #adadadfb;">
-                  <img class="izquierda_op"
-                  src="https://www.islahospitalmenorca.org/wp-content/uploads/2015/12/adobe-pdf-file-icon-logo-vector.png"
-                  width="21px" height="20px" margin-right="2px"> PDF
-                  </button>
-                  <button *ngIf="showButton" (click)="buscarReporte()"
-                  [disabled]="!showButton" mat-raised-button
-                  class="mat-raised-button"
-                  style="color: #fff; background-color: #db1313fb;">
-                  <img class="izquierda"
-                  src="https://www.islahospitalmenorca.org/wp-content/uploads/2015/12/adobe-pdf-file-icon-logo-vector.png"
-                  width="21px" height="20px" margin-right="2px"> PDF
-                  </button>
-                  <br>
-            </div>
+                <button *ngIf="!showButton" (click)="makeExcel()"
+                        [disabled]="!showButton"
+                        mat-raised-button class="mat-raised-button"
+                        style="color: #fff; background-color: #adadadfb;"> Excel
+                </button>
+                <button *ngIf="showButton && estado !== 'CD'" (click)="makeExcel()"
+                        mat-raised-button class="mat-raised-button"
+                        style="color: #fff; background-color: #13ad34fb;"
+                        >  Excel
+                </button>
+                <button *ngIf="!showButton" (click)="buscarReporte()"
+                        [disabled]="!showButton" mat-raised-button
+                        class="mat-raised-button"
+                        style="color: #fff; background-color: #adadadfb;"> PDF
+                </button>
+                <button *ngIf="showButton" (click)="buscarReporte()"
+                        [disabled]="!showButton" mat-raised-button
+                        class="mat-raised-button"
+                        style="color: #fff; background-color: #db1313fb;"
+                        style.width="{{ estado == 'CD' ? '100%' : '45%' }}"
+                        >PDF
+                </button>
+                <br>
+              </div>
             </form>
              
         </div>
