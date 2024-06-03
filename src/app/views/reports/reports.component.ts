@@ -35,7 +35,8 @@ import { Observable } from 'rxjs';
 })
 
 export class ReportsComponent {
-
+  estado!: string;
+  CD : boolean = false
   consulta_reporte!: FormGroup;
   submitted = false;
   name?: string;
@@ -126,7 +127,7 @@ export class ReportsComponent {
     var mediaType = 'application/pdf';
     let path = '';
     if (data.estado == 'CD') {
-      path = '/cobranza/';
+      path = '/sis2000/cobranza/';
     } else {
       path = '/single_receipts/';
     }
@@ -156,7 +157,9 @@ export class ReportsComponent {
     let estado = this.consulta_reporte.get('estado')?.value;
     let fdesde_pol = this.consulta_reporte.get('fdesde_pol')?.value;
     let fhasta_pol = this.consulta_reporte.get('fhasta_pol')?.value;
-    console.log(estado)
+    this.estado = estado;
+    console.log(this.estado);
+    
     if (estado !== 'CD') {
       this.showButton = true
       fetch(environment.apiUrl + '/api/v1/collection/search-collected/' + estado)
