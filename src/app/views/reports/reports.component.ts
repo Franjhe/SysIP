@@ -23,6 +23,9 @@ import {
   MatSnackBarVerticalPosition,
 } from '@angular/material/snack-bar';
 import { log } from 'console';
+import { Injectable } from '@angular/core';
+import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 
 @Component({
@@ -32,7 +35,8 @@ import { log } from 'console';
 })
 
 export class ReportsComponent {
-
+  estado!: string;
+  CD : boolean = false
   consulta_reporte!: FormGroup;
   submitted = false;
   name?: string;
@@ -119,11 +123,16 @@ export class ReportsComponent {
       estado: this.consulta_reporte.get('estado')?.value,
       fdesde_pol: this.consulta_reporte.get('fdesde_pol')?.value,
       fhasta_pol: this.consulta_reporte.get('fhasta_pol')?.value,
-      ctransaccion: this.consulta_reporte.get('ctransaccion')?.value,
     };
     var mediaType = 'application/pdf';
+    let path = '';
+    if (data.estado == 'CD') {
+      path = '/sis2000/cobranza/';
+    } else {
+      path = '/single_receipts/';
+    }
     try {
-      this.http.post(environment.apiUrl_prod + '/single_receipts/', JSON.stringify(data), { responseType: 'blob' }).subscribe(
+      this.http.post(environment.apiUrl_prod + path, JSON.stringify(data), { responseType: 'blob' }).subscribe(
         (response) => {
           var blob = new Blob([response], { type: mediaType });
           saveAs(blob, 'reporte.pdf');
@@ -224,9 +233,11 @@ export class ReportsComponent {
             })
           }
         })
-    } else {
-      window.open('https://api.lamundialdeseguros.com/sis2000/cobranza/', '_blank');
-    }
+    } 
+    else {
+      this.showButton = true
+    //   window.open('https://api.lamundialdeseguros.com/sis2000/cobranza/', '_blank');
+     }
   }
   makeExcel() {
     this.snackBar.open("Reporte en Excel descargado con Éxito", "Cerrar", {

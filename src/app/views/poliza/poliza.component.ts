@@ -222,16 +222,16 @@ export class PolizaComponent implements AfterViewInit {
       this.FechaHastaPol.nativeElement.value = FechaHastaPol;
       this.Vigencia.nativeElement.value = Vigencia;
       this.Sucursal.nativeElement.value = Sucursal;
-      this.Intermediario.nativeElement.value = Intermediario;
       this.Estatus_Poliza.nativeElement.value = Estatus_Poliza;
-      this.cproductor.nativeElement.value = cproductor;
+      this.cproductor.nativeElement.value = cproductor + ' - ' + Intermediario;
       this.Moneda.nativeElement.value = Moneda;
       this.Tasa.nativeElement.value = Tasa;
       this.Tipo_Renovacion.nativeElement.value = Tipo_Renovacion;
       this.Fecha_Emision.nativeElement.value = Fecha_Emision;
-      this.Plan.nativeElement.value = Plan;
+      this.Plan.nativeElement.value = Plan + ' - ' + Descripcion_Plan;
       this.Descripcion_Plan.nativeElement.value = Descripcion_Plan;
       this.Observacion.nativeElement.value = Observacion;
+      this.Intermediario.nativeElement.value = Intermediario;
   });
 
   this.recibosData = [];
