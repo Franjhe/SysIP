@@ -116,14 +116,28 @@ export class ReportsComponent {
     });
   }
   buscarReporte() {
+    const fdesde_pol = this.consulta_reporte.get('fdesde_pol')?.value;
+    const fhasta_pol = this.consulta_reporte.get('fhasta_pol')?.value;
+  
+    // Verificar que la diferencia entre fdesde_pol y fhasta_pol no sea mayor a 20 días
+    const diffInDays = this.getDaysDifference(fdesde_pol, fhasta_pol);
+    if (diffInDays > 20) {
+      this.snackBar.open("El rango de fechas no debe ser mayor a 20 días", "Cerrar", {
+        duration: 3000,
+      });
+      return;
+    }
+  
     this.snackBar.open("Reporte en PDF descargado con Éxito", "Cerrar", {
       duration: 3000,
     });
+  
     let data = {
       estado: this.consulta_reporte.get('estado')?.value,
-      fdesde_pol: this.consulta_reporte.get('fdesde_pol')?.value,
-      fhasta_pol: this.consulta_reporte.get('fhasta_pol')?.value,
+      fdesde_pol: fdesde_pol,
+      fhasta_pol: fhasta_pol,
     };
+  
     var mediaType = 'application/pdf';
     let path = '';
     if (data.estado == 'CD') {
@@ -131,6 +145,7 @@ export class ReportsComponent {
     } else {
       path = '/single_receipts/';
     }
+  
     try {
       this.http.post(environment.apiUrl_prod + path, JSON.stringify(data), { responseType: 'blob' }).subscribe(
         (response) => {
@@ -141,6 +156,12 @@ export class ReportsComponent {
     } catch (e) {
       console.log(e);
     }
+  }
+  
+  getDaysDifference(date1: string, date2: string): number {
+    const oneDay = 24 * 60 * 60 * 1000; // Horas * Minutos * Segundos * Milisegundos
+    const diffDays = Math.round(Math.abs((new Date(date1).getTime() - new Date(date2).getTime()) / oneDay));
+    return diffDays;
   }
   activateSendButton() {
     if (this.consulta_reporte.invalid) {
