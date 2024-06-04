@@ -147,7 +147,6 @@ export class PolizaComponent implements AfterViewInit {
       this.token = localStorage.getItem('user');
       this.currentUser = JSON.parse(this.token);
       let ccorredor = this.currentUser.data.ccorredor;
-      console.log(ccorredor)
       if (this.token) {
         let corredor = {
           ccorredor: ccorredor
