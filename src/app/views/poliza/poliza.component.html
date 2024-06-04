@@ -26,7 +26,8 @@
               <th mat-header-cell *matHeaderCellDef>
                 <mat-checkbox (change)="$event ? masterToggle(null) : null"
                   [checked]="selection.hasValue() && isAllSelected()"
-                  [indeterminate]="selection.hasValue() && !isAllSelected()">
+                  [indeterminate]="selection.hasValue() && !isAllSelected()"
+                  >
                 </mat-checkbox>
               </th>
 
@@ -97,14 +98,14 @@
         </div>
       </form>
     </mat-step>
-    <mat-step [stepControl]="secondFormGroup" label="Información de la Póliza"
-      #stepper>
+    <mat-step [stepControl]="secondFormGroup" label="Información de la Póliza" #stepper>
       <form [formGroup]="secondFormGroup">
+        
         <br>
         <div class="card" style="background-color: #fff;">
           <div class="card-header" style="background-color: #fff;">
-            <h2 style="text-align: center; font-size: 1.1rem;"><strong>DATOS DEL
-                TOMADOR - ASEGURADO</strong></h2>
+            <h2 style="text-align: center; font-size: 1.1rem;"><strong>DATOS DEL TOMADOR -
+                ASEGURADO</strong></h2>
           </div>
           <div class="row">
 
@@ -180,8 +181,7 @@
               </span>
             </mat-form-field>
 
-            <h2 style="text-align: center; font-size: 1.1rem;"><strong>DATOS DE
-                LA
+            <h2 style="text-align: center; font-size: 1.1rem;"><strong>DATOS DE LA
                 PÓLIZA</strong></h2>
 
             <mat-form-field style="font-size: 0.9rem;" class="peq2">
@@ -211,7 +211,7 @@
               </span>
             </mat-form-field>
 
-            <mat-form-field style="font-size: 0.9rem;" class="peq4">
+            <mat-form-field style="font-size: 0.9rem;" class="peq2">
               <mat-label>Renovación:</mat-label>
               <span class="readonly-input">
                 <input matInput
@@ -220,7 +220,7 @@
               </span>
             </mat-form-field>
 
-            <mat-form-field style="font-size: 0.9rem;" class="peq3">
+            <mat-form-field style="font-size: 0.9rem;" class="peq2">
               <mat-label>Sucursal:</mat-label>
               <span class="readonly-input">
                 <input matInput
@@ -228,7 +228,7 @@
                   readonly>
               </span>
             </mat-form-field>
-  
+
             <mat-form-field style="font-size: 0.9rem;" class="peq3">
               <mat-label>Estado de Póliza:</mat-label>
               <span class="readonly-input">
@@ -246,8 +246,10 @@
                   readonly>
               </span>
             </mat-form-field>
+            
+            
 
-            <mat-form-field style="font-size: 0.9rem;" class="emision">
+            <mat-form-field style="font-size: 0.9rem;" class="peq2">
               <mat-label>Moneda:</mat-label>
               <span class="readonly-input">
                 <input matInput
@@ -265,7 +267,7 @@
               </span>
             </mat-form-field>
 
-            <mat-form-field style="font-size: 0.9rem;" class="emision">
+            <mat-form-field style="font-size: 0.9rem;" class="fecha">
               <mat-label>Fecha de Emisión:</mat-label>
               <span class="readonly-input">
                 <input matInput
@@ -274,7 +276,7 @@
               </span>
             </mat-form-field>
 
-            <mat-form-field style="font-size: 0.9rem;" class="peq">
+            <mat-form-field style="font-size: 0.9rem;" class="planes">
               <mat-label>Plan:</mat-label>
               <span class="readonly-input">
                 <input matInput
@@ -283,7 +285,23 @@
               </span>
             </mat-form-field>
 
+            <mat-form-field style="font-size: 0.9rem;" class="planes2">
+              <mat-label>Descripción del Plan:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                  #Descripcion_Plan
+                  readonly>
+              </span>
+            </mat-form-field>
 
+            <mat-form-field style="font-size: 0.9rem;" class="planes2">
+              <mat-label>Intermediario:</mat-label>
+              <span class="readonly-input">
+                <input matInput
+                #Intermediario
+                readonly>
+              </span>
+            </mat-form-field>
 
             <mat-form-field style="font-size: 1rem;" class="totalwidth">
               <mat-label>Observaciones:</mat-label>
@@ -292,6 +310,8 @@
                 readonly>
           </textarea>
             </mat-form-field>
+
+            
 
           </div>
         </div>
@@ -310,30 +330,28 @@
         </div>
       </form>
     </mat-step>
+<!-- <mat-step [stepControl]="secondFormGroup" label="Datos Técnicos" #stepper>
+              <form [formGroup]="secondFormGroup">
+                <br>
+                <div class="card" style="background-color: #fff;">
+                  <div class="card-header" style="background-color: #fff;">
+                    <h2 style="text-align: center; font-size: 1.1rem;"><strong>ASEGURADO - BENEFICIARIO</strong></h2>
+                  </div>
+                  <div class="row">
+
+                  </div>
+                </div>
+                <br>
+                <div>
+                  <button class="align-right-button" mat-flat-button color="primary"
+                    mat-button matStepperNext>Siguiente</button>
+                  <button class="align-right-button" mat-flat-button color="warn"
+                    mat-button matStepperPrevious>Regresar</button>
+                </div>
+              </form>
 
 
-
-    <!-- <mat-step [stepControl]="secondFormGroup" label="Datos Técnicos" #stepper>
-      <form [formGroup]="secondFormGroup">
-        <br>
-        <div class="card" style="background-color: #fff;">
-          <div class="card-header" style="background-color: #fff;">
-            <h2 style="text-align: center; font-size: 1.1rem;"><strong>ASEGURADO - BENEFICIARIO</strong></h2>
-          </div>
-          <div class="row">
-
-          </div>
-        </div>
-        <br>
-        <div>
-          <button class="align-right-button" mat-flat-button color="primary"
-            mat-button matStepperNext>Siguiente</button>
-          <button class="align-right-button" mat-flat-button color="warn"
-            mat-button matStepperPrevious>Regresar</button>
-        </div>
-      </form>  
-    </mat-step> -->
-
+            </mat-step> -->
 
     <mat-step>
       <ng-template matStepLabel>Recibos Asociados</ng-template>
@@ -382,6 +400,13 @@
               <td mat-cell *matCellDef="let element"> {{element.Status_Rec}}
               </td>
             </ng-container>
+
+            <ng-container matColumnDef="ctransaccion">
+              <th mat-header-cell *matHeaderCellDef> Transacción </th>
+              <td mat-cell *matCellDef="let element"> {{element.ctransaccion}}
+              </td>
+            </ng-container>
+
             <tr mat-header-row *matHeaderRowDef="ColumnsRecibos"></tr>
             <tr mat-row *matRowDef="let row; columns: ColumnsRecibos;"></tr>
           </table>
