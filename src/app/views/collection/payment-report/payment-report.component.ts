@@ -276,6 +276,9 @@ export class PaymentReportComponent {
       asegurado : Number(aseguradoNumber)
     }
 
+    this.PositiveBalance = null
+    this.PositiveBalanceBool = false
+
     const receipt = this.searchReceipt.get("receipt") as FormArray
 
     while (receipt.length !== 0) {

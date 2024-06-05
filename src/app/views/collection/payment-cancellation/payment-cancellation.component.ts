@@ -96,6 +96,9 @@ export class PaymentCancellationComponent {
             monto_transaccion: transaction.monto_transaccion,
             monto_transaccion_ext: transaction.monto_transaccion_ext,
             saldoCliente:transaction.saldoCliente,
+            monedaSaldo : transaction.monedaSaldo,
+            msaldo : transaction.msaldo,
+            msaldoext : transaction.msaldoext,
             msaldodif:transaction.msaldodif,
             ptasamon: transaction.ptasamon,
             poliza: this._formBuilder.array([]),
@@ -293,22 +296,49 @@ export class PaymentCancellationComponent {
       })
     }
     else if(creds.at(i).get('iestadorec')?.value == 'C' ){
-      const data = {
-        transaccion : creds.at(i).get('id')?.value,
-        casegurado : creds.at(i).get('casegurado')?.value,
-        correo : creds.at(i).get('xcorreo')?.value,
-        cliente : creds.at(i).get('xcliente')?.value,
-        fpago : creds.at(i).get('freporte')?.value,
-        recibo : creds.at(i).get('poliza')?.value,
-        soporte : creds.at(i).get('recibos')?.value,
-        mpago : creds.at(i).get('monto_transaccion')?.value,
-        mpagoext : creds.at(i).get('monto_transaccion_ext')?.value,
-        ptasamon : creds.at(i).get('ptasamon')?.value,
-        cusuario : this.usuario,
-        fcobro : new Date(),
-        cprog : 'normalizacionPago',
-        ifuente : 'Web_Sys',
-        iestado_tran : creds.at(i).get('iestado_tran')?.value,
+      let data = {}
+      if( creds.at(i).get('saldoCliente')?.value != null){
+        data = {
+         transaccion : creds.at(i).get('id')?.value,
+         casegurado : creds.at(i).get('casegurado')?.value,
+         correo : creds.at(i).get('xcorreo')?.value,
+         cliente : creds.at(i).get('xcliente')?.value,
+         fpago : creds.at(i).get('freporte')?.value,
+         recibo : creds.at(i).get('poliza')?.value,
+         soporte : creds.at(i).get('recibos')?.value,
+         mpago : creds.at(i).get('monto_transaccion')?.value,
+         mpagoext : creds.at(i).get('monto_transaccion_ext')?.value,
+         ptasamon : creds.at(i).get('ptasamon')?.value,
+         cusuario : this.usuario,
+         fcobro : new Date(),
+         cprog : 'normalizacionPago',
+         ifuente : 'Web_Sys',
+         iestado_tran : creds.at(i).get('iestado_tran')?.value,
+         balancePositivo:{        
+           cmoneda: creds.at(i).get('monedaSaldo')?.value,
+           msaldo: 0,
+           msaldoext: 0,
+           idiferencia : "H",
+         }
+       }
+      }else{
+        data = {
+          transaccion : creds.at(i).get('id')?.value,
+          casegurado : creds.at(i).get('casegurado')?.value,
+          correo : creds.at(i).get('xcorreo')?.value,
+          cliente : creds.at(i).get('xcliente')?.value,
+          fpago : creds.at(i).get('freporte')?.value,
+          recibo : creds.at(i).get('poliza')?.value,
+          soporte : creds.at(i).get('recibos')?.value,
+          mpago : creds.at(i).get('monto_transaccion')?.value,
+          mpagoext : creds.at(i).get('monto_transaccion_ext')?.value,
+          ptasamon : creds.at(i).get('ptasamon')?.value,
+          cusuario : this.usuario,
+          fcobro : new Date(),
+          cprog : 'normalizacionPago',
+          ifuente : 'Web_Sys',
+          iestado_tran : creds.at(i).get('iestado_tran')?.value,
+        }
       }
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt/', data ).subscribe((response: any) => {
         if(response.status){

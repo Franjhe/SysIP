@@ -28,6 +28,9 @@
                           Fecha de notificacion de pago {{group.value.freporte}}<br>
                           Tasa BCV de cobro {{group.value.ptasamon}}
                         </a>
+                        <a *ngIf="group.value.saldoCliente != null" class="text-light" style="font-size: medium;">
+                          Saldo a favor de {{group.value.saldoCliente }} <br>
+                        </a>
                       </div>
 
                       <div class="col-4 text-light" style="font-size: medium;">
@@ -35,13 +38,6 @@
                           Pago Bs {{group.value.monto_transaccion}}<br>
                           Pago $  {{group.value.monto_transaccion_ext}}<br>
                         </a>
-                      </div>
-
-                      <div *ngIf="group.value.saldoCliente > 0" class="col-4 text-light" style="font-size: medium;">
-                        <a>
-                          Saldo a favor de {{group.value.saldoCliente }} <br>
-                        </a>
-
                       </div>
 
                       <div class="col-2">
