@@ -197,11 +197,9 @@ export class PolizaComponent implements AfterViewInit {
     }
   
     openR(recibo : any){
-      console.log(recibo)
       window.open('https://api.lamundialdeseguros.com/sis2000/recibo/' + recibo + '/', '_blank')
     }
     openT(transaccion : any){
-      console.log(transaccion)
       window.open('https://api.lamundialdeseguros.com/sis2000/ingreso_caja/' + transaccion + '/', '_blank')
     }
   
