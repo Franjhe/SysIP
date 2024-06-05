@@ -16,7 +16,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class ReceiptsCollectedComponent {
   displayedColumns: string[] = ['id', 'name', 'progress', 'fruit'];
-  details: string[] = ['cnpoliza','cnrecibo','ramo', 'pdf','recibo'];
+  details: string[] = ['cnpoliza','cnrecibo','ramo', 'pdf','recibo', 'transaccion'];
   dataSource: any;
 
   cliente : any
@@ -84,6 +84,12 @@ export class ReceiptsCollectedComponent {
         this.openPdf(poliza.contrato)
       }
 
+  }
+
+  openIC(transaccion : any){
+    // console.log(recibo)
+    console.log(transaccion)
+    window.open('https://api.lamundialdeseguros.com/sis2000/ingreso_caja/' + transaccion.cdoccob + '/', '_blank')
   }
 
   openPdf(ccontratoflota: any) {
