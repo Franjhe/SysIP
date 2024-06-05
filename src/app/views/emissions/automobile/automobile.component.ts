@@ -1219,8 +1219,8 @@ export class AutomobileComponent {
       if (response.data.plan) {
         for (let i = 0; i < response.data.plan.length; i++) {
           this.planList.push({
-            id: response.data.plan[i].cplan_rc,
-            value: response.data.plan[i].xplan_rc,
+            id: response.data.plan[i].cplan,
+            value: response.data.plan[i].xplan,
           });
         }
 
