@@ -44,6 +44,7 @@ export interface polizaDate {
 })
 export class PolizaComponent implements AfterViewInit {
   // @ViewChild('stepper') stepper?: MatStepper;
+  intermediario: string = 'No encontrado';
   currentStep = 0;
   consulta_reporte!: FormGroup;
   showButton: boolean = true;
@@ -56,7 +57,7 @@ export class PolizaComponent implements AfterViewInit {
   recibosData: any;
   defaultDataSource = new MatTableDataSource<any>;
   displayedColumns: string[] = ['select','Nro_Poliza', 'Descripcion_Ramo', 'Intermediario', 'Dias_de_vigencia', 'Id_Asegurado', 'Nombre_Asegurado', 'Estatus_Poliza'];
-  ColumnsRecibos: string[] = ['cnrecibo', 'Cuotas', 'Fecha_desde_Rec', 'Fecha_hasta_Rec', 'Monto_Rec', 'Monto_Rec_Ext', 'Status_Rec'];
+  ColumnsRecibos: string[] = ['cnrecibo', 'Cuotas', 'Fecha_desde_Rec', 'Fecha_hasta_Rec', 'Monto_Rec', 'Monto_Rec_Ext', 'Status_Rec', 'ctransaccion'];
   
   // Para las Pólizas
   @ViewChild(MatSort) sort!: MatSort;
@@ -91,6 +92,7 @@ export class PolizaComponent implements AfterViewInit {
   @ViewChild('Monto_Rec') Monto_Rec!: ElementRef<HTMLInputElement>;
   @ViewChild('Monto_Rec_Ext') Monto_Rec_Ext!: ElementRef<HTMLInputElement>;
   @ViewChild('Status_Rec') Status_Rec!: ElementRef<HTMLInputElement>;
+  @ViewChild('ctransaccion') ctransaccion!: ElementRef<HTMLInputElement>;
 
   firstFormGroup = this._formBuilder.group({
     firstCtrl: ['', Validators.required],
@@ -222,16 +224,16 @@ export class PolizaComponent implements AfterViewInit {
       this.FechaHastaPol.nativeElement.value = FechaHastaPol;
       this.Vigencia.nativeElement.value = Vigencia;
       this.Sucursal.nativeElement.value = Sucursal;
+      this.Intermediario.nativeElement.value = Intermediario;
       this.Estatus_Poliza.nativeElement.value = Estatus_Poliza;
       this.cproductor.nativeElement.value = cproductor + ' - ' + Intermediario;
       this.Moneda.nativeElement.value = Moneda;
       this.Tasa.nativeElement.value = Tasa;
       this.Tipo_Renovacion.nativeElement.value = Tipo_Renovacion;
       this.Fecha_Emision.nativeElement.value = Fecha_Emision;
-      this.Plan.nativeElement.value = Plan + ' - ' + Descripcion_Plan;
       this.Descripcion_Plan.nativeElement.value = Descripcion_Plan;
+      this.Plan.nativeElement.value = Plan + ' - ' + Descripcion_Plan;
       this.Observacion.nativeElement.value = Observacion;
-      this.Intermediario.nativeElement.value = Intermediario;
   });
 
   this.recibosData = [];
@@ -244,6 +246,7 @@ export class PolizaComponent implements AfterViewInit {
       let Monto_Rec = recibo.Monto_Rec.toFixed(2);
       let Monto_Rec_Ext = recibo.Monto_Rec_Ext.toFixed(2);
       let Status_Rec = recibo.Status_Rec;
+      let ctransaccion = recibo.ctransaccion;
   
       this.recibosData.push({
         cnrecibo,
@@ -252,7 +255,8 @@ export class PolizaComponent implements AfterViewInit {
         Fecha_hasta_Rec,
         Monto_Rec,
         Monto_Rec_Ext,
-        Status_Rec
+        Status_Rec,
+        ctransaccion
       });
     }
   }
