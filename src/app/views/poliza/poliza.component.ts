@@ -18,6 +18,8 @@ import {ThemePalette} from '@angular/material/core';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import { ElementRef } from '@angular/core';
 import { MatStepper } from '@angular/material/stepper';
+import { PdfGenerationService } from '../../_services/ServicePDF'
+import { from } from 'rxjs';
 // import {STEPPER_GLOBAL_OPTIONS} from '@angular/cdk/stepper';
 
 
@@ -58,7 +60,7 @@ export class PolizaComponent implements AfterViewInit {
   defaultDataSource = new MatTableDataSource<any>;
   displayedColumns: string[] = ['select','Nro_Poliza', 'Descripcion_Ramo', 'Intermediario', 'Dias_de_vigencia', 'Id_Asegurado', 'Nombre_Asegurado', 'Estatus_Poliza'];
   ColumnsRecibos: string[] = ['cnrecibo', 'Cuotas', 'Fecha_desde_Rec', 'Fecha_hasta_Rec', 'Monto_Rec', 'Monto_Rec_Ext', 'Status_Rec', 'ctransaccion'];
-  
+  details: string[] = ['cnpoliza','cnrecibo','ramo', 'pdf','recibo'];
   // Para las Pólizas
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -93,7 +95,8 @@ export class PolizaComponent implements AfterViewInit {
   @ViewChild('Monto_Rec_Ext') Monto_Rec_Ext!: ElementRef<HTMLInputElement>;
   @ViewChild('Status_Rec') Status_Rec!: ElementRef<HTMLInputElement>;
   @ViewChild('ctransaccion') ctransaccion!: ElementRef<HTMLInputElement>;
-
+  @ViewChild('Receip') Receip!: TemplateRef<any>;
+  detailReceipst : any = []
   firstFormGroup = this._formBuilder.group({
     firstCtrl: ['', Validators.required],
   });
@@ -103,7 +106,7 @@ export class PolizaComponent implements AfterViewInit {
   isLinear = false;
 
   constructor(private router: Router,
-
+    private pdfGenerationService: PdfGenerationService,
     private paginator2: MatPaginatorIntl,
     private _formBuilder: FormBuilder,
     private route: ActivatedRoute, 
@@ -145,6 +148,13 @@ export class PolizaComponent implements AfterViewInit {
       return;
     }}
     ngOnInit() {
+      fetch(environment.apiUrl + '/api/v1/collection/receipts-collect' )
+    .then((response) => response.json())
+    .then(data => {
+      let obj = data.searchClientforReceiptCollect
+      let array = Object.values(obj)
+
+    })
       this.pruebaDialog();
       this.token = localStorage.getItem('user');
       this.currentUser = JSON.parse(this.token);
@@ -177,6 +187,48 @@ export class PolizaComponent implements AfterViewInit {
         }});
       }
     }
+    receipt(data :any){
+      this.detailReceipst = []
+      this.detailReceipst = data.recibos
+      this.detail()
+    }
+    detail(config?: MatDialogConfig) {
+      return this.dialog.open(this.Receip, config);
+    }
+  
+    openR(recibo : any){
+      console.log(recibo)
+      window.open('https://api.lamundialdeseguros.com/sis2000/recibo/' + recibo + '/', '_blank')
+    }
+    openT(transaccion : any){
+      console.log(transaccion)
+      window.open('https://api.lamundialdeseguros.com/sis2000/ingreso_caja/' + transaccion + '/', '_blank')
+    }
+  
+    openP(poliza : any){  
+        if(poliza.cramo !== 18){
+          window.open('https://api.lamundialdeseguros.com/sis2000/poliza/' + poliza.cnpoliza + '/', '_blank')
+        }else{
+          this.openPdf(poliza.contrato)
+        }
+    }
+  
+    openPdf(ccontratoflota: any) {
+      const observable = from(this.pdfGenerationService.LoadDataCertifiqued(ccontratoflota));
+  
+      observable.subscribe(
+        (data) => {},
+        (error) => {
+          console.log(error)
+        }
+      );
+  
+      this.snackBar.open(`Se está generando el Cuadro Póliza. Por favor espere.`, '', {
+        duration: 6000,
+      });
+  
+    }
+   
   buscarReporte() {
   if (this.poliza === undefined) {
       this.snackBar.open('La Póliza Seleccionada No fue Encontrada.', 'Cerrar', {
@@ -239,24 +291,18 @@ export class PolizaComponent implements AfterViewInit {
   this.recibosData = [];
   for (let dataRecibo of this.selection.selected) {
     for (let recibo of dataRecibo.recibos) {
-      let cnrecibo = recibo.cnrecibo;
-      let Cuotas = recibo.Cuotas;
-      let Fecha_desde_Rec = recibo.Fdesde_Rec;
-      let Fecha_hasta_Rec = recibo.Fhasta_Rec;
-      let Monto_Rec = recibo.Monto_Rec.toFixed(2);
-      let Monto_Rec_Ext = recibo.Monto_Rec_Ext.toFixed(2);
-      let Status_Rec = recibo.Status_Rec;
-      let ctransaccion = recibo.ctransaccion;
-  
+
       this.recibosData.push({
-        cnrecibo,
-        Cuotas,
-        Fecha_desde_Rec,
-        Fecha_hasta_Rec,
-        Monto_Rec,
-        Monto_Rec_Ext,
-        Status_Rec,
-        ctransaccion
+         cnrecibo : recibo.cnrecibo,
+         crecibo : recibo.crecibo,
+         Cuotas : recibo.Cuotas,
+         Fecha_desde_Rec : recibo.Fdesde_Rec,
+         Fecha_hasta_Rec : recibo.Fhasta_Rec,
+         Monto_Rec : recibo.Monto_Rec.toFixed(2),
+         Monto_Rec_Ext : recibo.Monto_Rec_Ext.toFixed(2),
+         Status_Rec : recibo.Status_Rec,
+         ctransaccion : recibo.ctransaccion
+
       });
     }
   }
