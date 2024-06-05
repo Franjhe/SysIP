@@ -364,7 +364,7 @@
             <!-- Position Column -->
             <ng-container matColumnDef="cnrecibo">
               <th mat-header-cell *matHeaderCellDef> No. Recibo </th>
-              <td mat-cell *matCellDef="let element"> {{element.cnrecibo}}
+              <td mat-cell *matCellDef="let element" > {{element.cnrecibo}} <mat-icon style="font-size: 24px; margin-left: 3px; cursor: pointer;" (click)="openR(element.crecibo)">picture_as_pdf </mat-icon>
               </td>
             </ng-container>
             <!-- Name Column -->
@@ -403,9 +403,13 @@
 
             <ng-container matColumnDef="ctransaccion">
               <th mat-header-cell *matHeaderCellDef> Transacción </th>
-              <td mat-cell *matCellDef="let element"> {{element.ctransaccion}}
+              <td mat-cell *matCellDef="let element">
+                {{element.ctransaccion}}
+                <!-- (click)="openT(element.ctransaccion) -->
+                <!-- <mat-icon style="font-size: 24px; margin-left: 3px; cursor: pointer;" *ngIf="element.ctransaccion !== 'N/A'">picture_as_pdf</mat-icon> -->
               </td>
             </ng-container>
+
 
             <tr mat-header-row *matHeaderRowDef="ColumnsRecibos"></tr>
             <tr mat-row *matRowDef="let row; columns: ColumnsRecibos;"></tr>
