@@ -121,8 +121,8 @@ export class ReportsComponent {
   
     // Verificar que la diferencia entre fdesde_pol y fhasta_pol no sea mayor a 20 días
     const diffInDays = this.getDaysDifference(fdesde_pol, fhasta_pol);
-    if (diffInDays > 20) {
-      this.snackBar.open("El rango de fechas no debe ser mayor a 20 días", "Cerrar", {
+    if (diffInDays > 5) {
+      this.snackBar.open("El rango de fechas no debe ser mayor a 5 días", "Cerrar", {
         duration: 3000,
       });
       return;
