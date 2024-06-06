@@ -179,6 +179,7 @@ export class ReportsComponent {
     let fdesde_pol = this.consulta_reporte.get('fdesde_pol')?.value;
     let fhasta_pol = this.consulta_reporte.get('fhasta_pol')?.value;
     console.log(estado)
+    this.estado = estado
     if (estado !== 'CD') {
       this.showButton = true
       fetch(environment.apiUrl + '/api/v1/collection/search-collected/' + estado)
