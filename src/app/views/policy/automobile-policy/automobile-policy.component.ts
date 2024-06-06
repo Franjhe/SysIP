@@ -55,10 +55,10 @@ export class AutomobilePolicyComponent {
 
     observable.subscribe(
       (data) => {
-        console.log('DATA ' + data)
+        // console.log('DATA ' + data)
       },
       (error) => {
-        console.log(error)
+        // console.log(error)
       }
     );
 

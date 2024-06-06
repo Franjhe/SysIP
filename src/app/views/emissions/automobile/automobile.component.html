@@ -12,13 +12,14 @@
                         <input type="text"
                                placeholder="Seleccione"
                                aria-label="Seleccione"
+          
                                matInput
                                [formControl]="identControl"
                                [matAutocomplete]="ident"
                                required>
                                <mat-autocomplete #ident="matAutocomplete" (optionSelected)="onIdentSelection($event)">
                                 <mat-option *ngFor="let ident of filteredIdent | async" [value]="ident">
-                                  {{ ident }}
+                                  {{ ident }} 
                                 </mat-option>
                               </mat-autocomplete>
                       </mat-form-field>
@@ -26,7 +27,7 @@
                 <div class="col-3">
                     <mat-form-field class="example-full-width">
                         <mat-label>Identificación</mat-label>
-                        <input matInput placeholder="Identificación" formControlName="xrif_cliente" (change)="searchPropietary()" required>
+                        <input matInput type="number" pattern="^[0-9]+" placeholder="Identificación" formControlName="xrif_cliente" (change)="searchPropietary()" required>
                     </mat-form-field>
                 </div>
                 <div class="col-3" *ngIf="activaNombreYapellido" >

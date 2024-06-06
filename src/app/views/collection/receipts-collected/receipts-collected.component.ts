@@ -16,7 +16,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class ReceiptsCollectedComponent {
   displayedColumns: string[] = ['id', 'name', 'progress', 'fruit'];
-  details: string[] = ['cnpoliza','cnrecibo','ramo', 'pdf','recibo'];
+  details: string[] = ['cnpoliza','cnrecibo','ramo', 'pdf','recibo', 'transaccion'];
   dataSource: any;
 
   cliente : any
@@ -50,7 +50,7 @@ export class ReceiptsCollectedComponent {
     fetch(environment.apiUrl + '/api/v1/collection/receipts-collect' )
     .then((response) => response.json())
     .then(data => {
-      let obj = data.searchClientforReceiptCollect
+      let obj = data.receiptsCollect
       let array = Object.values(obj)
       this.dataSource = new MatTableDataSource(array);
       this.dataSource.paginator = this.paginator;
@@ -73,7 +73,7 @@ export class ReceiptsCollectedComponent {
   }
 
   openR(recibo : any){
-    console.log(recibo)
+    // console.log(recibo)
     window.open('https://api.lamundialdeseguros.com/sis2000/recibo/' + recibo[0] + '/', '_blank')
   }
 
@@ -86,13 +86,19 @@ export class ReceiptsCollectedComponent {
 
   }
 
+  openIC(transaccion : any){
+    // console.log(recibo)
+    console.log(transaccion)
+    window.open('https://api.lamundialdeseguros.com/sis2000/ingreso_caja/' + transaccion.cdoccob + '/', '_blank')
+  }
+
   openPdf(ccontratoflota: any) {
     const observable = from(this.pdfGenerationService.LoadDataCertifiqued(ccontratoflota));
 
     observable.subscribe(
       (data) => {},
       (error) => {
-        console.log(error)
+        // console.log(error)
       }
     );
 

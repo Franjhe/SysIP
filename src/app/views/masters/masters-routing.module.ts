@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { TradesComponent } from './trades/trades.component';
+import { AuthGuard } from 'src/app/_helpers/auth.guard';
 
 const routes: Routes = [
   {
@@ -8,6 +9,8 @@ const routes: Routes = [
     data: {
       title: 'masters',
     },
+    canActivate: [AuthGuard],
+
     children: [
       {
         path: '',

@@ -1121,7 +1121,7 @@ export class SelfManagementComponent {
         cplan: selectedPlan.id
       }
       this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/coverages-plan', plan).subscribe((response: any) => {
-        console.log(response.data.coverages)
+        // console.log(response.data.coverages)
         this.planCoverage = response.data.coverages.map((item: any) => {
           this.trans = false;
           return {
@@ -1141,7 +1141,7 @@ export class SelfManagementComponent {
         for (let i = 0; i < response.data.broker.length; i++) {
           this.brokerList.push({
             id: response.data.broker[i].cproductor,
-            value: response.data.broker[i].xintermediario,
+            value: response.data.broker[i].xproductor,
           });
         }
         this.filteredBroker = this.brokerControl.valueChanges.pipe(
@@ -1611,7 +1611,7 @@ export class SelfManagementComponent {
         }) 
       });
       let res = await response.json();
-      console.log(res)
+      // console.log(res)
       if (res.data) {
         this.ccontratoflota = res.data.ccontratoflota;
         this.buttonEmissions = false;
@@ -1857,7 +1857,7 @@ export class SelfManagementComponent {
       ncapcarga: this.vehicleFormGroup.get('ncapcarga')?.value,
     };
 
-    console.log(data)
+    // console.log(data)
 
     const nombre = this.personsFormGroup.get('xnombre')?.value + ' ' + this.personsFormGroup.get('xapellido')?.value;
     const placa = this.vehicleFormGroup.get('xplaca')?.value;

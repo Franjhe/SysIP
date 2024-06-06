@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AutomobileComponent } from './automobile/automobile.component';
 import { SuretyComponent } from './surety/surety.component';
+import { AuthGuard } from 'src/app/_helpers/auth.guard';
 
 const routes: Routes = [
   {
@@ -9,6 +10,8 @@ const routes: Routes = [
     data: {
       title: 'emissions',
     },
+    canActivate: [AuthGuard],
+
     children: [
       {
         path: '',

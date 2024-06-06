@@ -39,8 +39,17 @@ export interface PaymentRequest {
   mmontototal: any;
   xobservaciones?: any;
   recibos: any;
+  mtotalco: any;
+  mtotalbo: any;
   cmoneda: any;
   xmoneda: any;
+  mmonto_1: any;
+  mmonto_2: any;
+  cmoneda_2: any;
+  cmoneda_1: any;
+  mmonto_3: any;
+  msustraendo: any;
+  ccuentaban : any
 }
 
 
@@ -56,6 +65,7 @@ export class PaymentRequestsComponent {
   });
 
   paymentRequestFormGroup = this._formBuilder.group({
+    transfer: this._formBuilder.array([]),
     // xpago: [''],
     // femision: [''],
     // fdesde: ['', Validators.required],
@@ -128,9 +138,13 @@ export class PaymentRequestsComponent {
   ) {
   }
 
+  get transfer(): FormArray {
+    return this.paymentRequestFormGroup.get("transfer") as FormArray
+  }
+
   ngOnInit() {
     this.http.post(environment.apiUrl + '/api/v1/commissions/search-paymentRequests', '').subscribe((response: any) => {
-      console.log(response);
+      // console.log(response);
 
       this.defaultDataSource = new MatTableDataSource(response.returnData.search);
       this.dataSource = new MatTableDataSource(response.returnData.search);
@@ -179,7 +193,7 @@ export class PaymentRequestsComponent {
     }
     this.http.post(environment.apiUrl + '/api/v1/commissions/detail-paymentRequest', data).subscribe((response: any) => {
       this.paymentRequest = response.returnData.search[0]
-      console.log(this.paymentRequest);
+      // console.log(this.paymentRequest);
 
       this.defaultTableDetailReceipts = new MatTableDataSource(response.returnData.search[0].recibos);
       this.tableDetailReceipts = new MatTableDataSource(response.returnData.search[0].recibos);
@@ -204,6 +218,7 @@ export class PaymentRequestsComponent {
       }
 
       );
+      this.addPayment()
 
       return this.dialog.open(this.dialogPaymentRequest);
     });
@@ -262,7 +277,7 @@ export class PaymentRequestsComponent {
     this.reset_moneda_pago();
     let xmoneda = this.paymentRequestFormGroup.get('xmoneda')?.value;
     // let mmpago = (<HTMLInputElement>document.getElementById(`mmpago`)).value;
-    console.log(xmoneda);
+    // console.log(xmoneda);
     // alert(xmoneda);
     // let mpago_bs = (<HTMLInputElement>document.getElementById(`mpago`)).value;
     if (xmoneda == 'Bs') {
@@ -299,6 +314,36 @@ export class PaymentRequestsComponent {
 
   closeDialog() {
     return this.dialogDetailReceipts.close();
+  }
+
+  newPayment(): FormGroup {
+    return this._formBuilder.group({
+      cmoneda: '',
+      mpago: ''
+    })
+  }
+
+  addPayment() {
+    const trasnfer = this.paymentRequestFormGroup.get("transfer") as FormArray
+
+    if (trasnfer.length < 2) {
+      this.transfer.push(this.newPayment());
+    }
+    else if (trasnfer.length >= 2) {
+      this.toast.open('Solo puede registrar dos modalidades de pago', '', {
+        duration: 5000,
+        verticalPosition: 'top',
+        panelClass: ['error-toast']
+      });
+    }
+
+
+  }
+
+  removePayment(i: number) {
+    this.transfer.removeAt(i);
+
+
   }
 
 
@@ -359,13 +404,51 @@ export class PaymentRequestsComponent {
       var mmovimiento = this.paymentRequest.mpago
       var xmoneda = 'Bolívares';
       var islr = this.paymentRequest.mislr;
+      var msustraendo = this.paymentRequest.mmonto_4
     } else {
       var mmontototal = this.paymentRequest.mpagosolext
       var mmovimiento = this.paymentRequest.mpagoext
       var xmoneda = 'Dólares';
       var islr = this.paymentRequest.mislrext;
+      var msustraendo = this.paymentRequest.mmonto_4ext
     }
-    
+
+
+    if (this.paymentRequest.mmonto_1 == null) {
+      this.paymentRequest.mmonto_1 = 0
+      this.paymentRequest.cmoneda_1 = '.'
+
+    }
+    if (this.paymentRequest.mmonto_2 == null) {
+      this.paymentRequest.mmonto_2 = 0
+      this.paymentRequest.cmoneda_2 = '.'
+
+    }
+    if (this.paymentRequest.mmonto_3 == null) {
+      this.paymentRequest.mmonto_3 = 0
+    }
+
+    let mtotalco = 0
+    let mtotalbo = 0
+    this.paymentRequest.recibos.forEach((element: any) => {
+      if (element.imovcom == 'BO') {
+        if (this.paymentRequest.cmoneda.toLowerCase().trim() == 'bs') {
+          mtotalbo += element.mmovcom
+        } else {
+          mtotalbo += element.mmovcomext
+        }
+      }
+      if (element.imovcom == 'CO') {
+        if (this.paymentRequest.cmoneda.toLowerCase().trim() == 'bs') {
+          mtotalco += element.mmovcom
+        } else {
+          mtotalco += element.mmovcomext
+        }
+      }
+    });
+
+
+
 
     var paymentRequest: PaymentRequest = {
       csolpag: this.paymentRequest.csolpag,
@@ -388,10 +471,22 @@ export class PaymentRequestsComponent {
       islr: islr.toFixed(2),
       mmontototal: mmontototal.toFixed(2),
       recibos: this.paymentRequest.recibos,
+      mtotalco: mtotalco.toFixed(2),
+      mtotalbo: mtotalbo.toFixed(2),
       cmoneda: this.paymentRequest.cmoneda.trim(),
       xmoneda: xmoneda.toUpperCase(),
       xobservaciones: this.paymentRequest.xobserva.trim(),
+      mmonto_1: this.paymentRequest.mmonto_1,
+      mmonto_2: this.paymentRequest.mmonto_2,
+      cmoneda_2: this.paymentRequest.cmoneda_2,
+      cmoneda_1: this.paymentRequest.cmoneda_1,
+      mmonto_3: this.paymentRequest.mmonto_3,
+      ccuentaban: this.paymentRequest.ccuentaban,
+      msustraendo: msustraendo,
+
     }
+    console.log(paymentRequest);
+
 
     const observable = from(this.pdfGenerationService.CreatePaymentRequestPDF(paymentRequest));
 
@@ -485,3 +580,6 @@ export class ComponentB {
     this.dialogRef.close();
   }
 }
+
+
+

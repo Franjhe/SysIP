@@ -59,13 +59,13 @@ export class TradesComponent implements AfterViewInit {
   }
 
   onEditClick(event: Event) {
-    console.log('Editar');
+    // console.log('Editar');
     event.preventDefault();
     // Realiza cualquier acción necesaria sin recargar la página
   }
   
   onCreateContract(event: Event) {
-    console.log('Crear Contrato');
+    // console.log('Crear Contrato');
     event.preventDefault();
     // Realiza cualquier acción necesaria sin recargar la página
   }
