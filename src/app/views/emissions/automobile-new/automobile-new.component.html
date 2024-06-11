@@ -1,0 +1,655 @@
+<mat-stepper linear #stepper>
+  <mat-step>
+    <form [formGroup]="personsFormGroup">
+      <ng-template matStepLabel>Datos Personales</ng-template>
+      <div class="row">
+        <div class="col-3">
+          <mat-form-field class="example-full-width">
+            <mat-label>Tipo Doc. Identidad</mat-label>
+            <mat-select (selectionChange)="onIdentSelection()" formControlName="icedula">
+              <mat-option *ngFor="let ident of identList " [value]="ident">
+                {{ ident }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="example-full-width">
+            <mat-label>Identificación</mat-label>
+            <input matInput type="number" pattern="^[0-9]+" placeholder="Identificación" formControlName="xrif_cliente"
+              (change)="searchPropietary()" required>
+          </mat-form-field>
+        </div>
+        <div class="col-3" *ngIf="!activaRepresentante">
+          <mat-form-field class="example-full-width">
+            <mat-label>Nombre</mat-label>
+            <input matInput placeholder="Nombre" formControlName="xnombre" required>
+          </mat-form-field>
+        </div>
+        <div class="col-3" *ngIf="!activaRepresentante">
+          <mat-form-field class="example-full-width">
+            <mat-label>Apellido</mat-label>
+            <input matInput placeholder="Apellido" formControlName="xapellido">
+          </mat-form-field>
+        </div>
+        <div class="col-6" *ngIf="activaRepresentante">
+          <mat-form-field class="example-full-width">
+            <mat-label>Nombre Representante</mat-label>
+            <input matInput placeholder="Nombre Representante" formControlName="xnombre">
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-3">
+          <mat-form-field class="example-full-width">
+            <mat-label>Teléfono</mat-label>
+            <input matInput placeholder="Teléfono" formControlName="xtelefono_emp" required>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="example-full-width">
+            <mat-label>Correo</mat-label>
+            <input matInput placeholder="Correo" formControlName="email" required>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="example-full-width">
+            <mat-label>Estado</mat-label>
+            <input type="text" placeholder="Seleccione Estado" aria-label="Seleccione" matInput
+              [formControl]="stateControl" [matAutocomplete]="state" required>
+            <mat-autocomplete formControlName="cestado" #state="matAutocomplete" (optionSelected)="getCity()">
+              <mat-option *ngFor="let state of filteredState | async" [value]="state">
+                {{ state }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+
+        </div>
+        <div class="col-3">
+          <mat-form-field class="example-full-width">
+            <mat-label>Ciudad</mat-label>
+            <input type="text" placeholder="Seleccione Ciudad" aria-label="Seleccione" matInput
+              [formControl]="cityControl" [matAutocomplete]="city" required>
+            <mat-autocomplete formControlName="cciudad" #city="matAutocomplete">
+              <mat-option *ngFor="let city of filteredCity | async" [value]="city">
+                {{ city }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+
+        </div>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-4">
+          <!-- <label class="form-label required" for="form3Examplev5">Fecha de Nacimiento</label>
+                      <input type="date" formControlName="fnacimiento" class="form-control form-control-lg" (ngModelChange)="calculateYears($event)" /> -->
+          <mat-form-field class="example-full-width">
+            <mat-label>{{fecha}}</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="fnacimiento"
+              (dateChange)="calculateYears($event)">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="col-4">
+          <mat-form-field class="example-full-width">
+            <mat-label>Sexo</mat-label>
+            <mat-select formControlName="isexo">
+              <mat-option value="M">MASCULINO</mat-option>
+              <mat-option value="F">FEMENINO</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col-4">
+          <mat-form-field class="example-full-width">
+            <mat-label>Estado Civil</mat-label>
+            <mat-select formControlName="iestado_civil">
+              <mat-option value="S">SOLTERO / A</mat-option>
+              <mat-option value="C">CASADO / A</mat-option>
+              <mat-option value="D">DIVORCIADO / A</mat-option>
+              <mat-option value="V">VIUDO / A</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-8">
+          <mat-form-field class="example-full-width">
+            <mat-label>Dirección</mat-label>
+            <textarea matInput placeholder="Direccion" formControlName="xdireccion" required></textarea>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row justify-content-center py-5">
+        <button mat-button matStepperNext>Continuar</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step label="Datos del Vehículo">
+    <form [formGroup]="vehicleFormGroup">
+      <div class="row">
+        <div class="col-3">
+          <mat-form-field>
+            <mat-label>N° de Cotizacion</mat-label>
+            <input matInput type="number" placeholder="N° de Cotizacion" formControlName="ccotizacion">
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field>
+            <mat-label>Año</mat-label>
+            <input matInput type="number" placeholder="Año" formControlName="fano" [maxlength]="4"
+              (change)="changeYears()" required>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="example-full-width">
+            <mat-label>Marca</mat-label>
+            <input type="text" placeholder="Seleccione Marca" aria-label="Seleccione" matInput
+              [formControl]="brandControl" [matAutocomplete]="brand" required>
+            <mat-autocomplete formControlName="xmarca" #brand="matAutocomplete" (optionSelected)="getModel()">
+              <mat-option *ngFor="let brand of filteredBrand | async" [value]="brand">
+                {{ brand }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+        <div class="col-3">
+          <mat-form-field class="example-full-width">
+            <mat-label>Modelo</mat-label>
+            <input type="text" placeholder="Seleccione Modelo" aria-label="Seleccione" matInput
+              [formControl]="modelControl" [matAutocomplete]="model" required>
+            <mat-autocomplete formControlName="xmodelo" #model="matAutocomplete" (optionSelected)="getVersion()">
+              <mat-option *ngFor="let model of filteredModel | async" [value]="model">
+                {{ model }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+      </div>
+
+      <div class="row">
+        <div class="col-3">
+          <mat-form-field class="example-full-width">
+            <mat-label>Version</mat-label>
+            <input type="text" placeholder="Seleccione Version" aria-label="Seleccione" matInput
+              [formControl]="versionControl" [matAutocomplete]="version" required>
+            <mat-autocomplete formControlName="xversion" #version="matAutocomplete"
+              (optionSelected)="onVersionSelection($event)">
+              <mat-option *ngFor="let version of filteredVersion | async" [value]="version">
+                {{ version }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+        <div class="col-3">
+          <mat-form-field class="example-full-width">
+            <mat-label>Pasajeros</mat-label>
+            <input matInput formControlName="npasajeros">
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="example-full-width">
+            <mat-label>Color</mat-label>
+            <input type="text" placeholder="Seleccione Color" aria-label="Seleccione" matInput
+              [formControl]="colorControl" [matAutocomplete]="color" required>
+            <mat-autocomplete formControlName="xcolor" #color="matAutocomplete">
+              <mat-option *ngFor="let color of filteredColor | async" [value]="color">
+                {{ color }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field>
+            <mat-label>Placa</mat-label>
+            <input matInput placeholder="Placa" formControlName="xplaca" [maxlength]="7" (change)="searchVehicle()"
+              required (input)="valueplate($event)">
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row justify-content-center" *ngIf="clasificacionMotos">
+        <div class="col-3">
+          <mat-form-field>
+            <mat-label>Clasificacion para Casco</mat-label>
+            <input matInput placeholder="Clasificacion para Casco" formControlName="xclasificacion"
+              (change)="Clasification()">
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-3">
+          <mat-form-field class="example-full-width">
+            <mat-label>Serial de Carroceria</mat-label>
+            <input matInput placeholder="Serial de Carroceria" formControlName="xserialcarroceria" [maxlength]="17"
+              required (input)="valueSerial($event)">
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="example-full-width">
+            <mat-label>Serial de Motor</mat-label>
+            <input matInput placeholder="Serial de Motor" formControlName="xserialmotor" [maxlength]="17"
+              (input)="valueSerialMotor($event)">
+          </mat-form-field>
+        </div>
+
+        <div class="col-3" *ngIf="activateInspection">
+          <mat-form-field>
+            <mat-label>N° de Inspección</mat-label>
+            <input matInput type="number" placeholder="N° de Inspección" formControlName="cinspeccion"
+              (change)="changeInspection()">
+          </mat-form-field>
+        </div>
+        <div class="col-3" *ngIf="activateRate">
+          <mat-form-field class="example-full-width">
+            <mat-label>Tarifas</mat-label>
+            <input type="text" placeholder="Seleccione Tarifa" aria-label="Seleccione" matInput
+              [formControl]="ratesControl" [matAutocomplete]="rates" required>
+            <mat-autocomplete formControlName="ctarifa_exceso" #rates="matAutocomplete">
+              <mat-option *ngFor="let rates of filteredRates | async" [value]="rates">
+                {{ rates }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <div class="col-3" *ngIf="activateTypeVehicle">
+          <mat-form-field class="example-full-width">
+            <mat-label>Tipo de Vehiculo</mat-label>
+            <input type="text" placeholder="Seleccione Tipo de Vehiculo" aria-label="Seleccione" matInput
+              [formControl]="typeVehicleControl" [matAutocomplete]="typeVehicle" required>
+            <mat-autocomplete formControlName="ctipovehiculo" #typeVehicle="matAutocomplete"
+              (optionSelected)="validateYearsFromHullPrice()">
+              <mat-option *ngFor="let typeVehicle of filteredTypeVehicle | async" [value]="typeVehicle">
+                {{ typeVehicle }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <div class="col-3">
+          <mat-form-field class="example-full-width">
+            <mat-label>Recargo por Uso</mat-label>
+            <input type="text" placeholder="Seleccione Recargo por Uso" aria-label="Seleccione" matInput
+              [formControl]="utilityVehicleControl" [matAutocomplete]="utility">
+            <mat-autocomplete formControlName="precargo" #utility="matAutocomplete">
+              <mat-option *ngFor="let utility of filteredUtilityVehicle | async" [value]="utility">
+                {{ utility }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <div class="col-3" *ngIf="activateUtility">
+          <mat-form-field class="example-full-width">
+            <mat-label>Uso</mat-label>
+            <input type="text" placeholder="Seleccione Uso" aria-label="Seleccione" matInput
+              [formControl]="utilityControl" [matAutocomplete]="utilityL">
+            <mat-autocomplete formControlName="xuso" #utilityL="matAutocomplete">
+              <mat-option *ngFor="let utility of filteredUtility | async" [value]="utility">
+                {{ utility }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row justify-content-center py-5">
+        <div class="col-2">
+          <button mat-button matStepperPrevious>Regresar</button>
+        </div>
+        <div class="col-1">
+          <button mat-button matStepperNext>Continuar</button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step label="Detalles del plan">
+    <form [formGroup]="planFormGroup" class="row">
+
+      <div class="col-lg-4">
+
+          <div >
+            <mat-form-field class="example-full-width">
+              <mat-label>Planes</mat-label>
+              <input type="text" placeholder="Seleccione Planes" aria-label="Seleccione" matInput
+                [formControl]="planControl" [matAutocomplete]="plan" required>
+              <mat-autocomplete formControlName="cplan" #plan="matAutocomplete" (optionSelected)="getAmount()">
+                <mat-option *ngFor="let plan of filteredPlan | async" [value]="plan">
+                  {{ plan }}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+          <div >
+            <mat-form-field>
+              <mat-label>Coberturas</mat-label>
+              <mat-select formControlName="xcobertura" (selectionChange)="onCoverageChange()">
+                <mat-option value="Rcv">RCV</mat-option>
+                <mat-option value="Cobertura Amplia" *ngIf="userBroker && casco">COBERTURA AMPLIA</mat-option>
+                <mat-option value="Perdida Total" *ngIf="userBroker && casco">PERDIDA TOTAL</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+  
+          <div>
+            <mat-form-field class="example-full-width">
+              <mat-label>Corredores</mat-label>
+              <input type="text" placeholder="Seleccione Corredor" aria-label="Seleccione" matInput
+                [formControl]="brokerControl" [matAutocomplete]="broker" formControlName="xcorredor">
+              <mat-autocomplete formControlName="ccorredor" #broker="matAutocomplete">
+                <mat-option *ngFor="let broker of filteredBroker | async" [value]="broker">
+                  {{ broker }}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+  
+          <div >
+            <mat-form-field class="example-full-width">
+              <mat-label>Tomador</mat-label>
+              <input type="text" placeholder="Seleccione Tomador" aria-label="Seleccione" matInput
+                [formControl]="takersControl" [matAutocomplete]="takers">
+              <mat-autocomplete formControlName="ctomador" #takers="matAutocomplete" (optionSelected)="validateTaker()">
+                <mat-option *ngFor="let takers of filteredTakers | async" [value]="takers">
+                  {{ takers }}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+          <!--*ngIf="takersInfo" -->
+          <div style="background-color: azure;" *ngIf="takersInfo">
+            <div>
+              <mat-form-field>
+                <mat-label>Identificación</mat-label>
+                <mat-select formControlName="icedula_tomador" (selectionChange)="onCoverageChange()">
+                  <mat-option value="V">V</mat-option>
+                  <mat-option value="P">P</mat-option>
+                  <mat-option value="E">E</mat-option>
+                  <mat-option value="J">J</mat-option>
+                  <mat-option value="C">C</mat-option>
+                  <mat-option value="G">G</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div>
+              <mat-form-field>
+                <mat-label>Identificación</mat-label>
+                <input matInput type="number" placeholder="Identificación" formControlName="xrif_tomador">
+              </mat-form-field>
+            </div>
+            <div>
+              <mat-form-field>
+                <mat-label>Correo</mat-label>
+                <input matInput type="text" placeholder="Correo" formControlName="xemail_tomador">
+              </mat-form-field>
+            </div>
+            <div>
+              <mat-form-field class="example-full-width">
+                <mat-label>Estado</mat-label>
+                <input type="text" placeholder="Seleccione Estado" aria-label="Seleccione" matInput
+                  [matAutocomplete]="state" required>
+                <mat-autocomplete formControlName="cestado" #state="matAutocomplete" (optionSelected)="getCityTaker()">
+                  <mat-option *ngFor="let state of filteredStateTaker | async" [value]="state">
+                    {{ state }}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+            </div>
+            <div>
+              <mat-form-field class="example-full-width">
+                <mat-label>Ciudad</mat-label>
+                <input type="text" placeholder="Seleccione Ciudad" aria-label="Seleccione" matInput
+                  [formControl]="cityTakerControl" [matAutocomplete]="cityTa" required>
+                <mat-autocomplete formControlName="cciudad" #cityTa="matAutocomplete">
+                  <mat-option *ngFor="let city of filteredCityTaker | async" [value]="city">
+                    {{ city }}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+            </div>
+            <div>
+              <mat-form-field>
+                <mat-label>Dirección</mat-label>
+                <input matInput type="text" placeholder="Dirección" formControlName="xdireccion_tomador">
+              </mat-form-field>
+            </div>
+            <div>
+              <mat-form-field>
+                <mat-label>Zona Postal</mat-label>
+                <input matInput type="text" placeholder="Zona Postal" formControlName="xzona_postal_tomador">
+              </mat-form-field>
+            </div>
+            <div>
+              <mat-form-field>
+                <mat-label>Teléfono</mat-label>
+                <input matInput type="text" placeholder="Teléfono" formControlName="xtelefono_tomador">
+              </mat-form-field>
+            </div>
+          </div>
+    
+      </div>
+
+      <div class="col-lg-6">
+
+        <mat-tab-group >
+            <mat-tab label="Tasas Casco"> 
+              <div style="display: flex;">
+                <div class="col-3">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Tarifa de Casco</mat-label>
+                    <input matInput formControlName="pcasco">
+                  </mat-form-field>
+                </div>
+                <div class="col-2">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Suma Asegurada</mat-label>
+                    <input matInput placeholder="Suma Asegurada" formControlName="msuma_aseg"  required>
+                  </mat-form-field>
+                </div>
+                <div class="col-3">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Prima</mat-label>
+                    <input matInput formControlName="mprima_casco_text">
+                  </mat-form-field>
+                </div>
+                <div class="col-2"  style="margin-left: 29px;">
+                  <button mat-button [matMenuTriggerFor]="aboveMenu" style="margin-top: 25px;">Descuento / Recarga</button>
+                  <mat-menu #aboveMenu="matMenu" yPosition="above">
+                    <div class="col-10">
+                      <div class="form-outline">
+                        <label class="form-label required">Porcentaje del Descuento</label>
+                        <input type="number" formControlName="pdescuento" class="form-control form-control-lg" (click)="$event.stopPropagation()"  />
+                      </div>
+                    </div>
+        
+                    <div class="col-10">
+                      <div class="form-outline">
+                        <label class="form-label required">Porcentaje de Recarga</label>
+                        <input type="number" formControlName="precarga" class="form-control form-control-lg" (click)="$event.stopPropagation()"  />
+                      </div>
+                    </div>
+        
+                  </mat-menu>
+                </div>
+                <div class="col-1" >
+                  <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" style="margin-top: 25px;">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #menu="matMenu" class="p-3">
+                    <P><strong>Prima Bruta:  </strong>{{primaBruta}}$</P>
+                    <P><strong>Descuento:  </strong>{{descuento}}%</P>
+                  </mat-menu>
+                </div>
+              </div>
+            </mat-tab>
+            <mat-tab label="Blindaje"> 
+              <div style="display: flex;">
+                <div class="col-3">
+                  <mat-form-field >
+                    <mat-label>Tasa de blindaje</mat-label>
+                    <input matInput type="number" formControlName="pblindaje">
+                  </mat-form-field>
+                </div>
+                <div class="col-3">
+                  <mat-form-field >
+                    <mat-label>Suma Asegurada</mat-label>
+                    <input matInput type="number" formControlName="msuma_blindaje" >
+                  </mat-form-field>
+                </div>
+                <div class="col-3">
+                  <mat-form-field >
+                    <mat-label>Prima de Blindaje</mat-label>
+                    <input matInput type="number" formControlName="mprima_blindaje">
+                  </mat-form-field>
+                </div>
+              </div>
+            </mat-tab>
+            <mat-tab label="Aditamento de Camiones" *ngIf="activateAttachment"> 
+              <div style="display: flex;">
+                <div class="col-3">
+                  <mat-form-field >
+                    <mat-label>Tasa de Aditamento</mat-label>
+                    <input matInput type="number" formControlName="paditamento">
+                  </mat-form-field>
+                </div>
+                <div class="col-3">
+                  <mat-form-field >
+                    <mat-label>Suma Asegurada</mat-label>
+                    <input matInput type="number" formControlName="msuma_aditamento" >
+                  </mat-form-field>
+                </div>
+                <div class="col-3">
+                  <mat-form-field >
+                    <mat-label>Prima de Aditamento</mat-label>
+                    <input matInput type="number" formControlName="mprima_aditamento">
+                  </mat-form-field>
+                </div>
+              </div>
+            </mat-tab>
+            <mat-tab label="Accesorios" formArrayName="accesorios">
+              <table class="accesories-table">
+                <thead>
+                  <tr>
+                    <th>Accesorio</th>
+                    <th>Tasa</th>
+                    <th>Suma Asegurada</th>
+                    <th>Prima</th>
+                  </tr>
+                </thead>
+                <tbody *ngFor="let creds of accesorios.controls; let i=index">
+                  <tr [formGroupName]="i">
+                    <td >{{creds.value.xaccesorio}}</td>
+                    <td>{{creds.value.ptasa}}</td>
+                    <td class="items">
+                      <input  type="number" formControlName="sumaAsegurada" (change)="calculateAccesories(i)" placeholder="Ingrese valor" />
+                    </td>
+                    <td >{{creds.value.xprimaAccesorio}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </mat-tab>
+          </mat-tab-group>
+        
+        
+          <div class="row justify-content-center" >
+            <div class="col-3">
+              <h3><strong>Motín: </strong>{{primaMotin}}$</h3>
+            </div>
+        
+            <div class="col-3">
+              <h3><strong>Riesgo Catastrófico: </strong>{{primaRiesgo}}$</h3>
+            </div>
+        
+            <div class="col-4">
+              <h3><strong>Indemnizacion Diaria por Robo: </strong>{{primaRobo}}$</h3>
+            </div>
+          </div>
+      </div>
+
+
+      <div class="row justify-content-center py-5">
+        <div class="col-2">
+          <button mat-button matStepperPrevious>Regresar</button>
+        </div>
+        <div class="col-1">
+          <button mat-button matStepperNext>Continuar</button>
+        </div>
+      </div>
+
+    </form>
+  </mat-step>
+  <mat-step label="Detalles del Recibo">
+    <form [formGroup]="receiptFormGroup">
+      <div class="row">
+        <div class="col-3">
+          <label class="form-label required" for="form3Examplev5">Fecha Desde</label>
+          <input type="date" formControlName="fdesde" class="form-control form-control-lg"
+            (ngModelChange)="calculateDate($event)" />
+        </div>
+        <div class="col-3">
+          <label class="form-label required" for="form3Examplev5">Fecha Hasta</label>
+          <input type="date" formControlName="fhasta" class="form-control form-control-lg" />
+        </div>
+        <div class="col-3">
+          <mat-form-field class="example-full-width">
+            <mat-label>Frecuencia de Pago</mat-label>
+            <input type="text" placeholder="Seleccione Frecuencia de Pago" aria-label="Seleccione" matInput
+              [formControl]="methodOfPaymentControl" [matAutocomplete]="methodOfPayment" required>
+            <mat-autocomplete formControlName="cmetodologiapago" #methodOfPayment="matAutocomplete"
+              (optionSelected)="onMethodOfPaymentSelection($event)">
+              <mat-option *ngFor="let methodOfPayment of filteredMethodOfPayment | async" [value]="methodOfPayment">
+                {{ methodOfPayment }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-3" style="margin-top: 34px;">
+          <h4><strong>Monto Total RCV: </strong>{{montoTotal}}$</h4>
+          <h4><strong>Tasa del día:</strong> {{bcv}}</h4>
+        </div>
+        <div class="col-4" style="margin-top: 34px;">
+          <h4><strong>Monto Total Casco: </strong>{{xprimaTotalCasco}}$</h4>
+        </div>
+      </div>
+
+
+      <div class="row justify-content-center">
+        <div class="col-4">
+          <h3><strong>Prima Casco + RCV: </strong>{{primaFinal}}$</h3>
+        </div>
+      </div>
+
+      <div class="ms-4 ps-5 text-center container row">
+        <div class="col-lg-5 mt-2">
+          <div style="width: 220px;height: 48px;margin-top: 10px;margin-left: 100px;" class="button">
+            <button id="ubiiboton"></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-4">
+          <button mat-raised-button color="primary"
+            style="width: 42%; margin-top: 44px;margin-left: 89px;">Emitir</button>
+        </div>
+
+      </div>
+
+      <div class="row justify-content-center py-5">
+        <div class="col-2">
+          <button mat-button matStepperPrevious>Regresar</button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+</mat-stepper>

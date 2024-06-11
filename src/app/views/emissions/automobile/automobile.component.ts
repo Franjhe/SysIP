@@ -552,7 +552,6 @@ export class AutomobileComponent {
     }
   }
 
-
   valueIdentification(value: any){
     var ExpRegSoloLetras="^[A-Za-z0-9\s]+$";
     if(value.data.match(ExpRegSoloLetras)==null){

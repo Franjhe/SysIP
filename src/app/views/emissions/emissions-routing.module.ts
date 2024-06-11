@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AutomobileComponent } from './automobile/automobile.component';
 import { SuretyComponent } from './surety/surety.component';
 import { AuthGuard } from 'src/app/_helpers/auth.guard';
+import { AutomobileNewComponent } from './automobile-new/automobile-new.component';
 
 const routes: Routes = [
   {
@@ -30,6 +31,13 @@ const routes: Routes = [
         component: SuretyComponent,
         data: {
           title: 'surety',
+        },
+      },
+      {
+        path: 'automobile-new',
+        component: AutomobileNewComponent,
+        data: {
+          title: 'automobile',
         },
       },
     ]

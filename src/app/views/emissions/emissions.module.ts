@@ -9,13 +9,15 @@ import { MaterialExampleModule } from './../../material.module'
 import { ReactiveFormsModule } from '@angular/forms';
 import { SuretyComponent } from './surety/surety.component';
 import { SelfManagementComponent } from './self-management/self-management.component';
+import { AutomobileNewComponent } from './automobile-new/automobile-new.component';
 
 
 @NgModule({
   declarations: [
     AutomobileComponent,
     SuretyComponent,
-    SelfManagementComponent
+    SelfManagementComponent,
+    AutomobileNewComponent
   ],
   imports: [
     CommonModule,

@@ -2,7 +2,7 @@
   <mat-tab-group>
     <mat-tab label="Emisión Individual"> 
       <mat-stepper [linear]="isLinear" #stepper>
-        <mat-step [stepControl]="personsFormGroup">
+        <mat-step >
           <form [formGroup]="personsFormGroup">
             <ng-template matStepLabel>Datos Personales</ng-template>
             <div class="row">
@@ -162,7 +162,7 @@
             </div>
           </form>
         </mat-step>
-        <mat-step [stepControl]="vehicleFormGroup" label="Datos del Vehículo">
+        <mat-step  label="Datos del Vehículo">
           <form [formGroup]="vehicleFormGroup">
             <div class="row">
               <div class="col-3">
@@ -409,7 +409,7 @@
             </div>
           </form>
         </mat-step>
-        <mat-step [stepControl]="planFormGroup" label="Detalles del plan">
+        <mat-step  label="Detalles del plan">
             <form [formGroup]="planFormGroup">
               <div class="row justify-content-center">
                 <div class="col-4">
@@ -706,7 +706,7 @@
 
             </form>
         </mat-step>
-        <mat-step [stepControl]="receiptFormGroup" label="Detalles del Recibo">
+        <mat-step  label="Detalles del Recibo">
             <form [formGroup]="receiptFormGroup">
               <div class="row">
                 <div class="col-3">
