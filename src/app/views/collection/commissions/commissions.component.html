@@ -12,6 +12,23 @@
         <input matInput (keyup)="applyFilter($event)" #input>
     </mat-form-field>
 
+    <div class="col-3">
+
+
+        <mat-form-field>
+            <mat-label>Fecha de ingreso</mat-label>
+            <mat-date-range-input [formGroup]="range"  [rangePicker]="picker">
+              <input matStartDate formControlName="start" placeholder="Start date">
+              <input matEndDate formControlName="end" placeholder="End date" (dateChange)="searchCommis()">
+            </mat-date-range-input>
+            <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          
+          </mat-form-field>
+          
+    </div>
+
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z2" matSort (matSortChange)="sortData($event)">
 
         <!--- Note that these columns can be defined in any order.
@@ -144,8 +161,8 @@
                     <td mat-cell *matCellDef="let row"> {{row.canexo}} </td>
                 </ng-container>
                 <ng-container matColumnDef="5">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha </th>
-                    <td mat-cell *matCellDef="let row"> {{row.femision | date: "dd/MM/YYYY"}} </td>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha de cobro </th>
+                    <td mat-cell *matCellDef="let row"> {{row.fcobro }} </td>
                 </ng-container>
                 <ng-container matColumnDef="6">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Prima Bs. </th>
@@ -287,6 +304,7 @@
                             </mat-select>
                         </mat-form-field>
                     </div>
+
                     <div class="col-3" >
                         <mat-form-field>
                             <mat-label>Monto Movimiento Bs:</mat-label>
@@ -295,7 +313,7 @@
                     </div>
                     <div class="col-3">
                         <mat-form-field>
-                            <mat-label>Monto Movimiento Ext:</mat-label>
+                            <mat-label>Monto Movimiento Divisa:</mat-label>
                             <input matInput type="text" value="{{paymentRequest.cmoneda}}{{paymentRequest.mpagoext}}"
                                 disabled>
                         </mat-form-field>
@@ -315,9 +333,15 @@
                     </div>
                     <div class="col-3" *ngIf="listMonedaOrden[i] == '$'">
                         <mat-form-field>
-                            <mat-label>Monto Retención Ext:</mat-label>
+                            <mat-label>Monto Retención Divisa:</mat-label>
                             <input matInput type="text" value="$. {{paymentRequest.mislrext}}"
                             disabled>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-3" *ngIf="paymentRequest.ipersona == 'N'">
+                        <mat-form-field>
+                            <mat-label>Sustraendo:</mat-label>
+                            <input matInput type="text" value="{{moneda}}. {{msustraendo}}" disabled>
                         </mat-form-field>
                     </div>
                     <div class="col-3" *ngIf="listMonedaOrden[i] == 'Bs'">
@@ -328,10 +352,64 @@
                     </div>
                     <div class="col-3" *ngIf="listMonedaOrden[i] == '$'">
                         <mat-form-field>
-                            <mat-label>Monto a Pagar Ext:</mat-label>
+                            <mat-label>Monto a Pagar Divisa:</mat-label>
                             <input matInput type="text" value="$. {{paymentRequest.mpagosolext}}" disabled>
                         </mat-form-field>
                     </div>
+
+                    <div class="col-3">
+                        <mat-form-field>
+                            <mat-label>Tasa del dia</mat-label>
+                            <input #horaFinInputRef  matInput [value]="tasaBcv" class="form-control form-control-alternative"  type="number" (change)="bcvChange(horaFinInputRef.value)"/>                                                      
+            
+                        </mat-form-field>
+                    </div >
+
+                    <div class="col-3">
+                        <mat-form-field>
+                            <mat-label>Diferencia cambiaria</mat-label>
+                            <input #diferencia  matInput [value]="diferencia" class="form-control form-control-alternative"  type="number" (change)="diferenceChange(diferencia.value)"/>                                                      
+            
+                        </mat-form-field>
+                    </div >
+
+                    <div formArrayName="transfer" class="row justify-content-center">
+                        Monto restante {{restante}}
+                        monto neto {{neto}} USD / {{netoBs}} Bs
+                        <div *ngFor="let creds of transfer.controls let i=index"  >
+                            <div [formGroupName]="i"  class="row">
+                              
+                                    <div class="col-4">
+                                        <mat-form-field>
+                                            <mat-label>Moneda Pago Orden:</mat-label>
+                                            <mat-select formControlName="cmoneda" 
+                                                required #cmonedaOrden >
+                                                <mat-option value="Bs" selected>Bolívares</mat-option>
+                                                <mat-option value="$">Usd</mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-3">
+                                        <mat-form-field>
+                                            <mat-label>Monto</mat-label>
+                                            <input matInput formControlName="mpago" (change)="calculateMount()">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="mt-3 col-4" >
+                                        <button mat-button  class="bg-danger text-light m-2" (click)="removePayment(i)">Eliminar movimiento</button>
+                                    </div> 
+                          
+
+
+                            </div>  
+                        </div>
+                        <div>
+                            <button mat-button  class="bg-warning text-light m-2" (click)="addPayment()">Añadir movimiento</button>
+                        </div>
+
+                    </div>
+
+
                     <div class="col-12">
                         <mat-form-field>
                             <mat-label>Observaciones:</mat-label>
@@ -351,6 +429,8 @@
                         </mat-select>
                       </mat-form-field> -->
                 </div>
+
+
                 <div class="row mt-4">
                     <div class="col col-2 text-center"><button mat-raised-button
                             (click)="cancelPaymentRequests()">Cancelar</button></div>

@@ -8,6 +8,7 @@ import { LoginComponent } from './views/pages/login/login.component';
 import { RegisterComponent } from './views/pages/register/register.component';
 import { PaymentReportComponent } from './views/collection/payment-report/payment-report.component';
 import { SelfManagementComponent } from './views/emissions/self-management/self-management.component';
+import { GroupPaymentReportComponent } from './views/collection/group-payment-report/group-payment-report.component';
 
 const routes: Routes = [
   {
@@ -119,6 +120,13 @@ const routes: Routes = [
     component: PaymentReportComponent,
     data: {
       title: 'Payment Report '
+    }
+  },
+  {
+    path: 'group-payment-report',
+    component: GroupPaymentReportComponent,
+    data: {
+      title: 'Group Payment Report '
     }
   },
   {

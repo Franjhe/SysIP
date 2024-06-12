@@ -156,7 +156,7 @@ export class ReportsComponent {
         },
       );
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     }
   }
   
@@ -180,9 +180,14 @@ export class ReportsComponent {
     let estado = this.consulta_reporte.get('estado')?.value;
     let fdesde_pol = this.consulta_reporte.get('fdesde_pol')?.value;
     let fhasta_pol = this.consulta_reporte.get('fhasta_pol')?.value;
+<<<<<<< HEAD
     this.estado = estado;
     
     
+=======
+    console.log(estado)
+    this.estado = estado
+>>>>>>> c25b5992c62ea40529e8c5c22fa33ce71157d559
     if (estado !== 'CD') {
       this.showButton = true
       fetch(environment.apiUrl + '/api/v1/collection/search-collected/' + estado)
@@ -396,7 +401,7 @@ export class ReportsComponent {
     let estado = this.consulta_reporte.get('estado')?.value
     let variable = (<HTMLInputElement>document.getElementById("prueba1")).value;
     this.http.get(environment.apiUrl + '/api/v1/report/email/' + estado).subscribe((response: any) => {
-      console.log(response, this.correo)
+      // console.log(response, this.correo)
     });
 
   }

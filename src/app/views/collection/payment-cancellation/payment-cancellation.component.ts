@@ -1,18 +1,11 @@
-import {Component, TemplateRef, ViewChild  } from '@angular/core';
-import {FormBuilder, Validators, FormGroup, FormControl , FormArray} from '@angular/forms';
+import {Component } from '@angular/core';
+import {FormBuilder, FormArray} from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatSort , MatSortModule } from '@angular/material/sort';
-import { MatPaginator } from '@angular/material/paginator';
-import { Observable } from 'rxjs';
-import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
-import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
-import {animate, state, style, transition, trigger} from '@angular/animations';
-
+import {MatDialog } from '@angular/material/dialog';
+import { MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
 @Component({
@@ -26,58 +19,12 @@ export class PaymentCancellationComponent {
   horizontalPosition: MatSnackBarHorizontalPosition = 'center';
   verticalPosition: MatSnackBarVerticalPosition = 'top';
 
-  displayedColumns: string[] = ['id', 'name', 'progress', 'fruit'];
-  dataSource = new MatTableDataSource<any> ;
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-
-
-  @ViewChild('Alerta') InfoReceipt!: TemplateRef<any>;
-  @ViewChild('Alerta1') Alerta1!: TemplateRef<any>;
-
   bcv : any
-  viewData : boolean = false
-  clienteData : any
-
-  urlImg : any
-
-  listCollected : any = []
-  listReceipt: any = []
-
-  dataSoport: any = [] //recibos notificados
-
-  dataReport: any = [] //recibos notificados
-
-  dataReportB: any = [] //recibos notificados
-
-  tradesList : any = []
-  coinList : any = []
-  transferList : any = []
-
-  bankInternational : any = []
-  bankNational: any = []
-
-  bankReceptorInternational : any = []
-  bankReceptorNational : any = []
-  bankReceptorPM : any = []
-  bankReceptorCustodia : any = []
-
-
-  usd : boolean = false
-  pmovil : boolean = false
-  depositoUSD : boolean = false
-  trans: boolean = false
-
-  totalPending : any
   totalNotificated : any
   totalNotificatedExt: any
 
-  messajeError : any
-  error : boolean = false
   revision : boolean = false
   cobradoSAF : boolean = false
-
 
   mount : any //monto de la suma de los recibos 
   mountIGTF : any //monto con el calculo igtf 
@@ -86,33 +33,6 @@ export class PaymentCancellationComponent {
   mountBsP : any //monto en bolivares del porcentaje igtf 
   mountBsExt : any //monto en bolivares del monto total en dolares con igtf
 
-
-  ntransaccion : any //numero de transaccion de recibo notificado
-
-  nrecibo : any //numero de recibo pendiente
-  asegurado : any
-  cliente : any
-  telefono : any
-  correo : any
-  dataReceiptPending : any = []
-  dataReceiptPendingB: any = []
-
-
-  listPending: any = []
-  listVencido : any = []
-  listCollectedReport: any = []
-
-
-  listReceiptClient : any = []
-  lenghReceipt : boolean = false
-
-  lisDiferenceClient: any 
-  listDetalle: any
-  listSoport : any = []
-  diference : boolean = false
-
-  boollistReceipts: boolean = false
-  GroupReceiptsBool : boolean = false
   groupReceiptsForm = this._formBuilder.group({
     agrupado : this._formBuilder.array([])
   });
@@ -125,39 +45,14 @@ export class PaymentCancellationComponent {
     return this.groupReceiptsForm.get("agrupado") as FormArray
   }
 
-  updateReceipt = this._formBuilder.group({
-    iestadorec: [{ value: '', disabled: false }],
-    mdiferencia :[{ value: '', disabled: false }],
-    iestado_tra : [{ value: '', disabled: false }],
-    xobservacion: [{ value: '', disabled: false }],
-    itransaccion: [{ value: '', disabled: false }],
-  });
-
-  updateReceiptPending = this._formBuilder.group({
-    itransaccion :'',
-    cmoneda:'',
-    cbanco:'',
-    cbanco_destino: '',
-    mpago: '',
-    mpagoext: '',
-    ptasamon: '',
-    ptasaref: '',
-    freporte: '',
-    xreferencia: '',
-    ximagen: '',
-    iestadorec: '',
-  });
-
-
-  constructor( private _formBuilder: FormBuilder,
+  constructor( 
+    private _formBuilder: FormBuilder,
     private http: HttpClient,
-    private sanitizer: DomSanitizer,
-    readonly dialog: MatDialog,
     private toast: MatSnackBar,
-    private _snackBar: MatSnackBar
 
-    ) {
-   }
+    private sanitizer: DomSanitizer,
+    readonly dialog: MatDialog
+  ) {}
 
   ngOnInit(){
 
@@ -172,126 +67,6 @@ export class PaymentCancellationComponent {
       this.bcv = data.monitors.usd.price
     })
 
-    fetch(environment.apiUrl + '/api/v1/valrep/trade')
-    .then((response) => response.json())
-    .then(responde => {
-
-      this.tradesList = []
-      for(let i = 0; i < responde.data.trades.length; i++){
-        this.tradesList.push({
-          id: responde.data.trades[i].cramo,
-          value: responde.data.trades[i].xdescripcion_l,
-        })
-      }
-
-    })
-
-    fetch(environment.apiUrl + '/api/v1/valrep/coin')
-    .then((response) => response.json())
-    .then(coin => {
-
-      this.coinList = []
-      for(let i = 0; i < coin.data.coins.length; i++){
-        this.coinList.push({
-          id: coin.data.coins[i].cmoneda,
-          value: coin.data.coins[i].xdescripcion_l,
-        })
-      }
-
-    })
-
-
-    //bancos nacionales transfertencias
-    let bankNational = {
-      ctipopago: 2
-    }
-
-    this.http.post(environment.apiUrl + '/api/v1/valrep/target-bank', bankNational ).subscribe((response: any) => {
-      for(let i = 0; i < response.data.targetBank.length; i++){
-        this.bankReceptorNational.push({
-          id: response.data.targetBank[i].cbanco_destino,
-          value: response.data.targetBank[i].xbanco,
-        })        
-      }
-
-
-    })
-
-    //bancos internacionales
-    let bankInternational = {
-      ctipopago: 1
-    }
-
-    this.http.post(environment.apiUrl + '/api/v1/valrep/target-bank', bankInternational ).subscribe((response: any) => {
-      for(let i = 0; i < response.data.targetBank.length; i++){
-        this.bankReceptorInternational.push({
-          id: response.data.targetBank[i].cbanco_destino,
-          value: response.data.targetBank[i].xbanco,
-        })        
-      }
-
-
-    })
-
-    //bancos pago movil
-    let bankReceptorPM = {
-      ctipopago: 3
-    }
-
-    this.http.post(environment.apiUrl + '/api/v1/valrep/target-bank', bankReceptorPM ).subscribe((response: any) => {
-      for(let i = 0; i < response.data.targetBank.length; i++){
-        this.bankReceptorPM.push({
-          id: response.data.targetBank[i].cbanco_destino,
-          value: response.data.targetBank[i].xbanco,
-        })        
-      }
-
-
-    })
-
-    //bancos custodia
-
-    let bankReceptorCustodia = {
-      ctipopago: 7
-    }
-
-    this.http.post(environment.apiUrl + '/api/v1/valrep/target-bank', bankReceptorCustodia ).subscribe((response: any) => {
-      for(let i = 0; i < response.data.targetBank.length; i++){
-        this.bankReceptorCustodia.push({
-          id: response.data.targetBank[i].cbanco_destino,
-          value: response.data.targetBank[i].xbanco,
-        })        
-      }
-
-
-    })
-
-    let extranjero = {
-      itipo: 'e'
-    }
-
-    this.http.post(environment.apiUrl + '/api/v1/valrep/bank', extranjero).subscribe((response: any) => {
-      for(let i = 0; i < response.data.bank.length; i++){
-        this.bankInternational.push({
-          id: response.data.bank[i].cbanco,
-          value: response.data.bank[i].xbanco,
-        })        
-      }
-    })
-
-    let venezolano = {
-      itipo: 'v'
-    }
-
-    this.http.post(environment.apiUrl + '/api/v1/valrep/bank', venezolano).subscribe((response: any) => {
-      for(let i = 0; i < response.data.bank.length; i++){
-        this.bankNational.push({
-          id: response.data.bank[i].cbanco,
-          value: response.data.bank[i].xbanco,
-        })        
-      }
-    })
-
 
     fetch(environment.apiUrl + '/api/v1/collection/search-notification' )
     .then((response) => response.json())
@@ -299,13 +74,12 @@ export class PaymentCancellationComponent {
         // Obtener la referencia al FormArray transactions
         const transactionsArray = this.groupReceiptsForm.get("agrupado") as FormArray
         
-        data.searchPaymentReport.forEach((transaction: any) => {
+        data.searchPaymentNotifications.forEach((transaction: any) => {
           let dateNotification = new Date(transaction.freporte);
           let fechaISOHasta = dateNotification.toISOString().substring(0, 10);
 
           const transactionGroup = this._formBuilder.group({
             id: transaction.ctransaccion,
-            ctransaccion: transaction.ctransaccion,
             iestadorec : '',
             xobservacion : '',
             mdiferencia : '',
@@ -321,25 +95,27 @@ export class PaymentCancellationComponent {
             cdoccob: transaction.cdoccob,
             monto_transaccion: transaction.monto_transaccion,
             monto_transaccion_ext: transaction.monto_transaccion_ext,
-            diferencia_saldo:transaction.diferencia_saldo,
+            saldoCliente:transaction.saldoCliente,
+            monedaSaldo : transaction.monedaSaldo,
+            msaldo : transaction.msaldo,
+            msaldoext : transaction.msaldoext,
             msaldodif:transaction.msaldodif,
-            tasa_saldo:transaction.tasa_saldo,
-            cmoneda_dif:transaction.cmoneda_dif,   
             ptasamon: transaction.ptasamon,
             poliza: this._formBuilder.array([]),
             recibos: this._formBuilder.array([])
           });
 
           const polizaArray = transactionGroup.get('poliza') as FormArray;
-          transaction.poliza.forEach((poliza:any) => {
+          transaction.poliza.forEach((poliza:any) => {            
             polizaArray.push(this._formBuilder.group({
+              beneficiario : poliza.beneficiario,
               crecibo: poliza.crecibo,
               cnrecibo: poliza.cnrecibo,
               cpoliza: poliza.cpoliza,
               cnpoliza: poliza.cnpoliza,
               cuotas : poliza.cuotas,
-              mmontorec: poliza.mmontorec,
-              mmontorecext: poliza.mmontorecext,
+              mprimabruta: poliza.mmontorec,
+              mprimabrutaext: poliza.mmontorecext,
               iestadorec: poliza.iestadorec,
               cramo: poliza.cramo, 
               xramo: poliza.xramo, 
@@ -354,7 +130,6 @@ export class PaymentCancellationComponent {
               estado_diferencia: poliza.estado_diferencia,
               freport_pago: poliza.freport_pago,
               moneda_cobro_diferencia: poliza.moneda_cobro_diferencia, 
-
             }));
           });
       
@@ -367,7 +142,7 @@ export class PaymentCancellationComponent {
             const safeImageUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullImageUrl);
 
             recibosArray.push(this._formBuilder.group({
-              ctransaccion: recibo.ctransaccion,
+              transaccion: recibo.ctransaccion,
               cbanco_destino: recibo.cbanco_destino,
               cbanco_origen: recibo.cbanco_origen,
               npago: recibo.npago,
@@ -393,7 +168,7 @@ export class PaymentCancellationComponent {
         let sumaMpagoExt = 0;
 
         // Iterar sobre cada objeto en el array
-        data.searchPaymentReport.forEach((objeto:any) => {
+        data.searchPaymentNotifications.forEach((objeto:any) => {
             // Iterar sobre los recibos de cada objeto
             objeto.recibos.forEach((recibo:any) => {
                 // Sumar el valor de mpago al total
@@ -401,7 +176,7 @@ export class PaymentCancellationComponent {
             });
         });
 
-        data.searchPaymentReport.forEach((objeto:any) => {
+        data.searchPaymentNotifications.forEach((objeto:any) => {
           // Iterar sobre los recibos de cada objeto
           objeto.recibos.forEach((recibo:any) => {
               // Sumar el valor de mpago al total
@@ -414,109 +189,13 @@ export class PaymentCancellationComponent {
 
     })
 
-
-  }
-
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.toLowerCase();
   }
 
   getImage(imageUrl: string): string {
     return environment.apiUrl + '/api/get-document/' + imageUrl;
   }
 
-  Alert(config?: MatDialogConfig) {
-    return this.dialog.open(this.InfoReceipt, config);
-  }
-
-
-  async dataPendient(recibo : any,asegurado : any){
-    this.nrecibo = recibo
-    this.asegurado = asegurado
-    fetch(environment.apiUrl + '/api/v1/collection/search-receipt-data/' + recibo)
-    .then((response) => response.json())
-    .then(data => {
-
-      this.dataReceiptPending = []
-      for(let i = 0; i < data.searchReceiptClientData.recibo.length; i++){
-
-        let id = data.searchReceiptClientData.recibo[i].cramo
-        let treatments = this.tradesList
-        let filterdata = treatments.filter((data: { id: any; }) => data.id == id)
-        const xramo = filterdata[0].value
-
-        //fecha desde recibo
-          let dateDReceip = new Date(data.searchReceiptClientData.recibo[i].fdesde );
-          let fechaISODesde = dateDReceip.toISOString().substring(0, 10);
-
-
-        //fecha hasta recibo
-          let dateHReceip = new Date(data.searchReceiptClientData.recibo[i].fhasta );
-          let fechaISOHasta = dateHReceip.toISOString().substring(0, 10);
-
-        this.dataReceiptPending.push({
-          cmoneda : data.searchReceiptClientData.recibo[i].cmoneda ,
-          cnpoliza : data.searchReceiptClientData.recibo[i].cnpoliza ,
-          cnrecibo : data.searchReceiptClientData.recibo[i].cnrecibo ,
-          cpoliza : data.searchReceiptClientData.recibo[i].cpoliza ,
-          cramo : data.searchReceiptClientData.recibo[i].cramo + ' - ' + xramo,
-          crecibo : data.searchReceiptClientData.recibo[i].crecibo ,
-          fanopol : data.searchReceiptClientData.recibo[i].fanopol ,
-          fdesde : fechaISODesde ,
-          fdesde_pol : data.searchReceiptClientData.recibo[i].fdesde_pol ,
-          fhasta : fechaISOHasta ,
-          fhasta_pol : data.searchReceiptClientData.recibo[i].fhasta_pol ,
-          fmespol : data.searchReceiptClientData.recibo[i].fmespol ,
-          mprimabruta : data.searchReceiptClientData.recibo[i].mprimabruta ,
-          mprimabrutaext : data.searchReceiptClientData.recibo[i].mprimabrutaext ,
-          qcuotas : data.searchReceiptClientData.recibo[i].qcuotas
-        })
-
-        this.dataReceiptPendingB.push({
-          cmoneda : data.searchReceiptClientData.recibo[i].cmoneda ,
-          cnpoliza : data.searchReceiptClientData.recibo[i].cnpoliza ,
-          cnrecibo : data.searchReceiptClientData.recibo[i].cnrecibo ,
-          cpoliza : data.searchReceiptClientData.recibo[i].cpoliza ,
-          cramo : data.searchReceiptClientData.recibo[i].cramo,
-          crecibo : data.searchReceiptClientData.recibo[i].crecibo ,
-          fanopol : data.searchReceiptClientData.recibo[i].fanopol ,
-          fdesde : fechaISODesde ,
-          fdesde_pol : data.searchReceiptClientData.recibo[i].fdesde_pol ,
-          fhasta : fechaISOHasta ,
-          fhasta_pol : data.searchReceiptClientData.recibo[i].fhasta_pol ,
-          fmespol : data.searchReceiptClientData.recibo[i].fmespol ,
-          mprimabruta : data.searchReceiptClientData.recibo[i].mprimabruta ,
-          mprimabrutaext : data.searchReceiptClientData.recibo[i].mprimabrutaext ,
-          qcuotas : data.searchReceiptClientData.recibo[i].qcuotas
-        })
-
-      }
-
-      fetch(environment.apiUrl + '/api/v1/collection/search-client/' + asegurado)
-      .then((response) => response.json())
-      .then(data => {
-        for(let i = 0; i < data.searchClientData.cliente.length; i++){
-          this.cliente = data.searchClientData.cliente[i].xcliente
-          this.telefono = data.searchClientData.cliente[i].xtelefono
-          this.correo = data.searchClientData.cliente[i].xemail
-
-        }
-  
-  
-      })
-
-    })
-
-
-    this.Alert()
-  }
-
-  async alerUpdateReceipt(config?: MatDialogConfig) {
-    return this.dialog.open(this.Alerta1, config);
-  }
-
-  updateReceiptNotificated(i : any){
+  onSubmit(i : any){
 
     const creds = this.groupReceiptsForm.controls.agrupado as FormArray;
 
@@ -528,42 +207,40 @@ export class PaymentCancellationComponent {
         let monto = creds.at(i).get('mdiferencia')?.value / this.bcv
         data = {
           transaccion : creds.at(i).get('id')?.value,
-          xobservacion: creds.at(i).get('xobservacion')?.value,
-          mdiferencia: creds.at(i).get('mdiferencia')?.value,
-          mdiferenciaext: monto,
-          iestadorec: creds.at(i).get('iestadorec')?.value,
           casegurado : creds.at(i).get('casegurado')?.value,
           cliente : creds.at(i).get('xcliente')?.value,
-          recibo : creds.at(i).get('recibo')?.value,
           correo : creds.at(i).get('xcorreo')?.value,
-          cmoneda : creds.at(i).get('cmoneda')?.value,
-          idiferencia : creds.at(i).get('idiferencia')?.value,
-          tasa : this.bcv,
+          ptasamon : this.bcv,
           cusuario : this.usuario,
           fcobro : new Date(),
-
-
-
+          reciboConDiferencia: {
+            mdiferencia: creds.at(i).get('mdiferencia')?.value,
+            mdiferenciaext: monto,
+            xobservacion: creds.at(i).get('xobservacion')?.value,
+            idiferencia : creds.at(i).get('idiferencia')?.value,
+            crecibo : creds.at(i).get('recibo')?.value,
+            cmoneda : creds.at(i).get('cmoneda')?.value,
+          }
         }
 
       }else{
         let monto = creds.at(i).get('mdiferencia')?.value * this.bcv
         data = {
           transaccion : creds.at(i).get('id')?.value,
-          xobservacion: creds.at(i).get('xobservacion')?.value,
-          mdiferenciaext: creds.at(i).get('mdiferencia')?.value,
-          mdiferencia: monto,
           correo : creds.at(i).get('xcorreo')?.value,
-          iestadorec: creds.at(i).get('iestadorec')?.value,
           casegurado : creds.at(i).get('casegurado')?.value,
           cliente : creds.at(i).get('xcliente')?.value,
-          recibo : creds.at(i).get('recibo')?.value,
-          cmoneda : creds.at(i).get('cmoneda')?.value,
-          idiferencia : creds.at(i).get('idiferencia')?.value,
-          tasa : this.bcv,
+          ptasamon : this.bcv,
           cusuario : this.usuario,
           fcobro : new Date(),
-
+          reciboConDiferencia: {
+            mdiferencia: monto,
+            mdiferenciaext: creds.at(i).get('mdiferencia')?.value,
+            xobservacion: creds.at(i).get('xobservacion')?.value,
+            idiferencia : creds.at(i).get('idiferencia')?.value,
+            crecibo : creds.at(i).get('recibo')?.value,
+            cmoneda : creds.at(i).get('cmoneda')?.value,
+          }
 
         }
 
@@ -573,50 +250,102 @@ export class PaymentCancellationComponent {
         if(response.status){
           location.reload()
         }
-  
       })
 
     }
     else if(creds.at(i).get('iestadorec')?.value == 'CS' ){
+      let monto = 0
+      let montoUSD = 0
+
+      if(creds.at(i).get('cmoneda')?.value  == 'BS'){
+        montoUSD = creds.at(i).get('mdiferencia')?.value / this.bcv
+        monto = creds.at(i).get('mdiferencia')?.value
+      }else{
+        montoUSD = creds.at(i).get('mdiferencia')?.value
+        monto = creds.at(i).get('mdiferencia')?.value * this.bcv
+      }
+
       let data = {
         transaccion : creds.at(i).get('id')?.value,
         iestadorec: 'C',
         fcobro : new Date(),
         casegurado : creds.at(i).get('casegurado')?.value,
-        msaldodif: creds.at(i).get('mdiferencia')?.value,
-        cmoneda_dif: creds.at(i).get('cmoneda')?.value,
         cliente : creds.at(i).get('xcliente')?.value,
         correo : creds.at(i).get('xcorreo')?.value,
-        idiferencia : "H",
-        detalle : creds.at(i).get('poliza')?.value,
+        recibo : creds.at(i).get('poliza')?.value,
         ptasamon : this.bcv,
         cusuario : this.usuario,
-
+        cprog : 'normalizacionPago',
+        ifuente : 'Web_Sys',
+        balancePositivo:{        
+          cmoneda: creds.at(i).get('cmoneda')?.value,
+          msaldo: monto,
+          msaldoext: montoUSD,
+          idiferencia : "H",
+        }
       }
+
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt-positive-balance', data ).subscribe((response: any) => {
         if(response.status){
+          this.toast.open("Actualización de pago éxitoso", "Cerrar", {
+            duration: 3000,
+          });
           location.reload()
         }
   
       })
     }
     else if(creds.at(i).get('iestadorec')?.value == 'C' ){
-      const data = {
-        transaccion : creds.at(i).get('id')?.value,
-        iestadorec: creds.at(i).get('iestadorec')?.value,
-        casegurado : creds.at(i).get('casegurado')?.value,
-        correo : creds.at(i).get('xcorreo')?.value,
-        cliente : creds.at(i).get('xcliente')?.value,
-        fpago : creds.at(i).get('freporte')?.value,
-        detalle : creds.at(i).get('poliza')?.value,
-        cusuario : this.usuario,
-        fcobro : new Date(),
-
-
+      let data = {}
+      if( creds.at(i).get('saldoCliente')?.value != null){
+        data = {
+         transaccion : creds.at(i).get('id')?.value,
+         casegurado : creds.at(i).get('casegurado')?.value,
+         correo : creds.at(i).get('xcorreo')?.value,
+         cliente : creds.at(i).get('xcliente')?.value,
+         fpago : creds.at(i).get('freporte')?.value,
+         recibo : creds.at(i).get('poliza')?.value,
+         soporte : creds.at(i).get('recibos')?.value,
+         mpago : creds.at(i).get('monto_transaccion')?.value,
+         mpagoext : creds.at(i).get('monto_transaccion_ext')?.value,
+         ptasamon : creds.at(i).get('ptasamon')?.value,
+         cusuario : this.usuario,
+         fcobro : new Date(),
+         cprog : 'normalizacionPago',
+         ifuente : 'Web_Sys',
+         iestado_tran : creds.at(i).get('iestado_tran')?.value,
+         balancePositivo:{        
+           cmoneda: creds.at(i).get('monedaSaldo')?.value,
+           msaldo: 0,
+           msaldoext: 0,
+           idiferencia : "H",
+         }
+       }
+      }else{
+        data = {
+          transaccion : creds.at(i).get('id')?.value,
+          casegurado : creds.at(i).get('casegurado')?.value,
+          correo : creds.at(i).get('xcorreo')?.value,
+          cliente : creds.at(i).get('xcliente')?.value,
+          fpago : creds.at(i).get('freporte')?.value,
+          recibo : creds.at(i).get('poliza')?.value,
+          soporte : creds.at(i).get('recibos')?.value,
+          mpago : creds.at(i).get('monto_transaccion')?.value,
+          mpagoext : creds.at(i).get('monto_transaccion_ext')?.value,
+          ptasamon : creds.at(i).get('ptasamon')?.value,
+          cusuario : this.usuario,
+          fcobro : new Date(),
+          cprog : 'normalizacionPago',
+          ifuente : 'Web_Sys',
+          iestado_tran : creds.at(i).get('iestado_tran')?.value,
+        }
       }
       this.http.patch(environment.apiUrl + '/api/v1/collection/update-receipt/', data ).subscribe((response: any) => {
         if(response.status){
-          location.reload()
+          this.toast.open("Actualización de pago éxitoso", "Cerrar", {
+            duration: 3000,
+          });
+          location.reload()        
         }
   
       })
@@ -635,17 +364,11 @@ export class PaymentCancellationComponent {
     
     else if(creds.at(i).get('iestadorec')?.value == 'CS'){
       this.cobradoSAF = true
-      this.revision = false    }
-    else{
+      this.revision = false    
+    }else{
       this.revision = false
 
     }
-
-  }
-
-
-  changeError(){
-    this.error = false 
 
   }
 

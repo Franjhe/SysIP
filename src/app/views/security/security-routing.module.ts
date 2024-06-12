@@ -41,6 +41,7 @@ import { UpdateSubmenuComponent } from './menu/update-submenu/update-submenu.com
 import { DeleteMainmenuComponent } from './menu/delete-mainmenu/delete-mainmenu.component';
 import { DeleteMenuComponent } from './menu/delete-menu/delete-menu.component';
 import { DeleteSubmenuComponent } from './menu/delete-submenu/delete-submenu.component';
+import { AuthGuard } from 'src/app/_helpers/auth.guard';
 
 const routes: Routes = [
   {
@@ -48,6 +49,8 @@ const routes: Routes = [
     data: {
       title: 'security',
     },
+    canActivate: [AuthGuard],
+
     children: [
       {
         path: '',

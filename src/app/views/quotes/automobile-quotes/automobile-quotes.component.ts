@@ -393,7 +393,7 @@ export class AutomobileQuotesComponent {
         for (let i = 0; i < response.data.broker.length; i++) {
           this.brokerList.push({
             id: response.data.broker[i].cproductor,
-            value: response.data.broker[i].xintermediario,
+            value: response.data.broker[i].xproductor,
           });
         }
         if (this.currentUser.data.xcorredor) {
@@ -406,6 +406,8 @@ export class AutomobileQuotesComponent {
           map(value => this._filterBroker(value || ''))
         );
       }
+
+      console.log(this.brokerList)
     });
   }
 
@@ -525,7 +527,7 @@ export class AutomobileQuotesComponent {
         this.quotesBoolean = true;
         this.quotesList = response.data.list.result;
         console.log(this.quotesList)
-        this.quotesList.sort((a, b) => a.xplan_rc > b.xplan_rc ? 1 : -1);
+        this.quotesList.sort((a, b) => a.cplan_rc > b.cplan_rc ? 1 : -1);
 
         this.nombreCompleto = data.xnombre + ' ' + data.xapellido;
         this.vehiculo = this.quotesForm.get('xmarca')?.value + ' ' + this.quotesForm.get('xmodelo')?.value;
@@ -554,7 +556,7 @@ export class AutomobileQuotesComponent {
             email_user: this.xcorreo_emisor
           }
           this.http.post('https://api.lamundialdeseguros.com/get_quote/', data2).subscribe((response: any) => {
-            console.log(response.status)
+            // console.log(response.status)
           })
         }
 
@@ -1025,7 +1027,7 @@ export class AutomobileQuotesComponent {
       (data) => {
       },
       (error) => {
-        console.log(error)
+        // console.log(error)
       }
     );
   }
