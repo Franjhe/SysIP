@@ -25,7 +25,7 @@ import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog
   styleUrls: ['./automobile-new.component.scss']
 })
 export class AutomobileNewComponent {
-
+//new FormControl(bankName, Validators.required)
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
     xrif_cliente: ['', Validators.required],
@@ -34,28 +34,16 @@ export class AutomobileNewComponent {
     fnacimiento: ['', Validators.required],
     xtelefono_emp: ['', Validators.required],
     email: ['', Validators.required],
-    cestado: ['', Validators.required],
-    cciudad: ['', Validators.required],
+    cestado : new FormControl<string>('', { nonNullable: true}),
+    cciudad: new FormControl<string>('', { nonNullable: true}),
     iestado_civil: ['', Validators.required],
     isexo: ['', Validators.required],
     xdireccion: [''],
   });
 
   planFormGroup = this._formBuilder.group({
-    cplan: ['', Validators.required],
+    cplan:  new FormControl<string>('', { nonNullable: true}),
     xplan: [{ value: '', disabled: true }],
-    ccorredor: [''],
-    xcorredor: [''],
-    ctomador: [{ value: '', disabled: false }],
-    xtomador: [{ value: '', disabled: false }],
-    icedula_tomador: [''],
-    xrif_tomador: [''],
-    cestado_tomador: [''],
-    cciudad_tomador: [''],
-    xemail_tomador: [''],
-    xdireccion_tomador: [''],
-    xzona_postal_tomador: [''],
-    xtelefono_tomador: [''],
     pcasco: [{ value: '', disabled: true }],
     msuma_aseg: [''],
     msuma_aseg_text: [{ value: '', disabled: true }],
@@ -77,6 +65,8 @@ export class AutomobileNewComponent {
     paditamento: [{ value: '', disabled: false }],
     msuma_aditamento: [''],
     mprima_aditamento: [{ value: '', disabled: false }],
+    xcobertura: ['', Validators.required],
+
   });
 
   receiptFormGroup = this._formBuilder.group({
@@ -94,16 +84,29 @@ export class AutomobileNewComponent {
     mpagado: [''],
     xmoneda: [''],
     mprima_accesorio: [''],
-    irecibo: ['']
+    irecibo: [''],
+    ccorredor:  new FormControl<string>('', { nonNullable: true}),
+    xcorredor: [''],
+    ctomador:  new FormControl<string>('', { nonNullable: true}),
+    xtomador: [''],
+    icedula_tomador: [''],
+    xrif_tomador: [''],
+    cestado_tomador:  new FormControl<string>('', { nonNullable: true}),
+    cciudad_tomador:  new FormControl<string>('', { nonNullable: true}),
+    xemail_tomador: [''],
+    xdireccion_tomador: [''],
+    xzona_postal_tomador: [''],
+    xtelefono_tomador: [''],
+
   });
 
   vehicleFormGroup = this._formBuilder.group({
     ccotizacion: [{ value: '', disabled: false }],
     cinspeccion: [{ value: '', disabled: false }],
     xplaca: ['',[Validators.required, Validators.maxLength(7)]],
-    xmarca: [{ value: '', disabled: true}, Validators.required],
-    xmodelo: [{ value: '', disabled: true}, Validators.required],
-    xversion: [{ value: '', disabled: true}, Validators.required],
+    xmarca: new FormControl<string>('', { nonNullable: true}) ,
+    xmodelo:  new FormControl<string>('', { nonNullable: true}),
+    xversion: new FormControl<string>('', { nonNullable: true}),
     fano: ['',[Validators.required, Validators.maxLength(4)]],
     npasajeros: [{ value: '', disabled: true }],
     cclasificacion: [''],
@@ -112,7 +115,6 @@ export class AutomobileNewComponent {
     xcolor: ['', Validators.required],
     xserialcarroceria: ['', [Validators.required, Validators.maxLength(17)]],
     xserialmotor: ['', [Validators.maxLength(17)]],
-    xcobertura: ['', Validators.required],
     ctarifa_exceso: ['', Validators.required],
     cuso: [''],
     cusoVeh: [''],
@@ -127,65 +129,41 @@ export class AutomobileNewComponent {
 
   //listas
   identList = ['V', 'P', 'E', 'J', 'C','G'];
-  stateList: any[] = [];
-  cityList: any[] = [];
-  stateTakerList: any[] = [];
-  cityTakerList: any[] = [];
-  brandList: any[] = [];
-  modelList: any[] = [];
-  versionList: any[] = [];
-  colorList: any[] = [];
-  ratesList: any[] = [];
-  typeVehicleList: any[] = [];
-  utilityVehicleList:  any[] = [];
-  utilityList:  any[] = [];
-  classList:  any[] = [];
-  planList:  any[] = [];
-  brokerList:  any[] = [];
-  takersList: any [] = []
-
+  stateList:            any[] = [];
+  cityList:             any[] = [];
+  stateTakerList:       any[] = [];
+  cityTakerList:        any[] = [];
+  brandList:            any[] = [];
+  modelList:            any[] = [];
+  versionList:          any[] = [];
+  colorList:            any[] = [];
+  ratesList:            any[] = [];
+  typeVehicleList:      any[] = [];
+  utilityVehicleList:   any[] = [];
+  utilityList:          any[] = [];
+  classList:            any[] = [];
+  planList:             any[] = [];
+  brokerList:           any[] = [];
+  takersList:           any [] = []
+  methodOfPaymentList:  any [] = []
 
   //Observable's 
-  filteredState!: Observable<string[]>;
-  filteredCity!: Observable<string[]>;
-  filteredStateTaker!: Observable<string[]>;
-  filteredCityTaker!: Observable<string[]>;
-  filteredVersion!: Observable<string[]>;
-  filteredColor!: Observable<string[]>;
-  filteredRates!: Observable<string[]>;
-  filteredTypeVehicle!: Observable<string[]>;
-  filteredUtilityVehicle!: Observable<string[]>;
-  filteredUtility!: Observable<string[]>;
-  filteredClass!: Observable<string[]>;
-  filteredPlan!: Observable<string[]>;
-  filteredBroker!: Observable<string[]>;
-  filteredTakers!: Observable<string[]>;
-  filteredBrand!: Observable<string[]>;
-  filteredModel!: Observable<string[]>;
-  filteredMethodOfPayment!: Observable<string[]>;
-
-
-
-  //controles
-  stateControl = new FormControl('');
-  cityControl = new FormControl('');
-  stateTakerControl = new FormControl('');
-  cityTakerControl = new FormControl('');
-  versionControl = new FormControl('');
-  colorControl = new FormControl('');
-  ratesControl = new FormControl('');
-  typeVehicleControl = new FormControl('');
-  utilityVehicleControl = new FormControl('');
-  utilityControl = new FormControl('');
-  classControl = new FormControl('');
-  planControl = new FormControl('');
-  brokerControl = new FormControl('');
-  accesories = new FormControl('');
-  takersControl = new FormControl('');
-  brandControl = new FormControl('');
-  modelControl = new FormControl('');
-  methodOfPaymentControl = new FormControl('');
-
+  filteredState! : Observable<any[]>;
+  filteredCity!: Observable<any[]>;
+  filteredStateTaker!: Observable<any[]>;
+  filteredCityTaker!: Observable<any[]>;
+  filteredVersion!: Observable<any[]>;
+  filteredColor!: Observable<any[]>;
+  filteredRates!: Observable<any[]>;
+  filteredTypeVehicle!: Observable<any[]>;
+  filteredUtilityVehicle!: Observable<any[]>;
+  filteredUtility!: Observable<any[]>;
+  filteredClass!: Observable<any[]>;
+  filteredPlan!: Observable<any[]>;
+  filteredBroker!: Observable<any[]>;
+  filteredTakers!: Observable<any[]>;
+  filteredBrand!: Observable<any[]>;
+  filteredModel!: Observable<any[]>;
 
   //validaciones
   clientNew : boolean = false
@@ -246,15 +224,15 @@ export class AutomobileNewComponent {
     this.getRates();
     this.getTypeVehicles();
     this.getUtilityVehicle();
-    this.getClass();
+    //this.getClass();
     this.getPlan();
     this.getBroker();
     this.getAccesories();
     this.getTakers();
     this.setDefaultDates();
     this.getUtility();
+    this.getMethodOfPayment()
     this.fecha = 'Fecha de Nacimiento';
-
 
     const today = new Date();
     const formattedDate = today.toISOString().split('T')[0]; // Obtener solo la parte de la fecha sin la hora
@@ -283,6 +261,12 @@ export class AutomobileNewComponent {
     }else{
       this.userBroker = true;
     }
+
+    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv')
+    .then((response) => response.json())
+    .then(data => {
+      this.bcv = data.monitors.usd.price
+    })
 
 
   }
@@ -373,12 +357,12 @@ export class AutomobileNewComponent {
             value: response.data.state[i].xdescripcion_l
           });
         }
-        this.filteredState = this.stateControl.valueChanges.pipe(
+        this.filteredState = this.personsFormGroup.get('cestado')!.valueChanges.pipe(
           startWith(''),
           map(value => this._filterState(value || ''))
         );
 
-        this.filteredStateTaker = this.stateTakerControl.valueChanges.pipe(
+        this.filteredStateTaker = this.receiptFormGroup.get('cestado_tomador')!.valueChanges.pipe(
           startWith(''),
           map(value => this._filterStateTaker(value || ''))
         );
@@ -403,7 +387,7 @@ export class AutomobileNewComponent {
   getCityTaker(){
     let data = {
       cpais: 58,
-      cestado: this.planFormGroup.get('cestado_tomador')?.value
+      cestado: this.receiptFormGroup.get('cestado_tomador')?.value
     };
     this.http.post(environment.apiUrl + '/api/v1/valrep/city', data).subscribe((response: any) => {
       if (response.data.city) {
@@ -413,7 +397,7 @@ export class AutomobileNewComponent {
             value: response.data.city[i].xdescripcion_l
           });
         }
-        this.filteredCityTaker = this.cityTakerControl.valueChanges.pipe(
+        this.filteredCityTaker = this.filteredCityTaker = this.receiptFormGroup.get('cestado_tomador')!.valueChanges.pipe(
           startWith(''),
           map(value => this._filterCityTaker(value || ''))
         );
@@ -434,7 +418,7 @@ export class AutomobileNewComponent {
             value: response.data.city[i].xdescripcion_l
           });
         }
-        this.filteredCity = this.cityControl.valueChanges.pipe(
+        this.filteredCity = this.personsFormGroup.get('cestado')!.valueChanges.pipe(
           startWith(''),
           map(value => this._filterCity(value || ''))
         );
@@ -466,7 +450,7 @@ export class AutomobileNewComponent {
             value: response.data.rates[i].xgrupo,
           });
         }
-        this.filteredRates = this.ratesControl.valueChanges.pipe(
+        this.filteredRates = this.vehicleFormGroup.get('ctarifa_exceso')!.valueChanges.pipe(
           startWith(''),
           map(value => this._filterRates(value || ''))
         );
@@ -491,7 +475,7 @@ export class AutomobileNewComponent {
             value: response.data.type[i].xtipovehiculo,
           });
         }
-        this.filteredTypeVehicle = this.typeVehicleControl.valueChanges.pipe(
+        this.filteredTypeVehicle = this.vehicleFormGroup.get('ctipovehiculo')!.valueChanges.pipe(
           startWith(''),
           map(value => this._filterTypeVehicle(value || ''))
         );
@@ -516,7 +500,7 @@ export class AutomobileNewComponent {
             precargo: response.data.utilityR[i].precargo,
           });
         }
-        this.filteredUtilityVehicle = this.utilityVehicleControl.valueChanges.pipe(
+        this.filteredUtilityVehicle = this.vehicleFormGroup.get('precargo')!.valueChanges.pipe(
           startWith(''),
           map(value => this._filterUtilityVehicle(value || ''))
         );
@@ -539,7 +523,7 @@ export class AutomobileNewComponent {
             value: response.data.utility[i].xuso,
           });
         }
-        this.filteredUtility = this.utilityControl.valueChanges.pipe(
+        this.filteredUtility = this.vehicleFormGroup.get('xuso')!.valueChanges.pipe(
           startWith(''),
           map(value => this._filterUtility(value || ''))
         );
@@ -594,37 +578,37 @@ export class AutomobileNewComponent {
     }
   }
 
-  getClass(){
-    this.http.post(environment.apiUrl + '/api/v1/valrep/class', null).subscribe((response: any) => {
-      if (response.data.class) {
-        for (let i = 0; i < response.data.class.length; i++) {
-          this.classList.push({
-            id: response.data.class[i].cclase,
-            value: response.data.class[i].xclase,
-          });
-        }
-        this.filteredClass = this.classControl.valueChanges.pipe(
-          startWith(''),
-          map(value => this._filterClass(value || ''))
-        );
-      }
-    });
-  }
+  // getClass(){
+  //   this.http.post(environment.apiUrl + '/api/v1/valrep/class', null).subscribe((response: any) => {
+  //     if (response.data.class) {
+  //       for (let i = 0; i < response.data.class.length; i++) {
+  //         this.classList.push({
+  //           id: response.data.class[i].cclase,
+  //           value: response.data.class[i].xclase,
+  //         });
+  //       }
+  //       this.filteredClass = this.classControl.valueChanges.pipe(
+  //         startWith(''),
+  //         map(value => this._filterClass(value || ''))
+  //       );
+  //     }
+  //   });
+  // }
 
-  private _filterClass(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    return this.classList
-      .map(classL => classL.value)
-      .filter(classL => classL.toLowerCase().includes(filterValue));
-  }
+  // private _filterClass(value: string): string[] {
+  //   const filterValue = value.toLowerCase();
+  //   return this.classList
+  //     .map(classL => classL.value)
+  //     .filter(classL => classL.toLowerCase().includes(filterValue));
+  // }
 
-  onClassSelection(event: any) {
-    const selectedValue = event.option.value;
-    const selectedClass = this.classList.find(classL => classL.value === selectedValue);
-    if (selectedClass) {
-      this.vehicleFormGroup.get('cclase')?.setValue(selectedClass.id);
-    }
-  }
+  // onClassSelection(event: any) {
+  //   const selectedValue = event.option.value;
+  //   const selectedClass = this.classList.find(classL => classL.value === selectedValue);
+  //   if (selectedClass) {
+  //     this.vehicleFormGroup.get('cclase')?.setValue(selectedClass.id);
+  //   }
+  // }
 
   getPlan(){
     this.http.post(environment.apiUrl + '/api/v1/valrep/plan', null).subscribe((response: any) => {
@@ -655,7 +639,7 @@ export class AutomobileNewComponent {
           
         }
 
-        this.filteredPlan = this.planControl.valueChanges.pipe(
+        this.filteredPlan = this.planFormGroup.get('cplan')!.valueChanges.pipe(
           startWith(''),
           map(value => this._filterPlan(value || ''))
         );
@@ -679,8 +663,8 @@ export class AutomobileNewComponent {
             value: response.data.broker[i].xproductor.trim(),
           });
         }
-        this.filteredBroker = this.brokerControl.valueChanges.pipe(
-          
+        this.filteredBroker = this.receiptFormGroup.get('ccorredor')!.valueChanges.pipe(
+          startWith(''),
           map(value => this._filterBroker(value || ''))
         );
       }
@@ -721,7 +705,7 @@ export class AutomobileNewComponent {
             value: response.data.takers[i].xtomador,
           });
         }
-        this.filteredTakers = this.takersControl.valueChanges.pipe(
+        this.filteredTakers = this.receiptFormGroup.get('ctomador')!.valueChanges.pipe(
           startWith(''),
           map(value => this._filterTakers(value || ''))
         );
@@ -731,29 +715,19 @@ export class AutomobileNewComponent {
 
   private _filterTakers(value: string): string[] {
     const filterValue = value.toLowerCase();
-    const lista = this.takersList.map(taker => taker.value).filter(taker => taker.toLowerCase().includes(filterValue));;
-  
-    if(!lista[0]){
-      this.planFormGroup.get('xtomador')?.setValue(filterValue)
-      if(this.planFormGroup.get('xtomador')?.value){
-        this.validateTaker();
-      }
-    }
-
-    return lista
+    return this.takersList
+    .map(taker => taker.value)
+    .filter(taker => taker.toLowerCase().includes(filterValue));
+    
   }
 
 
   validateTaker(){
-    if(this.planFormGroup.get('xtomador')?.value){
-      if(this.planFormGroup.get('ctomador')?.value){
-        this.planFormGroup.get('xtomador')?.setValue('')
-        this.takersInfo = false;
-      }else{
-        this.takersInfo = true;
-      }
-    }
+    this.takersInfo = false;
+  }
 
+  validateTaker2(){
+    this.takersInfo = true;
   }
 
   validateYearsFromHullPrice() {
@@ -912,7 +886,7 @@ export class AutomobileNewComponent {
         }
         this.brandList.sort((a, b) => a.value > b.value ? 1 : -1);
 
-        this.filteredBrand = this.brandControl.valueChanges.pipe(
+        this.filteredBrand = this.vehicleFormGroup.get('xmarca')!.valueChanges.pipe(
           startWith(''),
           map(value => this._filterBrand(value || ''))
         );
@@ -944,7 +918,7 @@ export class AutomobileNewComponent {
         }
         this.modelList.sort((a, b) => a.value > b.value ? 1 : -1);
 
-        this.filteredModel = this.modelControl.valueChanges.pipe(
+        this.filteredModel = this.vehicleFormGroup.get('xmodelo')!.valueChanges.pipe(
           startWith(''),
           map(value => this._filterModel(value || ''))
         );
@@ -1022,7 +996,7 @@ export class AutomobileNewComponent {
           }
         }
 
-        this.filteredVersion = this.versionControl.valueChanges.pipe(
+        this.filteredVersion = this.vehicleFormGroup.get('xversion')!.valueChanges.pipe(
           startWith(''),
           map(value => this._filterVersion(value || ''))
         );
@@ -1099,7 +1073,7 @@ export class AutomobileNewComponent {
             value: response.data.color[i].xcolor,
           });
         }
-        this.filteredColor = this.colorControl.valueChanges.pipe(
+        this.filteredColor = this.vehicleFormGroup.get('xcolor')!.valueChanges.pipe(
           startWith(''),
           map(value => this._filterColor(value || ''))
         );
@@ -1223,7 +1197,7 @@ export class AutomobileNewComponent {
     }
   }
 
-  calculateDate(newValue: string) {
+  calculateDate(newValue: any) {
     this.receiptFormGroup.get('fhasta')?.setValue('');
   
     if (newValue) {
@@ -1277,6 +1251,21 @@ export class AutomobileNewComponent {
       this.receiptFormGroup.get('fhasta')?.setValue(formattedNextYearDate);
     }
   }
+
+
+  getMethodOfPayment(){
+    this.http.post(environment.apiUrl + '/api/v1/valrep/method-of-payment', null).subscribe((response: any) => {
+      if (response.data.payment) {
+        for (let i = 0; i < response.data.payment.length; i++) {
+          this.methodOfPaymentList.push({
+            id: response.data.payment[i].cmetodologiapago,
+            value: response.data.payment[i].xmetodologiapago,
+          });
+        }
+      }
+    });
+  }
+
 
   onMethodOfPaymentSelection(event: any) {
     const selectedValue = event.option.value;
