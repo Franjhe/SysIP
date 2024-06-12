@@ -118,19 +118,10 @@ export class ReportsComponent {
   buscarReporte() {
     const fdesde_pol = this.consulta_reporte.get('fdesde_pol')?.value;
     const fhasta_pol = this.consulta_reporte.get('fhasta_pol')?.value;
-  
-    // Verificar que la diferencia entre fdesde_pol y fhasta_pol no sea mayor a 20 días
-    const diffInDays = this.getDaysDifference(fdesde_pol, fhasta_pol);
-    if (diffInDays > 5) {
-      this.snackBar.open("El rango de fechas no debe ser mayor a 5 días", "Cerrar", {
-        duration: 3000,
-      });
-      return;
-    }
-  
-    this.snackBar.open("Reporte en PDF descargado con Éxito", "Cerrar", {
+    this.snackBar.open("Reporte Descargado con Éxito", "Cerrar", {
       duration: 3000,
     });
+    
   
     let data = {
       estado: this.consulta_reporte.get('estado')?.value,
@@ -142,6 +133,17 @@ export class ReportsComponent {
     let path = '';
     if (data.estado == 'CD') {
       path = '/sis2000/cobranza/';
+      const diffInDays = this.getDaysDifference(fdesde_pol, fhasta_pol);
+      if (diffInDays > 3) {
+      this.snackBar.open("El rango de fechas no debe ser mayor a 3 días", "Cerrar", {
+        duration: 3000,
+      });
+      return;
+    }
+  
+    this.snackBar.open("Reporte en PDF descargado con Éxito", "Cerrar", {
+      duration: 3000,
+    });
     } else {
       path = '/single_receipts/';
     }
@@ -179,7 +181,7 @@ export class ReportsComponent {
     let fdesde_pol = this.consulta_reporte.get('fdesde_pol')?.value;
     let fhasta_pol = this.consulta_reporte.get('fhasta_pol')?.value;
     this.estado = estado;
-    console.log(this.estado);
+    
     
     if (estado !== 'CD') {
       this.showButton = true
