@@ -1,4 +1,5 @@
 import { Component} from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-inquiries',
@@ -8,4 +9,14 @@ import { Component} from '@angular/core';
 export class InquiriesComponent {
   showTable: boolean = true;
 
+
+  constructor(
+    private router: Router,
+  )
+  {}
+
+  linkAuto(){
+    this.router.navigate(['/quotes/surety-quotes']);
+
+  }
 }

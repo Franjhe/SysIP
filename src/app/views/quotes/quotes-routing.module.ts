@@ -24,7 +24,7 @@ const routes: Routes = [{
       },
     },
     {
-      path: 'surety-quotes',
+      path: 'surety-quotes-surety',
       component: SuretyQuotesComponent,
       data: {
         title: 'surety-quotes',
@@ -38,7 +38,7 @@ const routes: Routes = [{
       },
     },
     {
-      path: 'inquiries/automobile',
+      path: 'surety-quotes',
       component: AutomobileInquiriesComponent,
       data: {
         title: 'Automovil',
