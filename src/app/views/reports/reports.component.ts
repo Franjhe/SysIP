@@ -180,14 +180,8 @@ export class ReportsComponent {
     let estado = this.consulta_reporte.get('estado')?.value;
     let fdesde_pol = this.consulta_reporte.get('fdesde_pol')?.value;
     let fhasta_pol = this.consulta_reporte.get('fhasta_pol')?.value;
-<<<<<<< HEAD
     this.estado = estado;
-    
-    
-=======
-    console.log(estado)
-    this.estado = estado
->>>>>>> c25b5992c62ea40529e8c5c22fa33ce71157d559
+    //  c25b5992c62ea40529e8c5c22fa33ce71157d559
     if (estado !== 'CD') {
       this.showButton = true
       fetch(environment.apiUrl + '/api/v1/collection/search-collected/' + estado)
@@ -283,6 +277,21 @@ export class ReportsComponent {
     let fhasta_pol = this.consulta_reporte.get('fhasta_pol')?.value;
     fdesde_pol = fdesde_pol ? fdesde_pol : '1900-01-01';
     fhasta_pol = fhasta_pol ? fhasta_pol : '2100-01-01';
+    let title = '';
+    if (this.valorList == 'P') {
+      title = 'Recibos Pendientes';
+    } else if (this.valorList == 'C') {
+      title = 'Recibos Cobrados';
+    } else if (this.valorList == 'A') {
+      title = 'Recibos Anulados';
+    }
+    else if (this.valorList == 'S') {
+      title = 'Recibos Suspendidos';
+    }
+    else if (this.valorList == 'N') {
+      title = 'Recibos Notificados';
+    };
+    const titleWithDate = `${title} (${formato_fecha})`;
     if (this.valorList == 'C') {
 
       for (let item of this.listPending) {
@@ -350,12 +359,18 @@ export class ReportsComponent {
         }
       }
     }
-    const worksheet = XLSX.utils.json_to_sheet(filteredData);
+    const worksheet = XLSX.utils.json_to_sheet([]);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
+    XLSX.utils.sheet_add_aoa(worksheet, [[title]], {origin: 0});
+    XLSX.utils.sheet_add_aoa(worksheet, [
+      [title],
+      // [filteredData.toLocaleString()]
+    ], {origin: 0});
+    XLSX.utils.sheet_add_json(worksheet, filteredData, {origin: 1});
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte de ' + title + '');
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.  spreadsheetml.sheet' });
-    saveAs(excelData, `Reporte de Recibos.xlsx`);
+    saveAs(excelData, `Reporte de `+ titleWithDate + ` .xlsx`);
   }
   makeExcelCollection() {
     this.snackBar.open("Reporte en Excel descargado con Éxito", "Cerrar", {
