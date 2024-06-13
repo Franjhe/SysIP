@@ -34,15 +34,15 @@ export class AutomobileNewComponent {
     fnacimiento: ['', Validators.required],
     xtelefono_emp: ['', Validators.required],
     email: ['', Validators.required],
-    cestado : new FormControl<string>('', { nonNullable: true}),
-    cciudad: new FormControl<string>('', { nonNullable: true}),
+    cestado : new FormControl<any>('', { nonNullable: true}),
+    cciudad: new FormControl<any>('', { nonNullable: true}),
     iestado_civil: ['', Validators.required],
     isexo: ['', Validators.required],
     xdireccion: [''],
   });
 
   planFormGroup = this._formBuilder.group({
-    cplan:  new FormControl<string>('', { nonNullable: true}),
+    cplan:  new FormControl<any>('', { nonNullable: true}),
     xplan: [{ value: '', disabled: true }],
     pcasco: [{ value: '', disabled: true }],
     msuma_aseg: [''],
@@ -85,14 +85,14 @@ export class AutomobileNewComponent {
     xmoneda: [''],
     mprima_accesorio: [''],
     irecibo: [''],
-    ccorredor:  new FormControl<string>('', { nonNullable: true}),
+    ccorredor:  new FormControl<any>('', { nonNullable: true}),
     xcorredor: [''],
-    ctomador:  new FormControl<string>('', { nonNullable: true}),
+    ctomador:  new FormControl<any>('', { nonNullable: true}),
     xtomador: [''],
     icedula_tomador: [''],
     xrif_tomador: [''],
-    cestado_tomador:  new FormControl<string>('', { nonNullable: true}),
-    cciudad_tomador:  new FormControl<string>('', { nonNullable: true}),
+    cestado_tomador:  new FormControl<any>('', { nonNullable: true}),
+    cciudad_tomador:  new FormControl<any>('', { nonNullable: true}),
     xemail_tomador: [''],
     xdireccion_tomador: [''],
     xzona_postal_tomador: [''],
@@ -104,9 +104,9 @@ export class AutomobileNewComponent {
     ccotizacion: [{ value: '', disabled: false }],
     cinspeccion: [{ value: '', disabled: false }],
     xplaca: ['',[Validators.required, Validators.maxLength(7)]],
-    xmarca: new FormControl<string>('', { nonNullable: true}) ,
-    xmodelo:  new FormControl<string>('', { nonNullable: true}),
-    xversion: new FormControl<string>('', { nonNullable: true}),
+    xmarca: new FormControl<any>('', { nonNullable: true}) ,
+    xmodelo:  new FormControl<any>('', { nonNullable: true}),
+    xversion: new FormControl<any>('', { nonNullable: true}),
     fano: ['',[Validators.required, Validators.maxLength(4)]],
     npasajeros: [{ value: '', disabled: true }],
     cclasificacion: [''],
@@ -357,6 +357,8 @@ export class AutomobileNewComponent {
             value: response.data.state[i].xdescripcion_l
           });
         }
+
+
         this.filteredState = this.personsFormGroup.get('cestado')!.valueChanges.pipe(
           startWith(''),
           map(value => this._filterState(value || ''))
@@ -370,24 +372,22 @@ export class AutomobileNewComponent {
     });
   }
 
-  private _filterStateTaker(value: string): string[] {
+  private _filterStateTaker(value: string): any[] {
     const filterValue = value.toLowerCase();
-    return this.stateTakerList
-      .map(state => state.value)
-      .filter(state => state.toLowerCase().includes(filterValue));
+    const filteredStates = this.stateTakerList.filter(state => state.value.toLowerCase().includes(filterValue));
+    return filteredStates;
   }
 
   private _filterState(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.stateList
-      .map(state => state.value)
-      .filter(state => state.toLowerCase().includes(filterValue));
+    const filteredStates = this.stateList.filter(state => state.value.toLowerCase().includes(filterValue));
+    return filteredStates;
   }
 
   getCityTaker(){
     let data = {
       cpais: 58,
-      cestado: this.receiptFormGroup.get('cestado_tomador')?.value
+      cestado: this.receiptFormGroup.get('cestado_tomador')?.value.id
     };
     this.http.post(environment.apiUrl + '/api/v1/valrep/city', data).subscribe((response: any) => {
       if (response.data.city) {
@@ -406,9 +406,10 @@ export class AutomobileNewComponent {
   }
 
   getCity(){
+    console.log(this.personsFormGroup.get('cestado')?.value)
     let data = {
       cpais: 58,
-      cestado: this.personsFormGroup.get('cestado')?.value
+      cestado: this.personsFormGroup.get('cestado')?.value.id
     };
     this.http.post(environment.apiUrl + '/api/v1/valrep/city', data).subscribe((response: any) => {
       if (response.data.city) {
@@ -428,16 +429,14 @@ export class AutomobileNewComponent {
 
   private _filterCity(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.cityList
-      .map(city => city.value)
-      .filter(city => city.toLowerCase().includes(filterValue));
+    const filteredStates = this.cityList.filter(state => state.value.toLowerCase().includes(filterValue));
+    return filteredStates;
   }
 
   private _filterCityTaker(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.cityTakerList
-      .map(city => city.value)
-      .filter(city => city.toLowerCase().includes(filterValue));
+    const filteredStates = this.cityTakerList.filter(state => state.value.toLowerCase().includes(filterValue));
+    return filteredStates;
   }
 
 
@@ -460,9 +459,8 @@ export class AutomobileNewComponent {
 
   private _filterRates(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.ratesList
-      .map(rates => rates.value)
-      .filter(rates => rates.toLowerCase().includes(filterValue));
+    const filteredStates = this.ratesList.filter(state => state.value.toLowerCase().includes(filterValue));
+    return filteredStates;
   }
 
 
@@ -485,9 +483,8 @@ export class AutomobileNewComponent {
 
   private _filterTypeVehicle(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.typeVehicleList
-      .map(type => type.value)
-      .filter(type => type.toLowerCase().includes(filterValue));
+    const filteredStates = this.typeVehicleList.filter(state => state.value.toLowerCase().includes(filterValue));
+    return filteredStates;
   }
 
   getUtilityVehicle(){
@@ -510,9 +507,8 @@ export class AutomobileNewComponent {
 
   private _filterUtilityVehicle(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.utilityVehicleList
-      .map(utility => utility.value)
-      .filter(utility => utility.toLowerCase().includes(filterValue));
+    const filteredStates = this.utilityVehicleList.filter(state => state.value.toLowerCase().includes(filterValue));
+    return filteredStates;
   }
 
   getUtility(){
@@ -533,9 +529,8 @@ export class AutomobileNewComponent {
 
   private _filterUtility(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.utilityList
-      .map(utility => utility.value)
-      .filter(utility => utility.toLowerCase().includes(filterValue));
+    const filteredStates = this.utilityList.filter(state => state.value.toLowerCase().includes(filterValue));
+    return filteredStates;
   }
 
   searchRates(){
@@ -649,9 +644,8 @@ export class AutomobileNewComponent {
 
   private _filterPlan(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.planList
-      .map(plan => plan.value)
-      .filter(plan => plan.toLowerCase().includes(filterValue));
+    const filteredStates = this.planList.filter(state => state.value.toLowerCase().includes(filterValue));
+    return filteredStates;
   }
 
   getBroker(){
@@ -674,9 +668,8 @@ export class AutomobileNewComponent {
 
   private _filterBroker(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.brokerList
-      .map(broker => broker.value)
-      .filter(broker => broker.toLowerCase().includes(filterValue));
+    const filteredStates = this.brokerList.filter(state => state.value.toLowerCase().includes(filterValue));
+    return filteredStates;
   }
 
 
@@ -715,10 +708,8 @@ export class AutomobileNewComponent {
 
   private _filterTakers(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.takersList
-    .map(taker => taker.value)
-    .filter(taker => taker.toLowerCase().includes(filterValue));
-    
+    const filteredStates = this.takersList.filter(state => state.value.toLowerCase().includes(filterValue));
+    return filteredStates;
   }
 
 
@@ -896,16 +887,15 @@ export class AutomobileNewComponent {
 
   private _filterBrand(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.brandList
-      .map(brand => brand.value)
-      .filter(brand => brand.toLowerCase().includes(filterValue));
+    const filteredStates = this.brandList.filter(state => state.value.toLowerCase().includes(filterValue));
+    return filteredStates;
   }
 
 
   getModel(){
     let data = {
       qano: this.vehicleFormGroup.get('fano')?.value,
-      xmarca: this.vehicleFormGroup.get('xmarca')?.value,
+      xmarca: this.vehicleFormGroup.get('xmarca')?.value.id,
     };
     this.http.post(environment.apiUrl + '/api/v1/valrep/model', data).subscribe((response: any) => {
       if (response.data.model) {
@@ -928,16 +918,15 @@ export class AutomobileNewComponent {
 
   private _filterModel(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.modelList
-      .map(model => model.value)
-      .filter(model => model.toLowerCase().includes(filterValue));
+    const filteredStates = this.modelList.filter(state => state.value.toLowerCase().includes(filterValue));
+    return filteredStates;
   }
 
   getVersion(){
     let data = {
       qano: this.vehicleFormGroup.get('fano')?.value,
-      xmarca: this.vehicleFormGroup.get('xmarca')?.value,
-      xmodelo: this.vehicleFormGroup.get('xmodelo')?.value,
+      xmarca: this.vehicleFormGroup.get('xmarca')?.value.id,
+      xmodelo: this.vehicleFormGroup.get('xmodelo')?.value.id,
     };
     this.http.post(environment.apiUrl + '/api/v1/valrep/version', data).subscribe((response: any) => {
       if (response.data.version) {
@@ -1006,9 +995,8 @@ export class AutomobileNewComponent {
 
   private _filterVersion(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.versionList
-      .map(version => version.value)
-      .filter(version => version.toLowerCase().includes(filterValue));
+    const filteredStates = this.versionList.filter(state => state.value.toLowerCase().includes(filterValue));
+    return filteredStates;
   }
 
   onVersionSelection(event: any) {
@@ -1083,12 +1071,9 @@ export class AutomobileNewComponent {
 
   private _filterColor(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.colorList
-      .map(color => color.value)
-      .filter(color => color.toLowerCase().includes(filterValue));
+    const filteredStates = this.colorList.filter(state => state.value.toLowerCase().includes(filterValue));
+    return filteredStates;
   }
-
-
 
   getAccesories(){
     this.http.post(environment.apiUrl + '/api/v1/valrep/accesories', null).subscribe((response: any) => {
