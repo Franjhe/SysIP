@@ -10,6 +10,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { SuretyComponent } from './surety/surety.component';
 import { SelfManagementComponent } from './self-management/self-management.component';
 import { AutomobileNewComponent } from './automobile-new/automobile-new.component';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 
 
 @NgModule({
@@ -25,7 +26,8 @@ import { AutomobileNewComponent } from './automobile-new/automobile-new.componen
     MaterialExampleModule,
     ReactiveFormsModule,
     NgbModule,
-    FormsModule
+    FormsModule,
+    MatAutocompleteModule
   ]
 })
 export class EmissionsModule { }

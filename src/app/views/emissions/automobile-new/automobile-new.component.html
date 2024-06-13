@@ -60,9 +60,9 @@
               type="text" placeholder="Seleccione Estado" aria-label="Seleccione" matInput
               [matAutocomplete]="state" required formControlName="cestado" 
               >
-            <mat-autocomplete #state="matAutocomplete" (optionSelected)="getCity()">
-              <mat-option *ngFor="let state of filteredState | async" [value]="state.id">
-                {{ state.value }}
+            <mat-autocomplete #state="matAutocomplete" (optionSelected)="getCity()" [displayWith]="displayStateFn">
+              <mat-option *ngFor="let state of filteredState | async" [value]="state">
+                {{ state.nombre }}
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
@@ -73,8 +73,8 @@
           <mat-form-field class="example-full-width">
             <mat-label>Ciudad</mat-label>
             <input type="text" placeholder="Seleccione Ciudad" aria-label="Seleccione" matInput
-               [matAutocomplete]="city" required formControlName="cciudad">
-            <mat-autocomplete  #city="matAutocomplete">
+               [matAutocomplete]="city" required formControlName="cciudad" >
+            <mat-autocomplete  #city="matAutocomplete" [displayWith]="displayCityFn">
               <mat-option *ngFor="let city of filteredCity | async" [value]="city">
                 {{ city.value }}
               </mat-option>
@@ -513,7 +513,7 @@
               aria-label="Seleccione" matInput
               [matAutocomplete]="state" required formControlName="cestado"
               >
-            <mat-autocomplete  #state="matAutocomplete" (optionSelected)="getCityTaker()">
+            <mat-autocomplete  #state="matAutocomplete" (optionSelected)="getCityTaker()" [displayWith]="displayStateFn">
               <mat-option *ngFor="let state of filteredStateTaker | async" [value]="state">
                 {{ state.value }}
               </mat-option>
@@ -523,13 +523,16 @@
           <mat-form-field >
             <mat-label>Ciudad</mat-label>
             <input type="text" placeholder="Seleccione Ciudad" aria-label="Seleccione" matInput
-               [matAutocomplete]="cityTa" required formControlName="cciudad">
-            <mat-autocomplete #cityTa="matAutocomplete">
+               [matAutocomplete]="cityTa" required formControlName="cciudad"
+               
+               >
+            <mat-autocomplete #cityTa="matAutocomplete" [displayWith]="displayCityFn">
               <mat-option *ngFor="let city of filteredCityTaker | async" [value]="city">
                 {{ city.value }}
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
+
         
           <mat-form-field style="width: 35%;"> 
             <mat-label>Dirección</mat-label>

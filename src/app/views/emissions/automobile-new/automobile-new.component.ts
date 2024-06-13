@@ -15,9 +15,10 @@ import { format, addYears } from 'date-fns';
 // import { initUbii } from '@ubiipagos/boton-ubii-dc';
 import { initUbii } from '@ubiipagos/boton-ubii';
 import * as Papa from 'papaparse';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
+
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
+
+export interface State {id : '' , nombre : ''}
 
 @Component({
   selector: 'app-automobile-new',
@@ -25,7 +26,6 @@ import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog
   styleUrls: ['./automobile-new.component.scss']
 })
 export class AutomobileNewComponent {
-//new FormControl(bankName, Validators.required)
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
     xrif_cliente: ['', Validators.required],
@@ -34,7 +34,7 @@ export class AutomobileNewComponent {
     fnacimiento: ['', Validators.required],
     xtelefono_emp: ['', Validators.required],
     email: ['', Validators.required],
-    cestado : new FormControl<any>('', { nonNullable: true}),
+    cestado : new FormControl<string | State>('', { nonNullable: true}) ,
     cciudad: new FormControl<any>('', { nonNullable: true}),
     iestado_civil: ['', Validators.required],
     isexo: ['', Validators.required],
@@ -148,7 +148,7 @@ export class AutomobileNewComponent {
   methodOfPaymentList:  any [] = []
 
   //Observable's 
-  filteredState! : Observable<any[]>;
+  filteredState! : Observable<State[]>;
   filteredCity!: Observable<any[]>;
   filteredStateTaker!: Observable<any[]>;
   filteredCityTaker!: Observable<any[]>;
@@ -217,8 +217,6 @@ export class AutomobileNewComponent {
   }  
 
   ngOnInit(){
-
-
     this.getState();
     this.getColor();
     this.getRates();
@@ -349,19 +347,24 @@ export class AutomobileNewComponent {
         for (let i = 0; i < response.data.state.length; i++) {
           this.stateList.push({
             id: response.data.state[i].cestado,
-            value: response.data.state[i].xdescripcion_l
+            nombre: response.data.state[i].xdescripcion_l
           });
 
           this.stateTakerList.push({
             id: response.data.state[i].cestado,
-            value: response.data.state[i].xdescripcion_l
+            nombre: response.data.state[i].xdescripcion_l
           });
         }
 
 
         this.filteredState = this.personsFormGroup.get('cestado')!.valueChanges.pipe(
+
           startWith(''),
-          map(value => this._filterState(value || ''))
+          map(value => {
+            const name = typeof value === 'string' ? value : value?.nombre;
+            return name ? this._filterState(name as string) : this.stateList.slice();
+          }),
+
         );
 
         this.filteredStateTaker = this.receiptFormGroup.get('cestado_tomador')!.valueChanges.pipe(
@@ -380,8 +383,16 @@ export class AutomobileNewComponent {
 
   private _filterState(value: string): string[] {
     const filterValue = value.toLowerCase();
-    const filteredStates = this.stateList.filter(state => state.value.toLowerCase().includes(filterValue));
+    const filteredStates = this.stateList.filter(state => state.nombre.toLowerCase().includes(filterValue));
     return filteredStates;
+  }
+
+  displayCityFn(city: any): string {
+    return city.value;
+  }
+
+  displayStateFn(state: any): string {
+    return state.nombre;
   }
 
   getCityTaker(){
@@ -409,7 +420,7 @@ export class AutomobileNewComponent {
     console.log(this.personsFormGroup.get('cestado')?.value)
     let data = {
       cpais: 58,
-      cestado: this.personsFormGroup.get('cestado')?.value.id
+      cestado: this.personsFormGroup.get('cestado')?.value
     };
     this.http.post(environment.apiUrl + '/api/v1/valrep/city', data).subscribe((response: any) => {
       if (response.data.city) {
@@ -419,7 +430,7 @@ export class AutomobileNewComponent {
             value: response.data.city[i].xdescripcion_l
           });
         }
-        this.filteredCity = this.personsFormGroup.get('cestado')!.valueChanges.pipe(
+        this.filteredCity = this.personsFormGroup.get('cciudad')!.valueChanges.pipe(
           startWith(''),
           map(value => this._filterCity(value || ''))
         );
