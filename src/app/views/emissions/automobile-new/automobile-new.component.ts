@@ -19,6 +19,26 @@ import * as Papa from 'papaparse';
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 
 export interface State {id : '' , nombre : ''}
+export interface City {id : '' , nombre : ''}
+export interface Marca {id : '' , nombre : ''}
+export interface Modelo {id : '' , nombre : ''}
+
+  // value: response.data.version[i].xversion,
+  // npasajero: response.data.version[i].npasajero,
+  // cclasificacion: response.data.version[i].xclasificacion,
+  // id_inma: response.data.version[i].id,
+  // msum: response.data.version[i].msum,
+  // xtipovehiculo: response.data.version[i].xclase_rcv,
+  // ctarifa_exceso: response.data.version[i].ctarifa_exceso,
+  // xuso: response.data.version[i].xuso,
+  // npesovacio: response.data.version[i].npesovacio,
+  // ncapcarga: response.data.version[i].ncapcarga,
+
+
+export interface Version {id : '' , nombre : ''}
+export interface State_Take {id : '' , nombre : ''}
+export interface City_Take {id : '' , nombre : ''}
+export interface Plan {id : '' , nombre : ''}
 
 @Component({
   selector: 'app-automobile-new',
@@ -34,16 +54,15 @@ export class AutomobileNewComponent {
     fnacimiento: ['', Validators.required],
     xtelefono_emp: ['', Validators.required],
     email: ['', Validators.required],
-    cestado : new FormControl<string | State>('', { nonNullable: true}) ,
-    cciudad: new FormControl<any>('', { nonNullable: true}),
+    cestado : new FormControl<any | State>('', { nonNullable: true}) ,
+    cciudad: new FormControl<any | City>('', { nonNullable: true}),
     iestado_civil: ['', Validators.required],
     isexo: ['', Validators.required],
     xdireccion: [''],
   });
 
   planFormGroup = this._formBuilder.group({
-    cplan:  new FormControl<any>('', { nonNullable: true}),
-    xplan: [{ value: '', disabled: true }],
+    cplan:  new FormControl<any | State>('', { nonNullable: true}),
     pcasco: [{ value: '', disabled: true }],
     msuma_aseg: [''],
     msuma_aseg_text: [{ value: '', disabled: true }],
@@ -85,14 +104,14 @@ export class AutomobileNewComponent {
     xmoneda: [''],
     mprima_accesorio: [''],
     irecibo: [''],
-    ccorredor:  new FormControl<any>('', { nonNullable: true}),
+    ccorredor:  new FormControl<any | State>('', { nonNullable: true}),
     xcorredor: [''],
-    ctomador:  new FormControl<any>('', { nonNullable: true}),
+    ctomador:  new FormControl<any | State>('', { nonNullable: true}),
     xtomador: [''],
     icedula_tomador: [''],
     xrif_tomador: [''],
-    cestado_tomador:  new FormControl<any>('', { nonNullable: true}),
-    cciudad_tomador:  new FormControl<any>('', { nonNullable: true}),
+    cestado_tomador:  new FormControl<any | State>('', { nonNullable: true}),
+    cciudad_tomador:  new FormControl<any | State>('', { nonNullable: true}),
     xemail_tomador: [''],
     xdireccion_tomador: [''],
     xzona_postal_tomador: [''],
@@ -100,27 +119,28 @@ export class AutomobileNewComponent {
 
   });
 
+
   vehicleFormGroup = this._formBuilder.group({
     ccotizacion: [{ value: '', disabled: false }],
     cinspeccion: [{ value: '', disabled: false }],
     xplaca: ['',[Validators.required, Validators.maxLength(7)]],
-    xmarca: new FormControl<any>('', { nonNullable: true}) ,
-    xmodelo:  new FormControl<any>('', { nonNullable: true}),
-    xversion: new FormControl<any>('', { nonNullable: true}),
+    xmarca: new FormControl<any | State>('', { nonNullable: true}) ,
+    xmodelo:  new FormControl<any | State>('', { nonNullable: true}),
+    xversion: new FormControl<any | State>('', { nonNullable: true}),
     fano: ['',[Validators.required, Validators.maxLength(4)]],
     npasajeros: [{ value: '', disabled: true }],
     cclasificacion: [''],
     xclasificacion: [''],  
     xtipovehiculo: [''],
-    xcolor: ['', Validators.required],
+    xcolor: new FormControl<any | State>('', { nonNullable: true}),
     xserialcarroceria: ['', [Validators.required, Validators.maxLength(17)]],
     xserialmotor: ['', [Validators.maxLength(17)]],
-    ctarifa_exceso: ['', Validators.required],
+    ctarifa_exceso: new FormControl<any | State>('', { nonNullable: true}), //['', Validators.required],
     cuso: [''],
     cusoVeh: [''],
-    xuso: [''],
-    precargo: [''],
-    ctipovehiculo: [''],
+    xuso: new FormControl<any | State>('', { nonNullable: true}),
+    precargo: new FormControl<any | State>('', { nonNullable: true}),
+    ctipovehiculo: new FormControl<any | State>('', { nonNullable: true}),
     cclase: [''],
     id_inma: [''],
     npesovacio: [''],
@@ -358,18 +378,19 @@ export class AutomobileNewComponent {
 
 
         this.filteredState = this.personsFormGroup.get('cestado')!.valueChanges.pipe(
-
           startWith(''),
           map(value => {
             const name = typeof value === 'string' ? value : value?.nombre;
             return name ? this._filterState(name as string) : this.stateList.slice();
           }),
-
         );
 
         this.filteredStateTaker = this.receiptFormGroup.get('cestado_tomador')!.valueChanges.pipe(
           startWith(''),
-          map(value => this._filterStateTaker(value || ''))
+          map(value => {
+            const name = typeof value === 'string' ? value : value?.nombre;
+            return name ? this._filterStateTaker(name as string) : this.stateTakerList.slice();
+          }),
         );
       }
     });
@@ -400,6 +421,7 @@ export class AutomobileNewComponent {
       cpais: 58,
       cestado: this.receiptFormGroup.get('cestado_tomador')?.value.id
     };
+    this.cityTakerList = []
     this.http.post(environment.apiUrl + '/api/v1/valrep/city', data).subscribe((response: any) => {
       if (response.data.city) {
         for (let i = 0; i < response.data.city.length; i++) {
@@ -410,18 +432,23 @@ export class AutomobileNewComponent {
         }
         this.filteredCityTaker = this.filteredCityTaker = this.receiptFormGroup.get('cestado_tomador')!.valueChanges.pipe(
           startWith(''),
-          map(value => this._filterCityTaker(value || ''))
+          map(value => {
+            const name = typeof value === 'string' ? value : value?.nombre;
+            return name ? this._filterCityTaker(name as string) : this.cityTakerList.slice();
+          }),
         );
       }
     });
   }
 
   getCity(){
-    console.log(this.personsFormGroup.get('cestado')?.value)
     let data = {
       cpais: 58,
-      cestado: this.personsFormGroup.get('cestado')?.value
+      cestado: this.personsFormGroup.get('cestado')?.value.id
     };
+
+    this.cityList = []
+
     this.http.post(environment.apiUrl + '/api/v1/valrep/city', data).subscribe((response: any) => {
       if (response.data.city) {
         for (let i = 0; i < response.data.city.length; i++) {
@@ -432,7 +459,10 @@ export class AutomobileNewComponent {
         }
         this.filteredCity = this.personsFormGroup.get('cciudad')!.valueChanges.pipe(
           startWith(''),
-          map(value => this._filterCity(value || ''))
+          map(value => {
+            const name = typeof value === 'string' ? value : value?.nombre;
+            return name ? this._filterCity(name as string) : this.cityList.slice();
+          }),
         );
       }
     });
@@ -460,9 +490,13 @@ export class AutomobileNewComponent {
             value: response.data.rates[i].xgrupo,
           });
         }
+        
         this.filteredRates = this.vehicleFormGroup.get('ctarifa_exceso')!.valueChanges.pipe(
           startWith(''),
-          map(value => this._filterRates(value || ''))
+          map(value => {
+            const name = typeof value === 'string' ? value : value?.nombre;
+            return name ? this._filterRates(name as string) : this.ratesList.slice();
+          }),
         );
       }
     });
@@ -486,7 +520,10 @@ export class AutomobileNewComponent {
         }
         this.filteredTypeVehicle = this.vehicleFormGroup.get('ctipovehiculo')!.valueChanges.pipe(
           startWith(''),
-          map(value => this._filterTypeVehicle(value || ''))
+          map(value => {
+            const name = typeof value === 'string' ? value : value?.nombre;
+            return name ? this._filterTypeVehicle(name as string) : this.typeVehicleList.slice();
+          }),
         );
       }
     });
@@ -510,7 +547,10 @@ export class AutomobileNewComponent {
         }
         this.filteredUtilityVehicle = this.vehicleFormGroup.get('precargo')!.valueChanges.pipe(
           startWith(''),
-          map(value => this._filterUtilityVehicle(value || ''))
+          map(value => {
+            const name = typeof value === 'string' ? value : value?.nombre;
+            return name ? this._filterUtilityVehicle(name as string) : this.typeVehicleList.slice();
+          }),
         );
       }
     });
@@ -532,7 +572,10 @@ export class AutomobileNewComponent {
         }
         this.filteredUtility = this.vehicleFormGroup.get('xuso')!.valueChanges.pipe(
           startWith(''),
-          map(value => this._filterUtility(value || ''))
+          map(value => {
+            const name = typeof value === 'string' ? value : value?.nombre;
+            return name ? this._filterUtility(name as string) : this.utilityList.slice();
+          }),
         );
       }
     });
@@ -635,19 +678,15 @@ export class AutomobileNewComponent {
 
         
         if(this.ccotizacion){
-          const selectedId = parseInt(this.cplan);
-          const selectedPlan = this.planList.find(plan => plan.id === selectedId);
-          if (selectedPlan) {
-            this.planFormGroup.get('cplan')?.setValue(selectedPlan.id);
-            this.planFormGroup.get('xplan')?.setValue(selectedPlan.value);
             this.getAmountQuotes();
-          }
-          
         }
 
         this.filteredPlan = this.planFormGroup.get('cplan')!.valueChanges.pipe(
           startWith(''),
-          map(value => this._filterPlan(value || ''))
+          map(value => {
+            const name = typeof value === 'string' ? value : value?.nombre;
+            return name ? this._filterPlan(name as string) : this.planList.slice();
+          }),
         );
       }
     });
@@ -670,7 +709,10 @@ export class AutomobileNewComponent {
         }
         this.filteredBroker = this.receiptFormGroup.get('ccorredor')!.valueChanges.pipe(
           startWith(''),
-          map(value => this._filterBroker(value || ''))
+          map(value => {
+            const name = typeof value === 'string' ? value : value?.nombre;
+            return name ? this._filterBroker(name as string) : this.brokerList.slice();
+          }),
         );
       }
 
@@ -711,7 +753,10 @@ export class AutomobileNewComponent {
         }
         this.filteredTakers = this.receiptFormGroup.get('ctomador')!.valueChanges.pipe(
           startWith(''),
-          map(value => this._filterTakers(value || ''))
+          map(value => {
+            const name = typeof value === 'string' ? value : value?.nombre;
+            return name ? this._filterTakers(name as string) : this.takersList.slice();
+          }),
         );
       }
     });
@@ -890,7 +935,10 @@ export class AutomobileNewComponent {
 
         this.filteredBrand = this.vehicleFormGroup.get('xmarca')!.valueChanges.pipe(
           startWith(''),
-          map(value => this._filterBrand(value || ''))
+          map(value => {
+            const name = typeof value === 'string' ? value : value?.nombre;
+            return name ? this._filterBrand(name as string) : this.brandList.slice();
+          }),
         );
       }
     });
@@ -921,7 +969,10 @@ export class AutomobileNewComponent {
 
         this.filteredModel = this.vehicleFormGroup.get('xmodelo')!.valueChanges.pipe(
           startWith(''),
-          map(value => this._filterModel(value || ''))
+          map(value => {
+            const name = typeof value === 'string' ? value : value?.nombre;
+            return name ? this._filterModel(name as string) : this.modelList.slice();
+          }),
         );
       }
     });
@@ -998,7 +1049,10 @@ export class AutomobileNewComponent {
 
         this.filteredVersion = this.vehicleFormGroup.get('xversion')!.valueChanges.pipe(
           startWith(''),
-          map(value => this._filterVersion(value || ''))
+          map(value => {
+            const name = typeof value === 'string' ? value : value?.nombre;
+            return name ? this._filterVersion(name as string) : this.versionList.slice();
+          }),
         );
       }
     });
@@ -1074,7 +1128,10 @@ export class AutomobileNewComponent {
         }
         this.filteredColor = this.vehicleFormGroup.get('xcolor')!.valueChanges.pipe(
           startWith(''),
-          map(value => this._filterColor(value || ''))
+          map(value => {
+            const name = typeof value === 'string' ? value : value?.nombre;
+            return name ? this._filterColor(name as string) : this.colorList.slice();
+          }),
         );
       }
     });
