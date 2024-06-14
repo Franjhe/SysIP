@@ -47,6 +47,7 @@ export class ReportsComponent {
   correo: string = '';
   ctransaccion: string = '';
   fdesde_pol: string = '';
+  Fecha_desde_Recibo: string = '';
 
 
   dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
@@ -181,13 +182,11 @@ export class ReportsComponent {
     let fdesde_pol = this.consulta_reporte.get('fdesde_pol')?.value;
     let fhasta_pol = this.consulta_reporte.get('fhasta_pol')?.value;
     this.estado = estado;
-    //  c25b5992c62ea40529e8c5c22fa33ce71157d559
     if (estado !== 'CD') {
       this.showButton = true
       fetch(environment.apiUrl + '/api/v1/collection/search-collected/' + estado)
         .then((response) => response.json())
         .then(data => {
-          this.listPending = []
           for (let i = 0; i < data.searchPaymentCollected.recibo.length; i++) {
             let fechaFiltro = new Date(data.searchPaymentCollected.recibo[i].Fecha_desde_Pol).toISOString().substring(0, 10);
             //fecha emisión Recibo
@@ -277,6 +276,8 @@ export class ReportsComponent {
     let fhasta_pol = this.consulta_reporte.get('fhasta_pol')?.value;
     fdesde_pol = fdesde_pol ? fdesde_pol : '1900-01-01';
     fhasta_pol = fhasta_pol ? fhasta_pol : '2100-01-01';
+    console.log(fdesde_pol, fhasta_pol);
+    
     let title = '';
     if (this.valorList == 'P') {
       title = 'Recibos Pendientes';
@@ -293,7 +294,6 @@ export class ReportsComponent {
     };
     const titleWithDate = `${title} (${formato_fecha})`;
     if (this.valorList == 'C') {
-
       for (let item of this.listPending) {
         let fechaFiltro = new Date(item.Fecha_Cobro).toISOString().substring(0, 10);
         if (fechaFiltro >= fdesde_pol && fechaFiltro <= fhasta_pol) {
@@ -359,14 +359,13 @@ export class ReportsComponent {
         }
       }
     }
-    const worksheet = XLSX.utils.json_to_sheet([]);
+    const worksheet = XLSX.utils.json_to_sheet([filteredData]);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.sheet_add_aoa(worksheet, [[title]], {origin: 0});
     XLSX.utils.sheet_add_aoa(worksheet, [
       [title],
-      // [filteredData.toLocaleString()]
     ], {origin: 0});
-    XLSX.utils.sheet_add_json(worksheet, filteredData, {origin: 1});
+    XLSX.utils.sheet_add_json(worksheet, filteredData, { origin: 1 });
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte de ' + title + '');
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.  spreadsheetml.sheet' });

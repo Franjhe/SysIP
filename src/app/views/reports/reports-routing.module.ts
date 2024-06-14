@@ -5,6 +5,7 @@ import { ReportsComponent } from './reports.component';
 import { ReceiptsComponent } from './receipts/receipts.component';
 import { BonusAndCommissionsComponent } from './bonus-and-commissions/bonus-and-commissions.component';
 import { AuthGuard } from 'src/app/_helpers/auth.guard';
+import { CorredorComponent } from './corredor/corredor.component';
 
 const routes: Routes = [
   {
@@ -30,6 +31,13 @@ const routes: Routes = [
       {
         path: 'bonus-and-commissions',
         component: BonusAndCommissionsComponent,
+        data: {
+          title: 'Bonificaciones y Comisiones',
+        },
+      },
+      {
+        path: 'corredor',
+        component: CorredorComponent,
         data: {
           title: 'Bonificaciones y Comisiones',
         },
