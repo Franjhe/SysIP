@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { PdfGenerationService } from '../../../_services/ServicePDF'
-import {MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { ChangeDetectorRef } from '@angular/core';
 import { format, addYears } from 'date-fns';
@@ -16,35 +16,79 @@ import { format, addYears } from 'date-fns';
 import { initUbii } from '@ubiipagos/boton-ubii';
 import * as Papa from 'papaparse';
 
-import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material/dialog';
 
-export interface State {id : '' , nombre : ''}
-export interface City {id : '' , nombre : ''}
-export interface Marca {id : '' , nombre : ''}
-export interface Modelo {id : '' , nombre : ''}
+export interface State {
+  id : '' , nombre : ''
+}
 
-  // value: response.data.version[i].xversion,
-  // npasajero: response.data.version[i].npasajero,
-  // cclasificacion: response.data.version[i].xclasificacion,
-  // id_inma: response.data.version[i].id,
-  // msum: response.data.version[i].msum,
-  // xtipovehiculo: response.data.version[i].xclase_rcv,
-  // ctarifa_exceso: response.data.version[i].ctarifa_exceso,
-  // xuso: response.data.version[i].xuso,
-  // npesovacio: response.data.version[i].npesovacio,
-  // ncapcarga: response.data.version[i].ncapcarga,
+export interface City {
+  id : '' , nombre : ''
+}
 
+export interface Marca {
+  id : '' , nombre : ''
+}
 
-export interface Version {id : '' , nombre : ''}
-export interface State_Take {id : '' , nombre : ''}
-export interface City_Take {id : '' , nombre : ''}
-export interface Plan {id : '' , nombre : ''}
+export interface Modelo {
+  id : '' , nombre : ''
+}
 
+export interface Version {
+  id : '' , 
+  nombre : '',
+  npasajero : '' , 
+  cclasificacion : '', 
+  id_inma: '', 
+  msum: '', 
+  xtipovehiculo: '', 
+  ctarifa_exceso: '', 
+  xuso: '', 
+  npesovacio: '', 
+  ncapcarga: '', 
+}
+export interface State_Take {
+  id : '' , nombre : ''
+}
+export interface City_Take {
+  id : '' , nombre : ''
+}
+export interface Plan {
+  id : '' , nombre : ''
+}
+
+export interface broker {
+  id : '' , nombre : ''
+}
+
+export interface takers {
+  id : '' , nombre : ''
+}
+
+export interface color {
+  id : '' , nombre : ''
+}
+
+export interface rates {
+  id : '' , nombre : ''
+}
+
+export interface typeVehicle {
+  id : '' , nombre : ''
+}
+
+export interface filteredUtilityVehicle {
+  id : '' , nombre : ''
+}
+
+export interface filteredUtility {
+  id : '' , nombre : ''
+}
 @Component({
   selector: 'app-automobile-new',
   templateUrl: './automobile-new.component.html',
   styleUrls: ['./automobile-new.component.scss']
 })
+
 export class AutomobileNewComponent {
   personsFormGroup = this._formBuilder.group({
     icedula: ['', Validators.required],
@@ -62,7 +106,7 @@ export class AutomobileNewComponent {
   });
 
   planFormGroup = this._formBuilder.group({
-    cplan:  new FormControl<any | State>('', { nonNullable: true}),
+    cplan:  new FormControl<any | Plan>('', { nonNullable: true}),
     pcasco: [{ value: '', disabled: true }],
     msuma_aseg: [''],
     msuma_aseg_text: [{ value: '', disabled: true }],
@@ -95,23 +139,18 @@ export class AutomobileNewComponent {
     fhasta: ['', Validators.required],
     cmetodologiapago: ['', Validators.required],
     ctipopago: [''],
-    cbanco: [''],
-    cbanco_destino: [''],
     fcobro: [''],
-    xreferencia: [''],
     mprima_pagada: [''],
-    mpagado: [''],
-    xmoneda: [''],
     mprima_accesorio: [''],
     irecibo: [''],
-    ccorredor:  new FormControl<any | State>('', { nonNullable: true}),
+    ccorredor:  new FormControl<any | broker>('', { nonNullable: true}),
     xcorredor: [''],
-    ctomador:  new FormControl<any | State>('', { nonNullable: true}),
+    ctomador:  new FormControl<any | takers>('', { nonNullable: true}),
     xtomador: [''],
     icedula_tomador: [''],
     xrif_tomador: [''],
-    cestado_tomador:  new FormControl<any | State>('', { nonNullable: true}),
-    cciudad_tomador:  new FormControl<any | State>('', { nonNullable: true}),
+    cestado_tomador:  new FormControl<any | State_Take>('', { nonNullable: true}),
+    cciudad_tomador:  new FormControl<any | City_Take>('', { nonNullable: true}),
     xemail_tomador: [''],
     xdireccion_tomador: [''],
     xzona_postal_tomador: [''],
@@ -119,28 +158,27 @@ export class AutomobileNewComponent {
 
   });
 
-
   vehicleFormGroup = this._formBuilder.group({
     ccotizacion: [{ value: '', disabled: false }],
     cinspeccion: [{ value: '', disabled: false }],
     xplaca: ['',[Validators.required, Validators.maxLength(7)]],
-    xmarca: new FormControl<any | State>('', { nonNullable: true}) ,
-    xmodelo:  new FormControl<any | State>('', { nonNullable: true}),
-    xversion: new FormControl<any | State>('', { nonNullable: true}),
+    xmarca: new FormControl<any | Marca>('', { nonNullable: true}) ,
+    xmodelo:  new FormControl<any | Modelo>('', { nonNullable: true}),
+    xversion: new FormControl<any | Version>('', { nonNullable: true}),
     fano: ['',[Validators.required, Validators.maxLength(4)]],
     npasajeros: [{ value: '', disabled: true }],
     cclasificacion: [''],
     xclasificacion: [''],  
     xtipovehiculo: [''],
-    xcolor: new FormControl<any | State>('', { nonNullable: true}),
+    xcolor: new FormControl<any | color>('', { nonNullable: true}),
     xserialcarroceria: ['', [Validators.required, Validators.maxLength(17)]],
     xserialmotor: ['', [Validators.maxLength(17)]],
-    ctarifa_exceso: new FormControl<any | State>('', { nonNullable: true}), //['', Validators.required],
+    ctarifa_exceso: new FormControl<any | rates>('', { nonNullable: true}), //['', Validators.required],
     cuso: [''],
     cusoVeh: [''],
-    xuso: new FormControl<any | State>('', { nonNullable: true}),
-    precargo: new FormControl<any | State>('', { nonNullable: true}),
-    ctipovehiculo: new FormControl<any | State>('', { nonNullable: true}),
+    xuso: new FormControl<any | filteredUtility>('', { nonNullable: true}),
+    precargo: new FormControl<any | filteredUtilityVehicle>('', { nonNullable: true}),
+    ctipovehiculo: new FormControl<any | typeVehicle>('', { nonNullable: true}),
     cclase: [''],
     id_inma: [''],
     npesovacio: [''],
@@ -222,13 +260,11 @@ export class AutomobileNewComponent {
   (
     private _formBuilder: FormBuilder,
     private http: HttpClient,
-    private modalService: NgbModal,
     private dateAdapter: DateAdapter<Date>,
     private pdfGenerationService: PdfGenerationService,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
-    readonly dialog: MatDialog,
     private router: Router
   ) {}
    
@@ -288,8 +324,6 @@ export class AutomobileNewComponent {
 
 
   }
-
-  //Funciones en "Datos Personales"
 
   onIdentSelection() {
     let selectedIdent = this.personsFormGroup.get('icedula')?.value || ''
@@ -396,26 +430,6 @@ export class AutomobileNewComponent {
     });
   }
 
-  private _filterStateTaker(value: string): any[] {
-    const filterValue = value.toLowerCase();
-    const filteredStates = this.stateTakerList.filter(state => state.value.toLowerCase().includes(filterValue));
-    return filteredStates;
-  }
-
-  private _filterState(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    const filteredStates = this.stateList.filter(state => state.nombre.toLowerCase().includes(filterValue));
-    return filteredStates;
-  }
-
-  displayCityFn(city: any): string {
-    return city.value;
-  }
-
-  displayStateFn(state: any): string {
-    return state.nombre;
-  }
-
   getCityTaker(){
     let data = {
       cpais: 58,
@@ -427,10 +441,10 @@ export class AutomobileNewComponent {
         for (let i = 0; i < response.data.city.length; i++) {
           this.cityTakerList.push({
             id: response.data.city[i].cciudad,
-            value: response.data.city[i].xdescripcion_l
+            nombre: response.data.city[i].xdescripcion_l
           });
         }
-        this.filteredCityTaker = this.filteredCityTaker = this.receiptFormGroup.get('cestado_tomador')!.valueChanges.pipe(
+        this.filteredCityTaker = this.receiptFormGroup.get('cestado_tomador')!.valueChanges.pipe(
           startWith(''),
           map(value => {
             const name = typeof value === 'string' ? value : value?.nombre;
@@ -454,7 +468,7 @@ export class AutomobileNewComponent {
         for (let i = 0; i < response.data.city.length; i++) {
           this.cityList.push({
             id: response.data.city[i].cciudad,
-            value: response.data.city[i].xdescripcion_l
+            nombre: response.data.city[i].xdescripcion_l
           });
         }
         this.filteredCity = this.personsFormGroup.get('cciudad')!.valueChanges.pipe(
@@ -468,26 +482,13 @@ export class AutomobileNewComponent {
     });
   }
 
-  private _filterCity(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    const filteredStates = this.cityList.filter(state => state.value.toLowerCase().includes(filterValue));
-    return filteredStates;
-  }
-
-  private _filterCityTaker(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    const filteredStates = this.cityTakerList.filter(state => state.value.toLowerCase().includes(filterValue));
-    return filteredStates;
-  }
-
-
   getRates(){
     this.http.post(environment.apiUrl + '/api/v1/valrep/rates', null).subscribe((response: any) => {
       if (response.data.rates) {
         for (let i = 0; i < response.data.rates.length; i++) {
           this.ratesList.push({
             id: response.data.rates[i].ctarifa_exceso,
-            value: response.data.rates[i].xgrupo,
+            nombre: response.data.rates[i].xgrupo,
           });
         }
         
@@ -502,20 +503,13 @@ export class AutomobileNewComponent {
     });
   }
 
-  private _filterRates(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    const filteredStates = this.ratesList.filter(state => state.value.toLowerCase().includes(filterValue));
-    return filteredStates;
-  }
-
-
   getTypeVehicles(){
     this.http.post(environment.apiUrl + '/api/v1/valrep/type-vehicle', null).subscribe((response: any) => {
       if (response.data.type) {
         for (let i = 0; i < response.data.type.length; i++) {
           this.typeVehicleList.push({
             id: response.data.type[i].ctipovehiculo,
-            value: response.data.type[i].xtipovehiculo,
+            nombre: response.data.type[i].xtipovehiculo,
           });
         }
         this.filteredTypeVehicle = this.vehicleFormGroup.get('ctipovehiculo')!.valueChanges.pipe(
@@ -529,19 +523,13 @@ export class AutomobileNewComponent {
     });
   }
 
-  private _filterTypeVehicle(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    const filteredStates = this.typeVehicleList.filter(state => state.value.toLowerCase().includes(filterValue));
-    return filteredStates;
-  }
-
   getUtilityVehicle(){
     this.http.post(environment.apiUrl + '/api/v1/valrep/utility-rechange', null).subscribe((response: any) => {
       if (response.data.utilityR) {
         for (let i = 0; i < response.data.utilityR.length; i++) {
           this.utilityVehicleList.push({
             id: response.data.utilityR[i].cuso,
-            value: response.data.utilityR[i].xuso,
+            nombre: response.data.utilityR[i].xuso,
             precargo: response.data.utilityR[i].precargo,
           });
         }
@@ -556,18 +544,12 @@ export class AutomobileNewComponent {
     });
   }
 
-  private _filterUtilityVehicle(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    const filteredStates = this.utilityVehicleList.filter(state => state.value.toLowerCase().includes(filterValue));
-    return filteredStates;
-  }
-
   getUtility(){
     this.http.post(environment.apiUrl + '/api/v1/valrep/utility', null).subscribe((response: any) => {
       if (response.data.utility) {
         for (let i = 0; i < response.data.utility.length; i++) {
           this.utilityList.push({
-            value: response.data.utility[i].xuso,
+            nombre: response.data.utility[i].xuso,
           });
         }
         this.filteredUtility = this.vehicleFormGroup.get('xuso')!.valueChanges.pipe(
@@ -579,12 +561,6 @@ export class AutomobileNewComponent {
         );
       }
     });
-  }
-
-  private _filterUtility(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    const filteredStates = this.utilityList.filter(state => state.value.toLowerCase().includes(filterValue));
-    return filteredStates;
   }
 
   searchRates(){
@@ -665,7 +641,7 @@ export class AutomobileNewComponent {
         for (let i = 0; i < response.data.plan.length; i++) {
           this.planList.push({
             id: response.data.plan[i].cplan,
-            value: response.data.plan[i].xplan,
+            nombre: response.data.plan[i].xplan,
           });
         }
 
@@ -692,19 +668,13 @@ export class AutomobileNewComponent {
     });
   }
 
-  private _filterPlan(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    const filteredStates = this.planList.filter(state => state.value.toLowerCase().includes(filterValue));
-    return filteredStates;
-  }
-
   getBroker(){
     this.http.post(environment.apiUrl + '/api/v1/valrep/brokers', null).subscribe((response: any) => {
       if (response.data.broker) {
         for (let i = 0; i < response.data.broker.length; i++) {
           this.brokerList.push({
             id: response.data.broker[i].cproductor,
-            value: response.data.broker[i].xproductor.trim(),
+            nombre: response.data.broker[i].xproductor.trim(),
           });
         }
         this.filteredBroker = this.receiptFormGroup.get('ccorredor')!.valueChanges.pipe(
@@ -718,13 +688,6 @@ export class AutomobileNewComponent {
 
     });
   }
-
-  private _filterBroker(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    const filteredStates = this.brokerList.filter(state => state.value.toLowerCase().includes(filterValue));
-    return filteredStates;
-  }
-
 
   setDefaultDates(): void {
     const currentDate = new Date();
@@ -740,15 +703,13 @@ export class AutomobileNewComponent {
     this.receiptFormGroup.get('fhasta')?.setValue(formattedNextYearDate);
   }
 
-
-
   getTakers(){
     this.http.post(environment.apiUrl + '/api/v1/valrep/takers', null).subscribe((response: any) => {
       if (response.data.takers) {
         for (let i = 0; i < response.data.takers.length; i++) {
           this.takersList.push({
             id: response.data.takers[i].ctomador,
-            value: response.data.takers[i].xtomador,
+            nombre: response.data.takers[i].xtomador,
           });
         }
         this.filteredTakers = this.receiptFormGroup.get('ctomador')!.valueChanges.pipe(
@@ -761,13 +722,6 @@ export class AutomobileNewComponent {
       }
     });
   }
-
-  private _filterTakers(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    const filteredStates = this.takersList.filter(state => state.value.toLowerCase().includes(filterValue));
-    return filteredStates;
-  }
-
 
   validateTaker(){
     this.takersInfo = false;
@@ -891,7 +845,6 @@ export class AutomobileNewComponent {
     // });
   }
 
-  //Datos del Vehículo
   searchVehicle(){
     let data = {
       xplaca: this.vehicleFormGroup.get('xplaca')?.value
@@ -928,7 +881,7 @@ export class AutomobileNewComponent {
         for (let i = 0; i < response.data.brand.length; i++) {
           this.brandList.push({
             id: i,
-            value: response.data.brand[i].xmarca,
+            nombre: response.data.brand[i].xmarca,
           });
         }
         this.brandList.sort((a, b) => a.value > b.value ? 1 : -1);
@@ -944,17 +897,10 @@ export class AutomobileNewComponent {
     });
   }
 
-  private _filterBrand(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    const filteredStates = this.brandList.filter(state => state.value.toLowerCase().includes(filterValue));
-    return filteredStates;
-  }
-
-
   getModel(){
     let data = {
       qano: this.vehicleFormGroup.get('fano')?.value,
-      xmarca: this.vehicleFormGroup.get('xmarca')?.value.id,
+      xmarca: this.vehicleFormGroup.get('xmarca')?.value.nombre,
     };
     this.http.post(environment.apiUrl + '/api/v1/valrep/model', data).subscribe((response: any) => {
       if (response.data.model) {
@@ -962,7 +908,7 @@ export class AutomobileNewComponent {
         for (let i = 0; i < response.data.model.length; i++) {
           this.modelList.push({
             id: i,
-            value: response.data.model[i].xmodelo,
+            nombre: response.data.model[i].xmodelo,
           });
         }
         this.modelList.sort((a, b) => a.value > b.value ? 1 : -1);
@@ -978,17 +924,11 @@ export class AutomobileNewComponent {
     });
   }
 
-  private _filterModel(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    const filteredStates = this.modelList.filter(state => state.value.toLowerCase().includes(filterValue));
-    return filteredStates;
-  }
-
   getVersion(){
     let data = {
       qano: this.vehicleFormGroup.get('fano')?.value,
-      xmarca: this.vehicleFormGroup.get('xmarca')?.value.id,
-      xmodelo: this.vehicleFormGroup.get('xmodelo')?.value.id,
+      xmarca: this.vehicleFormGroup.get('xmarca')?.value.nombre,
+      xmodelo: this.vehicleFormGroup.get('xmodelo')?.value.nombre,
     };
     this.http.post(environment.apiUrl + '/api/v1/valrep/version', data).subscribe((response: any) => {
       if (response.data.version) {
@@ -996,7 +936,7 @@ export class AutomobileNewComponent {
         for (let i = 0; i < response.data.version.length; i++) {
           this.versionList.push({
             id: i,
-            value: response.data.version[i].xversion,
+            nombre: response.data.version[i].xversion,
             npasajero: response.data.version[i].npasajero,
             cclasificacion: response.data.version[i].xclasificacion,
             id_inma: response.data.version[i].id,
@@ -1010,42 +950,41 @@ export class AutomobileNewComponent {
         }
         this.versionList.sort((a, b) => a.value > b.value ? 1 : -1);
 
-        if(this.ccotizacion){
-          const selectedValue = this.vehicleFormGroup.get('xversion')?.value;
-          const selectedVersion = this.versionList.find(version => version.value === selectedValue);
-          if (selectedVersion) {
-            this.vehicleFormGroup.get('xversion')?.setValue(selectedVersion.value);
-            this.vehicleFormGroup.get('npasajeros')?.setValue(selectedVersion.npasajero);
-            this.vehicleFormGroup.get('cclasificacion')?.setValue(selectedVersion.cclasificacion);
-            this.vehicleFormGroup.get('id_inma')?.setValue(selectedVersion.id_inma);
-            this.vehicleFormGroup.get('xtipovehiculo')?.setValue(selectedVersion.xtipovehiculo);
-            this.getHullPrice()
-            this.vehicleFormGroup.get('xuso')?.setValue(selectedVersion.xuso);
-            this.vehicleFormGroup.get('npesovacio')?.setValue(selectedVersion.npesovacio);
-            this.vehicleFormGroup.get('ncapcarga')?.setValue(selectedVersion.ncapcarga);
-            this.sumaAsegurada = selectedVersion.msum;
-            this.sumaAseguradaBase = selectedVersion.msum;
+        // if(this.ccotizacion){
+        //   const selectedValue = this.vehicleFormGroup.get('xversion')?.value;
+        //   const selectedVersion = this.versionList.find(version => version.value === selectedValue);
+        //   if (selectedVersion) {
+        //     this.vehicleFormGroup.get('npasajeros')?.setValue(selectedVersion.npasajero);
+        //     this.vehicleFormGroup.get('cclasificacion')?.setValue(selectedVersion.cclasificacion);
+        //     this.vehicleFormGroup.get('id_inma')?.setValue(selectedVersion.id_inma);
+        //     this.vehicleFormGroup.get('xtipovehiculo')?.setValue(selectedVersion.xtipovehiculo);
+        //     this.getHullPrice()
+        //     this.vehicleFormGroup.get('xuso')?.setValue(selectedVersion.xuso);
+        //     this.vehicleFormGroup.get('npesovacio')?.setValue(selectedVersion.npesovacio);
+        //     this.vehicleFormGroup.get('ncapcarga')?.setValue(selectedVersion.ncapcarga);
+        //     this.sumaAsegurada = selectedVersion.msum;
+        //     this.sumaAseguradaBase = selectedVersion.msum;
       
       
-            if(!this.vehicleFormGroup.get('xtipovehiculo')?.value){
-              this.activateTypeVehicle = true;
-            }else{
-              this.activateTypeVehicle = false;
-            }
+        //     if(!this.vehicleFormGroup.get('xtipovehiculo')?.value){
+        //       this.activateTypeVehicle = true;
+        //     }else{
+        //       this.activateTypeVehicle = false;
+        //     }
       
-            if(this.vehicleFormGroup.get('xtipovehiculo')?.value == 'CARGA' || this.vehicleFormGroup.get('xtipovehiculo')?.value == 'Carga'){
-              this.activateAttachment = true;
-            }else{
-              this.activateAttachment = false;
-            }
+        //     if(this.vehicleFormGroup.get('xtipovehiculo')?.value == 'CARGA' || this.vehicleFormGroup.get('xtipovehiculo')?.value == 'Carga'){
+        //       this.activateAttachment = true;
+        //     }else{
+        //       this.activateAttachment = false;
+        //     }
       
-            if(!this.vehicleFormGroup.get('xuso')?.value){
-              this.activateUtility = true;
-            }else{
-              this.activateUtility = false;
-            }
-          }
-        }
+        //     if(!this.vehicleFormGroup.get('xuso')?.value){
+        //       this.activateUtility = true;
+        //     }else{
+        //       this.activateUtility = false;
+        //     }
+        //   }
+        // }
 
         this.filteredVersion = this.vehicleFormGroup.get('xversion')!.valueChanges.pipe(
           startWith(''),
@@ -1058,55 +997,42 @@ export class AutomobileNewComponent {
     });
   }
 
-  private _filterVersion(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    const filteredStates = this.versionList.filter(state => state.value.toLowerCase().includes(filterValue));
-    return filteredStates;
-  }
+  onVersionSelection() {
 
-  onVersionSelection(event: any) {
-    const selectedValue = event.option.value;
-    const selectedVersion = this.versionList.find(version => version.value === selectedValue);
-    if (selectedVersion) {
-      this.vehicleFormGroup.get('xversion')?.setValue(selectedVersion.value);
-      this.vehicleFormGroup.get('npasajeros')?.setValue(selectedVersion.npasajero);
-      this.vehicleFormGroup.get('cclasificacion')?.setValue(selectedVersion.cclasificacion);
+      this.vehicleFormGroup.get('npasajeros')?.setValue(this.vehicleFormGroup.get('xversion')?.value.npasajero);
+      this.vehicleFormGroup.get('cclasificacion')?.setValue(this.vehicleFormGroup.get('xversion')?.value.cclasificacion);
       this.searchRates();
-      this.vehicleFormGroup.get('id_inma')?.setValue(selectedVersion.id_inma);
-      this.vehicleFormGroup.get('xtipovehiculo')?.setValue(selectedVersion.xtipovehiculo);
-      this.vehicleFormGroup.get('ctarifa_exceso')?.setValue(selectedVersion.ctarifa_exceso);
-      this.vehicleFormGroup.get('xuso')?.setValue(selectedVersion.xuso);
-      this.vehicleFormGroup.get('npesovacio')?.setValue(selectedVersion.npesovacio);
-      this.vehicleFormGroup.get('ncapcarga')?.setValue(selectedVersion.ncapcarga);
-      this.sumaAsegurada = selectedVersion.msum;
-      this.sumaAseguradaBase = selectedVersion.msum;
+      this.vehicleFormGroup.get('id_inma')?.setValue(this.vehicleFormGroup.get('xversion')?.value.id_inma);
+      this.vehicleFormGroup.get('npesovacio')?.setValue(this.vehicleFormGroup.get('xversion')?.value.npesovacio);
+      this.vehicleFormGroup.get('ncapcarga')?.setValue(this.vehicleFormGroup.get('xversion')?.value.ncapcarga);
+      this.sumaAsegurada = this.vehicleFormGroup.get('xversion')?.value.msum;
+      this.sumaAseguradaBase = this.vehicleFormGroup.get('xversion')?.value.msum;
 
 
-      if(!this.vehicleFormGroup.get('xtipovehiculo')?.value){
-        this.activateTypeVehicle = true;
-      }else{
-        this.activateTypeVehicle = false;
-      }
-
-      if(this.vehicleFormGroup.get('xtipovehiculo')?.value == 'CARGA' || this.vehicleFormGroup.get('xtipovehiculo')?.value == 'Carga'){
+      if(this.vehicleFormGroup.get('xversion')?.value.xtipovehiculo == 'CARGA' || this.vehicleFormGroup.get('xversion')?.value.xtipovehiculo == 'Carga'){
         this.activateAttachment = true;
       }else{
         this.activateAttachment = false;
       }
+      if(!this.vehicleFormGroup.get('xversion')?.value.xtipovehiculo){
+        this.activateTypeVehicle = true;
+      }else{
+        this.activateTypeVehicle = false;
+      }
       
-      if(!this.vehicleFormGroup.get('ctarifa_exceso')?.value){
+      if(!this.vehicleFormGroup.get('xversion')?.value.ctarifa_exceso){
         this.activateRate = true;
       }else{
         this.activateRate = false;
       }
 
-      if(!this.vehicleFormGroup.get('xuso')?.value){
+      if(!this.vehicleFormGroup.get('xversion')?.value.xuso){
         this.activateUtility = true;
       }else{
         this.activateUtility = false;
       }
 
-      const tarifaExcesoValue = this.vehicleFormGroup.get('ctarifa_exceso')?.value;
+      const tarifaExcesoValue = this.vehicleFormGroup.get('xversion')?.value.ctarifa_exceso;
       if (tarifaExcesoValue !== null && tarifaExcesoValue !== undefined) {
           if (typeof tarifaExcesoValue === 'number' && tarifaExcesoValue === 20) {
               if(this.currentUser.data.crol == 7){
@@ -1114,7 +1040,7 @@ export class AutomobileNewComponent {
               }
           }
       }
-    }
+    
   }
 
   getColor(){
@@ -1123,7 +1049,7 @@ export class AutomobileNewComponent {
         for (let i = 0; i < response.data.color.length; i++) {
           this.colorList.push({
             id: response.data.color[i].ccolor,
-            value: response.data.color[i].xcolor,
+            nombre: response.data.color[i].xcolor,
           });
         }
         this.filteredColor = this.vehicleFormGroup.get('xcolor')!.valueChanges.pipe(
@@ -1135,12 +1061,6 @@ export class AutomobileNewComponent {
         );
       }
     });
-  }
-
-  private _filterColor(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    const filteredStates = this.colorList.filter(state => state.value.toLowerCase().includes(filterValue));
-    return filteredStates;
   }
 
   getAccesories(){
@@ -1305,20 +1225,18 @@ export class AutomobileNewComponent {
     }
   }
 
-
   getMethodOfPayment(){
     this.http.post(environment.apiUrl + '/api/v1/valrep/method-of-payment', null).subscribe((response: any) => {
       if (response.data.payment) {
         for (let i = 0; i < response.data.payment.length; i++) {
           this.methodOfPaymentList.push({
             id: response.data.payment[i].cmetodologiapago,
-            value: response.data.payment[i].xmetodologiapago,
+            nombre: response.data.payment[i].xmetodologiapago,
           });
         }
       }
     });
   }
-
 
   onMethodOfPaymentSelection(event: any) {
     const selectedValue = event.option.value;
@@ -1468,5 +1386,159 @@ export class AutomobileNewComponent {
     // }
   
 
+  }
+
+  //Display input's
+
+  displayStateFn(State: any): string {
+    return State.nombre;
+  }
+
+  displayCityFn(City: any): string {
+    return City.nombre;
+  }  
+
+  displayBrandFn(Brand: any): string {
+    return Brand.nombre;
+  } 
+
+  displayModelFn(Model: any): string {
+    return Model.nombre;
+  }
+
+  displayVersionFn(Version: any): string {
+    return Version.nombre;
+  }
+
+  displayColorFn(Color: any): string {
+    return Color.nombre;
+  }
+
+  displayRatesFn(Rates: any): string {
+    return Rates.nombre;
+  }
+
+  displayTypeVehicleFn(TypeVehicle: any): string {
+    return TypeVehicle.nombre;
+  } 
+  
+  displayUtilityVehicle(UtilityVehicle: any): string {
+    return UtilityVehicle.nombre;
+  }
+  
+  displayUtilityFn(Utility: any): string {
+    return Utility.nombre;
+  }
+
+  displayPlanFn(Plan: any): string {
+    return Plan.nombre;
+  }
+
+  displayBrokerFn(Broker: any): string {
+    return Broker.nombre;
+  } 
+
+  displayTakersFn(Takers: any): string {
+    return Takers.nombre;
+  }
+
+  displayStateTakerFn(StateTaker: any): string {
+    return StateTaker.nombre;
+  }  
+
+  displayCityTakerFn(CityTaker: any): string {
+    return CityTaker.nombre;
+  }
+
+
+  //Funciones private
+  private _filterVersion(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    const filteredStates = this.versionList.filter(state => state.nombre.toLowerCase().includes(filterValue));
+    return filteredStates;
+  }
+
+  private _filterColor(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    const filteredStates = this.colorList.filter(state => state.nombre.toLowerCase().includes(filterValue));
+    return filteredStates;
+  }
+
+  private _filterModel(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    const filteredStates = this.modelList.filter(state => state.nombre.toLowerCase().includes(filterValue));
+    return filteredStates;
+  }
+
+  private _filterBrand(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    const filteredStates = this.brandList.filter(state => state.nombre.toLowerCase().includes(filterValue));
+    return filteredStates;
+  }
+
+  private _filterTakers(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    const filteredStates = this.takersList.filter(state => state.nombre.toLowerCase().includes(filterValue));
+    return filteredStates;
+  }
+
+  private _filterBroker(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    const filteredStates = this.brokerList.filter(state => state.nombre.toLowerCase().includes(filterValue));
+    return filteredStates;
+  }
+
+  private _filterPlan(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    const filteredStates = this.planList.filter(state => state.nombre.toLowerCase().includes(filterValue));
+    return filteredStates;
+  }
+
+  private _filterStateTaker(value: string): any[] {
+    const filterValue = value.toLowerCase();
+    const filteredStates = this.stateTakerList.filter(state => state.nombre.toLowerCase().includes(filterValue));
+    return filteredStates;
+  }
+
+  private _filterState(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    const filteredStates = this.stateList.filter(state => state.nombre.toLowerCase().includes(filterValue));
+    return filteredStates;
+  }
+
+  private _filterUtilityVehicle(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    const filteredStates = this.utilityVehicleList.filter(state => state.nombre.toLowerCase().includes(filterValue));
+    return filteredStates;
+  }
+
+  private _filterUtility(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    const filteredStates = this.utilityList.filter(state => state.nombre.toLowerCase().includes(filterValue));
+    return filteredStates;
+  }
+
+  private _filterCity(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    const filteredStates = this.cityList.filter(state => state.nombre.toLowerCase().includes(filterValue));
+    return filteredStates;
+  }
+
+  private _filterCityTaker(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    const filteredStates = this.cityTakerList.filter(state => state.nombre.toLowerCase().includes(filterValue));
+    return filteredStates;
+  }
+
+  private _filterTypeVehicle(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    const filteredStates = this.typeVehicleList.filter(state => state.nombre.toLowerCase().includes(filterValue));
+    return filteredStates;
+  }
+
+  private _filterRates(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    const filteredStates = this.ratesList.filter(state => state.nombre.toLowerCase().includes(filterValue));
+    return filteredStates;
   }
 }

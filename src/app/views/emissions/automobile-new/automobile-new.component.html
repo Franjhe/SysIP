@@ -76,7 +76,7 @@
                [matAutocomplete]="city" required formControlName="cciudad" >
             <mat-autocomplete  #city="matAutocomplete" [displayWith]="displayCityFn">
               <mat-option *ngFor="let city of filteredCity | async" [value]="city">
-                {{ city.value }}
+                {{ city.nombre }}
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
@@ -154,9 +154,9 @@
             <mat-label>Marca</mat-label>
             <input type="text" placeholder="Seleccione Marca" aria-label="Seleccione" matInput
                [matAutocomplete]="brand" required formControlName="xmarca">
-            <mat-autocomplete  #brand="matAutocomplete" (optionSelected)="getModel()">
+            <mat-autocomplete  #brand="matAutocomplete" (optionSelected)="getModel()" [displayWith]="displayBrandFn">
               <mat-option *ngFor="let brand of filteredBrand | async" [value]="brand">
-                {{ brand.value }}
+                {{ brand.nombre }}
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
@@ -167,9 +167,9 @@
             <mat-label>Modelo</mat-label>
             <input type="text" placeholder="Seleccione Modelo" aria-label="Seleccione" matInput
                [matAutocomplete]="model" required formControlName="xmodelo">
-            <mat-autocomplete #model="matAutocomplete" (optionSelected)="getVersion()">
+            <mat-autocomplete #model="matAutocomplete" (optionSelected)="getVersion()" [displayWith]="displayModelFn">
               <mat-option *ngFor="let model of filteredModel | async" [value]="model">
-                {{ model.value }}
+                {{ model.nombre }}
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
@@ -184,9 +184,9 @@
             <input type="text" placeholder="Seleccione Version" aria-label="Seleccione" matInput
                [matAutocomplete]="version" required formControlName="xversion">
             <mat-autocomplete #version="matAutocomplete"
-              (optionSelected)="onVersionSelection($event)">
+              (optionSelected)="onVersionSelection()" [displayWith]="displayVersionFn">
               <mat-option *ngFor="let version of filteredVersion | async" [value]="version">
-                {{ version.value }}
+                {{ version.nombre }}
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
@@ -203,9 +203,9 @@
             <mat-label>Color</mat-label>
             <input type="text" placeholder="Seleccione Color" aria-label="Seleccione" matInput
                [matAutocomplete]="color" required formControlName="xcolor">
-            <mat-autocomplete #color="matAutocomplete">
+            <mat-autocomplete #color="matAutocomplete" [displayWith]="displayColorFn">
               <mat-option *ngFor="let color of filteredColor | async" [value]="color">
-                {{ color.value }}
+                {{ color.nombre }}
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
@@ -257,9 +257,9 @@
             <mat-label>Tarifas</mat-label>
             <input type="text" placeholder="Seleccione Tarifa" aria-label="Seleccione" matInput
                [matAutocomplete]="rates" required formControlName="ctarifa_exceso">
-            <mat-autocomplete #rates="matAutocomplete">
+            <mat-autocomplete #rates="matAutocomplete" [displayWith]="displayRatesFn">
               <mat-option *ngFor="let rates of filteredRates | async" [value]="rates">
-                {{ rates.value }}
+                {{ rates.nombre }}
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
@@ -270,21 +270,21 @@
             <input type="text" placeholder="Seleccione Tipo de Vehiculo" aria-label="Seleccione" matInput
                [matAutocomplete]="typeVehicle" required formControlName="ctipovehiculo">
             <mat-autocomplete #typeVehicle="matAutocomplete"
-              (optionSelected)="validateYearsFromHullPrice()">
+              (optionSelected)="validateYearsFromHullPrice()" [displayWith]="displayTypeVehicleFn">
               <mat-option *ngFor="let typeVehicle of filteredTypeVehicle | async" [value]="typeVehicle">
-                {{ typeVehicle.value }}
+                {{ typeVehicle.nombre }}
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
         </div>
-        <div class="col-3">
+        <div class="col-3" *ngIf="activateUtility">
           <mat-form-field class="example-full-width">
             <mat-label>Recargo por Uso</mat-label>
             <input type="text" placeholder="Seleccione Recargo por Uso" aria-label="Seleccione" matInput
                [matAutocomplete]="utility" formControlName="precargo">
-            <mat-autocomplete #utility="matAutocomplete">
+            <mat-autocomplete #utility="matAutocomplete" [displayWith]="displayUtilityVehicle">
               <mat-option *ngFor="let utility of filteredUtilityVehicle | async" [value]="utility">
-                {{ utility.value }}
+                {{ utility.nombre }}
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
@@ -294,9 +294,9 @@
             <mat-label>Uso</mat-label>
             <input type="text" placeholder="Seleccione Uso" aria-label="Seleccione" matInput
                [matAutocomplete]="utilityL" formControlName="xuso" >
-            <mat-autocomplete #utilityL="matAutocomplete">
+            <mat-autocomplete #utilityL="matAutocomplete" [displayWith]="displayUtilityFn">
               <mat-option *ngFor="let utility of filteredUtility | async" [value]="utility">
-                {{ utility.value }}
+                {{ utility.nombre }}
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
@@ -330,9 +330,9 @@
           <mat-label>Planes</mat-label>
           <input type="text" placeholder="Seleccione Planes" aria-label="Seleccione" matInput
              [matAutocomplete]="plan" required formControlName="cplan" >
-          <mat-autocomplete #plan="matAutocomplete" (optionSelected)="getAmount()">
+          <mat-autocomplete #plan="matAutocomplete" (optionSelected)="getAmount()" [displayWith]="displayPlanFn">
             <mat-option *ngFor="let plan of filteredPlan | async" [value]="plan">
-              {{ plan.value }}
+              {{ plan.nombre }}
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
@@ -461,9 +461,9 @@
           <mat-label>Corredores</mat-label>
           <input type="text" placeholder="Seleccione Corredor" aria-label="Seleccione" matInput
             [matAutocomplete]="broker" formControlName="ccorredor">
-          <mat-autocomplete #broker="matAutocomplete">
+          <mat-autocomplete #broker="matAutocomplete" [displayWith]="displayBrokerFn">
             <mat-option *ngFor="let broker of filteredBroker | async" [value]="broker">
-              {{ broker.value }}
+              {{ broker.nombre }}
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
@@ -475,9 +475,9 @@
             (change)="validateTaker2()"
             formControlName="ctomador"
             >
-          <mat-autocomplete #takers="matAutocomplete" (optionSelected)="validateTaker()">
+          <mat-autocomplete #takers="matAutocomplete" (optionSelected)="validateTaker()" [displayWith]="displayTakersFn">
             <mat-option  *ngFor="let takers of filteredTakers | async" [value]="takers">
-              {{ takers.value }}
+              {{ takers.nombre }}
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
@@ -511,11 +511,11 @@
             <input type="text"
               placeholder="Seleccione Estado" 
               aria-label="Seleccione" matInput
-              [matAutocomplete]="state" required formControlName="cestado"
+              [matAutocomplete]="state" required formControlName="cestado_tomador"
               >
-            <mat-autocomplete  #state="matAutocomplete" (optionSelected)="getCityTaker()" [displayWith]="displayStateFn">
+            <mat-autocomplete  #state="matAutocomplete" (optionSelected)="getCityTaker()" [displayWith]="displayStateTakerFn">
               <mat-option *ngFor="let state of filteredStateTaker | async" [value]="state">
-                {{ state.value }}
+                {{ state.nombre }}
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
@@ -523,12 +523,12 @@
           <mat-form-field >
             <mat-label>Ciudad</mat-label>
             <input type="text" placeholder="Seleccione Ciudad" aria-label="Seleccione" matInput
-               [matAutocomplete]="cityTa" required formControlName="cciudad"
+               [matAutocomplete]="cityTa" required formControlName="cciudad_tomador"
                
                >
-            <mat-autocomplete #cityTa="matAutocomplete" [displayWith]="displayCityFn">
+            <mat-autocomplete #cityTa="matAutocomplete" [displayWith]="displayCityTakerFn">
               <mat-option *ngFor="let city of filteredCityTaker | async" [value]="city">
-                {{ city.value }}
+                {{ city.nombre }}
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
