@@ -573,7 +573,7 @@
           <mat-select formControlName="cmetodologiapago" >
             <mat-option  placeholder="Seleccione Frecuencia de Pago" 
             *ngFor="let methodOfPayment of methodOfPaymentList" [value]="methodOfPayment">
-              {{ methodOfPayment.value }}
+              {{ methodOfPayment.nombre }}
             </mat-option>
           </mat-select>
         </mat-form-field>
