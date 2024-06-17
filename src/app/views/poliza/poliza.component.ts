@@ -142,11 +142,13 @@ export class PolizaComponent implements AfterViewInit {
     secondCtrl: ['', Validators.required],
     beneficiarios: this._formBuilder.array([]),
     asegurados: this._formBuilder.array([]),
+    descrip: this._formBuilder.array([]),
     automovil: this._formBuilder.array([]),
   });
 
   isLinear = false;
-  ramoAuto = false;
+  ramoAuto  : boolean = false;
+  ramoRcg : boolean = false;
 
 
   constructor(
@@ -185,6 +187,10 @@ export class PolizaComponent implements AfterViewInit {
   get asegurados(): FormArray {
     return this.datosTecnicos.get('asegurados') as FormArray;
   }
+
+  get descrip(): FormArray {
+    return this.datosTecnicos.get('descrip') as FormArray;
+  }
   get automovil(): FormArray {
     return this.datosTecnicos.get('automovil') as FormArray;
   }
@@ -212,8 +218,8 @@ export class PolizaComponent implements AfterViewInit {
     fetch(environment.apiUrl + '/api/v1/collection/receipts-collect')
       .then((response) => response.json())
       .then((data) => {
-        let obj = data.searchClientforReceiptCollect;
-        let array = Object.values(obj);
+        // let obj = data.searchClientforReceiptCollect;
+        // let array = Object.values(obj);
       });
     this.pruebaDialog();
     this.token = localStorage.getItem('user');
@@ -381,12 +387,10 @@ export class PolizaComponent implements AfterViewInit {
           ctransaccion: recibo.ctransaccion,
         });
       }
-
       const auto = this.datosTecnicos.get('automovil') as FormArray;
-      
-
       if (dataRecibo.Codigo_Ramo == 18) {
         this.ramoAuto = true
+        this.ramoRcg = false
         this.http.post(environment.apiUrl + '/api/v1/poliza/searchAutomobile', { cnpoliza: this.poliza })
         .subscribe((response: any) => {
           while (auto.length !== 0) {
@@ -409,11 +413,23 @@ export class PolizaComponent implements AfterViewInit {
               })
             );
           });
-          console.log(this.datosTecnicos);
-
         });
       } else {
         this.ramoAuto = false
+        this.ramoRcg = false
+        if(dataRecibo.Codigo_Ramo == 10 || dataRecibo.Codigo_Ramo == 11  || dataRecibo.Codigo_Ramo == 12
+        || dataRecibo.Codigo_Ramo == 13 || dataRecibo.Codigo_Ramo == 14  || dataRecibo.Codigo_Ramo == 15
+        || dataRecibo.Codigo_Ramo == 16 || dataRecibo.Codigo_Ramo == 17  || dataRecibo.Codigo_Ramo == 19
+        || dataRecibo.Codigo_Ramo == 20 || dataRecibo.Codigo_Ramo == 21  || dataRecibo.Codigo_Ramo == 22
+        || dataRecibo.Codigo_Ramo == 23 || dataRecibo.Codigo_Ramo == 24  || dataRecibo.Codigo_Ramo == 25
+        || dataRecibo.Codigo_Ramo == 27 || dataRecibo.Codigo_Ramo == 28  || dataRecibo.Codigo_Ramo == 29
+        || dataRecibo.Codigo_Ramo == 30 || dataRecibo.Codigo_Ramo == 31  || dataRecibo.Codigo_Ramo == 32
+        || dataRecibo.Codigo_Ramo == 33 || dataRecibo.Codigo_Ramo == 34  || dataRecibo.Codigo_Ramo == 35
+        || dataRecibo.Codigo_Ramo == 37 || dataRecibo.Codigo_Ramo == 38  || dataRecibo.Codigo_Ramo == 39
+        || dataRecibo.Codigo_Ramo == 40 || dataRecibo.Codigo_Ramo == 41
+        ){
+          this.ramoRcg = true
+        }
         this.http.post(environment.apiUrl + '/api/v1/poliza/searchBeneficiary', { cnpoliza: this.poliza })
           .subscribe((response: any) => {
             if (response.data && response.data) {
@@ -458,7 +474,21 @@ export class PolizaComponent implements AfterViewInit {
                 })
               );
             });
-        
+            const descrip1 = this.datosTecnicos.get('descrip') as FormArray;
+            while (descrip1.length !== 0) {
+              descrip1.removeAt(0);
+            }
+            response.search.descrip.forEach((item: any) => {
+              descrip1.push(
+                this._formBuilder.group({
+                  xdescripcion :  item.xdescripcion  || 'N/A.' ,
+                  xdescripcion2 : item.xdescripcion2 || 'N/A.' ,
+                  xdescripcion3 : item.xdescripcion3 || 'N/A.' ,
+                  xdescripcion4 : item.xdescripcion4 || 'N/A.' ,
+                  Descrip_Ramo :  item.Descrip_Ramo  || 'N/A.' ,
+                })
+              );
+            });
           });
       }
     }

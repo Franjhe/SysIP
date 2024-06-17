@@ -103,7 +103,7 @@
         </div>
       </form>
     </mat-step>
-
+<!-- DATOS DE LA PÓLIZA -->
     <mat-step [stepControl]="polizaGroup" label="Información de la Póliza"
       #stepper>
       <form [formGroup]="polizaGroup">
@@ -111,7 +111,8 @@
         <br>
         <div class="card" style="background-color: #fff;">
           <div class="card-header" style="background-color: #fff;">
-            <h2 style="text-align: center; font-size: 1.1rem;"><strong>DATOS DEL TOMADOR - ASEGURADO</strong></h2>
+            <h2 style="text-align: center; font-size: 1.1rem;"><strong>DATOS DEL
+                TOMADOR - ASEGURADO</strong></h2>
           </div>
           <div class="row">
 
@@ -187,7 +188,8 @@
               </span>
             </mat-form-field>
             <div class="card-header" style="background-color: #fff;">
-            <h2 style="text-align: center; font-size: 1.1rem;"><strong>DATOS DE LA PÓLIZA</strong></h2>
+              <h2 style="text-align: center; font-size: 1.1rem;"><strong>DATOS
+                  DE LA PÓLIZA</strong></h2>
             </div>
             <mat-form-field style="font-size: 0.9rem;" class="peq2">
               <mat-label>Vigencia:</mat-label>
@@ -337,283 +339,357 @@
       <form [formGroup]="datosTecnicos">
         <br>
         <!-- ASEGURADOS -->
-        <div class="card" style="background-color: #fff;">
-          <div class="card-header" style="background-color: #fff;" *ngIf="!ramoAuto">
-            <h2
-              style="text-align: center; font-size: 1.1rem;"><strong>ASEGURADOS</strong></h2>
-          </div>
+        <div class="card" style="background-color: #fff;" *ngIf="!ramoAuto && !ramoRcg">
           <div class="row">
-            <div class="card-header" style="background-color: #fff;" *ngIf="!ramoAuto"
-              formArrayName="asegurados">
+            <div style="background-color: #fff;" formArrayName="asegurados">
               <div *ngFor="let item of asegurados.controls; let i=index "
                 [formGroupName]="i">
-                
-                <h2
-                  style="text-align: center; font-size: 1.1rem;"><strong>
-                    {{item.value.xasegurado}}</strong></h2>
-                <mat-form-field style="font-size: 0.9rem; width: 35%;"
-                  class="peq">
-                  <mat-label>Nombre y Apellido:</mat-label>
-                  <span class="readonly-input">
-                    <input matInput
-                      value={{item.value.xasegurado}}
-                      readonly>
-                  </span>
-                </mat-form-field>
-
-                <mat-form-field style="font-size: 0.9rem; width: 15%;"
-                  class="peq">
-                  <mat-label>C.I./R.I.F.:</mat-label>
-                  <span class="readonly-input">
-                    <input matInput
-                      value={{item.value.xcedula_asegurado}}
-                      readonly>
-                  </span>
-                </mat-form-field>
-
-                <mat-form-field style="font-size: 0.9rem; width: 18%;"
-                  class="peq">
-                  <mat-label>Parentesco:</mat-label>
-                  <span class="readonly-input">
-                    <input matInput
-                      value={{item.value.xparentesco_asegurado}}
-                      readonly>
-                  </span>
-                </mat-form-field>
-
-                <mat-form-field style="font-size: 0.9rem; width: 20%;"
-                  class="peq">
-                  <mat-label>Fecha de Nacimiento:</mat-label>
-                  <span class="readonly-input">
-                    <input matInput
-                      value={{item.value.fnacimiento_asegurado}}
-                      readonly>
-                  </span>
-                </mat-form-field>
-
-                <div class="text-center">
-                  <mat-form-field style="font-size: 0.9rem;" class="peq">
-                    <mat-label>Estado Civil:</mat-label>
+                <div class="card-header" style="background-color: #fff;">
+                  <h2
+                    style="text-align: center; font-size: 1.1rem;"><strong>ASEGURADOS</strong></h2>
+                </div>
+                <br>
+                <div class="card-body">
+                  <h2
+                    style="text-align: center; font-size: 1.1rem;"><strong>
+                      {{item.value.xasegurado}}</strong></h2>
+                  <mat-form-field style="font-size: 0.9rem; width: 35%;"
+                    class="peq">
+                    <mat-label>Nombre y Apellido:</mat-label>
                     <span class="readonly-input">
                       <input matInput
-                        value={{item.value.cestado_civil_asegurado}}
+                        value={{item.value.xasegurado}}
                         readonly>
                     </span>
                   </mat-form-field>
 
-                  <mat-form-field style="font-size: 0.9rem;" class="peq">
-                    <mat-label>Sexo:</mat-label>
+                  <mat-form-field style="font-size: 0.9rem; width: 15%;"
+                    class="peq">
+                    <mat-label>C.I./R.I.F.:</mat-label>
                     <span class="readonly-input">
                       <input matInput
-                        value={{item.value.csexo_asegurado}}
+                        value={{item.value.xcedula_asegurado}}
                         readonly>
                     </span>
                   </mat-form-field>
 
-                  <mat-form-field style="font-size: 0.9rem;" class="peq">
-                    <mat-label>Fecha Ingreso:</mat-label>
+                  <mat-form-field style="font-size: 0.9rem; width: 18%;"
+                    class="peq">
+                    <mat-label>Parentesco:</mat-label>
                     <span class="readonly-input">
                       <input matInput
-                        value={{item.value.fingreso_asegurado}}
+                        value={{item.value.xparentesco_asegurado}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+
+                  <mat-form-field style="font-size: 0.9rem; width: 20%;"
+                    class="peq">
+                    <mat-label>Fecha de Nacimiento:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.fnacimiento_asegurado}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+
+                  <div class="text-center">
+                    <mat-form-field style="font-size: 0.9rem;" class="peq">
+                      <mat-label>Estado Civil:</mat-label>
+                      <span class="readonly-input">
+                        <input matInput
+                          value={{item.value.cestado_civil_asegurado}}
+                          readonly>
+                      </span>
+                    </mat-form-field>
+
+                    <mat-form-field style="font-size: 0.9rem;" class="peq">
+                      <mat-label>Sexo:</mat-label>
+                      <span class="readonly-input">
+                        <input matInput
+                          value={{item.value.csexo_asegurado}}
+                          readonly>
+                      </span>
+                    </mat-form-field>
+
+                    <mat-form-field style="font-size: 0.9rem;" class="peq">
+                      <mat-label>Fecha Ingreso:</mat-label>
+                      <span class="readonly-input">
+                        <input matInput
+                          value={{item.value.fingreso_asegurado}}
+                          readonly>
+                      </span>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- BENEFICIARIOS -->
+        <div class="card" style="background-color: #fff;" *ngIf="!ramoAuto && !ramoRcg">
+          <div class="row">
+            <div style="background-color: #fff;" formArrayName="beneficiarios">
+              <div *ngFor="let item of beneficiarios.controls; let i=index "
+                [formGroupName]="i">
+                <div class="card-header" style="background-color: #fff;">
+                  <h2
+                    style="text-align: center; font-size: 1.1rem;"><strong>BENEFICIARIOS</strong></h2>
+                </div>
+                <br>
+                <div class="card-body">
+                  <h2
+                    style="text-align: center; font-size: 1.1rem;"><strong>{{item.value.xbeneficiario}}</strong></h2>
+
+                  <mat-form-field style="font-size: 0.9rem; width: 35%;">
+                    <mat-label>Nombre y Apellido:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.xbeneficiario}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+
+                  <mat-form-field style="font-size: 0.9rem; width: 15%;"
+                    class="peq">
+                    <mat-label>C.I./R.I.F.:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.xcedula_beneficiario}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+
+                  <mat-form-field style="font-size: 0.9rem; width: 18%;"
+                    class="peq">
+                    <mat-label>Parentesco:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.xparentesco_beneficiario}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+
+                  <mat-form-field style="font-size: 0.9rem; width: 20%;"
+                    class="peq">
+                    <mat-label>Fecha de Nacimiento:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.fnacimiento_beneficiario}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+
+                  <div class="text-center">
+                    <mat-form-field style="font-size: 0.9rem;" class="peq">
+                      <mat-label>Sexo:</mat-label>
+                      <span class="readonly-input">
+                        <input matInput
+                          value={{item.value.csexo_beneficiario}}
+                          readonly>
+                      </span>
+                    </mat-form-field>
+
+                    <mat-form-field style="font-size: 0.9rem;" class="peq">
+                      <mat-label>Fecha de Ingreso:</mat-label>
+                      <span class="readonly-input">
+                        <input matInput
+                          value={{item.value.fingreso_beneficiario}}
+                          readonly>
+                      </span>
+                    </mat-form-field>
+
+                    <mat-form-field style="font-size: 0.9rem;" class="peq">
+                      <mat-label>Estado Civil:</mat-label>
+                      <span class="readonly-input">
+                        <input matInput
+                          value={{item.value.cestado_civil_beneficiario}}
+                          readonly>
+                      </span>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Ramo de Riesgos Generales  -->
+        <div class="card" style="background-color: #fff;" *ngIf="ramoRcg">
+          <div class="row">
+            <div style="background-color: #fff;"
+              formArrayName="descrip">
+              <div *ngFor="let item of descrip.controls; let i=index "
+                [formGroupName]="i">
+                <div class="card-header" style="background-color: #fff;">
+                  <h2
+                    style="text-align: center; font-size: 1.1rem;"><strong>DESCRIPCIÓN
+                      DE PÓLIZA: {{item.value.Descrip_Ramo}}</strong></h2>
+                </div>
+                <br>
+                <div class="card-body">
+                  <mat-form-field style="font-size: 0.9rem; width: 100%;">
+                    <mat-label>Descripción #1:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.xdescripcion}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <mat-form-field style="font-size: 0.9rem; width: 100%;">
+                    <mat-label>Descripción #2:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.xdescripcion2}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+
+                  <mat-form-field style="font-size: 0.9rem; width: 100%;">
+                    <mat-label>Descripción #3:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.xdescripcion3}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+
+                  <mat-form-field style="font-size: 0.9rem; width: 100%;">
+                    <mat-label>Descripción #4:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.xdescripcion4}}
                         readonly>
                     </span>
                   </mat-form-field>
                 </div>
-          <!-- BENEFICIARIOS -->
-          <div class="card-header " style="background-color: #fff;" *ngIf="!ramoAuto">
-            <h2
-              style="text-align: center; font-size: 1.1rem;"><strong>BENEFICIARIOS</strong></h2>
-          </div>
-          <div class="card-header" style="background-color: #fff;"
-            formArrayName="beneficiarios" *ngIf="!ramoAuto">
-            <div *ngFor="let item of beneficiarios.controls; let i=index "
-              [formGroupName]="i">
-              <h2
-                style="text-align: center; font-size: 1.1rem;"><strong>{{item.value.xbeneficiario}}</strong></h2>
-              <mat-form-field style="font-size: 0.9rem; width: 35%;">
-                <mat-label>Nombre y Apellido:</mat-label>
-                <span class="readonly-input">
-                  <input matInput
-                    value={{item.value.xbeneficiario}}
-                    readonly>
-                </span>
-              </mat-form-field>
-              <mat-form-field style="font-size: 0.9rem; width: 15%;"
-                class="peq">
-                <mat-label>C.I./R.I.F.:</mat-label>
-                <span class="readonly-input">
-                  <input matInput
-                    value={{item.value.xcedula_beneficiario}}
-                    readonly>
-                </span>
-              </mat-form-field>
-
-              <mat-form-field style="font-size: 0.9rem; width: 18%;"
-                class="peq">
-                <mat-label>Parentesco:</mat-label>
-                <span class="readonly-input">
-                  <input matInput
-                    value={{item.value.xparentesco_beneficiario}}
-                    readonly>
-                </span>
-              </mat-form-field>
-
-              <mat-form-field style="font-size: 0.9rem; width: 20%;"
-                class="peq">
-                <mat-label>Fecha de Nacimiento:</mat-label>
-                <span class="readonly-input">
-                  <input matInput
-                    value={{item.value.fnacimiento_beneficiario}}
-                    readonly>
-                </span>
-              </mat-form-field>
-
-              <div class="text-center">
-                <mat-form-field style="font-size: 0.9rem;" class="peq">
-                  <mat-label>Sexo:</mat-label>
-                  <span class="readonly-input">
-                    <input matInput
-                      value={{item.value.csexo_beneficiario}}
-                      readonly>
-                  </span>
-                </mat-form-field>
-
-                <mat-form-field style="font-size: 0.9rem;" class="peq">
-                  <mat-label>Fecha de Ingreso:</mat-label>
-                  <span class="readonly-input">
-                    <input matInput
-                      value={{item.value.fingreso_beneficiario}}
-                      readonly>
-                  </span>
-                </mat-form-field>
-
-                <mat-form-field style="font-size: 0.9rem;" class="peq">
-                  <mat-label>Estado Civil:</mat-label>
-                  <span class="readonly-input">
-                    <input matInput
-                      value={{item.value.cestado_civil_beneficiario}}
-                      readonly>
-                  </span>
-                </mat-form-field>
               </div>
-            </div>
-          </div>
-              </div>
-            </div>
-          </div>
-          <div class="" style="background-color: #fff;"
-          formArrayName="automovil" *ngIf="ramoAuto">
-          <div *ngFor="let item of automovil.controls; let i=index "
-            [formGroupName]="i">
-            <h2
-              style="text-align: center; font-size: 1.1rem;"><strong> DATOS DEL VEHÍCULO - 
-                {{item.value.XMODELO}} : {{item.value.XPLACA}}</strong></h2>
-            <mat-form-field style="font-size: 0.9rem; width: 14%;"
-              class="peq">
-              <mat-label>Estatus:</mat-label>
-              <span class="readonly-input">
-                <input matInput
-                  value={{item.value.XESTATUSGENERAL}}
-                  readonly>
-              </span>
-            </mat-form-field>
-              <mat-form-field style="font-size: 0.9rem; width: 15%;">
-                <mat-label>Placa:</mat-label>
-                <span class="readonly-input">
-                  <input matInput
-                    value={{item.value.XPLACA}}
-                    readonly>
-                </span>
-              </mat-form-field>
-              <mat-form-field style="font-size: 0.9rem; width: 22%;">
-                <mat-label>Serial Carrocería:</mat-label>
-                <span class="readonly-input">
-                  <input matInput
-                    value={{item.value.XSERIALCARROCERIA}}
-                    readonly>
-                </span>
-              </mat-form-field>
-              <mat-form-field style="font-size: 0.9rem; width: 23%;">
-                <mat-label>Serial Motor:</mat-label>
-                <span class="readonly-input">
-                  <input matInput
-                    value={{item.value.XSERIALMOTOR}}
-                    readonly>
-                </span>
-              </mat-form-field>
-              <mat-form-field style="font-size: 0.9rem; width: 14%;">
-                <mat-label>Color:</mat-label>
-                <span class="readonly-input">
-                  <input matInput
-                    value={{item.value.XCOLOR}}
-                    readonly>
-                </span>
-              </mat-form-field>
-              <mat-form-field style="font-size: 0.9rem; width: 15%;">
-                <mat-label>Marca:</mat-label>
-                <span class="readonly-input">
-                  <input matInput
-                    value={{item.value.XMARCA}}
-                    readonly>
-                </span>
-              </mat-form-field>
-              <mat-form-field style="font-size: 0.9rem; width: 18%;">
-                <mat-label>Modelo:</mat-label>
-                <span class="readonly-input">
-                  <input matInput
-                    value={{item.value.XMODELO}}
-                    readonly>
-                </span>
-              </mat-form-field>
-              <mat-form-field style="font-size: 0.9rem; width: 12%;">
-                <mat-label>Año:</mat-label>
-                <span class="readonly-input">
-                  <input matInput
-                    value={{item.value.FANO}}
-                    readonly>
-                </span>
-              </mat-form-field>
-              <mat-form-field style="font-size: 0.9rem; width: 15%;">
-                <mat-label>Transmisión:</mat-label>
-                <span class="readonly-input">
-                  <input matInput
-                    value={{item.value.XTRANSMISION}}
-                    readonly>
-                </span>
-              </mat-form-field>
-              <mat-form-field style="font-size: 0.9rem; width: 28%;">
-                <mat-label>Versión:</mat-label>
-                <span class="readonly-input">
-                  <input matInput
-                    value={{item.value.XVERSION}}
-                    readonly>
-                </span>
-              </mat-form-field>
-              <div class = "text-center">
-              <mat-form-field style="font-size: 0.9rem; width: 30%;">
-                <mat-label>Uso:</mat-label>
-                <span class="readonly-input">
-                  <input matInput
-                    value={{item.value.XUSO}}
-                    readonly>
-                </span>
-              </mat-form-field>
-            </div>
             </div>
           </div>
         </div>
-        <div>
-          <br>
-            <button class="align-right-button" mat-flat-button color="primary"
-              mat-button matStepperNext>Siguiente</button>
-            <button class="align-right-button" mat-flat-button color="warn"
-              mat-button matStepperPrevious>Regresar</button>
-            <button class="align-left-button" mat-flat-button
-              style="background-color: #b6b6b6; color: white;"
-              mat-button disabled>Editar</button>
-            <!-- #447bd7; -->
+        <!-- Datos de Automóvil -->
+        <div class="card" style="background-color: #fff;" *ngIf="ramoAuto && !ramoRcg">
+          <div class="row">
+            <div style="background-color: #fff;"
+              formArrayName="automovil">
+              <div *ngFor="let item of automovil.controls; let i=index "
+                [formGroupName]="i">
+                <div class="card-header" style="background-color: #fff;">
+                  <h2 style="text-align: center; font-size: 1.1rem;"><strong>
+                      DATOS
+                      DEL VEHÍCULO -
+                      {{item.value.XMODELO}} :
+                      {{item.value.XPLACA}}</strong></h2>
+                </div>
+                <br>
+                <div class="card-body">
+                  <mat-form-field style="font-size: 0.9rem; width: 14%;"
+                    class="peq">
+                    <mat-label>Estatus:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.XESTATUSGENERAL}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <mat-form-field style="font-size: 0.9rem; width: 15%;">
+                    <mat-label>Placa:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.XPLACA}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <mat-form-field style="font-size: 0.9rem; width: 22%;">
+                    <mat-label>Serial Carrocería:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.XSERIALCARROCERIA}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <mat-form-field style="font-size: 0.9rem; width: 23%;">
+                    <mat-label>Serial Motor:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.XSERIALMOTOR}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <mat-form-field style="font-size: 0.9rem; width: 14%;">
+                    <mat-label>Color:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.XCOLOR}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <mat-form-field style="font-size: 0.9rem; width: 15%;">
+                    <mat-label>Marca:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.XMARCA}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <mat-form-field style="font-size: 0.9rem; width: 18%;">
+                    <mat-label>Modelo:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.XMODELO}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <mat-form-field style="font-size: 0.9rem; width: 12%;">
+                    <mat-label>Año:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.FANO}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <mat-form-field style="font-size: 0.9rem; width: 15%;">
+                    <mat-label>Transmisión:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.XTRANSMISION}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <mat-form-field style="font-size: 0.9rem; width: 28%;">
+                    <mat-label>Versión:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.XVERSION}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <div class="text-center">
+                    <mat-form-field style="font-size: 0.9rem; width: 30%;">
+                      <mat-label>Uso:</mat-label>
+                      <span class="readonly-input">
+                        <input matInput
+                          value={{item.value.XUSO}}
+                          readonly>
+                      </span>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        
+        </div>
+        <!-- BOTONES -->
+          <div>
+          <br>
+          <button class="align-right-button" mat-flat-button color="primary"
+            mat-button matStepperNext>Siguiente</button>
+          <button class="align-right-button" mat-flat-button color="warn"
+            mat-button matStepperPrevious>Regresar</button>
+          <button class="align-left-button" mat-flat-button
+            style="background-color: #b6b6b6; color: white;"
+            mat-button disabled>Editar</button>
+          <!-- #447bd7; -->
+        </div>
       </form>
     </mat-step>
     <!-- DATOS DE LOS RECIBOS -->
