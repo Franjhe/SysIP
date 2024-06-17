@@ -187,7 +187,6 @@ export class ReportsComponent {
       fetch(environment.apiUrl + '/api/v1/collection/search-collected/' + estado)
         .then((response) => response.json())
         .then(data => {
-          this.listPending = []
           for (let i = 0; i < data.searchPaymentCollected.recibo.length; i++) {
             let fechaFiltro = new Date(data.searchPaymentCollected.recibo[i].Fecha_desde_Pol).toISOString().substring(0, 10);
             //fecha emisión Recibo
@@ -359,6 +358,9 @@ export class ReportsComponent {
         }
       }
     }
+    console.log(fdesde_pol, fhasta_pol);
+    
+    
     const worksheet = XLSX.utils.json_to_sheet([]);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.sheet_add_aoa(worksheet, [[title]], {origin: 0});
@@ -371,6 +373,7 @@ export class ReportsComponent {
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.  spreadsheetml.sheet' });
     saveAs(excelData, `Reporte de `+ titleWithDate + ` .xlsx`);
+    console.log(filteredData);
   }
   makeExcelCollection() {
     this.snackBar.open("Reporte en Excel descargado con Éxito", "Cerrar", {
