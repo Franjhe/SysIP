@@ -57,7 +57,7 @@
                       <div class="invalid-feedback"
                       *ngIf="submitted && consulta_reporte.controls['fdesde_pol'].errors">Error en el nombre</div>
                       </div>
-                    </div>
+                    </div> 
                     <div class="col-6">
                       <div class="form-group mb-3">
                         <label for="fhasta_pol" class="label-opaque">Fecha Hasta</label>
@@ -73,7 +73,7 @@
                     </div>
                   </div>
               </div>
-              <div class="example-button-row">
+              <div class="example-button-row" >
                 <button *ngIf="!showButton" (click)="makeExcel()"
                         [disabled]="!showButton"
                         mat-raised-button class="mat-raised-button"
@@ -87,7 +87,7 @@
                 <button *ngIf="!showButton" (click)="buscarReporte()"
                         [disabled]="!showButton" mat-raised-button
                         class="mat-raised-button"
-                        style="color: #fff; background-color: #adadadfb;"> PDF
+                        style="color: #fff; background-color: #adadadfb;"> PDF 
                 </button>
                 <button *ngIf="showButton" (click)="buscarReporte()"
                         [disabled]="!showButton" mat-raised-button

@@ -7,9 +7,11 @@
     <h3>Ingrese Datos de la Póliza</h3>
   </div> -->
   <mat-stepper [linear]="isLinear" #stepper>
-    <mat-step [stepControl]="firstFormGroup">
-      <form [formGroup]="firstFormGroup">
+    <mat-step [stepControl]="polizaGroup">
+      <form [formGroup]="polizaGroup">
         <ng-template matStepLabel>Selección de la Póliza</ng-template>
+
+        <!-- DATOS DE LA PÓLIZA -->
 
         <div style="text-align: center;">
           <h2 style="margin-bottom: 0.1px; font-size: 1rem;">SELECCIONE LA
@@ -26,8 +28,7 @@
               <th mat-header-cell *matHeaderCellDef>
                 <mat-checkbox (change)="$event ? masterToggle(null) : null"
                   [checked]="selection.hasValue() && isAllSelected()"
-                  [indeterminate]="selection.hasValue() && !isAllSelected()"
-                  >
+                  [indeterminate]="selection.hasValue() && !isAllSelected()">
                 </mat-checkbox>
               </th>
 
@@ -42,40 +43,44 @@
             <!-- Position Column -->
             <ng-container matColumnDef="Nro_Poliza">
               <th mat-header-cell *matHeaderCellDef> Póliza </th>
-              <td mat-cell *matCellDef="let element"> {{element.Nro_Poliza}}
+              <td mat-cell *matCellDef="let element" style="font-size: 12px;">
+                {{element.Nro_Poliza}}
               </td>
             </ng-container>
             <!-- Name Column -->
             <ng-container matColumnDef="Descripcion_Ramo">
               <th mat-header-cell *matHeaderCellDef> Ramo </th>
-              <td mat-cell *matCellDef="let element">
+              <td mat-cell *matCellDef="let element" style="font-size: 12px;">
                 {{element.Descripcion_Ramo}} </td>
             </ng-container>
             <ng-container matColumnDef="Intermediario">
               <th mat-header-cell *matHeaderCellDef> Intermediario </th>
-              <td mat-cell *matCellDef="let element"> {{element.Intermediario}}
+              <td mat-cell *matCellDef="let element" style="font-size: 12px;">
+                {{element.Intermediario}}
               </td>
             </ng-container>
             <ng-container matColumnDef="Dias_de_vigencia">
               <th mat-header-cell *matHeaderCellDef> Vigencia </th>
-              <td mat-cell *matCellDef="let element">
+              <td mat-cell *matCellDef="let element" style="font-size: 12px;">
                 {{element.Dias_de_vigencia}} Días</td>
             </ng-container>
             <ng-container matColumnDef="Nombre_Asegurado">
               <th mat-header-cell *matHeaderCellDef> Asegurado </th>
-              <td mat-cell *matCellDef="let element">
+              <td mat-cell *matCellDef="let element" style="font-size: 12px;">
                 {{element.Nombre_Asegurado}} </td>
             </ng-container>
 
             <ng-container matColumnDef="Id_Asegurado">
               <th mat-header-cell *matHeaderCellDef> Identificación </th>
-              <td mat-cell *matCellDef="let element"> {{element.Id_Asegurado}}
+              <td mat-cell *matCellDef="let element" style="font-size: 12px;">
+                {{element.Id_Asegurado}}
               </td>
             </ng-container>
 
             <ng-container matColumnDef="Estatus_Poliza">
               <th mat-header-cell *matHeaderCellDef> Estado </th>
-              <td mat-cell *matCellDef="let element"> {{element.Estatus_Poliza}}
+              <td mat-cell *matCellDef="let element" style="font-size: 12px;">
+                {{element.Estatus_Poliza}}
               </td>
             </ng-container>
 
@@ -98,14 +103,16 @@
         </div>
       </form>
     </mat-step>
-    <mat-step [stepControl]="secondFormGroup" label="Información de la Póliza" #stepper>
-      <form [formGroup]="secondFormGroup">
-        
+<!-- DATOS DE LA PÓLIZA -->
+    <mat-step [stepControl]="polizaGroup" label="Información de la Póliza"
+      #stepper>
+      <form [formGroup]="polizaGroup">
+
         <br>
         <div class="card" style="background-color: #fff;">
           <div class="card-header" style="background-color: #fff;">
-            <h2 style="text-align: center; font-size: 1.1rem;"><strong>DATOS DEL TOMADOR -
-                ASEGURADO</strong></h2>
+            <h2 style="text-align: center; font-size: 1.1rem;"><strong>DATOS DEL
+                TOMADOR - ASEGURADO</strong></h2>
           </div>
           <div class="row">
 
@@ -113,7 +120,7 @@
               <mat-label>C.I. Tomador:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #ciTomadorInput
+                  formControlName="ciTomadorInput"
                   readonly>
               </span>
             </mat-form-field>
@@ -122,7 +129,7 @@
               <mat-label>Tomador:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #tomadorInput
+                  formControlName="tomadorInput"
                   readonly>
               </span>
             </mat-form-field>
@@ -131,7 +138,7 @@
               <mat-label>C.I. Asegurado:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #ciAseguradoInput
+                  formControlName="ciAseguradoInput"
                   readonly>
               </span>
             </mat-form-field>
@@ -140,7 +147,7 @@
               <mat-label>Asegurado:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #nombreAseguradoInput
+                  formControlName="nombreAseguradoInput"
                   readonly>
               </span>
             </mat-form-field>
@@ -149,7 +156,7 @@
               <mat-label>C.I. Beneficiario:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #ciBeneficiarioInput
+                  formControlName="ciBeneficiarioInput"
                   readonly>
               </span>
             </mat-form-field>
@@ -158,7 +165,7 @@
               <mat-label>Beneficiario:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #nombreBeneficiarioInput
+                  formControlName="nombreBeneficiarioInput"
                   readonly>
               </span>
             </mat-form-field>
@@ -167,7 +174,7 @@
               <mat-label>Nro. Póliza:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #nroPolizaInput
+                  formControlName="nroPolizaInput"
                   readonly>
               </span>
             </mat-form-field>
@@ -176,19 +183,19 @@
               <mat-label>Descripción del Ramo:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #descripcionRamo
+                  formControlName="descripcionRamo"
                   readonly>
               </span>
             </mat-form-field>
-
-            <h2 style="text-align: center; font-size: 1.1rem;"><strong>DATOS DE LA
-                PÓLIZA</strong></h2>
-
+            <div class="card-header" style="background-color: #fff;">
+              <h2 style="text-align: center; font-size: 1.1rem;"><strong>DATOS
+                  DE LA PÓLIZA</strong></h2>
+            </div>
             <mat-form-field style="font-size: 0.9rem;" class="peq2">
               <mat-label>Vigencia:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #Vigencia
+                  formControlName="Vigencia"
                   readonly>
               </span>
             </mat-form-field>
@@ -197,7 +204,7 @@
               <mat-label>Fecha desde Póliza:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #FechaDesdePol
+                  formControlName="FechaDesdePol"
                   readonly>
               </span>
             </mat-form-field>
@@ -206,7 +213,7 @@
               <mat-label>Fecha hasta Póliza:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #FechaHastaPol
+                  formControlName="FechaHastaPol"
                   readonly>
               </span>
             </mat-form-field>
@@ -215,7 +222,7 @@
               <mat-label>Renovación:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #Tipo_Renovacion
+                  formControlName="Tipo_Renovacion"
                   readonly>
               </span>
             </mat-form-field>
@@ -224,7 +231,7 @@
               <mat-label>Sucursal:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #Sucursal
+                  formControlName="Sucursal"
                   readonly>
               </span>
             </mat-form-field>
@@ -233,7 +240,7 @@
               <mat-label>Estado de Póliza:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #Estatus_Poliza
+                  formControlName="Estatus_Poliza"
                   readonly>
               </span>
             </mat-form-field>
@@ -242,18 +249,16 @@
               <mat-label>Productor:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #cproductor
+                  formControlName="cproductor"
                   readonly>
               </span>
             </mat-form-field>
-            
-            
 
             <mat-form-field style="font-size: 0.9rem;" class="peq2">
               <mat-label>Moneda:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #Moneda
+                  formControlName="Moneda"
                   readonly>
               </span>
             </mat-form-field>
@@ -262,7 +267,7 @@
               <mat-label>Tasa:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #Tasa
+                  formControlName="Tasa_Cambio"
                   readonly>
               </span>
             </mat-form-field>
@@ -271,7 +276,7 @@
               <mat-label>Fecha de Emisión:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #Fecha_Emision
+                  formControlName="Fecha_Emision"
                   readonly>
               </span>
             </mat-form-field>
@@ -280,7 +285,7 @@
               <mat-label>Plan:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #Plan
+                  formControlName="Plan"
                   readonly>
               </span>
             </mat-form-field>
@@ -289,7 +294,7 @@
               <mat-label>Descripción del Plan:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                  #Descripcion_Plan
+                  formControlName="Descripcion_Plan"
                   readonly>
               </span>
             </mat-form-field>
@@ -298,20 +303,18 @@
               <mat-label>Intermediario:</mat-label>
               <span class="readonly-input">
                 <input matInput
-                #Intermediario
-                readonly>
+                  formControlName="Intermediario"
+                  readonly>
               </span>
             </mat-form-field>
 
             <mat-form-field style="font-size: 1rem;" class="totalwidth">
               <mat-label>Observaciones:</mat-label>
               <textarea matInput
-                #Observacion
+                formControlName="Observacion"
                 readonly>
           </textarea>
             </mat-form-field>
-
-            
 
           </div>
         </div>
@@ -330,29 +333,366 @@
         </div>
       </form>
     </mat-step>
-<!-- <mat-step [stepControl]="secondFormGroup" label="Datos Técnicos" #stepper>
-              <form [formGroup]="secondFormGroup">
-                <br>
-                <div class="card" style="background-color: #fff;">
-                  <div class="card-header" style="background-color: #fff;">
-                    <h2 style="text-align: center; font-size: 1.1rem;"><strong>ASEGURADO - BENEFICIARIO</strong></h2>
-                  </div>
-                  <div class="row">
 
-                  </div>
+    <!-- DATOS TÉCNICOS -->
+    <mat-step [stepControl]="datosTecnicos" label="Datos Técnicos" #stepper>
+      <form [formGroup]="datosTecnicos">
+        <br>
+        <!-- ASEGURADOS -->
+        <div class="card" style="background-color: #fff;" *ngIf="!ramoAuto && !ramoRcg">
+          <div class="row">
+            <div style="background-color: #fff;" formArrayName="asegurados">
+              <div *ngFor="let item of asegurados.controls; let i=index "
+                [formGroupName]="i">
+                <div class="card-header" style="background-color: #fff;">
+                  <h2
+                    style="text-align: center; font-size: 1.1rem;"><strong>ASEGURADOS</strong></h2>
                 </div>
                 <br>
-                <div>
-                  <button class="align-right-button" mat-flat-button color="primary"
-                    mat-button matStepperNext>Siguiente</button>
-                  <button class="align-right-button" mat-flat-button color="warn"
-                    mat-button matStepperPrevious>Regresar</button>
+                <div class="card-body">
+                  <h2
+                    style="text-align: center; font-size: 1.1rem;"><strong>
+                      {{item.value.xasegurado}}</strong></h2>
+                  <mat-form-field style="font-size: 0.9rem; width: 35%;"
+                    class="peq">
+                    <mat-label>Nombre y Apellido:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.xasegurado}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+
+                  <mat-form-field style="font-size: 0.9rem; width: 15%;"
+                    class="peq">
+                    <mat-label>C.I./R.I.F.:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.xcedula_asegurado}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+
+                  <mat-form-field style="font-size: 0.9rem; width: 18%;"
+                    class="peq">
+                    <mat-label>Parentesco:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.xparentesco_asegurado}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+
+                  <mat-form-field style="font-size: 0.9rem; width: 20%;"
+                    class="peq">
+                    <mat-label>Fecha de Nacimiento:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.fnacimiento_asegurado}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+
+                  <div class="text-center">
+                    <mat-form-field style="font-size: 0.9rem;" class="peq">
+                      <mat-label>Estado Civil:</mat-label>
+                      <span class="readonly-input">
+                        <input matInput
+                          value={{item.value.cestado_civil_asegurado}}
+                          readonly>
+                      </span>
+                    </mat-form-field>
+
+                    <mat-form-field style="font-size: 0.9rem;" class="peq">
+                      <mat-label>Sexo:</mat-label>
+                      <span class="readonly-input">
+                        <input matInput
+                          value={{item.value.csexo_asegurado}}
+                          readonly>
+                      </span>
+                    </mat-form-field>
+
+                    <mat-form-field style="font-size: 0.9rem;" class="peq">
+                      <mat-label>Fecha Ingreso:</mat-label>
+                      <span class="readonly-input">
+                        <input matInput
+                          value={{item.value.fingreso_asegurado}}
+                          readonly>
+                      </span>
+                    </mat-form-field>
+                  </div>
                 </div>
-              </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- BENEFICIARIOS -->
+        <div class="card" style="background-color: #fff;" *ngIf="!ramoAuto && !ramoRcg">
+          <div class="row">
+            <div style="background-color: #fff;" formArrayName="beneficiarios">
+              <div *ngFor="let item of beneficiarios.controls; let i=index "
+                [formGroupName]="i">
+                <div class="card-header" style="background-color: #fff;">
+                  <h2
+                    style="text-align: center; font-size: 1.1rem;"><strong>BENEFICIARIOS</strong></h2>
+                </div>
+                <br>
+                <div class="card-body">
+                  <h2
+                    style="text-align: center; font-size: 1.1rem;"><strong>{{item.value.xbeneficiario}}</strong></h2>
 
+                  <mat-form-field style="font-size: 0.9rem; width: 35%;">
+                    <mat-label>Nombre y Apellido:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.xbeneficiario}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
 
-            </mat-step> -->
+                  <mat-form-field style="font-size: 0.9rem; width: 15%;"
+                    class="peq">
+                    <mat-label>C.I./R.I.F.:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.xcedula_beneficiario}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
 
+                  <mat-form-field style="font-size: 0.9rem; width: 18%;"
+                    class="peq">
+                    <mat-label>Parentesco:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.xparentesco_beneficiario}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+
+                  <mat-form-field style="font-size: 0.9rem; width: 20%;"
+                    class="peq">
+                    <mat-label>Fecha de Nacimiento:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.fnacimiento_beneficiario}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+
+                  <div class="text-center">
+                    <mat-form-field style="font-size: 0.9rem;" class="peq">
+                      <mat-label>Sexo:</mat-label>
+                      <span class="readonly-input">
+                        <input matInput
+                          value={{item.value.csexo_beneficiario}}
+                          readonly>
+                      </span>
+                    </mat-form-field>
+
+                    <mat-form-field style="font-size: 0.9rem;" class="peq">
+                      <mat-label>Fecha de Ingreso:</mat-label>
+                      <span class="readonly-input">
+                        <input matInput
+                          value={{item.value.fingreso_beneficiario}}
+                          readonly>
+                      </span>
+                    </mat-form-field>
+
+                    <mat-form-field style="font-size: 0.9rem;" class="peq">
+                      <mat-label>Estado Civil:</mat-label>
+                      <span class="readonly-input">
+                        <input matInput
+                          value={{item.value.cestado_civil_beneficiario}}
+                          readonly>
+                      </span>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Ramo de Riesgos Generales  -->
+        <div class="card" style="background-color: #fff;" *ngIf="!ramoAuto && ramoRcg">
+          <div class="row">
+            <div style="background-color: #fff;"
+              formArrayName="descrip">
+              <div *ngFor="let item of descrip.controls; let i=index "
+                [formGroupName]="i">
+                <div class="card-header" style="background-color: #fff;">
+                  <h2
+                    style="text-align: center; font-size: 1.1rem;"><strong>DESCRIPCIÓN
+                      DE PÓLIZA: {{item.value.Descrip_Ramo}}</strong></h2>
+                </div>
+                <br>
+                <div class="card-body">
+                  <mat-form-field style="font-size: 0.9rem; width: 100%;">
+                    <mat-label>Descripción #1:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.xdescripcion}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <mat-form-field style="font-size: 0.9rem; width: 100%;">
+                    <mat-label>Descripción #2:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.xdescripcion2}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+
+                  <mat-form-field style="font-size: 0.9rem; width: 100%;">
+                    <mat-label>Descripción #3:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.xdescripcion3}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+
+                  <mat-form-field style="font-size: 0.9rem; width: 100%;">
+                    <mat-label>Descripción #4:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.xdescripcion4}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Datos de Automóvil -->
+        <div class="card" style="background-color: #fff;" *ngIf="ramoAuto && !ramoRcg">
+          <div class="row">
+            <div style="background-color: #fff;"
+              formArrayName="automovil">
+              <div *ngFor="let item of automovil.controls; let i=index "
+                [formGroupName]="i">
+                <div class="card-header" style="background-color: #fff;">
+                  <h2 style="text-align: center; font-size: 1.1rem;"><strong>
+                      DATOS
+                      DEL VEHÍCULO -
+                      {{item.value.XMODELO}} :
+                      {{item.value.XPLACA}}</strong></h2>
+                </div>
+                <br>
+                <div class="card-body">
+                  <mat-form-field style="font-size: 0.9rem; width: 14%;"
+                    class="peq">
+                    <mat-label>Estatus:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.XESTATUSGENERAL}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <mat-form-field style="font-size: 0.9rem; width: 15%;">
+                    <mat-label>Placa:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.XPLACA}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <mat-form-field style="font-size: 0.9rem; width: 22%;">
+                    <mat-label>Serial Carrocería:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.XSERIALCARROCERIA}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <mat-form-field style="font-size: 0.9rem; width: 23%;">
+                    <mat-label>Serial Motor:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.XSERIALMOTOR}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <mat-form-field style="font-size: 0.9rem; width: 14%;">
+                    <mat-label>Color:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.XCOLOR}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <mat-form-field style="font-size: 0.9rem; width: 15%;">
+                    <mat-label>Marca:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.XMARCA}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <mat-form-field style="font-size: 0.9rem; width: 18%;">
+                    <mat-label>Modelo:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.XMODELO}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <mat-form-field style="font-size: 0.9rem; width: 12%;">
+                    <mat-label>Año:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.FANO}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <mat-form-field style="font-size: 0.9rem; width: 15%;">
+                    <mat-label>Transmisión:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.XTRANSMISION}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <mat-form-field style="font-size: 0.9rem; width: 28%;">
+                    <mat-label>Versión:</mat-label>
+                    <span class="readonly-input">
+                      <input matInput
+                        value={{item.value.XVERSION}}
+                        readonly>
+                    </span>
+                  </mat-form-field>
+                  <div class="text-center">
+                    <mat-form-field style="font-size: 0.9rem; width: 30%;">
+                      <mat-label>Uso:</mat-label>
+                      <span class="readonly-input">
+                        <input matInput
+                          value={{item.value.XUSO}}
+                          readonly>
+                      </span>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- BOTONES -->
+          <div>
+          <br>
+          <button class="align-right-button" mat-flat-button color="primary"
+            mat-button matStepperNext>Siguiente</button>
+          <button class="align-right-button" mat-flat-button color="warn"
+            mat-button matStepperPrevious>Regresar</button>
+          <button class="align-left-button" mat-flat-button
+            style="background-color: #b6b6b6; color: white;"
+            mat-button disabled>Editar</button>
+          <!-- #447bd7; -->
+        </div>
+      </form>
+    </mat-step>
+    <!-- DATOS DE LOS RECIBOS -->
     <mat-step>
       <ng-template matStepLabel>Recibos Asociados</ng-template>
       <div>
@@ -365,6 +705,9 @@
             <ng-container matColumnDef="cnrecibo">
               <th mat-header-cell *matHeaderCellDef> No. Recibo </th>
               <td mat-cell *matCellDef="let element"> {{element.cnrecibo}}
+                <mat-icon
+                  style="font-size: 24px; margin-left: 3px; cursor: pointer;"
+                  (click)="openR(element.crecibo)">picture_as_pdf </mat-icon>
               </td>
             </ng-container>
             <!-- Name Column -->
@@ -403,7 +746,10 @@
 
             <ng-container matColumnDef="ctransaccion">
               <th mat-header-cell *matHeaderCellDef> Transacción </th>
-              <td mat-cell *matCellDef="let element"> {{element.ctransaccion}}
+              <td mat-cell *matCellDef="let element">
+                {{element.ctransaccion}}
+                <!-- (click)="openT(element.ctransaccion) -->
+                <!-- <mat-icon style="font-size: 24px; margin-left: 3px; cursor: pointer;" *ngIf="element.ctransaccion !== 'N/A'">picture_as_pdf</mat-icon> -->
               </td>
             </ng-container>
 
