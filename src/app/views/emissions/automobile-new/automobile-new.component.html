@@ -224,7 +224,7 @@
           <mat-form-field>
             <mat-label>Clasificacion para Casco</mat-label>
             <input matInput placeholder="Clasificacion para Casco" formControlName="xclasificacion"
-              (change)="Clasification()">
+              >
           </mat-form-field>
         </div>
       </div>
@@ -245,13 +245,13 @@
           </mat-form-field>
         </div>
 
-        <div class="col-3" *ngIf="activateInspection">
+        <!-- <div class="col-3" *ngIf="activateInspection">
           <mat-form-field>
             <mat-label>N° de Inspección</mat-label>
             <input matInput type="number" placeholder="N° de Inspección" formControlName="cinspeccion"
               (change)="changeInspection()">
           </mat-form-field>
-        </div>
+        </div> -->
         <div class="col-3" *ngIf="activateRate">
           <mat-form-field class="example-full-width">
             <mat-label>Tarifas</mat-label>
@@ -347,7 +347,7 @@
         </mat-form-field>
       </div>
 
-      <mat-tab-group color="primary" backgroundColor="primary">
+      <mat-tab-group color="primary" backgroundColor="primary" *ngIf="userBroker && casco">
         <mat-tab label="Tasas" class="text-light" >
           <div class="row mt-5">
             <div class="col-3 text-center"> 
@@ -366,7 +366,7 @@
     
               <mat-form-field >
                 <mat-label>Prima</mat-label>
-                <input matInput formControlName="mprima_casco_text">
+                <input matInput formControlName="mprima_casco_ext">
               </mat-form-field>
             </div>
     
@@ -386,7 +386,7 @@
               </mat-form-field>
             </div>
     
-            <div class="col-3 text-center">
+            <div class="col-3 text-center" *ngIf="activateAttachment">
               <h4 class="text-center">Aditamento de Camiones</h4>
               <mat-form-field >
                 <mat-label>Tasa de Aditamento</mat-label>
@@ -454,8 +454,17 @@
     </form>
   </mat-step>
 
-  <mat-step label="Detalles del Recibo">
+  <mat-step label="Resumen del Recibo">
     <form [formGroup]="receiptFormGroup">
+
+      <div class="container row">
+        <h4 class="col-2">Monto Total RCV:  {{montoTotal}}$ </h4>
+        <h4 class="col-2">Tasa del día:  {{bcv}}$</h4>
+        <h4 class="col-2">Monto Total Casco: {{xprimaTotalCasco}}$</h4>
+        <h4 class="col-3">Prima Casco + RCV: {{primaFinal}}$</h4>
+      </div>
+      
+
       <div class="col-lg-12 row mt-4">
         <mat-form-field style=" width: 45%;">
           <mat-label>Corredores</mat-label>
@@ -580,21 +589,6 @@
 
       </div>
 
-      <div class="row justify-content-center">
-
-        <h4><strong>Monto Total RCV: </strong>{{montoTotal}}$</h4>
-        <h4><strong>Tasa del día:</strong> {{bcv}}</h4>
-        <h4><strong>Monto Total Casco: </strong>{{xprimaTotalCasco}}$</h4>
-        <h4><strong>Prima Casco + RCV: </strong>{{primaFinal}}$</h4>
-
-      </div>
-
-
-      <div class="row justify-content-center">
-        <div class="col-4">
-        </div>
-      </div>
-
       <div class="ms-4 ps-5 text-center container row">
         <div class="col-lg-5 mt-2">
           <div style="width: 220px;height: 48px;margin-top: 10px;margin-left: 100px;" class="button">
@@ -606,7 +600,7 @@
       <div class="row justify-content-center">
         <div class="col-4">
           <button mat-raised-button color="primary"
-            style="width: 42%; margin-top: 44px;margin-left: 89px;">Emitir</button>
+            style="width: 42%; margin-top: 44px;margin-left: 89px;" (click)="onSubmit()">Emitir</button>
         </div>
 
       </div>
