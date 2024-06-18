@@ -17,6 +17,7 @@ import {MatButtonModule} from '@angular/material/button';
 import { DatePipe } from '@angular/common';
 import {MatSelectModule} from '@angular/material/select';
 import {MatCardModule} from '@angular/material/card';
+import { CotizacionesComponent } from './cotizaciones/cotizaciones.component';
 // import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 
 
@@ -24,7 +25,8 @@ import {MatCardModule} from '@angular/material/card';
   
   declarations: [
     SearchComponent,
-    PolizaComponent, 
+    PolizaComponent,
+    CotizacionesComponent, 
   ],
   imports: [
     CommonModule,

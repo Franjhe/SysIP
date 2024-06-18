@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { SearchComponent } from './search/search.component';
 import { PolizaComponent } from './poliza.component';
 import { AuthGuard } from 'src/app/_helpers/auth.guard';
+import { CotizacionesComponent } from './cotizaciones/cotizaciones.component';
 
 const routes: Routes = [{
   path: '',
@@ -29,6 +30,13 @@ const routes: Routes = [{
       component: PolizaComponent,
       data: {
         title: 'poliza',
+      },
+    },
+    {
+      path: 'cotizaciones',
+      component: CotizacionesComponent,
+      data: {
+        title: 'cotizaciones',
       },
     },
   ]

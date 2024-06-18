@@ -131,6 +131,12 @@ export class ReportsComponent {
   
     var mediaType = 'application/pdf';
     let path = '';
+    if (fdesde_pol === '' || fhasta_pol === '') {
+      this.snackBar.open("Por favor, seleccione las fechas desde y hasta para poder imprimir el Reporte.", "Cerrar", {
+        duration: 3000,
+      });
+      return;
+    }
     if (data.estado == 'CD') {
       path = '/sis2000/cobranza/';
       const diffInDays = this.getDaysDifference(fdesde_pol, fhasta_pol);
@@ -181,7 +187,6 @@ export class ReportsComponent {
     let fdesde_pol = this.consulta_reporte.get('fdesde_pol')?.value;
     let fhasta_pol = this.consulta_reporte.get('fhasta_pol')?.value;
     this.estado = estado;
-    //  c25b5992c62ea40529e8c5c22fa33ce71157d559
     if (estado !== 'CD') {
       this.showButton = true
       fetch(environment.apiUrl + '/api/v1/collection/search-collected/' + estado)
@@ -259,7 +264,6 @@ export class ReportsComponent {
     } 
     else {
       this.showButton = true
-    //   window.open('https://api.lamundialdeseguros.com/sis2000/cobranza/', '_blank');
      }
   }
   makeExcel() {
