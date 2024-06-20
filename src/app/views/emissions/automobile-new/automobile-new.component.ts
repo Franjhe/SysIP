@@ -603,7 +603,6 @@ export class AutomobileNewComponent {
     })
   }
 
-
   getPlan(){
     this.http.post(environment.apiUrl + '/api/v1/valrep/plan', null).subscribe((response: any) => {
       if (response.data.plan) {
@@ -1534,23 +1533,8 @@ export class AutomobileNewComponent {
         vehivulo: this.vehicleFormGroup.value,
         plan: this.planFormGroup.value,
         recibo: this.receiptFormGroup.value,
-        msuma_aseg: 0,
-        mprima_bruta: 0,
-        pdescuento: 0,
-        precarga: 0,
-        pmotin: 0,
-        pcatastrofico: 0,
-        mprima_casco: 0,
-        mcatastrofico: 0,
-        mmotin: 0,
-        pblindaje: 0,
-        msuma_blindaje: 0,
-        mprima_blindaje: 0,
         cpais: 58,
         cusuario: this.currentUser.data.cusuario,
-        paditamento: 0,
-        msuma_aditamento: 0,
-        mprima_aditamento: 0,
       }
     }else{
       data = {
@@ -1567,27 +1551,27 @@ export class AutomobileNewComponent {
     const nombre = this.personsFormGroup.get('xnombre')?.value + ' ' + this.personsFormGroup.get('xapellido')?.value;
     const placa = this.vehicleFormGroup.get('xplaca')?.value;
 
-    // this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/create', data).subscribe((response: any) => {
-    //   if (response.status) {
-    //     // this.loadingEmissions = false;
-    //     // this.loadingPdf = true;
-    //     // this.ccontratoflota = response.data.ccontratoflota;
-    //     // const observable = from(this.pdfGenerationService.LoadDataCertifiqued(this.ccontratoflota));
+    this.http.post(environment.apiUrl + '/api/v1/emissions/quote-automovile', data).subscribe((response: any) => {
+      if (response.status) {
+        // this.loadingEmissions = false;
+        // this.loadingPdf = true;
+        // this.ccontratoflota = response.data.ccontratoflota;
+        // const observable = from(this.pdfGenerationService.LoadDataCertifiqued(this.ccontratoflota));
 
-    //     // observable.subscribe(
-    //     //   (data) => {
-    //     //     this.check = true;
-    //     //     this.loadingPdf = false
-    //     //   },
-    //     //   (error) => {
-    //     //   }
-    //     // );
+        // observable.subscribe(
+        //   (data) => {
+        //     this.check = true;
+        //     this.loadingPdf = false
+        //   },
+        //   (error) => {
+        //   }
+        // );
 
-    //     // this.snackBar.open(`Se ha generado exitósamente el contrato n° ${this.ccontratoflota} del cliente ${nombre?.toUpperCase()} para el vehículo de placa ${placa?.toUpperCase()}`, '', {
-    //     //   duration: 3000,
-    //     // });
-    //   }
-    // });
+        // this.snackBar.open(`Se ha generado exitósamente el contrato n° ${this.ccontratoflota} del cliente ${nombre?.toUpperCase()} para el vehículo de placa ${placa?.toUpperCase()}`, '', {
+        //   duration: 3000,
+        // });
+      }
+    });
 
   }
 
