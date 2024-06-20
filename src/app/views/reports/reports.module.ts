@@ -7,6 +7,7 @@ import { MaterialExampleModule } from './../../material.module'
 import { ReactiveFormsModule } from '@angular/forms';
 import { ReceiptsComponent } from './receipts/receipts.component';
 import { BonusAndCommissionsComponent } from './bonus-and-commissions/bonus-and-commissions.component';
+import { CorredorComponent } from './corredor/corredor.component';
 
 
 
@@ -15,7 +16,8 @@ import { BonusAndCommissionsComponent } from './bonus-and-commissions/bonus-and-
     PremiumsComponent,
     ReportsComponent,
     ReceiptsComponent,
-    BonusAndCommissionsComponent
+    BonusAndCommissionsComponent,
+    CorredorComponent
   ],
   imports: [
     CommonModule,

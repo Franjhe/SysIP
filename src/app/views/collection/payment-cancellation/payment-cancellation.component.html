@@ -99,7 +99,7 @@
                       <div class="col-2">
 
 <!-- saldoCliente -->
-                        <mat-form-field *ngIf="group.value.casegurado != 1300 || group.value.saldoCliente == null">
+                        <mat-form-field *ngIf="group.value.casegurado != 1300 && group.value.saldoCliente == null">
                           <mat-label>Estado de recibo</mat-label>
                           <mat-select (selectionChange)="validateMov(i)" formControlName="iestadorec" >
                             <mat-option value="C">Cobrado</mat-option>

@@ -118,19 +118,10 @@ export class ReportsComponent {
   buscarReporte() {
     const fdesde_pol = this.consulta_reporte.get('fdesde_pol')?.value;
     const fhasta_pol = this.consulta_reporte.get('fhasta_pol')?.value;
-  
-    // Verificar que la diferencia entre fdesde_pol y fhasta_pol no sea mayor a 20 días
-    const diffInDays = this.getDaysDifference(fdesde_pol, fhasta_pol);
-    if (diffInDays > 5) {
-      this.snackBar.open("El rango de fechas no debe ser mayor a 5 días", "Cerrar", {
-        duration: 3000,
-      });
-      return;
-    }
-  
-    this.snackBar.open("Reporte en PDF descargado con Éxito", "Cerrar", {
+    this.snackBar.open("Reporte Descargado con Éxito", "Cerrar", {
       duration: 3000,
     });
+    
   
     let data = {
       estado: this.consulta_reporte.get('estado')?.value,
@@ -142,6 +133,17 @@ export class ReportsComponent {
     let path = '';
     if (data.estado == 'CD') {
       path = '/sis2000/cobranza/';
+      const diffInDays = this.getDaysDifference(fdesde_pol, fhasta_pol);
+      if (diffInDays > 3) {
+      this.snackBar.open("El rango de fechas no debe ser mayor a 3 días", "Cerrar", {
+        duration: 3000,
+      });
+      return;
+    }
+  
+    this.snackBar.open("Reporte en PDF descargado con Éxito", "Cerrar", {
+      duration: 3000,
+    });
     } else {
       path = '/single_receipts/';
     }
@@ -178,13 +180,13 @@ export class ReportsComponent {
     let estado = this.consulta_reporte.get('estado')?.value;
     let fdesde_pol = this.consulta_reporte.get('fdesde_pol')?.value;
     let fhasta_pol = this.consulta_reporte.get('fhasta_pol')?.value;
-    console.log(estado)
+    this.estado = estado;
+    //  c25b5992c62ea40529e8c5c22fa33ce71157d559
     if (estado !== 'CD') {
       this.showButton = true
       fetch(environment.apiUrl + '/api/v1/collection/search-collected/' + estado)
         .then((response) => response.json())
         .then(data => {
-          this.listPending = []
           for (let i = 0; i < data.searchPaymentCollected.recibo.length; i++) {
             let fechaFiltro = new Date(data.searchPaymentCollected.recibo[i].Fecha_desde_Pol).toISOString().substring(0, 10);
             //fecha emisión Recibo
@@ -274,6 +276,21 @@ export class ReportsComponent {
     let fhasta_pol = this.consulta_reporte.get('fhasta_pol')?.value;
     fdesde_pol = fdesde_pol ? fdesde_pol : '1900-01-01';
     fhasta_pol = fhasta_pol ? fhasta_pol : '2100-01-01';
+    let title = '';
+    if (this.valorList == 'P') {
+      title = 'Recibos Pendientes';
+    } else if (this.valorList == 'C') {
+      title = 'Recibos Cobrados';
+    } else if (this.valorList == 'A') {
+      title = 'Recibos Anulados';
+    }
+    else if (this.valorList == 'S') {
+      title = 'Recibos Suspendidos';
+    }
+    else if (this.valorList == 'N') {
+      title = 'Recibos Notificados';
+    };
+    const titleWithDate = `${title} (${formato_fecha})`;
     if (this.valorList == 'C') {
 
       for (let item of this.listPending) {
@@ -341,12 +358,22 @@ export class ReportsComponent {
         }
       }
     }
-    const worksheet = XLSX.utils.json_to_sheet(filteredData);
+    console.log(fdesde_pol, fhasta_pol);
+    
+    
+    const worksheet = XLSX.utils.json_to_sheet([]);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte');
+    XLSX.utils.sheet_add_aoa(worksheet, [[title]], {origin: 0});
+    XLSX.utils.sheet_add_aoa(worksheet, [
+      [title],
+      // [filteredData.toLocaleString()]
+    ], {origin: 0});
+    XLSX.utils.sheet_add_json(worksheet, filteredData, {origin: 1});
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reporte de ' + title + '');
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.  spreadsheetml.sheet' });
-    saveAs(excelData, `Reporte de Recibos.xlsx`);
+    saveAs(excelData, `Reporte de `+ titleWithDate + ` .xlsx`);
+    console.log(filteredData);
   }
   makeExcelCollection() {
     this.snackBar.open("Reporte en Excel descargado con Éxito", "Cerrar", {
