@@ -91,7 +91,9 @@ export interface filteredUtility {
 
 export class AutomobileNewComponent {
   personsFormGroup = this._formBuilder.group({
+    ccotizacion: [{ value: '', disabled: false }],
     icedula: ['', Validators.required],
+    cci_rif: '',
     xrif_cliente: ['', Validators.required],
     xnombre: ['', Validators.required],
     xapellido: ['', Validators.required],
@@ -159,7 +161,6 @@ export class AutomobileNewComponent {
   });
 
   vehicleFormGroup = this._formBuilder.group({
-    ccotizacion: [{ value: '', disabled: false }],
     cinspeccion: [{ value: '', disabled: false }],
     xplaca: ['',[Validators.required, Validators.maxLength(7)]],
     xmarca: new FormControl<any | Marca>('', { nonNullable: true}) ,
@@ -396,6 +397,8 @@ export class AutomobileNewComponent {
         this.personsFormGroup.get('iestado_civil')?.setValue(response.info?.iestado_civil)
         this.personsFormGroup.get('xtelefono_emp')?.setValue(response.info?.xtelefono)
         this.personsFormGroup.get('xdireccion')?.setValue(response.info?.xavecalle)
+        this.personsFormGroup.get('cci_rif')?.setValue(response.info?.cci_rif)
+
       }
     });
   }
@@ -676,8 +679,8 @@ export class AutomobileNewComponent {
       if (response.data.takers) {
         for (let i = 0; i < response.data.takers.length; i++) {
           this.takersList.push({
-            id: response.data.takers[i].ctomador,
-            nombre: response.data.takers[i].xtomador,
+            id: response.data.takers[i].cci_rif,
+            nombre: response.data.takers[i].xcliente,
           });
         }
         this.filteredTakers = this.receiptFormGroup.get('ctomador')!.valueChanges.pipe(
@@ -1530,28 +1533,31 @@ export class AutomobileNewComponent {
     if(this.planFormGroup.get('xcobertura')?.value == 'Rcv'){
       data = {
         persona: this.personsFormGroup.value,
-        vehivulo: this.vehicleFormGroup.value,
+        vehiculo: this.vehicleFormGroup.value,
         plan: this.planFormGroup.value,
         recibo: this.receiptFormGroup.value,
         cpais: 58,
         cusuario: this.currentUser.data.cusuario,
+        tasa : this.bcv
       }
     }else{
       data = {
         persona: this.personsFormGroup.value,
-        vehivulo: this.vehicleFormGroup.value,
+        vehiculo: this.vehicleFormGroup.value,
         plan: this.planFormGroup.value,
         recibo: this.receiptFormGroup.value,
         accesorios: accesorios.value,
         cpais: 58,
         cusuario: this.currentUser.data.cusuario,
+        tasa : this.bcv
+
       }
     }
 
     const nombre = this.personsFormGroup.get('xnombre')?.value + ' ' + this.personsFormGroup.get('xapellido')?.value;
     const placa = this.vehicleFormGroup.get('xplaca')?.value;
 
-    this.http.post(environment.apiUrl + '/api/v1/emissions/quote-automovile', data).subscribe((response: any) => {
+    this.http.post(environment.apiUrl + '/api/v1/emissions/quote-automobile', data).subscribe((response: any) => {
       if (response.status) {
         // this.loadingEmissions = false;
         // this.loadingPdf = true;

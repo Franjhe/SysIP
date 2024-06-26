@@ -4,6 +4,12 @@
       <ng-template matStepLabel>Datos Personales</ng-template>
       <div class="row">
         <div class="col-3">
+          <mat-form-field>
+            <mat-label>N° de Cotizacion</mat-label>
+            <input matInput type="number" placeholder="N° de Cotizacion" formControlName="ccotizacion">
+          </mat-form-field>
+        </div>
+        <div class="col-3">
           <mat-form-field class="example-full-width">
             <mat-label>Tipo Doc. Identidad</mat-label>
             <mat-select (selectionChange)="onIdentSelection()" formControlName="icedula">
@@ -136,12 +142,6 @@
   <mat-step label="Datos del Vehículo">
     <form [formGroup]="vehicleFormGroup">
       <div class="row">
-        <div class="col-3">
-          <mat-form-field>
-            <mat-label>N° de Cotizacion</mat-label>
-            <input matInput type="number" placeholder="N° de Cotizacion" formControlName="ccotizacion">
-          </mat-form-field>
-        </div>
         <div class="col-3">
           <mat-form-field>
             <mat-label>Año</mat-label>
