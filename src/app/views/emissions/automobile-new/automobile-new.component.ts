@@ -96,6 +96,7 @@ export class AutomobileNewComponent {
     cci_rif: '',
     xrif_cliente: ['', Validators.required],
     xnombre: ['', Validators.required],
+    xjuridico: ['', Validators.required],
     xapellido: ['', Validators.required],
     fnacimiento: ['', Validators.required],
     xtelefono_emp: ['', Validators.required],
@@ -329,40 +330,6 @@ export class AutomobileNewComponent {
 
   }
 
-  onIdentSelection() {
-    let selectedIdent = this.personsFormGroup.get('icedula')?.value || ''
-
-    // Si selectedIdent es distinto de 'V', eliminar la validación de 'fnacimiento'
-    if (selectedIdent !== 'V') {
-      this.personsFormGroup.get('fnacimiento')?.clearValidators();
-      this.personsFormGroup.get('iestado_civil')?.clearValidators();
-      this.personsFormGroup.get('isexo')?.clearValidators();
-      this.personsFormGroup.get('xapellido')?.clearValidators();
-      this.activaRepresentante = true;
-      this.fecha = 'Fecha de Registro';
-
-
-
-    } else { 
-      // Si selectedIdent es 'V', establecer la validación de 'fnacimiento'
-      this.personsFormGroup.get('fnacimiento')?.clearValidators();;
-      this.personsFormGroup.get('iestado_civil')?.clearValidators();;
-      this.personsFormGroup.get('isexo')?.clearValidators();;
-      this.personsFormGroup.get('xapellido')?.clearValidators();;
-      this.activaRepresentante = false;
-      this.fecha = 'Fecha de Nacimiento';
-
-
-
-    }
-
-    // Actualizar los controles después de cambiar las validaciones
-    this.personsFormGroup.get('fnacimiento')?.updateValueAndValidity();
-    this.personsFormGroup.get('iestado_civil')?.updateValueAndValidity();
-    this.personsFormGroup.get('isexo')?.updateValueAndValidity();
-    this.personsFormGroup.get('xapellido')?.updateValueAndValidity();
-  }
-
   calculateYears(event: any) {
     const selectedDate = new Date(event.value);
     const currentDate = new Date();
@@ -420,7 +387,6 @@ export class AutomobileNewComponent {
             nombre: response.data.state[i].xdescripcion_l
           });
         }
-
 
         this.filteredState = this.personsFormGroup.get('cestado')!.valueChanges.pipe(
           startWith(''),
@@ -613,6 +579,7 @@ export class AutomobileNewComponent {
           this.planList.push({
             id: response.data.plan[i].cplan,
             nombre: response.data.plan[i].xplan,
+            cmoneda : response.data.plan[i].cmoneda,
           });
         }
 
@@ -749,35 +716,6 @@ export class AutomobileNewComponent {
     this.planFormGroup.get('msuma_aseg')?.setValue(this.sumaAsegurada);
     this.planFormGroup.get('msuma_aseg_ext')?.setValue(this.sumaAsegurada);
 
-  }
-
-  getAmount(){
-    let data = {
-      cplan: this.planFormGroup.get('cplan')?.value,
-      ctarifa_exceso: this.vehicleFormGroup.get('ctarifa_exceso')?.value,
-      npasajeros: this.vehicleFormGroup.get('npasajeros')?.value,
-      cuso: this.vehicleFormGroup.get('cuso')?.value,
-    }
-    // this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/premium-amount', data).subscribe((response: any) => {
-    //   // if (response.status) {
-    //   //   this.montoTotal = response.data.mprima
-    //   //   this.ubii = response.data.ccubii
-    //   //   if(this.montoTotal){
-    //   //     this.operationUbii();
-    //   //     this.amountTotalRcv = true;
-    //   //     this.calculationsPremiumsCascoTotal()
-    //   //     if(this.planFormGroup.get('xcobertura')?.value !== 'Rcv'){
-    //   //       this.amountTotalCasco = true;
-    //   //     }else{
-    //   //       this.amountTotalCasco = false;
-    //   //     }
-    //   //   }else{
-    //   //     this.amountTotalRcv = false;
-    //   //   }
-    //   // }else{
-    //   //   this.amountTotalRcv = false;
-    //   // }
-    // });
   }
 
   getAmountQuotes(){
@@ -924,6 +862,8 @@ export class AutomobileNewComponent {
     });
   }
 
+
+  //pendiente del alcance de esta funcion
   onVersionSelection() {
 
       this.vehicleFormGroup.get('npasajeros')?.setValue(this.vehicleFormGroup.get('xversion')?.value.npasajero);
@@ -1046,14 +986,6 @@ export class AutomobileNewComponent {
     }
   }
 
-  changeInspection(){
-    if(this.currentUser.data.crol != 5){
-      this.snackBar.open(`No posee Número de Inspección, por lo tanto no puede proceder con ${this.planFormGroup.get('xcobertura')?.value}`, '', {
-        duration: 4000,
-      });
-    }
-  }
-
   async onCoverageChange() {
     await this.getHullPrice()
     this.calculationPremiums()
@@ -1149,18 +1081,6 @@ export class AutomobileNewComponent {
         }
       }
     });
-  }
-
-  onMethodOfPaymentSelection(event: any) {
-    const selectedValue = event.option.value;
-   // const selectedMethodOfPayment = this.methodOfPaymentList.find(payment => payment.value === selectedValue);
-    // if (selectedMethodOfPayment) {
-    //   this.receiptFormGroup.get('cmetodologiapago')?.setValue(selectedMethodOfPayment.id);
-    //   this.xmetodologia = selectedMethodOfPayment.value;
-    //this.validateMethod();
-    //this.operationAmount();
-
-    // }
   }
 
   validateMethod() {
@@ -1523,6 +1443,48 @@ export class AutomobileNewComponent {
 
   }
 
+  validateName(){
+    if(this.personsFormGroup.get('icedula')?.value != 'V'){
+      const str = this.personsFormGroup.get('xjuridico')?.value || ''
+      const words = str.split(" ");
+      this.personsFormGroup.get('xnombre')?.setValue(words[0])
+      this.personsFormGroup.get('xapellido')?.setValue(words[1] )
+    }
+  }
+
+  onIdentSelection() {
+    let selectedIdent = this.personsFormGroup.get('icedula')?.value || ''
+
+    // Si selectedIdent es distinto de 'V', eliminar la validación de 'fnacimiento'
+    if (selectedIdent !== 'V') {
+      this.personsFormGroup.get('fnacimiento')?.clearValidators();
+      this.personsFormGroup.get('iestado_civil')?.clearValidators();
+      this.personsFormGroup.get('isexo')?.clearValidators();
+      this.personsFormGroup.get('xapellido')?.clearValidators();
+      this.activaRepresentante = true;
+      this.fecha = 'Fecha de Registro';
+
+
+
+    } else { 
+      // Si selectedIdent es 'V', establecer la validación de 'fnacimiento'
+      this.personsFormGroup.get('fnacimiento')?.clearValidators();;
+      this.personsFormGroup.get('iestado_civil')?.clearValidators();;
+      this.personsFormGroup.get('isexo')?.clearValidators();;
+      this.personsFormGroup.get('xapellido')?.clearValidators();;
+      this.activaRepresentante = false;
+      this.fecha = 'Fecha de Nacimiento';
+
+
+
+    }
+
+    // Actualizar los controles después de cambiar las validaciones
+    this.personsFormGroup.get('fnacimiento')?.updateValueAndValidity();
+    this.personsFormGroup.get('iestado_civil')?.updateValueAndValidity();
+    this.personsFormGroup.get('isexo')?.updateValueAndValidity();
+    this.personsFormGroup.get('xapellido')?.updateValueAndValidity();
+  }
 
   //Guardado
 
@@ -1538,7 +1500,11 @@ export class AutomobileNewComponent {
         recibo: this.receiptFormGroup.value,
         cpais: 58,
         cusuario: this.currentUser.data.cusuario,
-        tasa : this.bcv
+        cramo: 18,
+        tasa : this.bcv,
+        cprog : "Emi_Auto",
+        ifuente : "WebSys",
+        csucur : 1
       }
     }else{
       data = {
@@ -1549,13 +1515,13 @@ export class AutomobileNewComponent {
         accesorios: accesorios.value,
         cpais: 58,
         cusuario: this.currentUser.data.cusuario,
-        tasa : this.bcv
-
+        cramo: 18,
+        tasa : this.bcv,
+        cprog : "Emi_Auto",
+        ifuente : "WebSys",
+        csucur : 1
       }
     }
-
-    const nombre = this.personsFormGroup.get('xnombre')?.value + ' ' + this.personsFormGroup.get('xapellido')?.value;
-    const placa = this.vehicleFormGroup.get('xplaca')?.value;
 
     this.http.post(environment.apiUrl + '/api/v1/emissions/quote-automobile', data).subscribe((response: any) => {
       if (response.status) {

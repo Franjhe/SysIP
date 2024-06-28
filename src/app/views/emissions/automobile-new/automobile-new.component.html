@@ -4,12 +4,6 @@
       <ng-template matStepLabel>Datos Personales</ng-template>
       <div class="row">
         <div class="col-3">
-          <mat-form-field>
-            <mat-label>N° de Cotizacion</mat-label>
-            <input matInput type="number" placeholder="N° de Cotizacion" formControlName="ccotizacion">
-          </mat-form-field>
-        </div>
-        <div class="col-3">
           <mat-form-field class="example-full-width">
             <mat-label>Tipo Doc. Identidad</mat-label>
             <mat-select (selectionChange)="onIdentSelection()" formControlName="icedula">
@@ -41,7 +35,7 @@
         <div class="col-6" *ngIf="activaRepresentante">
           <mat-form-field class="example-full-width">
             <mat-label>Nombre Representante</mat-label>
-            <input matInput placeholder="Nombre Representante" formControlName="xnombre">
+            <input matInput placeholder="Nombre Representante" formControlName="xjuridico">
           </mat-form-field>
         </div>
       </div>
@@ -134,7 +128,7 @@
       </div>
 
       <div class="text-center py-5">
-        <button class="bg-primary text-light" mat-button matStepperNext>Continuar</button>
+        <button class="bg-primary text-light" mat-button matStepperNext (click)="validateName()">Continuar</button>
       </div>
     </form>
   </mat-step>
@@ -245,13 +239,6 @@
           </mat-form-field>
         </div>
 
-        <!-- <div class="col-3" *ngIf="activateInspection">
-          <mat-form-field>
-            <mat-label>N° de Inspección</mat-label>
-            <input matInput type="number" placeholder="N° de Inspección" formControlName="cinspeccion"
-              (change)="changeInspection()">
-          </mat-form-field>
-        </div> -->
         <div class="col-3" *ngIf="activateRate">
           <mat-form-field class="example-full-width">
             <mat-label>Tarifas</mat-label>
@@ -330,7 +317,7 @@
           <mat-label>Planes</mat-label>
           <input type="text" placeholder="Seleccione Planes" aria-label="Seleccione" matInput
              [matAutocomplete]="plan" required formControlName="cplan" >
-          <mat-autocomplete #plan="matAutocomplete" (optionSelected)="getAmount()" [displayWith]="displayPlanFn">
+          <mat-autocomplete #plan="matAutocomplete"  [displayWith]="displayPlanFn">
             <mat-option *ngFor="let plan of filteredPlan | async" [value]="plan">
               {{ plan.nombre }}
             </mat-option>
