@@ -224,7 +224,6 @@ export class AutomobileNewComponent {
   filteredModel!: Observable<any[]>;
 
   //validaciones
-  clientNew : boolean = false
   activaRepresentante: boolean = false;
   userBroker : boolean = false
   clasificacionMotos: boolean = false;
@@ -346,14 +345,14 @@ export class AutomobileNewComponent {
   }
 
   searchPropietary(){
-    this.newClient = false
+    this.newClient = true
     let cliente = this.personsFormGroup.get('icedula')?.value +'-'+ this.personsFormGroup.get('xrif_cliente')?.value
     let data = {
       xrif_cliente: cliente
     };
     this.http.post(environment.apiUrl + '/api/v1/emissions/automobile/propietary', data).subscribe((response: any) => {
       if (response.status) {
-        this.newClient = true
+        this.newClient = false
         this.personsFormGroup.get('xnombre')?.setValue(response.info.xnombre)
         this.personsFormGroup.get('xapellido')?.setValue(response.info.xapellido)
         this.personsFormGroup.get('isexo')?.setValue(response.info?.isexo)
@@ -1488,9 +1487,22 @@ export class AutomobileNewComponent {
 
   //Guardado
 
-  onSubmit(){
+
+  async createClient(){
+    if(this.newClient){
+      
+      this.http.post(environment.apiUrl + '/api/v1/emissions/quote-automobile',
+        { persona: this.personsFormGroup.value }
+      ).subscribe((response: any) => {
+  
+      });
+    }
+  }
+
+  async onSubmit(){
     let data = {}
     const accesorios = this.planFormGroup.controls.accesorios as FormArray;
+    await this.createClient()
 
     if(this.planFormGroup.get('xcobertura')?.value == 'Rcv'){
       data = {
