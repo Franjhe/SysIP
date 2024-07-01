@@ -567,10 +567,10 @@
         <mat-form-field style="width: 40%;">
           <mat-label>Frecuencia de Pago</mat-label>
           <mat-select formControlName="cmetodologiapago" >
-            <mat-option  placeholder="Seleccione Frecuencia de Pago" 
-            *ngFor="let methodOfPayment of methodOfPaymentList" [value]="methodOfPayment">
-              {{ methodOfPayment.nombre }}
-            </mat-option>
+            <mat-option  placeholder="Seleccione Frecuencia de Pago" value="A">Anual</mat-option>
+            <mat-option  placeholder="Seleccione Frecuencia de Pago" value="M">Mensual</mat-option>
+            <mat-option  placeholder="Seleccione Frecuencia de Pago" value="T">Trimestral</mat-option>
+            <mat-option  placeholder="Seleccione Frecuencia de Pago" value="C">Cuatrimestral</mat-option>
           </mat-select>
         </mat-form-field>
 
