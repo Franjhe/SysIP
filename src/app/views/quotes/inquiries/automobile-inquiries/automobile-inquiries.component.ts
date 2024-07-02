@@ -70,11 +70,16 @@ export class AutomobileInquiriesComponent {
               private pdfGenerationService: PdfGenerationService,) {}
 
   ngOnInit(){
-    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv')
-    .then((response) => response.json())
+    fetch("https://ve.dolarapi.com/v1/dolares")
+    .then(response => response.json())
     .then(data => {
-      this.bcv = data.monitors.usd.price
-    })
+
+      for(let tasa of data){
+        if(tasa.fuente == 'oficial'){
+          this.bcv = tasa.promedio
+        }
+      }
+    });
 
     this.token = localStorage.getItem('user');
     this.currentUser = JSON.parse(this.token);

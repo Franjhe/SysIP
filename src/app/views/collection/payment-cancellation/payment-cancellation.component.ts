@@ -61,11 +61,16 @@ export class PaymentCancellationComponent {
     this.currentUser = JSON.parse(token);
     this.usuario = this.currentUser.data.cusuario
 
-    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv')
-    .then((response) => response.json())
+    fetch("https://ve.dolarapi.com/v1/dolares")
+    .then(response => response.json())
     .then(data => {
-      this.bcv = data.monitors.usd.price
-    })
+
+      for(let tasa of data){
+        if(tasa.fuente == 'oficial'){
+          this.bcv = tasa.promedio
+        }
+      }
+    });
 
 
     fetch(environment.apiUrl + '/api/v1/collection/search-notification' )

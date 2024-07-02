@@ -336,11 +336,16 @@ export class SelfManagementComponent {
     this.getTypeOfPay();
     this.getUtility();
     this.fechas = 'Fecha de Nacimiento';
-    fetch('https://pydolarvenezuela-api.vercel.app/api/v1/dollar?page=bcv')
-    .then((response) => response.json())
+    fetch("https://ve.dolarapi.com/v1/dolares")
+    .then(response => response.json())
     .then(data => {
-      this.bcv = data.monitors.usd.price
-    })
+
+      for(let tasa of data){
+        if(tasa.fuente == 'oficial'){
+          this.bcv = tasa.promedio
+        }
+      }
+    });
 
     this.today = new Date();
     const formattedDate = this.today.toISOString().split('T')[0]; // Obtener solo la parte de la fecha sin la hora
