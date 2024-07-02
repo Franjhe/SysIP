@@ -12,7 +12,64 @@
     width: 100%;
     overflow-x: auto;
   }
-  
+.button {
+  position: relative;
+  width: 165px;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border: 1px solid #5f93ec;
+  background-color: #447bd7;
+  overflow: hidden;
+}
+
+.button, .button__icon, .button__text {
+  transition: all 0.3s;
+}
+
+.button .button__text {
+  transform: translateX(6px);
+  color: #fff;
+  font-weight: 500;
+}
+
+.button .button__icon {
+  position: absolute;
+  transform: translateX(120px);
+  height: 100%;
+  width: 40px;
+  background-color: #2561c9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button .svg {
+  width: 20px;
+  fill: #fff;
+}
+
+.button:hover {
+  background: #2561c9;
+}
+
+.button:hover .button__text {
+  color: transparent;
+}
+
+.button:hover .button__icon {
+  width: 148px;
+  transform: translateX(0);
+}
+
+.button:active .button__icon {
+  background-color: #447bd7;
+}
+
+.button:active {
+  border: 1px solid #447bd7;
+}
   mat-table {
    width: 1200px;
    max-width: 1200px;

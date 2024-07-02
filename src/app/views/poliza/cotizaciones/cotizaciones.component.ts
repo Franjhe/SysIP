@@ -1,5 +1,6 @@
 import { saveAs } from 'file-saver';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
+import * as XLSX from 'xlsx';
 import {
   AfterViewInit,
   Component,
@@ -72,19 +73,22 @@ export class CotizacionesComponent implements AfterViewInit {
   descripcionPlan: string = 'No encontrado';
   currentUser!: any;
   token!: any;
-  poliza: any;
+  cotizacion: any;
   recibosData: any;
   defaultDataSource = new MatTableDataSource<any>();
   displayedColumns: string[] = [
-    'select',
     'cproces',
     'ccorredor',
-    'xramo',
     'xintermediario',
+    'xramo',
     'xcedula_asegurado',
     'xasegurado',
-    'Fecha_Emision_Cotizacion',
+    'fdesde_pol',
+    'fhasta_pol',
     'Estatus_Cotizacion',
+    'xsucursal',
+    'xcanal_venta',
+    'xmoneda',
   ];
   ColumnsRecibos: string[] = [
     'cnrecibo',
@@ -97,36 +101,20 @@ export class CotizacionesComponent implements AfterViewInit {
     'ctransaccion',
   ];
   itemList: any = [];
-  filterFormGroup = new FormGroup({
-    start: new FormControl<Date | null>(null),
-    end: new FormControl<Date | null>(null),
-    intermediario: new FormControl(null),
-  });
   details: string[] = ['cnpoliza', 'cnrecibo', 'ramo', 'pdf', 'recibo'];
-  polizaGroup = this._formBuilder.group({
+  cotizacionGroup = this._formBuilder.group({
     firstCtrl: ['', Validators.required],
-    nroPolizaInput: [''],
-    ciTomadorInput: [''],
-    tomadorInput: [''],
-    ciAseguradoInput: [''],
-    nombreAseguradoInput: [''],
-    descripcionRamo: [''],
-    ciBeneficiarioInput: [''],
-    nombreBeneficiarioInput: [''],
-    FechaDesdePol: [''],
-    FechaHastaPol: [''],
-    Vigencia: [''],
-    Sucursal: [''],
-    cproductor: [''],
-    Intermediario: [''],
-    Moneda: [''],
-    Tasa_Cambio: [''],
-    Tipo_Renovacion: [''],
-    Fecha_Emision: [''],
-    Estatus_Poliza: [''],
-    Plan: [''],
-    Descripcion_Plan: [''],
-    Observacion: [''],
+    cproces : [''],
+    ccorredor : [''],
+    xramo : [''],
+    xintermediario : [''],
+    xasegurado : [''],
+    xcedula_asegurado : [''],
+    fdesde_pol : [''],
+    fhasta_pol : [''],
+    Estatus_Cotizacion : [''],
+    start: new FormControl<Date | null>(null),
+    end:   new FormControl<Date | null>(null),
   });
 
   datosTecnicos = this._formBuilder.group({
@@ -145,7 +133,8 @@ export class CotizacionesComponent implements AfterViewInit {
     private route: ActivatedRoute,
     private http: HttpClient,
     readonly dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private _snackBar: MatSnackBar
   ) {
     this.paginator2.firstPageLabel = 'Primera Página';
     this.paginator2.itemsPerPageLabel = 'Registros por Página';
@@ -187,13 +176,26 @@ export class CotizacionesComponent implements AfterViewInit {
   isAllSelected() {
     return this.selection.selected.length === 1;
   }
+  dateFilter(event: any) {
+    let inicio: Date = this.cotizacionGroup.get('start')?.value || new Date()
+    let final = this.cotizacionGroup.get('end')?.value || new Date()
+    let data = {
+      start: new Date(inicio),
+      end: new Date(final)
+    }
+    this.itemList = [];
+    this.dataSource.data = []
+    this.http.post(environment.apiUrl + '/api/v1/poliza/searchCotizacion', data).subscribe((response: any) => {
+      const dataArray = Object.values(response.data.list);
+      this.dataSource.data = dataArray;
+      this.defaultDataSource = new MatTableDataSource(dataArray);
+      this.dataSource = new MatTableDataSource(dataArray);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    })
+  }
   ngOnInit() {
-    fetch(environment.apiUrl + '/api/v1/collection/receipts-collect')
-      .then((response) => response.json())
-      .then((data) => {
-        // let obj = data.searchClientforReceiptCollect;
-        // let array = Object.values(obj);
-      });
+    this.itemList = [];
     this.pruebaDialog();
     this.token = localStorage.getItem('user');
     this.currentUser = JSON.parse(this.token);
@@ -232,42 +234,18 @@ export class CotizacionesComponent implements AfterViewInit {
     }
   }
   pruebaDialog() {
-    let poliza: any;
+    let cotizacion: any;
     this.selection.selected.forEach((row: any) => {
-      this.poliza = row.Nro_Poliza.trim();
-      poliza = row.Nro_Poliza.trim();
-      this.polizaGroup.get('nroPolizaInput')?.setValue(row.Nro_Poliza.trim());
-      this.polizaGroup.get('ciTomadorInput')?.setValue(row.CID);
-      this.polizaGroup.get('tomadorInput')?.setValue(row.Nombre_del_Tomador);
-      this.polizaGroup.get('ciAseguradoInput')?.setValue(row.Id_Asegurado);
-      this.polizaGroup
-        .get('nombreAseguradoInput')
-        ?.setValue(row.Nombre_Asegurado);
-      this.polizaGroup.get('descripcionRamo')?.setValue(row.Descripcion_Ramo);
-      this.polizaGroup
-        .get('ciBeneficiarioInput')
-        ?.setValue(row.Id_del_Beneficiario);
-      this.polizaGroup
-        .get('nombreBeneficiarioInput')
-        ?.setValue(row.Nombre_Beneficiario);
-      this.polizaGroup.get('FechaDesdePol')?.setValue(row.Fecha_desde_Pol);
-      this.polizaGroup.get('FechaHastaPol')?.setValue(row.Fecha_hasta_Pol);
-      this.polizaGroup.get('Vigencia')?.setValue(row.Dias_de_vigencia);
-      this.polizaGroup.get('Sucursal')?.setValue(row.Sucursal || 'N/A.');
-      this.polizaGroup
-        .get('cproductor')
-        ?.setValue(row.cproductor + ' - ' + row.Intermediario || 'N/A');
-      this.polizaGroup.get('Intermediario')?.setValue(row.Intermediario);
-      this.polizaGroup.get('Moneda')?.setValue(row.Moneda);
-      this.polizaGroup.get('Tasa_Cambio')?.setValue(row.Tasa_Cambio.toFixed(2));
-      this.polizaGroup.get('Tipo_Renovacion')?.setValue(row.Tipo_Renovacion);
-      this.polizaGroup.get('Fecha_Emision')?.setValue(row.Fecha_Emision);
-      this.polizaGroup.get('Estatus_Poliza')?.setValue(row.Estatus_Poliza);
-      this.polizaGroup.get('Plan')?.setValue(row.Plan + ' - ' + row.Descripcion_Plan || 'N/A.');
-      this.polizaGroup
-        .get('Descripcion_Plan')
-        ?.setValue(row.Descripcion_Plan || 'N/A.');
-      this.polizaGroup.get('Observacion')?.setValue(row.Observacion);
+      this.cotizacion = row.cproces.trim();cotizacion = row.cproces.trim();
+      this.cotizacionGroup.get('cproces')?.setValue(row.Observacion);
+      this.cotizacionGroup.get('ccorredor')?.setValue(row.Observacion);
+      this.cotizacionGroup.get('xramo')?.setValue(row.Observacion);
+      this.cotizacionGroup.get('xintermediario')?.setValue(row.Observacion);
+      this.cotizacionGroup.get('xasegurado')?.setValue(row.Observacion);
+      this.cotizacionGroup.get('xcedula_asegurado')?.setValue(row.Observacion);
+      this.cotizacionGroup.get('fdesde_pol')?.setValue(row.Observacion);
+      this.cotizacionGroup.get('fhasta_pol')?.setValue(row.Observacion);
+      this.cotizacionGroup.get('Estatus_Cotizacion')?.setValue(row.Fecha_Emision_Cotizacion);
     });
 
     this.recibosData = [];
@@ -290,7 +268,7 @@ export class CotizacionesComponent implements AfterViewInit {
       if (dataRecibo.Codigo_Ramo == 18) {
         this.ramoAuto = true
         this.ramoRcg = false
-        this.http.post(environment.apiUrl + '/api/v1/poliza/searchAutomobile', { cnpoliza: this.poliza })
+        this.http.post(environment.apiUrl + '/api/v1/poliza/searchAutomobile', { cnpoliza: this.cotizacion })
         .subscribe((response: any) => {
           while (auto.length !== 0) {
             auto.removeAt(0);
@@ -329,7 +307,7 @@ export class CotizacionesComponent implements AfterViewInit {
         ){
           this.ramoRcg = true
         }
-        this.http.post(environment.apiUrl + '/api/v1/poliza/searchBeneficiary', { cnpoliza: this.poliza })
+        this.http.post(environment.apiUrl + '/api/v1/poliza/searchBeneficiary', { cnpoliza: this.cotizacion })
           .subscribe((response: any) => {
             if (response.data && response.data) {
               const dataArray = Object.values(response.data);
@@ -345,8 +323,7 @@ export class CotizacionesComponent implements AfterViewInit {
                   Nro_Poliza: item.Nro_Poliza,
                   csexo_beneficiario: item.csexo_beneficiario,
                   fingreso_beneficiario: item.fingreso_beneficiario,
-                  fnacimiento_beneficiario:
-                    item.fnacimiento_beneficiario || 'N/A.',
+                  fnacimiento_beneficiario: item.fnacimiento_beneficiario || 'N/A.',
                   xbeneficiario: item.xbeneficiario,
                   xcedula_beneficiario: item.xcedula_beneficiario,
                   xparentesco_beneficiario: item.xparentesco_beneficiario,
@@ -392,26 +369,25 @@ export class CotizacionesComponent implements AfterViewInit {
       }
     }
   }
-  dateFilter(event: any) {
-    let inicio: Date = this.filterFormGroup.get('start')?.value || new Date()
-    let final = this.filterFormGroup.get('end')?.value || new Date()
-    let body = {
-      start: new Date(inicio),
-      end: new Date(final)
-    }
-    this.itemList = [];
-    this.dataSource.data = []
-    this.http.post(environment.apiUrl + '/api/v1/poliza/searchCotizacion', body).subscribe((response: any) => {
-      var data = response.data.list.search
-      this.dataSource.data = response.data.list.search;
-      this.itemList = new MatTableDataSource(data).data;
-    })
-  }
+  
   sortData(sort: Sort) {
     const data = this.dataSource.data.slice();
     if (!sort.active || sort.direction === '') {
       this.dataSource.data = this.defaultDataSource.data;
       return;
     }
+  }
+  exportExcel() {
+    const worksheet = XLSX.utils.json_to_sheet(this.defaultDataSource.data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Report');
+    // XLSX.utils.format_cell()
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const excelData: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.  spreadsheetml.sheet' });
+    saveAs(excelData, `Reporte.xlsx`);
+    this._snackBar.open("Reporte en Excel descargado con Éxito", "Cerrar", {
+      duration: 3000,
+      panelClass: ['blue-snackbar'],
+    });
   }
 }

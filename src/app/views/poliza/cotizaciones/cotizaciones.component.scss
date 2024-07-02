@@ -8,7 +8,9 @@ table {
 .mat-stepper-horizontal {
     margin-top: 8px;
   }
-  
+.align-right-button {
+    float: right;
+}
 .mat-mdc-form-field {
     margin-top: 16px;
   }
@@ -17,6 +19,9 @@ table {
   }
 .align-right-button {
     float: right;
+  }
+.align-left-button {
+    float: left;
   }
 button {
   margin: 4px;
@@ -68,3 +73,48 @@ td{
 //   pointer-events: none;
 //   opacity: 0.5; 
 // }
+
+.totalwidth{
+  width: 100%;
+}
+.mediumwidth{
+  width: 67%;
+}
+.mediumwidth2{
+  width: 30%;
+}
+.table-responsive {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+}
+
+mat-table {
+ width: 1200px;
+ max-width: 1200px;
+ margin-bottom: 1rem;
+ display: table;
+ border-collapse: collapse;
+ margin: 0px;
+}
+
+mat-row,
+mat-header-row {
+  display: table-row;
+  
+}
+mat-cell,
+mat-header-cell {
+  word-wrap: initial;
+  display: table-cell;
+  padding: 0px 5px;
+  line-break: unset;
+  width: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+.mat-mdc-table {
+  white-space: nowrap;
+}
